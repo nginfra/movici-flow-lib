@@ -1,0 +1,50 @@
+export const authServerBase = '/auth/v1';
+export const dataEngineBase = '/data-engine/v4';
+export const geocodeBase = '/geocoder/v1';
+export const datasetGeneratorBase = '/dataset-generator/v1';
+export const simulationControlBase = '/model-engine/v1';
+
+export default {
+  activate: '/user/activate',
+  activityLogs: '/activity_logs',
+  autocomplete: '/autocomplete',
+  analysisPlot: '/analysis/plot',
+  control: '/control',
+  data: '/data',
+  datasets: '/datasets',
+  dataset_types: '/dataset_types',
+  entity_types: '/entity_types',
+  feedback_form: '/feedback/submit',
+  forgotpassword: '/user/forgot-password',
+  generate: '/generate',
+  generators: '/generators',
+  initdata: '/init_data',
+  invite: '/invite',
+  login: '/user/login',
+  logout: '/user/logout',
+  logs: '/logs',
+  map: '/map',
+  modelTypes: '/model_types',
+  organisations: '/organisations',
+  projects: '/projects',
+  profile: '/user/profile',
+  property_types: '/property_types',
+  resetpassword: '/user/reset-password',
+  results: '/results',
+  reverseSearch: '/reverse_search',
+  roles: '/roles',
+  runSimulation: '/run-simulation',
+  scenarios: '/scenarios',
+  schema: '/schema',
+  scopes: '/scopes',
+  search: '/search',
+  simulations: '/simulations',
+  state: '/state',
+  summary: '/summary',
+  timeline: '/timeline',
+  updates: '/updates',
+  users: '/users',
+  validateAuth: '/auth',
+  views: '/views',
+  workloads: '/workloads'
+};

@@ -1,0 +1,108 @@
+// Set colors
+$black: #000000;
+$black-bis: #333333;
+$black-ter: #4b4d4c;
+$grey-darker: #646665;
+$grey-dark: #7d807f;
+$grey-medium: #999896;
+$grey: #afb2b1;
+$grey-light: #c8cccb;
+$grey-lighter: #d4d9d7;
+$grey-lightest: #e6ebe9;
+$white-ter: #f5f5f5;
+$white-bis: #fafcfc;
+$white: #ffffff;
+
+$orange: #f18759;
+$yellow: #e8b53e;
+$green: #1ab67e;
+$green-light: #e8f8f2;
+$turquoise: #3ac8d1;
+$cyan: #1699f8;
+$blue: #5571f2;
+$light-blue: #d8defc;
+$purple: #a258dc;
+$red: #e54b4b;
+$pink: #f98ba6;
+$light-pink: #f5b7b7;
+$scrollbar-background: #f5f5f5;
+$scrollbar-color: #b3b3b3;
+
+$primary: $green;
+$secondary: $purple;
+$info: $blue;
+$success: $green;
+$warning: $orange;
+$danger: $red;
+$light: $white-ter;
+$dark: $grey-darker;
+
+$primary-invert: $green-light;
+$info-invert: $light-blue;
+$secondary-invert: $white;
+$warning-invert: $white;
+$pink-invert: $white;
+$success-invert: $white;
+$warning-invert: $white;
+$danger-invert: $light-pink;
+$light-invert: $white;
+$dark-invert: $white;
+
+// Setup $colors to use as bulma classes
+$colors: (
+  'white': (
+    $white,
+    $black
+  ),
+  'black': (
+    $black,
+    $white
+  ),
+  'light': (
+    $light,
+    $light-invert
+  ),
+  'dark': (
+    $dark,
+    $dark-invert
+  ),
+  'primary': (
+    $primary,
+    $primary-invert
+  ),
+  'white-green': (
+    $white,
+    $green
+  ),
+  'info': (
+    $info,
+    $info-invert
+  ),
+  'success': (
+    $success,
+    $success-invert
+  ),
+  'warning': (
+    $warning,
+    $warning-invert
+  ),
+  'danger': (
+    $danger,
+    $danger-invert
+  ),
+  'danger-invert': (
+    $light-pink,
+    $danger
+  )
+);
+
+$columns-margin: 0;
+$menu-item-size: 4.75rem;
+$menu-item-height: 5rem;
+$menu-bottom-item-size: 3.625rem;
+$left-menu-size: 18.75rem;
+$half-left-menu-size: calc(#{$left-menu-size} / 2);
+
+@mixin border-radius {
+  border-radius: 0.25rem !important;
+}

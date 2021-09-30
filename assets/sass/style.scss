@@ -1,0 +1,310 @@
+@import './variables';
+
+// block for the movici flow components
+.flow {
+  // label
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  .label {
+    color: $black;
+  }
+
+  // list
+  ul.flow-list {
+    padding-right: 0.25rem;
+    li {
+      @include border-radius;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      padding: 0.25rem 0.625rem;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+      &:hover {
+        background-color: $white-ter;
+      }
+      &.active {
+        background-color: $green-light;
+        color: $green;
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  // buttons
+  .button {
+    font-weight: bold;
+  }
+
+  // tabs
+  .b-tabs.flow-tabs {
+    flex-grow: 1;
+    margin-bottom: 0;
+    &.uppercase {
+      & > .tabs {
+        & > ul {
+          & > li {
+            text-transform: uppercase;
+          }
+        }
+      }
+    }
+    .tabs {
+      ul {
+        li {
+          a {
+            font-size: 0.85rem;
+            border-bottom-width: 0px;
+            span {
+              color: $black;
+            }
+          }
+          &.is-disabled {
+            a {
+              span {
+                color: $grey;
+              }
+            }
+          }
+          &.is-active {
+            font-weight: bold;
+            a {
+              border-bottom-width: 2px;
+              span.icon {
+                color: $primary;
+              }
+              span:not(.icon) {
+                color: $black;
+              }
+            }
+          }
+        }
+      }
+    }
+    .tab-content {
+      margin: 0;
+      height: calc(100% - 43px);
+      padding: 0;
+      .tab-item {
+        height: 100%;
+        width: 100%;
+      }
+    }
+  }
+
+  // buefy dropdown
+  .dropdown {
+    .dropdown-menu {
+      a.dropdown-item {
+        color: $black;
+        font-size: 0.8rem;
+        font-weight: 300;
+        &:hover {
+          background-color: $primary-invert;
+          color: $primary;
+        }
+      }
+    }
+
+    &.no-selection {
+      .dropdown-menu {
+        a.dropdown-item {
+          // buefy is-active puts an $primary color background, something we sometimes don't want
+          &.is-active {
+            background-color: inherit;
+            &:hover {
+              background-color: $primary-invert;
+              color: $primary;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .popup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    will-change: transform;
+    &.fixed {
+      position: unset;
+    }
+  }
+
+  .popup-anchor-top {
+    flex-direction: column;
+    .popup-tip {
+      margin-bottom: -1px;
+      align-self: center;
+      border-top: none;
+      border-bottom-color: $white;
+    }
+  }
+  .popup-anchor-top-left {
+    flex-direction: column;
+    .box {
+      border-top-left-radius: 0;
+    }
+    .popup-tip {
+      align-self: flex-start;
+      border-top: none;
+      border-left: none;
+      border-bottom-color: $white;
+    }
+  }
+  .popup-anchor-top-right {
+    flex-direction: column;
+    .box {
+      border-top-right-radius: 0;
+    }
+    .popup-tip {
+      align-self: flex-end;
+      border-top: none;
+      border-right: none;
+      border-bottom-color: $white;
+    }
+  }
+  .popup-anchor-bottom {
+    flex-direction: column-reverse;
+    .popup-tip {
+      margin-top: -1px;
+      align-self: center;
+      border-bottom: none;
+      border-top-color: $white;
+    }
+  }
+  .popup-anchor-bottom-left {
+    flex-direction: column-reverse;
+    .box {
+      border-bottom-left-radius: 0;
+    }
+    .popup-tip {
+      align-self: flex-start;
+      border-bottom: none;
+      border-left: none;
+      border-top-color: $white;
+    }
+  }
+  .popup-anchor-bottom-right {
+    flex-direction: column-reverse;
+    .box {
+      border-bottom-right-radius: 0;
+    }
+    .popup-tip {
+      align-self: flex-end;
+      border-bottom: none;
+      border-right: none;
+      border-top-color: $white;
+    }
+  }
+  .popup-anchor-left {
+    flex-direction: row;
+    .popup-tip {
+      margin-right: -1px;
+      align-self: center;
+      border-left: none;
+      border-right-color: $white;
+    }
+  }
+  .popup-anchor-right {
+    flex-direction: row-reverse;
+    .popup-tip {
+      margin-left: -1px;
+      align-self: center;
+      border-right: none;
+      border-left-color: $white;
+    }
+  }
+  .popup-tip {
+    width: 0;
+    height: 0;
+    border: 0.625rem solid transparent;
+    z-index: 1;
+  }
+
+  .draggable {
+    &.dashed {
+      border: 1px dashed $grey;
+    }
+    .flip-list-move {
+      transition: transform 0.5s;
+    }
+    .no-move {
+      transition: transform 0s;
+    }
+    .ghost {
+      background: transparent;
+    }
+    .list-group {
+      min-height: 20px;
+    }
+  }
+
+  // count class for whenever we must show totals
+  span.count {
+    margin-left: 0.25rem;
+    color: $grey;
+    font-weight: normal;
+  }
+}
+
+.group-picker {
+  @include border-radius;
+  padding: 0.25rem;
+  margin-bottom: 0.25rem;
+  &:last-child {
+    margin-bottom: 0;
+  }
+  .header {
+    display: flex;
+    margin: 0;
+    padding: 0.25rem 0;
+    align-items: center;
+    .label {
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto 0 0;
+      color: $black !important;
+    }
+    & > span {
+      &.grip {
+        cursor: n-resize;
+        color: $grey-light;
+      }
+    }
+  }
+}
+
+.modal.overflow-visible {
+  .modal-content {
+    overflow: visible;
+  }
+}
+
+.dialog {
+  .modal-card {
+    .modal-card-body {
+      color: $black;
+    }
+    .modal-card-head,
+    .modal-card-foot {
+      border: 0;
+    }
+    .modal-card-head {
+      padding-bottom: 0;
+    }
+    .modal-card-foot {
+      padding-top: 0;
+      .button {
+        font-size: 0.75rem;
+      }
+    }
+  }
+}
