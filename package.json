@@ -1,0 +1,89 @@
+{
+  "name": "flow-common",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "dev": "vue-cli-service serve",
+    "test:e2e": "vue-cli-service test:e2e",
+    "test:unit": "vue-cli-service test:unit"
+  },
+  "dependencies": {
+    "@deck.gl/aggregation-layers": "8.4.13",
+    "@deck.gl/core": "8.4.13",
+    "@deck.gl/layers": "8.4.13",
+    "@deck.gl/mapbox": "8.4.13",
+    "axios": "0.21.1",
+    "buefy": "0.9.6",
+    "bulma-divider": "0.2.0",
+    "bulma-utilities": "0.3.6",
+    "jszip": "^3.6.0",
+    "lodash": "4.17.21",
+    "mapbox-gl": "2.2.0",
+    "proj4": "2.7.2",
+    "reproject": "1.2.6",
+    "vue": "2.6.12",
+    "vue-class-component": "7.2.6",
+    "vue-color": "^2.8.1",
+    "vue-i18n": "8.24.3",
+    "vue-numeric-input": "1.0.6",
+    "vue-property-decorator": "9.1.2",
+    "vue-router": "3.5.1",
+    "vuedraggable": "^2.24.3",
+    "vuex": "3.6.2"
+  },
+  "devDependencies": {
+    "@danmarshall/deckgl-typings": "4.7.2",
+    "@kazupon/vue-i18n-loader": "0.5.0",
+    "@types/jest": "26.0.22",
+    "@types/lodash": "4.14.168",
+    "@types/mapbox-gl": "2.1.1",
+    "@types/proj4": "2.5.0",
+    "@types/vue-color": "^2.4.3",
+    "@typescript-eslint/eslint-plugin": "4.22.0",
+    "@typescript-eslint/parser": "4.22.0",
+    "@vue/cli-plugin-babel": "4.5.12",
+    "@vue/cli-plugin-eslint": "4.5.12",
+    "@vue/cli-plugin-typescript": "4.5.12",
+    "@vue/cli-plugin-unit-jest": "4.5.12",
+    "@vue/cli-service": "4.5.12",
+    "@vue/eslint-config-prettier": "6.0.0",
+    "@vue/eslint-config-typescript": "7.0.0",
+    "@vue/test-utils": "1.2.0",
+    "babel-eslint": "10.1.0",
+    "eslint": "7.24.0",
+    "eslint-plugin-prettier": "3.3.1",
+    "eslint-plugin-vue": "7.9.0",
+    "jest-serializer-vue": "2.0.2",
+    "node-sass": "5.0.0",
+    "prettier": "2.2.1",
+    "sass-loader": "10.1.1",
+    "typescript": "4.2.4",
+    "vue-cli-plugin-i18n": "2.1.0",
+    "vue-template-compiler": "2.6.12",
+    "vuex-module-decorators": "1.0.1",
+    "webpack-bundle-analyzer": "4.4.1"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 100,
+    "trailingComma": "none",
+    "arrowParens": "avoid",
+    "endOfLine": "auto"
+  },
+  "jest": {
+    "preset": "@vue/cli-plugin-unit-jest/presets/typescript-and-babel",
+    "snapshotSerializers": [
+      "jest-serializer-vue"
+    ],
+    "setupFiles": [
+      "./tests/unit/setupJest.js"
+    ],
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/tests/__mocks__/fileMock.js",
+      "\\.(css|less)$": "<rootDir>/tests/__mocks__/styleMock.js"
+    }
+  }
+}
