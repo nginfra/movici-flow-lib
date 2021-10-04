@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { SimulationMode, TimeOrientedSimulationInfo } from '@/flow/src/types';
+import { SimulationMode, TimeOrientedSimulationInfo } from '@/types';
 
 function defaultTimelineInfo(): TimeOrientedSimulationInfo {
   return {

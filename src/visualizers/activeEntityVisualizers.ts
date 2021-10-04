@@ -5,11 +5,11 @@ import {
   PointCoordinate,
   PointGeometryData,
   TopologyLayerData
-} from '@/flow/src/types';
+} from '@/types';
 import { ScatterplotLayer } from '@deck.gl/layers';
-import { PointTopologyFromStateGetter } from '@/flow/src/visualizers/geometry';
-import { getTapefiles, SinglePropertyTapefile } from '@/flow/src/visualizers/tapefile';
-import { BaseVisualizer, DIMENSIONS } from '@/flow/src/visualizers/visualizers';
+import { PointTopologyFromStateGetter } from '@/visualizers/geometry';
+import { getTapefiles, SinglePropertyTapefile } from '@/visualizers/tapefile';
+import { BaseVisualizer, DIMENSIONS } from '@/visualizers/visualizers';
 
 interface ActiveEntityLayerData<Coord extends Coordinate> extends TopologyLayerData<Coord> {
   onHoverText?: string | number;

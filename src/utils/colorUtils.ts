@@ -1,4 +1,4 @@
-import { RGBAColor } from '@/flow/src//types';
+import { RGBAColor } from '@//types';
 
 /**
  * Given two subsequent entries in a color mapping, calculate intermediate colors. It linearly

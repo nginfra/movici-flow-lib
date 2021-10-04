@@ -47,17 +47,17 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import { TimeOrientedSimulationInfo } from '@/flow/src/types';
-import FlowContainer from '@/flow/src/components/FlowContainer.vue';
-import FlowLayerPicker from '@/flow/src/components/widgets/FlowLayerPicker.vue';
-import ProjectInfoBox from '@/flow/src/components/info_box/ProjectInfoBox.vue';
-import ScenarioInfoBox from '@/flow/src/components/info_box/ScenarioInfoBox.vue';
-import ExportForm from '@/flow/src/components/export/ExportForm.vue';
-import ExportLayerPicker from '@/flow/src/components/export/ExportLayerPicker.vue';
-import { ComposableVisualizerInfo } from '@/flow/src/visualizers/VisualizerInfo';
-import ValidationProvider from '@/flow/src/mixins/ValidationProvider';
-import FormValidator from '@/flow/src/utils/FormValidator';
-import { flowStore } from '@/flow/src/store/store-accessor';
+import { TimeOrientedSimulationInfo } from '@/types';
+import FlowContainer from './FlowContainer.vue';
+import FlowLayerPicker from './widgets/FlowLayerPicker.vue';
+import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
+import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
+import ExportForm from './export/ExportForm.vue';
+import ExportLayerPicker from './export/ExportLayerPicker.vue';
+import { ComposableVisualizerInfo } from '@/visualizers/VisualizerInfo';
+import ValidationProvider from '@/mixins/ValidationProvider';
+import FormValidator from '@/utils/FormValidator';
+import { flowStore } from '@/store/store-accessor';
 
 @Component({
   components: {

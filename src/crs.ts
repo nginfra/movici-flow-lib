@@ -1,12 +1,7 @@
 import proj4 from 'proj4';
 import { reproject } from 'reproject';
-import { ValidationError } from '@/flow/src/errors';
-import {
-  Coordinate3DArray,
-  CoordinateArray,
-  Point3DCoordinate,
-  PointCoordinate
-} from '@/flow/src/types';
+import { ValidationError } from '@/errors';
+import { Coordinate3DArray, CoordinateArray, Point3DCoordinate, PointCoordinate } from '@/types';
 
 proj4.defs(
   'EPSG:28992',

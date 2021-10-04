@@ -39,15 +39,7 @@
 <script lang="ts">
 import { Component, Mixins, Prop, Ref } from 'vue-property-decorator';
 import FixedPosition from '../../mixins/FixedPosition';
-
-export interface ActionMenuItem {
-  icon?: string;
-  iconPack?: string;
-  label: string;
-  event: string;
-  colorScheme?: string;
-  isDisabled?: () => boolean;
-}
+import { ActionMenuItem } from '@/types';
 
 @Component({ name: 'MovActionMenu' })
 export default class MovActionMenu extends Mixins(FixedPosition) {

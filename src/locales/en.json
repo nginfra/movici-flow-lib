@@ -1,0 +1,275 @@
+{
+  "actions": {
+    "add": "Add",
+    "addNew": "Add new",
+    "apply": "Apply",
+    "back": "Back",
+    "bulk": "Bulk actions",
+    "cancel": "Cancel",
+    "change": "Change",
+    "delete": "Delete",
+    "deselectAll": "Deselect all",
+    "download": "Download",
+    "duplicate": "Duplicate",
+    "edit": "Edit",
+    "export": "Export",
+    "exportCSV": "Export to CSV",
+    "generate": "Generate",
+    "leave": "Leave",
+    "refresh": "Refresh",
+    "reset": "Reset",
+    "save": "Save",
+    "saveAndGenerate": "Save and generate",
+    "search": "Search",
+    "select": "Select",
+    "selectAll": "Select all",
+    "submit": "Submit",
+    "upload": "Upload"
+  },
+  "dataset": {
+    "addNew": "@:(actions.addNew) @:(resources.dataset)",
+    "duration": "Processing duration (sec)",
+    "edit": "@:(actions.edit) @:(resources.dataset)",
+    "initData": "Init data",
+    "invalid": "Invalid @:(resources.dataset)",
+    "nonAvailable": "No @:(resources.datasets) available",
+    "select": "Select a @:(resources.dataset)",
+    "selectRequiredTypes": "Select required :@(resources.dataset) types"
+  },
+  "entityGroup": {
+    "select": "Select an @:(resources.entityGroup)"
+  },
+  "flow": {
+    "datasets": {
+      "addDataset": "Add dataset",
+      "dataPreview": "Data preview",
+      "details": {
+        "created_on": "Created on",
+        "last_modified": "Last updated on",
+        "source": "Source",
+        "tags": "Tags"
+      },
+      "entitySummary": "Entity Groups",
+      "label": "Datasets",
+      "resume": "Resume",
+      "searchPlaceholder": "Search datasets...",
+      "usage": "Usage",
+      "zeroEntities": "This dataset can't be visualised"
+    },
+    "export": {
+      "custom": "Custom",
+      "filterData": "Filter data",
+      "format": "Export format",
+      "formatPlaceholder": "Choose a format",
+      "label": "Export",
+      "modalTitle": "Export data for scenario ",
+      "resetTimestamp": "Reset timestamp to original value"
+    },
+    "leftMenu": {
+      "actions": "Actions",
+      "collapse": "Collapse",
+      "expand": "Expand",
+      "returnToDashboard": "Return to dashboard"
+    },
+    "legend": {
+      "label": "Legend"
+    },
+    "mainView": {
+      "noDatasetText": "Select a dataset to view it",
+      "noProjectText": "Choose a workspace to view your data and configure scenarios",
+      "noProjectTitle": "You have not chosen a workspace yet!",
+      "noScenarioText": "Select a scenario to view it"
+    },
+    "projects": {
+      "details": {
+        "created_on": "Created on",
+        "dataset_count": "@:(resources.dataset)s",
+        "last_updated": "Last updated",
+        "scenario_count": "@:(resources.scenario)s",
+        "tags": "Tags"
+      },
+      "label": "Workspace",
+      "selectPlaceholder": "Select a workspace..."
+    },
+    "scenarios": {
+      "configAssistant": "Configuration Assistant",
+      "label": "Scenario",
+      "models": "Models",
+      "rawConfig": "Raw config",
+      "selectPlaceholder": "Select a scenario...",
+      "usedInScenario": "Used in this configuration",
+      "widgetDashboard": "Widget Dashboard"
+    },
+    "visualization": {
+      "basedOn": "Based on",
+      "byValue": "By value",
+      "colorConfig": {
+        "buckets": "Buckets",
+        "color": "Colour",
+        "gradient": "Gradient",
+        "palette": "Colour palette",
+        "steps": "Steps",
+        "type": "Colour type",
+        "value": "Value",
+        "valueRange": "Value (range)"
+      },
+      "dialogs": {
+        "closeConfigurator": "Close current configurator?",
+        "confirmDeleteView": "Are you sure you want to delete View <b>{name}</b> for everyone?",
+        "confirmOverwriteView": "Are you sure to overwrite View <b>{name}</b>?",
+        "confirmResetViewWithName": "Are you sure you want to start a new View? <br>You will lose all unsaved changes in <b>{name}</b>.",
+        "confirmResetViewWithoutName": "Are you sure you want to start a new View? <br>You will lose all unsaved changes.",
+        "continueEditing": "Continue editing",
+        "deleteVisualizer": "Do you really want to delete <b>{name}</b> Visualiser?",
+        "discardChanges": "Discard changes",
+        "loadView": "Load View",
+        "noViewsForScenario": "No saved Views for this Scenario.",
+        "noViewToDelete": "There is no current view to delete",
+        "selectView": "Select a View",
+        "unsavedChanges": "<b>You have unsaved changes!</b> <br>Do you want to close the Configurator?",
+        "unsavedView": "<b>You have an unsaved changes!</b> <br>Do you want to leave the Visualisation?",
+        "viewCreateSuccess": "View successfully saved",
+        "viewDeleteSuccess": "View successfully deleted",
+        "viewUpdateSuccess": "View successfully updated"
+      },
+      "displayAs": "Display as",
+      "editVisualizer": "Edit visualiser",
+      "infoLabel": "View",
+      "label": "Visualisation",
+      "legendLabel": "Legend label",
+      "legendTitle": "Legend title",
+      "loadView": "Load View",
+      "newVisualizer": "New visualiser",
+      "noGeometry": "No display geometry for this Entity group",
+      "popup": {
+        "addItem": "Add item",
+        "dynamic": "Dynamic",
+        "onClick": "On click",
+        "onHover": "On hover",
+        "position": "Position",
+        "showPopup": "Show popup",
+        "static": "Static",
+        "title": "Popup title",
+        "titlePlaceholder": "My visualiser"
+      },
+      "save": "Save",
+      "saveAndClose": "Save and close",
+      "showLegend": "Show legend",
+      "sizeConfig": {
+        "maxPixels": "Max size",
+        "minPixels": "Min size",
+        "radius": "Radius",
+        "size": "Size",
+        "thickness": "Thickness",
+        "value": "Value"
+      },
+      "static": "Static",
+      "tabs": {
+        "kpi": "KPI",
+        "visualizers": "Visualisers"
+      },
+      "visualiserDisplayName": "Visualiser display name"
+    }
+  },
+  "misc": {
+    "no": "No",
+    "of": "of",
+    "properties": "Properties",
+    "yes": "Yes"
+  },
+  "properties": {
+    "actions": "Actions",
+    "active": "Active",
+    "address": "Address",
+    "chamber_of_commerce": "Chamber of Commerce",
+    "city": "City",
+    "component": "Component",
+    "contact_email": "Contact email",
+    "country": "Country",
+    "createdOn": "Created on",
+    "currentTime": "Current time",
+    "data": "Data",
+    "data_type": "Data Type",
+    "dataset_format": " @:(resources.dataset) Format",
+    "description": "Description",
+    "displayName": "Display name",
+    "duration": "Duration",
+    "email": "Email",
+    "endTime": "End time",
+    "enum": "Enum",
+    "firstname": "First name",
+    "internalName": "Internal name",
+    "lastname": "Last name",
+    "middlename": "Middle name",
+    "name": "Name",
+    "organisation": "Organisation",
+    "password": "Password",
+    "passwordConfirm": "Confirm password",
+    "place": "Place",
+    "selected": "Selected",
+    "status": "Status",
+    "timeScale": "Time scale",
+    "type": "Type",
+    "unit": "Unit",
+    "username": "Username / @:(properties.email)",
+    "zip_code": "Zip code"
+  },
+  "resources": {
+    "analysis": "Analysis",
+    "dataset": "Dataset",
+    "dataset_type": "Dataset Type",
+    "dataset_types": "@:(resources.dataset_type)s",
+    "datasets": "@:(resources.dataset)s",
+    "entity_type": "Entity Type",
+    "entity_types": "@:(resources.entity_type)s",
+    "entityGroup": "Entity group",
+    "impactIndicator": "Impact indicator",
+    "model": "Model",
+    "model_type": "Model Type",
+    "model_types": "Model Types",
+    "models": "Models",
+    "organisation": "Organisation",
+    "organisations": "@:(resources.organisation)s",
+    "profile": "Profile",
+    "project": "Workspace",
+    "projects": "@:(resources.project)s",
+    "property_type": "Property Type",
+    "property_types": "@:(resources.property_type)s",
+    "region": "Region",
+    "scenario": "Scenario",
+    "scenarios": "@:(resources.scenario)s",
+    "schema": "Dataset Schema",
+    "scope": "Scope",
+    "scopes": "@:(resources.scope)s",
+    "timeline": "Timeline",
+    "user": "User",
+    "users": "@:(resources.user)s",
+    "view": "View",
+    "views": "@:(resources.view)s",
+    "visualizerGroup": "Visualiser group"
+  },
+  "settings": {
+    "dataEngineVersion": "Data Engine version",
+    "language": "Language",
+    "selectDataEngineVersion": "@:(actions.select) @:(settings.dataEngineVersion)",
+    "selectLanguage": "@:(actions.select) a @:(settings.language)"
+  },
+  "time": {
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds"
+  },
+  "timeline": {
+    "timestamp": "Timestamp"
+  },
+  "units": {
+    "meter": "metre",
+    "meters": "@:(units.meter)s",
+    "pixel": "pixel",
+    "pixels": "@:(units.pixel)s"
+  },
+  "visualizerGroup": {
+    "select": "Select an @:(resources.visualizerGroup)"
+  }  
+}

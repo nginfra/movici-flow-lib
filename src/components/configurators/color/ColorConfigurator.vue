@@ -68,15 +68,15 @@ import {
   LegendOptions,
   PropertyType,
   StaticColorClause
-} from '@/flow/src/types';
+} from '@/types';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import ColorStaticConfigurator from './ColorStaticConfigurator.vue';
 import ColorByValueConfigurator from './ColorByValueConfigurator.vue';
-import ColorLegendLabelsConfigurator from '@/flow/src/components/configurators/color/ColorLegendLabelsConfigurator.vue';
+import ColorLegendLabelsConfigurator from '@/components/configurators/color/ColorLegendLabelsConfigurator.vue';
 import {
   getLegendPlaceholders,
   PlaceholderType
-} from '@/flow/src/components/configurators/helpers';
+} from '@/components/configurators/helpers';
 
 @Component({
   components: {

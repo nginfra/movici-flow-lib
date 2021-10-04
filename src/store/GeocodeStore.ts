@@ -1,6 +1,6 @@
-import { GeocodeSearchQuery, GeocodeSearchResult, GeocodeSuggestion } from '@/flow/src/types';
+import { GeocodeSearchQuery, GeocodeSearchResult, GeocodeSuggestion } from '@/types';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import { transform, reverseTransform } from '@/flow/src/crs';
+import { transform, reverseTransform } from '@/crs';
 import Backend from '../api/backend';
 
 function transformResult(result: GeocodeSearchResult): GeocodeSearchResult {

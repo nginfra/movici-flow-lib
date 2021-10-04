@@ -1,5 +1,5 @@
-import { ComponentProperty, Update, UpdateWithData } from '@/flow/src/types';
-import Backend from '@/flow/src/api/backend';
+import { ComponentProperty, Update, UpdateWithData } from '@/types';
+import Backend from '@/api/backend';
 
 export interface DatasetStoreConfig {
   backend: Backend;

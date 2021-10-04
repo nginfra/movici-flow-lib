@@ -1,4 +1,4 @@
-import { ColorRuleSet } from '@/flow/src/types';
+import { ColorRuleSet } from '@/types';
 
 /**
  * This is the default ColorRuleSet that will always be used. This ruleset can be augmented by other

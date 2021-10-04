@@ -1,4 +1,4 @@
-import { GeocodeSearchQuery, GeocodeSearchResult, GeocodeSuggestion } from '@/flow/src/types';
+import { GeocodeSearchQuery, GeocodeSearchResult, GeocodeSuggestion } from '@/types';
 
 export default interface GeocodeService {
   resolveSuggestion(suggestion: GeocodeSuggestion): Promise<GeocodeSearchResult | null>;

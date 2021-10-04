@@ -32,9 +32,9 @@ import {
   colorTripleToHex,
   hexToColorTriple,
   MoviciColors
-} from '@/flow/src/visualizers/maps/colorMaps';
-import { ColorClause, RGBAColor, StaticColorClause } from '@/flow/src/types';
-import FlowColorPicker from '@/flow/src/components/configurators/color/FlowColorPicker.vue';
+} from '@/visualizers/maps/colorMaps';
+import { ColorClause, RGBAColor, StaticColorClause } from '@/types';
+import FlowColorPicker from '@/components/configurators/color/FlowColorPicker.vue';
 
 @Component({
   components: {

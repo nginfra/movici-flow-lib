@@ -1,9 +1,9 @@
 import { Store } from 'vuex';
 import { getModule } from 'vuex-module-decorators';
-import FlowStore from '@/flow/src/store/FlowStore';
-import FlowUIStore from '@/flow/src/store/FlowUserInterfaceStore';
-import GeocodeStore from '@/flow/src/store/GeocodeStore';
-import Backend from '@/flow/src/api/backend';
+import FlowStore from '@/store/FlowStore';
+import FlowUIStore from '@/store/FlowUserInterfaceStore';
+import GeocodeStore from '@/store/GeocodeStore';
+import Backend from '@/api/backend';
 
 let flowStore: FlowStore, flowUIStore: FlowUIStore, geocodeStore: GeocodeStore;
 
@@ -15,6 +15,7 @@ function initFlowStores(store: Store<unknown>): void {
 
 function bindAPI(backend: Backend) {
   flowStore.setApiClient(backend);
+  flowStore.setUIStore(flowUIStore);
   flowUIStore.setLanguage('en');
 }
 

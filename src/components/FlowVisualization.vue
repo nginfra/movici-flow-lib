@@ -75,35 +75,29 @@
 
 <script lang="ts">
 import { Component, Prop, Ref, Vue } from 'vue-property-decorator';
-import {
-  CameraOptions,
-  TimeOrientedSimulationInfo,
-  UUID,
-  View,
-  VisualizationMode
-} from '@/flow/src/types';
-import MapVis from '@/flow/src/components/map/MapVis.vue';
+import { CameraOptions, TimeOrientedSimulationInfo, UUID, View, VisualizationMode } from '@/types';
+import MapVis from '@/components/map/MapVis.vue';
 import FlowContainer from './FlowContainer.vue';
-import defaults from '@/flow/src/components/map/defaults';
-import { ComposableVisualizerInfo } from '@/flow/src/visualizers/VisualizerInfo';
-import FlowLayerPicker from '@/flow/src/components/widgets/FlowLayerPicker.vue';
-import DynamicDataView from '@/flow/src/components/map_widgets/DynamicDataView.vue';
-import DataViewContent from '@/flow/src/components/map_widgets/DataViewContent.vue';
-import StaticDataView from '@/flow/src/components/map_widgets/StaticDataView.vue';
+import defaults from '@/components/map/defaults';
+import { ComposableVisualizerInfo } from '@/visualizers/VisualizerInfo';
+import FlowLayerPicker from '@/components/widgets/FlowLayerPicker.vue';
+import DynamicDataView from '@/components/map_widgets/DynamicDataView.vue';
+import DataViewContent from '@/components/map_widgets/DataViewContent.vue';
+import StaticDataView from '@/components/map_widgets/StaticDataView.vue';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
 import ViewInfoBox from './info_box/ViewInfoBox.vue';
-import SearchBar from '@/flow/src/components/map/controls/SearchBar.vue';
-import NavigationControl from '@/flow/src/components/map/controls/NavigationControl.vue';
-import BaseMapControl from '@/flow/src/components/map/controls/BaseMapControl.vue';
-import TimeSlider from '@/flow/src/components/map_widgets/TimeSlider.vue';
-import { simplifiedCamera, visualizerSettingsValidator } from '@/flow/src/visualizers/viewHelpers';
-import { getEntitySummary } from '@/flow/src/utils';
+import SearchBar from '@/components/map/controls/SearchBar.vue';
+import NavigationControl from '@/components/map/controls/NavigationControl.vue';
+import BaseMapControl from '@/components/map/controls/BaseMapControl.vue';
+import TimeSlider from '@/components/map_widgets/TimeSlider.vue';
+import { simplifiedCamera, visualizerSettingsValidator } from '@/visualizers/viewHelpers';
+import { getEntitySummary } from '@/utils';
 import isEqual from 'lodash/isEqual';
 import isError from 'lodash/isError';
 import FlowLegend from './map_widgets/FlowLegend.vue';
-import { successMessage } from '@/flow/src/utils/snackbar';
-import { flowStore, flowUIStore } from '@/flow/src/store/store-accessor';
+import { successMessage } from '@/utils/snackbar';
+import { flowStore, flowUIStore } from '@/store/store-accessor';
 
 @Component({
   components: {

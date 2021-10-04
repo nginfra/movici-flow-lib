@@ -1,4 +1,4 @@
-import { hexToColorTriple } from '@/flow/src/visualizers/maps/colorMaps';
+import { hexToColorTriple } from '@/visualizers/maps/colorMaps';
 
 export interface ColorPaletteParams {
   name: string;

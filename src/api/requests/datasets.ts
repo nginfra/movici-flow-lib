@@ -1,13 +1,7 @@
-import {
-  ComponentProperty,
-  Dataset,
-  DatasetCrudResponse,
-  DatasetWithData,
-  UUID
-} from '@/flow/src/types';
+import { ComponentProperty, Dataset, DatasetCrudResponse, DatasetWithData, UUID } from '@/types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import uri, { dataEngineBase } from '@/flow/src/api/requests/uri';
-import { Request } from '@/flow/src/api/requests/base';
+import uri, { dataEngineBase } from '@/api/requests/uri';
+import { Request } from '@/api/requests/base';
 
 export interface DatasetFilter {
   properties?: string; // comma separated string

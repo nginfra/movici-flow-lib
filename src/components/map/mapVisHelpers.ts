@@ -1,6 +1,6 @@
-import { Nullable } from '@/flow/src/types';
-import { getVisualizerType, VisualizerConstructor } from '@/flow/src/visualizers';
-import { AnyVisualizerInfo } from '@/flow/src/visualizers/VisualizerInfo';
+import { Nullable } from '@/types';
+import { getVisualizerType, VisualizerConstructor } from '@/visualizers';
+import { AnyVisualizerInfo } from '@/visualizers/VisualizerInfo';
 
 export function determineChanges(
   newLayers: AnyVisualizerInfo[],

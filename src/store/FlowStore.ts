@@ -11,11 +11,11 @@ import {
   UUID,
   User,
   View
-} from '@/flow/src/types';
-import { ComposableVisualizerInfo } from '@/flow/src/visualizers/VisualizerInfo';
-import { exportFromConfig } from '@/flow/src/utils/DataExporter';
-import { flowUIStore } from '@/flow/src/store/store-accessor';
-import Backend from '@/flow/src/api/backend';
+} from '@/types';
+import { ComposableVisualizerInfo } from '@/visualizers/VisualizerInfo';
+import { exportFromConfig } from '@/utils/DataExporter';
+import Backend from '@/api/backend';
+import FlowUIStore from '@/store/FlowUserInterfaceStore';
 
 @Module({
   name: 'flow',
@@ -30,10 +30,12 @@ class FlowStore extends VuexModule {
   scenarios: ShortScenario[] = [];
   scenario: Scenario | null = null;
   timestamp = 0;
-  backend_: Backend | null = null;
   currentUser: User | null = null;
   datasetSummaries: Record<UUID, DatasetSummary> = {};
   scenarioSummaries: Record<UUID, Record<UUID, DatasetSummary>> = {};
+  // injected resources
+  backend_: Backend | null = null;
+  flowUIStore_: FlowUIStore | null = null;
 
   get hasProject(): boolean {
     return !!this.project;
@@ -130,6 +132,11 @@ class FlowStore extends VuexModule {
   }
 
   @Mutation
+  SET_UI_STORE(store: FlowUIStore) {
+    this.flowUIStore_ = store;
+  }
+
+  @Mutation
   ADD_DATASET_SUMMARY(payload: {
     datasetUUID: UUID;
     scenarioUUID?: UUID | null;
@@ -166,7 +173,7 @@ class FlowStore extends VuexModule {
 
   @Action({ rawError: true })
   async setCurrentFlowProject(project: Project) {
-    flowUIStore.enableSection({
+    this.flowUIStore_?.enableSection({
       datasets: true,
       scenario: true
     });
@@ -180,10 +187,15 @@ class FlowStore extends VuexModule {
   }
 
   @Action({ rawError: true })
+  setUIStore(flowUIStore_: FlowUIStore) {
+    this.SET_UI_STORE(flowUIStore_);
+  }
+
+  @Action({ rawError: true })
   async setCurrentFlowScenario(scenario: Scenario) {
     this.SET_CURRENT_SCENARIO(scenario);
 
-    flowUIStore.enableSection({ visualization: !!scenario, export: !!scenario });
+    this.flowUIStore_?.enableSection({ visualization: !!scenario, export: !!scenario });
 
     await this.getViewsByScenario(scenario.uuid);
   }
@@ -290,7 +302,7 @@ class FlowStore extends VuexModule {
     entityGroup: string;
     timestamp?: number;
   }) {
-    flowUIStore.setLoading({ value: true, msg: 'Exporting data...' });
+    this.flowUIStore_?.setLoading({ value: true, msg: 'Exporting data...' });
 
     const datasets = (await this.getDatasets(this.project?.uuid ?? '<unknown project>'))?.reduce<
       Record<string, Dataset>
@@ -313,7 +325,7 @@ class FlowStore extends VuexModule {
       });
     }
 
-    flowUIStore.setLoading({ value: false });
+    this.flowUIStore_?.setLoading({ value: false });
   }
 
   @Action({ rawError: true })
@@ -432,14 +444,14 @@ class FlowStore extends VuexModule {
       }
     }
 
-    flowUIStore.enableSection({
+    this.flowUIStore_?.enableSection({
       datasets: this.hasProject,
       scenario: this.hasProject,
       visualization: this.hasScenario,
       export: this.hasScenario
     });
 
-    flowUIStore.setDisableCollapser(disableCollapser);
+    this.flowUIStore_?.setDisableCollapser(disableCollapser);
   }
 }
 

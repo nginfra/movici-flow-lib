@@ -35,7 +35,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { CameraOptions } from '@/flow/src/types';
+import { CameraOptions } from '@/types';
 
 const DEFAULT_MIN_ZOOM = 0;
 const DEFAULT_MAX_ZOOM = 20;

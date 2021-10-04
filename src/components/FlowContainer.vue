@@ -11,7 +11,7 @@
       class="column options is-gapless is-margin-less left-panel"
     >
       <div class="top-logo is-flex mb-5 mt-2 is-flex-grow-0 is-flex-shrink-1">
-        <b-image :src="require('@/flow/assets/movici-flow.svg')" alt="MoViCI flow"></b-image>
+        <b-image src="/static/movici-flow.svg" alt="MoViCI flow"></b-image>
       </div>
       <slot name="leftPanel"></slot>
     </aside>
@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { flowUIStore } from '@/flow/src/store/store-accessor';
+import { flowUIStore } from '@/store/store-accessor';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})

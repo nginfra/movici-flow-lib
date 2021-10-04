@@ -8,21 +8,21 @@ import {
   TapefileLineVisualizer,
   TapefilePointVisualizer,
   TapefilePolygonVisualizer
-} from '@/flow/src/visualizers/tapefileVisualizers';
-import { ActivePointVisualizer } from '@/flow/src/visualizers/activeEntityVisualizers';
-import { FlowVisualizerType, LayerKind, Nullable } from '@/flow/src/types';
-import { EntityGeometry } from '@/flow/src/types/geometry';
+} from '@/visualizers/tapefileVisualizers';
+import { ActivePointVisualizer } from '@/visualizers/activeEntityVisualizers';
+import { FlowVisualizerType, LayerKind, Nullable } from '@/types';
+import { EntityGeometry } from '@/types/geometry';
 import {
   AnyVisualizerInfo,
   ComposableVisualizerInfo,
   VisualizerInfo
-} from '@/flow/src/visualizers/VisualizerInfo';
+} from '@/visualizers/VisualizerInfo';
 import {
   ComposableArcVisualizer,
   ComposableLineVisualizer,
   ComposablePointVisualizer,
   ComposablePolygonVisualizer
-} from '@/flow/src/visualizers/composableVisualizers';
+} from '@/visualizers/composableVisualizers';
 
 export type Visualizer =
   | StaticPointVisualizer
@@ -105,7 +105,7 @@ export function getComposableVisualizerType(
       return null;
   }
 }
-export { VisualizerInfo } from '@/flow/src/visualizers/VisualizerInfo';
+export { VisualizerInfo } from '@/visualizers/VisualizerInfo';
 
 export interface VisGroup {
   name: string;

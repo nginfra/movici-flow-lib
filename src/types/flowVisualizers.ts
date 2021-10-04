@@ -1,6 +1,6 @@
-import { RGBAColor } from '@/flow/src/types/colors';
-import { PropertySummary, PropertyType } from '@/flow/src/types/schema';
-import { CameraOptions, ITapefile } from '@/flow/src/types/visualization';
+import { RGBAColor } from '@/types/colors';
+import { PropertySummary, PropertyType } from '@/types/schema';
+import { CameraOptions, ITapefile } from '@/types/visualization';
 import { PickInfo } from '@deck.gl/core/lib/deck';
 
 export enum FlowVisualizerType {

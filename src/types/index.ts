@@ -12,3 +12,4 @@ export * from './scenarios';
 export * from './schema';
 export * from './users';
 export * from './visualization';
+export * from './ui';

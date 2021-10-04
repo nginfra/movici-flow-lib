@@ -37,7 +37,7 @@
           <h2 class="is-size-6">{{ $t('flow.mainView.noScenarioText') }}</h2>
         </header>
         <div class="no-resource">
-          <b-image :src="require('@/flow/assets/no-resources.png')" />
+          <b-image src="/static/no-resources.png" />
         </div>
       </template>
       <template v-else class="is-flex is-flex-direction-column">
@@ -100,10 +100,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { UUID } from '@/flow/src/types';
+import { UUID } from '@/types';
 import FlowContainer from './FlowContainer.vue';
-import { flowStore, flowUIStore } from '@/flow/src/store/store-accessor';
-import { getClassFromStatus } from '@/flow/src/utils';
+import { flowStore, flowUIStore } from '@/store/store-accessor';
+import { getClassFromStatus } from '@/utils';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
 

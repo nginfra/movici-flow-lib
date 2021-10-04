@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es2019",
     "module": "esnext",
     "strict": true,
     "jsx": "preserve",
@@ -33,7 +33,9 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx",
+    "src/components/index.js",
+    "src/plugins.js"
   ],
   "exclude": [
     "node_modules"

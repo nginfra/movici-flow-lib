@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { PopupContent, PropertyType } from '@/flow/src/types';
+import { PopupContent, PropertyType } from '@/types';
 
 @Component({
   name: 'DataViewContent'

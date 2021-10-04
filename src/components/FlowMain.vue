@@ -5,7 +5,7 @@
         <b-menu-item class="home">
           <template #label>
             <b-image
-              :src="require('@/flow/assets/movici-logo.svg')"
+              src="/static/movici-logo.svg"
               :title="$t('flow.leftMenu.returnToDashboard')"
             ></b-image>
           </template>
@@ -53,9 +53,9 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { FlowSection, FlowSectionItem, User } from '@/flow/src/types';
-import FlowExport from '@/flow/src/components/FlowExport.vue';
-import { flowStore, flowUIStore } from '@/flow/src/store/store-accessor'; // create getters for other store it interacts with?
+import { FlowSection, FlowSectionItem, User } from '@/types';
+import FlowExport from './FlowExport.vue';
+import { flowStore, flowUIStore } from '@/store/store-accessor'; // create getters for other store it interacts with?
 
 @Component({})
 export default class FlowMain extends Vue {

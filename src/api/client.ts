@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
-import { BaseRequest } from '@/flow/src/api/requests';
-import { ConcurrencyManager } from '@/flow/src/api/concurrency';
+import { BaseRequest } from '@/api/requests';
+import { ConcurrencyManager } from '@/api/concurrency';
 
 interface ErrorHandlingConfig {
   [k: number]: (e: HTTPErrorPayload) => void;

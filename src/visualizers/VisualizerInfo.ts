@@ -8,9 +8,9 @@ import {
   VisualizationMode,
   VisualizerConfigurationSettings,
   VisualizerViewConfig
-} from '@/flow/src/types';
-import { hasOwnProperty, propertyString } from '@/flow/src//utils';
-import { cleanVisualizerSettings } from '@/flow/src/visualizers/visualizerHelpers';
+} from '@/types';
+import { hasOwnProperty, propertyString } from '@//utils';
+import { cleanVisualizerSettings } from '@/visualizers/visualizerHelpers';
 
 abstract class BaseVisualizerInfo {
   name: string;

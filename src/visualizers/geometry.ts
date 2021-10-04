@@ -1,4 +1,4 @@
-import { transform, transformArray } from '@/flow/src/crs';
+import { transform, transformArray } from '@/crs';
 import {
   ComponentProperty,
   Coordinate,
@@ -12,9 +12,9 @@ import {
   PolygonGeometryData,
   PropertyType,
   TopologyLayerData
-} from '@/flow/src/types';
-import { EntityGeometry } from '@/flow/src/types/geometry';
-import { DatasetDownloader } from '@/flow/src//utils/DatasetDownloader';
+} from '@/types';
+import { EntityGeometry } from '@/types/geometry';
+import { DatasetDownloader } from '@//utils/DatasetDownloader';
 
 /**
  * A `TopologyGetter` queries a DatasetStore for topology information of a certain entity group,

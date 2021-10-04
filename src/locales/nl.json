@@ -1,0 +1,275 @@
+{
+  "actions": {
+    "add": "Toevoegen",
+    "addNew": "Voeg nieuw toe",
+    "apply": "Toepassen",
+    "back": "Terug",
+    "bulk": "Bulk acties",
+    "cancel": "Annuleren",
+    "change": "Veranderen",
+    "delete": "Verwijderen",
+    "deselectAll": "Deselecteer alles",
+    "download": "Downloaden",
+    "duplicate": "Dupliceren",
+    "edit": "Bewerken",
+    "export": "Exporteren",
+    "exportCSV": "Exporteren naar CSV",
+    "generate": "Genereren",
+    "leave": "Leave",
+    "refresh": "Verversen",
+    "reset": "Reset",
+    "save": "Opslaan",
+    "saveAndGenerate": "Opslaan en genereren",
+    "search": "Zoeken",
+    "select": "Selecteren",
+    "selectAll": "Selecteer alles",
+    "submit": "Verzenden",
+    "upload": "Uploaden"
+  },
+  "dataset": {
+    "addNew": "@:(resources.dataset) @:(actions.add)",
+    "duration": "Verwerkingsduur (sec)",
+    "edit": "@:(resources.dataset) @:(actions.edit)",
+    "initData": "Init data",
+    "invalid": "Ongeldige @:(resources.dataset)",
+    "nonAvailable": "Geen @:(resources.datasets) beschikbaar",
+    "select": "Selecteer een @:(resources.dataset)",
+    "selectRequiredTypes": "Selecteer benodige :@(resources.dataset) types"
+  },
+  "entityGroup": {
+    "select": "Selecteer een @:(resources.entityGroup)"
+  },
+  "flow": {
+    "datasets": {
+      "addDataset": "@:(dataset.addNew)",
+      "dataPreview": "Data preview",
+      "details": {
+        "created_on": "Gemaakt op",
+        "last_updated": "Laatst gewijzigd op",
+        "source": "Bron",
+        "tags": "Tags"
+      },
+      "entitySummary": "Entiteitensamenvatting",
+      "label": "@:(resources.dataset)s",
+      "resume": "Samenvatting",
+      "selectPlaceholder": "@:(dataset.select)",
+      "usage": "Gebruik",
+      "zeroEntities": "Deze dataset kan niet worden weergegeven :("
+    },
+    "export": {
+      "custom": "Custom",
+      "filterData": "Filter data",
+      "format": "Export format",
+      "formatPlaceholder": "Choose a format",
+      "label": "Export",
+      "modalTitle": "Export data for scenario ",
+      "resetTimestamp": "Reset timestamp to original value"
+    },
+    "leftMenu": {
+      "actions": "Acties",
+      "collapse": "Inklappen",
+      "expand": "Uitklappen",
+      "returnToDashboard": "Terugkeren naar het dashboard"
+    },
+    "legend": {
+      "label": "Legenda"
+    },
+    "mainView": {
+      "noDatasetText": "Selecteer een dataset om te bekijken",
+      "noProjectText": "Kies een @:(resources.project) om uw data te bekijken en scenarios te configureren",
+      "noProjectTitle": "U heeft nog geen @:(resources.project) gekozen!",
+      "noScenarioText": "Selecteer een scenario om te bekijken"
+    },
+    "projects": {
+      "details": {
+        "created_on": "Gemaakt op",
+        "dataset_count": "@:(resources.dataset)s",
+        "last_updated": "Laatst gewijzigd op",
+        "scenario_count": "@:(resources.scenario)s",
+        "tags": "Tags"
+      },
+      "label": "@:(resources.project)",
+      "selectPlaceholder": "@:(project.select)"
+    },
+    "scenarios": {
+      "configAssistant": "Configuratie-assistant",
+      "label": "@:(resources.scenario)s",
+      "models": "Modellen",
+      "rawConfig": "Ruwe config",
+      "selectPlaceholder": "@:(scenario.select)",
+      "usedInScenario": "Gebruikt in scenario",
+      "widgetDashboard": "Widget Dashboard"
+    },
+    "visualization": {
+      "basedOn": "Gebaseerd op",
+      "byValue": "Vanuit waardes",
+      "colorConfig": {
+        "buckets": "Kleurvakken",
+        "color": "Kleur",
+        "gradient": "Gradient",
+        "palette": "kleurenpalet",
+        "steps": "Stappen",
+        "type": "palet-type",
+        "value": "Waarde",
+        "valueRange": "Waarde (bereik)"
+      },
+      "dialogs": {
+        "closeConfigurator": "Huidige configurator sluiten?",
+        "confirmDeleteView": "Weet je zeker dat je View <b>{name}</b> wilt verwijderen voor iedereen?",
+        "confirmOverwriteView": "Wil je de huidige View <b>{name}</b> overschrijven?",
+        "confirmResetViewWithName": "Weet je zeker dat je een nieuwe View wilt starten? Alle niet-opgeslagen wijzigingen in <b>{name}</b> zullen verloren gaan",
+        "confirmResetViewWithoutName": "Weet je zeker dat je een nieuwe View wilt starten? Alle niet-opgeslagen wijzigingen zullen verloren gaan",
+        "continueEditing": "Doorgaan met bewerken",
+        "deleteVisualizer": "Weet je zeker dat je Visualiser <b>{name}</b> wilt verwijderen?",
+        "discardChanges": "Wijzigingen ongedaan maken",
+        "loadView": "View laden",
+        "noViewsForScenario": "Er zijn geen opgeslagen Views voor dit Scenario",
+        "noViewToDelete": "Er is geen View om te verwijderen",
+        "selectView": "View selecteren",
+        "unsavedChanges": "<b>Wijzigingen zijn niet opgeslagen!</b> <br>Weet je zeker dat je de Configurator wilt sluiten?",
+        "unsavedView": "<b>Wijzigingen zijn niet opgeslagen!</b> <br>Weet je zeker dat je de Visualisatie wilt verlaten?",
+        "viewCreateSuccess": "View succesvol opgeslagen",
+        "viewDeleteSuccess": "View succesvol verwijderd",
+        "viewUpdateSuccess": "View succesvol ge-updatet"
+      },
+      "displayAs": "Weergeven in",
+      "editVisualizer": "Bewerk Visualizer",
+      "infoLabel": "View",
+      "label": "Visualisatie",
+      "legendLabel": "Legenda label",
+      "legendTitle": "Legenda titel",
+      "loadView": "View laden",
+      "newVisualizer": "Nieuwe Visualiser",
+      "noGeometry": "Deze Entiteitgroep heeft geen geometrie",
+      "popup": {
+        "addItem": "Add item",
+        "dynamic": "Dynamisch",
+        "onClick": "Bij klikken",
+        "onHover": "Bij bewegen",
+        "position": "Positie",
+        "showPopup": "Popup weergeven",
+        "static": "Statisch",
+        "title": "Popup titel",
+        "titlePlaceholder": "Mijn Visualiser"
+      },
+      "save": "Opslaan",
+      "saveAndClose": "Opslaan en sluiten",
+      "showLegend": "Legenda weergeven",
+      "sizeConfig": {
+        "maxPixels": "Max grootte",
+        "minPixels": "Min grootte",
+        "radius": "Radius",
+        "sizes": "Grootte",
+        "thickness": "Dikte",
+        "value": "Waarde"
+      },
+      "static": "Statisch",
+      "tabs": {
+        "kpi": "KPI",
+        "visualizers": "Visualisers"
+      },
+      "visualiserDisplayName": "Visualiser weergavenaam"
+    }
+  },
+  "misc": {
+    "no": "Nee",
+    "of": "van",
+    "properties": "Eigenschappen",
+    "yes": "Ja"
+  },
+  "properties": {
+    "actions": "Acties",
+    "active": "Actief",
+    "address": "Adres",
+    "chamber_of_commerce": "KVK",
+    "city": "Stad",
+    "component": "Component",
+    "contact_email": "Contact e-mail",
+    "country": "Land",
+    "createdOn": "Aangemaakt Op",
+    "currentTime": "Huidige tijd",
+    "data": "Data",
+    "data_type": "Data Type",
+    "dataset_format": " @:(resources.dataset) Formaat",
+    "description": "Beschrijving",
+    "displayName": "Weergavenaam",
+    "duration": "Duur",
+    "email": "E-mail",
+    "endTime": "Eindtijd",
+    "enum": "Enum",
+    "firstname": "Voornaam",
+    "internalName": "Interne naam",
+    "lastname": "Achternaam",
+    "middlename": "Tussenvoegsel",
+    "name": "Naam",
+    "organisation": "Organisatie",
+    "password": "Wachtwoord",
+    "passwordConfirm": "Herhaal wachtwoord",
+    "place": "Plaats",
+    "selected": "Geselecteerd",
+    "status": "Status",
+    "timeScale": "Tijdschaal",
+    "type": "Type",
+    "unit": "Eenheid",
+    "username": "Gebruikersnaam / @:(properties.email)",
+    "zip_code": "Postcode"
+  },
+  "resources": {
+    "analysis": "Analyse",
+    "dataset": "Dataset",
+    "dataset_type": "Dataset Type",
+    "dataset_types": "@:(resources.dataset_type)s",
+    "datasets": "@:(resources.dataset)s",
+    "entity_type": "Entity Type",
+    "entity_types": "@:(resources.entity_type)s",
+    "entityGroup": "Entiteitsgroep",
+    "impactIndicator": "Impact indicator",
+    "model": "Model",
+    "model_type": "Model type",
+    "model_types": "Model types",
+    "models": "Modellen",
+    "organisation": "Organisatie",
+    "organisations": "@:(resources.organisation)s",
+    "profile": "Profiel",
+    "project": "Workspace",
+    "projects": "@:(resources.project)s",
+    "property_type": "Property Type",
+    "property_types": "@:(resources.property_type)s",
+    "region": "Regio",
+    "scenario": "Scenario",
+    "scenarios": "@:(resources.scenario)s",
+    "schema": "Dataset Schema",
+    "scope": "Scope",
+    "scopes": "@:(resources.scope)s",
+    "timeline": "Tijdlijn",
+    "user": "Gebruiker",
+    "users": "@:(resources.user)s",
+    "view": "View",
+    "views": "@:(resources.view)s",
+    "visualizerGroup": "Visualizer groep"
+  },
+  "settings": {
+    "dataEngineVersion": "Data Engine versie",
+    "language": "Taal",
+    "selectDataEngineVersion": "@:(settings.dataEngineVersion) @:(actions.select) ",
+    "selectLanguage": "@:(settings.language) @:(actions.select)"
+  },
+  "time": {
+    "days": "Dagen",
+    "hours": "Uren",
+    "minutes": "Minuten",
+    "seconds": "Secondes"
+  },
+  "timeline": {
+    "timestamp": "Timestamp"
+  },
+  "units": {
+    "meter": "meter",
+    "meters": "@:(units.meter)s",
+    "pixel": "pixel",
+    "pixels": "@:(units.pixel)s"
+  },
+  "visualizerGroup": {
+    "select": "Selecteer een @:(resources.visualizerGroup)"
+  }
+}

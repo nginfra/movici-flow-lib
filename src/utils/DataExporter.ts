@@ -1,8 +1,8 @@
 // import JSZip from 'jszip';
-import { EntityGroupData, ExportConfig, TimeOrientedSimulationInfo } from '@/flow/src/types';
-import Backend from '@/flow/src/api/backend';
-import { entityGroupToCSV, objectToCSV } from '@/flow/src//utils/csvUtils';
-import { DatasetDownloader } from '@/flow/src//utils/DatasetDownloader';
+import { EntityGroupData, ExportConfig, TimeOrientedSimulationInfo } from '@/types';
+import Backend from '@/api/backend';
+import { entityGroupToCSV, objectToCSV } from '@//utils/csvUtils';
+import { DatasetDownloader } from '@//utils/DatasetDownloader';
 
 export function downloadAsFile(data: Blob, filename: string) {
   const url = window.URL.createObjectURL(data);

@@ -54,7 +54,7 @@
           </div>
         </header>
         <div class="no-resource">
-          <b-image :src="require('@/flow/assets/no-resources.png')" />
+          <b-image src="/static/no-resources.png" />
         </div>
       </template>
       <!-- yes dataset -->
@@ -142,19 +142,19 @@
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import pick from 'lodash/pick';
 import isEqual from 'lodash/isEqual';
-import { CameraOptions, Dataset, Nullable } from '@/flow/src/types';
+import { CameraOptions, Dataset, Nullable } from '@/types';
 import FlowContainer from './FlowContainer.vue';
-import MapVis from '@/flow/src/components/map/MapVis.vue';
-import defaults from '@/flow/src/components/map/defaults';
+import MapVis from '@/components/map/MapVis.vue';
+import defaults from '@/components/map/defaults';
 import EntitySelector from './widgets/EntitySelector.vue';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
-import SearchBar from '@/flow/src/components/map/controls/SearchBar.vue';
-import NavigationControl from '@/flow/src/components/map/controls/NavigationControl.vue';
-import BaseMapControl from '@/flow/src/components/map/controls/BaseMapControl.vue';
-import DataViewContent from '@/flow/src/components/map_widgets/DataViewContent.vue';
-import StaticDataView from '@/flow/src/components/map_widgets/StaticDataView.vue';
-import { ComposableVisualizerInfo } from '@/flow/src/visualizers/VisualizerInfo';
-import { flowStore, flowUIStore } from '@/flow/src/store/store-accessor';
+import SearchBar from '@/components/map/controls/SearchBar.vue';
+import NavigationControl from '@/components/map/controls/NavigationControl.vue';
+import BaseMapControl from '@/components/map/controls/BaseMapControl.vue';
+import DataViewContent from '@/components/map_widgets/DataViewContent.vue';
+import StaticDataView from '@/components/map_widgets/StaticDataView.vue';
+import { ComposableVisualizerInfo } from '@/visualizers/VisualizerInfo';
+import { flowStore, flowUIStore } from '@/store/store-accessor';
 
 @Component({
   components: {

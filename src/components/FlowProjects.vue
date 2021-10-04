@@ -35,7 +35,7 @@
     <template #mainView>
       <template v-if="!currentProject">
         <div class="no-resource">
-          <b-image :src="require('@/flow/assets/no-project.png')"></b-image>
+          <b-image src="/static/no-project.png"></b-image>
           <div class="has-text-centered mt-3">
             <h1 class="is-size-4 has-text-weight-bold">{{ $t('flow.mainView.noProjectTitle') }}</h1>
             <h2 class="is-size-6">{{ $t('flow.mainView.noProjectText') }}</h2>
@@ -62,16 +62,16 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Project, CameraOptions, Nullable } from '@/flow/src/types';
-import MapVis from '@/flow/src/components/map/MapVis.vue';
+import { Project, CameraOptions, Nullable } from '@/types';
+import MapVis from '@/components/map/MapVis.vue';
 import FlowContainer from './FlowContainer.vue';
 import pick from 'lodash/pick';
-import defaults from '@/flow/src/components/map/defaults';
-import SearchBar from '@/flow/src/components/map/controls/SearchBar.vue';
-import NavigationControl from '@/flow/src/components/map/controls/NavigationControl.vue';
-import BaseMapControl from '@/flow/src/components/map/controls/BaseMapControl.vue';
+import defaults from '@/components/map/defaults';
+import SearchBar from '@/components/map/controls/SearchBar.vue';
+import NavigationControl from '@/components/map/controls/NavigationControl.vue';
+import BaseMapControl from '@/components/map/controls/BaseMapControl.vue';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
-import { flowStore, flowUIStore } from '@/flow/src/store/store-accessor';
+import { flowStore, flowUIStore } from '@/store/store-accessor';
 
 @Component({
   components: {

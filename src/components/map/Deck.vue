@@ -30,8 +30,8 @@ import { Deck as DeckGL, Layer } from '@deck.gl/core';
 
 // noinspection TypeScriptCheckImport
 import { DeckProps, PickInfo } from '@deck.gl/core/lib/deck';
-import { hasOwnProperty } from '@/flow/src/utils';
-import { CameraOptions, Nullable } from '@/flow/src/types';
+import { hasOwnProperty } from '@/utils';
+import { CameraOptions, Nullable } from '@/types';
 
 const DEFAULT_VIEWSTATE = {
   latitude: 51.992381,

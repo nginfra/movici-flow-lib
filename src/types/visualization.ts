@@ -2,11 +2,11 @@ import { RGBAColor } from './colors';
 import { ComponentProperty, PropertyType } from './schema';
 import { Project } from './project';
 import { ShortScenario } from './scenarios';
-import { SinglePropertyTapefile } from '@/flow/src/visualizers/tapefile';
-import { Coordinate, TopologyLayerData } from '@/flow/src/types/geometry';
+import { SinglePropertyTapefile } from '@/visualizers/tapefile';
+import { Coordinate, TopologyLayerData } from '@/types/geometry';
 import { LayerProps } from '@deck.gl/core/lib/layer';
-import { PopupContent } from '@/flow/src/types/flowVisualizers';
-import { LayerConstructor } from '@/flow/src/types/general';
+import { PopupContent } from '@/types/flowVisualizers';
+import { LayerConstructor } from '@/types/general';
 
 export interface ViewConfig {
   project_name: string;

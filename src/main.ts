@@ -3,20 +3,22 @@ import * as components from './components';
 import MovSnackBarProgramatic from './utils/snackbar';
 import { registerComponent, registerComponentProgrammatic } from './plugins';
 
-const Flow_ = {
-  install(Vue: typeof Vue_) {
-    // Options
-    // setOptions(merge(config, options, true))
-    // Components
-    Object.values(components).forEach(component => {
-      registerComponent(Vue, component);
-    });
+export default (() => {
+  const Flow_ = {
+    install(Vue: typeof Vue_) {
+      // Options
+      // setOptions(merge(config, options, true))
+      // Components
+      Object.values(components).forEach(component => {
+        registerComponent(Vue, component);
+      });
 
-    registerComponentProgrammatic(Vue, 'snackbar', MovSnackBarProgramatic);
-  }
-};
+      registerComponentProgrammatic(Vue, 'snackbar', MovSnackBarProgramatic);
+    }
+  };
 
-export default Flow_;
+  return Flow_;
+})();
 
 // export api client and interfaces and request classes for the api
 export * from './api';
@@ -30,3 +32,4 @@ export * from './router';
 export * from './utils';
 export * from './errors';
 export * from './crs';
+export * from './i18n';

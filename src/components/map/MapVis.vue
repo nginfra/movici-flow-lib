@@ -22,16 +22,16 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { CameraOptions, PopupContent, TimeOrientedSimulationInfo } from '@/flow/src/types';
+import { CameraOptions, PopupContent, TimeOrientedSimulationInfo } from '@/types';
 import Deck from './Deck.vue';
 import Buildings from './mapLayers/Buildings.vue';
 import defaults from './defaults';
 import { Layer } from '@deck.gl/core';
-import VisualizerManager from '@/flow/src/visualizers/VisualizerManager';
-import { Visualizer } from '@/flow/src/visualizers';
-import { AnyVisualizerInfo } from '@/flow/src/visualizers/VisualizerInfo';
-import { flowStore, flowUIStore } from '@/flow/src/store/store-accessor';
-import Backend from '@/flow/src/api/backend';
+import VisualizerManager from '@/visualizers/VisualizerManager';
+import { Visualizer } from '@/visualizers';
+import { AnyVisualizerInfo } from '@/visualizers/VisualizerInfo';
+import { flowStore, flowUIStore } from '@/store/store-accessor';
+import Backend from '@/api/backend';
 
 @Component({
   name: 'MapVis',

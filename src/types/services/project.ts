@@ -1,4 +1,4 @@
-import { Project } from '@/flow/src/types';
+import { Project } from '@/types';
 
 export default interface ProjectService {
   list(): Promise<Project[] | null>;

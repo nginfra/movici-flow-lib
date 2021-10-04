@@ -132,27 +132,27 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import { flowStore } from '@/flow/src/store/store-accessor';
+import { flowStore } from '@/store/store-accessor';
 import {
   FlowVisualizerOptions,
   FlowVisualizerType,
   ScenarioDataset,
   VisualizationMode
-} from '@/flow/src/types';
+} from '@/types';
 import ValidationProvider from '../../mixins/ValidationProvider';
-import SummaryListing from '@/flow/src/mixins/SummaryListing';
+import SummaryListing from '@/mixins/SummaryListing';
 import GeometrySelector from '../widgets/GeometrySelector.vue';
-import { VisGroup } from '@/flow/src/visualizers';
+import { VisGroup } from '@/visualizers';
 import ColorConfigurator from './color/ColorConfigurator.vue';
 import SizeConfigurator from './size/SizeConfigurator.vue';
 import PopupConfigurator from './PopupConfigurator.vue';
-import FormValidator from '@/flow/src/utils/FormValidator';
-import { ComposableVisualizerInfo } from '@/flow/src/visualizers/VisualizerInfo';
-import { propertyString } from '@/flow/src/utils';
+import FormValidator from '@/utils/FormValidator';
+import { ComposableVisualizerInfo } from '@/visualizers/VisualizerInfo';
+import { propertyString } from '@/utils';
 import {
   getSingleLegendPlaceholder,
   PlaceholderType
-} from '@/flow/src/components/configurators/helpers';
+} from '@/components/configurators/helpers';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 

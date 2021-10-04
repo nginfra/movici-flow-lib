@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { flowStore } from '@/flow/src/store/store-accessor';
+import { flowStore } from '@/store/store-accessor';
 import { ActionMenuItem } from '../global/ActionMenu.vue';
 
 @Component({

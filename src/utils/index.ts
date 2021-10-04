@@ -4,7 +4,7 @@ import {
   EntityGroupSummary,
   ShortScenario,
   Simulation
-} from '@/flow/src/types';
+} from '@/types';
 import upperFirst from 'lodash/upperFirst';
 
 /**

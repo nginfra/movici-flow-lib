@@ -5,14 +5,11 @@ import {
   PopupContent,
   TopologyLayerData,
   VisualizerCallbacks
-} from '@/flow/src/types';
+} from '@/types';
 import isEqual from 'lodash/isEqual';
 import { PickInfo } from '@deck.gl/core/lib/deck';
-import { SinglePropertyTapefile } from '@/flow/src/visualizers/tapefile';
-import {
-  VisualizerModule,
-  VisualizerModuleParams
-} from '@/flow/src/visualizers/visualizerModules/common';
+import { SinglePropertyTapefile } from '@/visualizers/tapefile';
+import { VisualizerModule, VisualizerModuleParams } from '@/visualizers/visualizerModules/common';
 
 type PickingHandler<D> = (info: PickInfo<D>) => boolean;
 

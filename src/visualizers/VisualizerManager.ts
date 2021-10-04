@@ -1,11 +1,11 @@
-import { getVisualizer, Visualizer, VisualizerInfo } from '@/flow/src/visualizers/index';
+import { getVisualizer, Visualizer, VisualizerInfo } from '@/visualizers/index';
 import isEqual from 'lodash/isEqual';
 import isError from 'lodash/isError';
 
-import { determineChanges } from '@/flow/src/components/map/mapVisHelpers';
-import { DatasetDownloader } from '@/flow/src//utils/DatasetDownloader';
-import { AnyVisualizerInfo } from '@/flow/src/visualizers/VisualizerInfo';
-import Backend from '@/flow/src/api/backend';
+import { determineChanges } from '@/components/map/mapVisHelpers';
+import { DatasetDownloader } from '@//utils/DatasetDownloader';
+import { AnyVisualizerInfo } from '@/visualizers/VisualizerInfo';
+import Backend from '@/api/backend';
 
 type VMCallback = (params: CallbackPayload) => void;
 

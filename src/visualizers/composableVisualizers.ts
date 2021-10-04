@@ -1,5 +1,5 @@
-import { getTapefiles, SinglePropertyTapefile } from '@/flow/src/visualizers/tapefile';
-import { AnyVisualizerInfo, ComposableVisualizerInfo } from '@/flow/src/visualizers/VisualizerInfo';
+import { getTapefiles, SinglePropertyTapefile } from '@/visualizers/tapefile';
+import { AnyVisualizerInfo, ComposableVisualizerInfo } from '@/visualizers/VisualizerInfo';
 import { Layer } from '@deck.gl/core';
 import {
   ComponentProperty,
@@ -16,8 +16,8 @@ import {
   TopologyLayerData,
   VisualizableDataTypes,
   VisualizerCallbacks
-} from '@/flow/src/types';
-import { parsePropertyString, propertyString } from '@/flow/src//utils';
+} from '@/types';
+import { parsePropertyString, propertyString } from '@//utils';
 import { ArcLayer, PathLayer, PolygonLayer, ScatterplotLayer } from '@deck.gl/layers';
 import { BaseVisualizer, VisualizerContext } from './visualizers';
 import { LineTopologyGetter, PointTopologyGetter, PolygonTopologyGetter } from './geometry';

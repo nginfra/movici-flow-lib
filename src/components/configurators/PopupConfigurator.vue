@@ -149,11 +149,11 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
-import { PropertyType, PopupClause, PopupItem } from '@/flow/src/types';
-import { propertyString } from '@/flow/src/utils';
+import { PropertyType, PopupClause, PopupItem } from '@/types';
+import { propertyString } from '@/utils';
 import Draggable from 'vuedraggable';
-import ValidationProvider from '@/flow/src/mixins/ValidationProvider';
-import FormValidator from '@/flow/src/utils/FormValidator';
+import ValidationProvider from '@/mixins/ValidationProvider';
+import FormValidator from '@/utils/FormValidator';
 
 @Component({
   components: {

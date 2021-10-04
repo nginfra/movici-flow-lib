@@ -81,13 +81,13 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import Modal from '@/flow/src/components/global/Modal.vue';
-import { Dataset, ScenarioDataset, TimeOrientedSimulationInfo } from '@/flow/src/types';
-import ValidationProvider from '@/flow/src/mixins/ValidationProvider';
-import SummaryListing from '@/flow/src/mixins/SummaryListing';
-import TimeSlider from '@/flow/src/components/map_widgets/TimeSlider.vue';
-import { ComposableVisualizerInfo } from '@/flow/src/visualizers/VisualizerInfo';
-import { flowStore } from '@/flow/src/store/store-accessor';
+import Modal from '@/components/global/Modal.vue';
+import { Dataset, ScenarioDataset, TimeOrientedSimulationInfo } from '@/types';
+import ValidationProvider from '@/mixins/ValidationProvider';
+import SummaryListing from '@/mixins/SummaryListing';
+import TimeSlider from '@/components/map_widgets/TimeSlider.vue';
+import { ComposableVisualizerInfo } from '@/visualizers/VisualizerInfo';
+import { flowStore } from '@/store/store-accessor';
 
 @Component({
   name: 'ExportForm',
