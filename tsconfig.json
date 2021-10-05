@@ -9,13 +9,15 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "experimentalDecorators": true,
+    "declaration": true,
     "baseUrl": ".",
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/@danmarshall/deckgl-typings"
     ],
+    "allowJs": true,
     "paths": {
       "@/*": [
         "src/*"
@@ -32,10 +34,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx",
-    "src/components/index.js",
-    "src/plugins.js"
+    "tests/**/*.tsx"
   ],
   "exclude": [
     "node_modules"

@@ -1,10 +1,10 @@
 import { Route, RouteConfig } from 'vue-router';
-import FlowMain from '@/components/FlowMain.vue';
-import FlowProjects from '@/components/FlowProjects.vue';
-import FlowDatasets from '@/components/FlowDatasets.vue';
-import FlowScenario from '@/components/FlowScenario.vue';
-import FlowVisualization from '@/components/FlowVisualization.vue';
-import FlowExport from '@/components/FlowExport.vue';
+import { FlowMain } from '@/components/js/flowmain.js';
+import { FlowProjects } from '@/components/js/flowprojects.js';
+import { FlowDatasets } from '@/components/js/flowdatasets.js';
+import { FlowScenario } from '@/components/js/flowscenario.js';
+import { FlowVisualization } from '@/components/js/flowvisualization.js';
+import { FlowExport } from '@/components/js/flowexport.js';
 
 function getFlowRoutes(baseURL: string): RouteConfig[] {
   return [

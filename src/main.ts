@@ -22,13 +22,13 @@ export default (() => {
 
 // export api client and interfaces and request classes for the api
 export * from './api';
-// export all components
+// // export all components
 export * from './components';
-// export all types
+// // export all types
 export * from './types';
-// export router
+// // export router
 export * from './router';
-// export utils and others
+// // export utils and others
 export * from './utils';
 export * from './errors';
 export * from './crs';

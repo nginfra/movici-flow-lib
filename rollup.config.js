@@ -2,61 +2,74 @@ import vue from 'rollup-plugin-vue2';
 import node from '@rollup/plugin-node-resolve';
 import cjs from '@rollup/plugin-commonjs';
 import scss from 'rollup-plugin-scss';
-import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import babel from 'rollup-plugin-babel';
 import alias from '@rollup/plugin-alias';
 // import typescript from 'rollup-plugin-typescript2';
 // import scss from 'rollup-plugin-scss';
 // import typescript from 'rollup-plugin-typescript2';
 const capitalize = s => {
-  if (typeof s !== 'string') return '';
-  return s.charAt(0).toUpperCase() + s.slice(1);
-};
-
-const lowercase = s => {
-  if (typeof s !== 'string') return '';
-  return s.toLowerCase();
-};
-
-const baseFolder = './src/';
-const componentsFolder = 'components/js/';
-const components = ['Action', 'ActionBar', 'ActionMenu', 'LanguagePicker', 'TooltipInfo'];
-const external = [
-  'lodash',
-  'axios',
-  'vue',
-  'vue-class-component',
-  'vue-router',
-  'vue-i18n',
-  'proj4',
-  'reproject'
-];
-
-const aliasConfig = { entries: [{ find: /^@\/(.+)/, replacement: './src/$1' }] };
-
-const scssConfig = {
-  prefix: `@import "./src/assets/sass/variables.scss";`
-};
-
-const vuePluginConfig = {};
-
-const babelConfig = {
-  exclude: 'node_modules/**',
-  runtimeHelpers: true,
-  babelrc: false,
-  presets: ['@vue/cli-plugin-babel/preset'],
-  plugins: ['@babel/plugin-proposal-optional-chaining']
-};
-
-const entries = {
-  // main file in js
-  index: './src/index.js',
-  // components
-  ...components.reduce((obj, name) => {
-    obj[name] = baseFolder + componentsFolder + lowercase(name);
-    return obj;
-  }, {})
-};
+    if (typeof s !== 'string') return '';
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  },
+  lowercase = s => {
+    if (typeof s !== 'string') return '';
+    return s.toLowerCase();
+  },
+  baseFolder = './src/',
+  componentsFolder = 'components/js/',
+  components = [
+    'Action',
+    'ActionBar',
+    'ActionMenu',
+    'LanguagePicker',
+    'TooltipInfo',
+    'Deck',
+    'MapVis',
+    'FlowMain',
+    'FlowProjects',
+    'FlowDatasets',
+    'FlowScenario',
+    'FlowVisualization',
+    'FlowExport'
+  ],
+  external = [
+    'lodash',
+    'axios',
+    'vue',
+    'vue-class-component',
+    'vue-router',
+    'vue-i18n',
+    'proj4',
+    'reproject'
+  ],
+  globals = {
+    axios: 'Axios',
+    vue: 'Vue',
+    proj4: 'proj4',
+    reproject: 'reproject',
+    'vue-i18n': 'VueI18n'
+  },
+  aliasConfig = { entries: [{ find: /^@\/(.+)/, replacement: './src/$1' }] },
+  scssConfig = {
+    prefix: `@import "./src/assets/sass/variables.scss";`
+  },
+  vuePluginConfig = {},
+  babelConfig = {
+    exclude: 'node_modules/**',
+    runtimeHelpers: true,
+    babelrc: false,
+    presets: ['@vue/cli-plugin-babel/preset'],
+    plugins: ['@babel/plugin-proposal-optional-chaining', '@babel/plugin-syntax-dynamic-import']
+  },
+  entries = {
+    // main file in js
+    index: './src/main.js',
+    // components
+    ...components.reduce((obj, name) => {
+      obj[name] = baseFolder + componentsFolder + lowercase(name);
+      return obj;
+    }, {})
+  };
 
 export default () => {
   const mapComponent = name => {
@@ -69,9 +82,7 @@ export default () => {
           name: capitalize(name),
           file: `dist/components/${lowercase(name)}/index.js`,
           exports: 'named',
-          globals: {
-            vue: 'Vue'
-          }
+          globals
         },
         plugins: [
           vue(vuePluginConfig),
@@ -126,34 +137,12 @@ export default () => {
       ]
     },
     {
-      input: 'src/index.js',
-      external,
-      output: {
-        format: 'umd',
-        name: capitalize('flow'),
-        file: 'dist/flow.js',
-        exports: 'named',
-        globals: {
-          vue: 'Vue'
-        }
-      },
-      plugins: [
-        vue(vuePluginConfig),
-        scss(scssConfig),
-        alias(aliasConfig),
-        babel(babelConfig),
-        node({
-          extensions: ['.vue', '.js']
-        }),
-        cjs()
-      ]
-    },
-    {
-      input: 'src/index.js',
+      input: 'src/main.js',
       external,
       output: {
         format: 'esm',
-        file: 'dist/flow.esm.js'
+        file: 'dist/flow.esm.js',
+        inlineDynamicImports: true
       },
       plugins: [
         vue(vuePluginConfig),

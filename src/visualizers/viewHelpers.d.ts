@@ -1,0 +1,10 @@
+import { CameraOptions, ComponentProperty, DatasetSummary, EntityGroupSummary, VisualizerViewConfig } from '@/types';
+import { AnyVisualizerInfo, ComposableVisualizerInfo, VisualizerInfo } from '@/visualizers/VisualizerInfo';
+export declare function datasetValidator(): (info: AnyVisualizerInfo) => void;
+export declare function entityGroupValidator(summary: DatasetSummary): (info: AnyVisualizerInfo) => boolean | undefined;
+export declare function geometryValidator(summary: EntityGroupSummary): (info: VisualizerInfo) => boolean;
+export declare function layerKindValidator(summary: EntityGroupSummary): (info: VisualizerInfo) => void;
+export declare function visualizerSettingsValidator(summary: EntityGroupSummary): (info: ComposableVisualizerInfo) => void;
+export declare function validateAttribute(summary: EntityGroupSummary, attribute?: ComponentProperty | null): import("@/types").PropertySummary;
+export declare function layerInfosToLayerConfig(infos: VisualizerInfo[]): VisualizerViewConfig[];
+export declare function simplifiedCamera(camera: CameraOptions): CameraOptions;

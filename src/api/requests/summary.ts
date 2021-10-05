@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios';
-import uri, { dataEngineBase } from '@/api/requests/uri';
+import uri, { dataEngineBase } from '@/api/requests/uri.js';
 import { DatasetSummary, UUID } from '@/types';
-import { Request } from '@/api/requests/base';
+import { Request } from '@/api/requests/base.js';
 
 export class GetDatasetSummary extends Request<DatasetSummary> {
   datasetUUID: string;
