@@ -1,16 +1,48 @@
-export class MoviciError extends Error {
-    constructor(message) {
-        super(message);
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+exports.__esModule = true;
+exports.ValidationError = exports.MoviciError = void 0;
+var MoviciError = /** @class */ (function (_super) {
+    __extends(MoviciError, _super);
+    function MoviciError(message) {
+        return _super.call(this, message) || this;
     }
-    get name() {
-        return 'MoviciError';
+    Object.defineProperty(MoviciError.prototype, "name", {
+        get: function () {
+            return 'MoviciError';
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return MoviciError;
+}(Error));
+exports.MoviciError = MoviciError;
+var ValidationError = /** @class */ (function (_super) {
+    __extends(ValidationError, _super);
+    function ValidationError(message) {
+        return _super.call(this, message) || this;
     }
-}
-export class ValidationError extends MoviciError {
-    constructor(message) {
-        super(message);
-    }
-    get name() {
-        return 'ValidationError';
-    }
-}
+    Object.defineProperty(ValidationError.prototype, "name", {
+        get: function () {
+            return 'ValidationError';
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return ValidationError;
+}(MoviciError));
+exports.ValidationError = ValidationError;

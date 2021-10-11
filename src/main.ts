@@ -9,8 +9,8 @@ export default (() => {
       // Options
       // setOptions(merge(config, options, true))
       // Components
-      Object.values(components).forEach(component => {
-        registerComponent(Vue, component);
+      Object.entries(components).forEach(([name, component]) => {
+        registerComponent(Vue, component, name);
       });
 
       registerComponentProgrammatic(Vue, 'snackbar', MovSnackBarProgramatic);
@@ -21,15 +21,15 @@ export default (() => {
 })();
 
 // export api client and interfaces and request classes for the api
-export * from './api';
+// export * from './api';
 // // export all components
 export * from './components';
 // // export all types
 export * from './types';
 // // export router
-export * from './router';
+// export * from './router';
 // // export utils and others
 export * from './utils';
 export * from './errors';
-export * from './crs';
-export * from './i18n';
+// export * from './crs';
+// export * from './i18n';

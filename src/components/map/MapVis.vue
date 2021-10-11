@@ -34,10 +34,10 @@ import { flowStore, flowUIStore } from '@/store/store-accessor';
 import Backend from '@/api/backend';
 
 @Component({
-  name: 'MapVis',
+  name: 'MovMapVis',
   components: { Deck, Buildings }
 })
-export default class MapVis extends Vue {
+export default class MovMapVis extends Vue {
   @Prop({ type: Array, default: () => [] })
   readonly layerInfos!: AnyVisualizerInfo[];
 

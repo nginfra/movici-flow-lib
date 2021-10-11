@@ -1,7 +1,7 @@
 import { ComponentProperty, TimelineFilter, Update, UpdateWithData, UUID } from '@/types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import uri, { dataEngineBase } from '@/api/requests/uri.js';
-import { getDatasetFilterParams } from '@/api/requests/datasets';
+import { getDatasetFilterParams } from '@/api/requests/datasets.js';
 import { Request } from './base';
 
 export class GetUpdates extends Request<Update[]> {

@@ -4,6 +4,9 @@ import cjs from '@rollup/plugin-commonjs';
 import scss from 'rollup-plugin-scss';
 import babel from 'rollup-plugin-babel';
 import alias from '@rollup/plugin-alias';
+import ts from 'rollup-plugin-typescript2';
+// import dts from 'rollup-plugin-dts';
+
 // import typescript from 'rollup-plugin-typescript2';
 // import scss from 'rollup-plugin-scss';
 // import typescript from 'rollup-plugin-typescript2';
@@ -43,27 +46,32 @@ const capitalize = s => {
     'reproject'
   ],
   globals = {
-    axios: 'Axios',
+    axios: 'axios',
     vue: 'Vue',
     proj4: 'proj4',
     reproject: 'reproject',
     'vue-i18n': 'VueI18n'
   },
+  tsConfig = {
+    check: false,
+    sourceMap: false
+    // useTsconfigDeclarationDir: true
+  },
   aliasConfig = { entries: [{ find: /^@\/(.+)/, replacement: './src/$1' }] },
   scssConfig = {
     prefix: `@import "./src/assets/sass/variables.scss";`
   },
-  vuePluginConfig = {},
+  vuePluginConfig = { styleToImports: true },
   babelConfig = {
     exclude: 'node_modules/**',
     runtimeHelpers: true,
-    babelrc: false,
+    babelrc: true,
     presets: ['@vue/cli-plugin-babel/preset'],
     plugins: ['@babel/plugin-proposal-optional-chaining', '@babel/plugin-syntax-dynamic-import']
   },
   entries = {
     // main file in js
-    index: './src/main.js',
+    index: './src/main.ts',
     // components
     ...components.reduce((obj, name) => {
       obj[name] = baseFolder + componentsFolder + lowercase(name);
@@ -85,14 +93,14 @@ export default () => {
           globals
         },
         plugins: [
-          vue(vuePluginConfig),
-          scss(scssConfig),
-          alias(aliasConfig),
-          babel(babelConfig),
           node({
             extensions: ['.vue', '.js']
           }),
-          cjs()
+          cjs(),
+          vue(vuePluginConfig),
+          alias(aliasConfig),
+          scss(scssConfig),
+          babel(babelConfig)
         ]
       }
     ];
@@ -100,44 +108,7 @@ export default () => {
 
   const config = [
     {
-      input: entries,
-      external,
-      output: {
-        format: 'esm',
-        dir: `dist/esm`
-      },
-      plugins: [
-        vue(vuePluginConfig),
-        scss(scssConfig),
-        alias(aliasConfig),
-        babel(babelConfig),
-        node({
-          extensions: ['.vue', '.js']
-        }),
-        cjs()
-      ]
-    },
-    {
-      input: entries,
-      external,
-      output: {
-        format: 'cjs',
-        dir: 'dist/cjs',
-        exports: 'named'
-      },
-      plugins: [
-        vue(vuePluginConfig),
-        scss(scssConfig),
-        alias(aliasConfig),
-        babel(babelConfig),
-        node({
-          extensions: ['.vue', '.js']
-        }),
-        cjs()
-      ]
-    },
-    {
-      input: 'src/main.js',
+      input: 'src/main.ts',
       external,
       output: {
         format: 'esm',
@@ -146,8 +117,9 @@ export default () => {
       },
       plugins: [
         vue(vuePluginConfig),
-        scss(scssConfig),
+        ts(tsConfig),
         alias(aliasConfig),
+        scss(scssConfig),
         babel(babelConfig),
         node({
           extensions: ['.vue', '.js']
@@ -157,6 +129,12 @@ export default () => {
     },
     // individual components
     ...components.map(f => mapComponent(f)).reduce((r, a) => r.concat(a), [])
+    // {
+    //   // path to your declaration files root
+    //   input: './src/main.d.ts',
+    //   output: [{ file: 'dist/index.d.ts', format: 'es' }],
+    //   plugins: [dts()]
+    // }
   ];
 
   return config;

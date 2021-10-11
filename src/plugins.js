@@ -1,5 +1,5 @@
-export const registerComponent = (Vue, component) => {
-  Vue.component(component.name, component);
+export const registerComponent = (Vue, component, name) => {
+  Vue.component(name, component);
 };
 
 export const registerComponentProgrammatic = (Vue, property, component) => {

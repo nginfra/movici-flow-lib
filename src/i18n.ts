@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueI18n, { LocaleMessages } from 'vue-i18n';
-import locales from '@/locales';
+import locales from '@/locales/index.js';
 Vue.use(VueI18n);
 
 function loadLocaleMessages(): LocaleMessages {

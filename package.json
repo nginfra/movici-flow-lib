@@ -11,7 +11,8 @@
     "lint": "vue-cli-service lint",
     "dev": "vue-cli-service serve",
     "test:e2e": "vue-cli-service test:e2e",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "rollup": "rmdir -r  ../local-flow/flow_module/dist && rollup -c && Xcopy ./dist ../local-flow/flow_module/ /E /H /C /I"
   },
   "dependencies": {
     "@deck.gl/aggregation-layers": "8.4.13",
@@ -43,6 +44,7 @@
     "@danmarshall/deckgl-typings": "4.7.2",
     "@kazupon/vue-i18n-loader": "0.5.0",
     "@rollup/plugin-alias": "^3.1.5",
+    "@rollup/plugin-buble": "^0.21.3",
     "@rollup/plugin-commonjs": "^11.1.0",
     "@rollup/plugin-node-resolve": "^13.0.5",
     "@types/jest": "26.0.22",
@@ -71,6 +73,7 @@
     "rollup-plugin-async": "^1.2.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-buble": "^0.19.8",
+    "rollup-plugin-dts": "^4.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-scss": "^3.0.0",
     "rollup-plugin-typescript2": "^0.30.0",
