@@ -21,6 +21,15 @@
 </template>
 
 <script lang="ts">
+type SlotProps = {
+  basemap: string;
+  setBasemap: (basemap: string) => void;
+  popupContent: PopupContent | null;
+  updateTimestamp: (t: number) => void;
+  dynamicPopup: boolean;
+  closePopup: () => void;
+};
+
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { CameraOptions, PopupContent, TimeOrientedSimulationInfo } from '@/types';
 import Deck from './Deck.vue';
@@ -96,7 +105,7 @@ export default class MovMapVis extends Vue {
     return this.visualizers;
   }
 
-  get slotProps() {
+  get slotProps(): SlotProps {
     return {
       basemap: this.basemap,
       setBasemap: this.setBasemap,

@@ -3,7 +3,7 @@ import isEqual from 'lodash/isEqual';
 import isError from 'lodash/isError';
 
 import { determineChanges } from '@/components/map/mapVisHelpers';
-import { DatasetDownloader } from '@//utils/DatasetDownloader';
+import { DatasetDownloader } from '@/utils/DatasetDownloader';
 import { AnyVisualizerInfo } from '@/visualizers/VisualizerInfo';
 import Backend from '@/api/backend';
 

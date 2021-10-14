@@ -11,7 +11,7 @@ import {
 import isEqual from 'lodash/isEqual';
 import { NumberColorMap } from '@/visualizers/maps/colorMaps';
 import { SinglePropertyTapefile } from '@/visualizers/tapefile';
-import { interpolateColorMapping } from '@//utils/colorUtils';
+import { interpolateColorMapping } from '@/utils/colorUtils';
 import {
   TapefileAccessor,
   VisualizerModule,

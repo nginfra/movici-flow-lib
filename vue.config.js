@@ -14,10 +14,5 @@ module.exports = {
         additionalData: `@import "./src/assets/sass/variables.scss";`
       }
     }
-  },
-  configureWebpack: config => {
-    if (process.env.NODE_ENV === 'production') {
-      config.optimization.splitChunks.chunks = 'all';
-    }
   }
 };

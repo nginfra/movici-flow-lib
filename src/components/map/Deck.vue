@@ -27,8 +27,6 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Deck as DeckGL, Layer } from '@deck.gl/core';
-
-// noinspection TypeScriptCheckImport
 import { DeckProps, PickInfo } from '@deck.gl/core/lib/deck';
 import { hasOwnProperty } from '@/utils';
 import { CameraOptions, Nullable } from '@/types';
@@ -40,6 +38,7 @@ const DEFAULT_VIEWSTATE = {
   bearing: 0,
   pitch: 0
 };
+
 @Component({
   name: 'Deck'
 })

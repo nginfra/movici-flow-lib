@@ -1,5 +1,5 @@
 import { ComponentProperty, EntityGroupData, EntityUpdate, Update } from '@/types';
-import { DatasetDownloader } from '@//utils/DatasetDownloader';
+import { DatasetDownloader } from '@/utils/DatasetDownloader';
 
 export class TimelineDownloader {
   entityGroup: string;

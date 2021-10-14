@@ -1,107 +1,99 @@
-import vue from 'rollup-plugin-vue2';
+import vue from 'rollup-plugin-vue';
 import node from '@rollup/plugin-node-resolve';
 import cjs from '@rollup/plugin-commonjs';
 import scss from 'rollup-plugin-scss';
-import babel from 'rollup-plugin-babel';
 import alias from '@rollup/plugin-alias';
 import ts from 'rollup-plugin-typescript2';
-// import dts from 'rollup-plugin-dts';
 
-// import typescript from 'rollup-plugin-typescript2';
-// import scss from 'rollup-plugin-scss';
-// import typescript from 'rollup-plugin-typescript2';
-const capitalize = s => {
-    if (typeof s !== 'string') return '';
-    return s.charAt(0).toUpperCase() + s.slice(1);
-  },
-  lowercase = s => {
+const lowercase = s => {
     if (typeof s !== 'string') return '';
     return s.toLowerCase();
   },
   baseFolder = './src/',
-  componentsFolder = 'components/js/',
-  components = [
-    'Action',
-    'ActionBar',
-    'ActionMenu',
-    'LanguagePicker',
-    'TooltipInfo',
-    'Deck',
-    'MapVis',
-    'FlowMain',
-    'FlowProjects',
-    'FlowDatasets',
-    'FlowScenario',
-    'FlowVisualization',
-    'FlowExport'
-  ],
+  componentsFolder = 'components/',
+  distFolder = 'flow_module',
+  components = {
+    Action: baseFolder + componentsFolder + 'global/Action.vue'
+    // ActionBar: baseFolder + componentsFolder + 'global/ActionBar.vue',
+    // ActionMenu: baseFolder + componentsFolder + 'global/ActionMenu.vue',
+    // LanguagePicker: baseFolder + componentsFolder + 'global/LanguagePicker.vue',
+    // TooltipInfo: baseFolder + componentsFolder + 'global/TooltipInfo.vue',
+    // Deck: baseFolder + componentsFolder + 'map/Deck.vue',
+    // MapVis: baseFolder + componentsFolder + 'map/MapVis.vue'
+    // FlowMain: baseFolder + componentsFolder + 'FlowMain.vue',
+    // FlowProjects: baseFolder + componentsFolder + 'FlowProjects.vue',
+    // FlowDatasets: baseFolder + componentsFolder + 'FlowDatasets.vue',
+    // FlowScenario: baseFolder + componentsFolder + 'FlowScenario.vue',
+    // FlowVisualization: baseFolder + componentsFolder + 'FlowVisualization.vue',
+    // FlowExport: baseFolder + componentsFolder + 'FlowExport.vue'
+  },
   external = [
-    'lodash',
-    'axios',
     'vue',
-    'vue-class-component',
     'vue-router',
     'vue-i18n',
+    'vuex',
+    'lodash',
+    'axios',
     'proj4',
-    'reproject'
+    'reproject',
+    'mapbox-gl',
+    '@deck.gl/core',
+    '@deck.gl/layers',
+    '@deck.gl/aggregation-layers'
   ],
   globals = {
-    axios: 'axios',
     vue: 'Vue',
+    'vue-i18n': 'VueI18n',
+    'vue-property-decorator': 'vuePropertyDecorator',
+    axios: 'axios',
     proj4: 'proj4',
     reproject: 'reproject',
-    'vue-i18n': 'VueI18n'
+    'mapbox-gl': 'mapboxgl',
+    '@deck.gl/core': 'DeckGL'
+  },
+  nodeConfig = {
+    extensions: ['.vue', '.js'],
+    browser: true
   },
   tsConfig = {
-    check: false,
-    sourceMap: false
-    // useTsconfigDeclarationDir: true
+    typescript: require('typescript'),
+    module: 'esnext',
+    target: 'es2019'
+    // tsconfig: 'tsconfig.json'
   },
-  aliasConfig = { entries: [{ find: /^@\/(.+)/, replacement: './src/$1' }] },
-  scssConfig = {
-    prefix: `@import "./src/assets/sass/variables.scss";`
+  aliasConfig = {
+    entries: [{ find: /^@\/(.+)/, replacement: './src/$1' }]
   },
-  vuePluginConfig = { styleToImports: true },
-  babelConfig = {
-    exclude: 'node_modules/**',
-    runtimeHelpers: true,
-    babelrc: true,
-    presets: ['@vue/cli-plugin-babel/preset'],
-    plugins: ['@babel/plugin-proposal-optional-chaining', '@babel/plugin-syntax-dynamic-import']
+  scssConfig = {},
+  vuePluginConfig = {
+    css: true,
+    data: {
+      scss: `@import "./src/assets/sass/variables.scss";`
+    }
   },
-  entries = {
-    // main file in js
-    index: './src/main.ts',
-    // components
-    ...components.reduce((obj, name) => {
-      obj[name] = baseFolder + componentsFolder + lowercase(name);
-      return obj;
-    }, {})
-  };
+  plugins = [
+    ts(tsConfig),
+    vue(vuePluginConfig),
+    // scss(scssConfig),
+    alias(aliasConfig),
+    node(nodeConfig),
+    cjs()
+  ];
 
 export default () => {
-  const mapComponent = name => {
+  const mapComponent = (name, input) => {
     return [
       {
-        input: baseFolder + componentsFolder + `${name}`,
+        input,
         external,
         output: {
+          name,
           format: 'umd',
-          name: capitalize(name),
-          file: `dist/components/${lowercase(name)}/index.js`,
+          file: `${distFolder}/components/${lowercase(name)}.js`,
           exports: 'named',
           globals
         },
-        plugins: [
-          node({
-            extensions: ['.vue', '.js']
-          }),
-          cjs(),
-          vue(vuePluginConfig),
-          alias(aliasConfig),
-          scss(scssConfig),
-          babel(babelConfig)
-        ]
+        plugins
       }
     ];
   };
@@ -112,29 +104,16 @@ export default () => {
       external,
       output: {
         format: 'esm',
-        file: 'dist/flow.esm.js',
-        inlineDynamicImports: true
+        file: `${distFolder}/flow.esm.js`,
+        inlineDynamicImports: true,
+        globals
       },
-      plugins: [
-        vue(vuePluginConfig),
-        ts(tsConfig),
-        alias(aliasConfig),
-        scss(scssConfig),
-        babel(babelConfig),
-        node({
-          extensions: ['.vue', '.js']
-        }),
-        cjs()
-      ]
-    },
+      plugins
+    }
     // individual components
-    ...components.map(f => mapComponent(f)).reduce((r, a) => r.concat(a), [])
-    // {
-    //   // path to your declaration files root
-    //   input: './src/main.d.ts',
-    //   output: [{ file: 'dist/index.d.ts', format: 'es' }],
-    //   plugins: [dts()]
-    // }
+    // ...Object.entries(components)
+    //   .map(([name, path]) => mapComponent(name, path))
+    //   .reduce((r, a) => r.concat(a), [])
   ];
 
   return config;

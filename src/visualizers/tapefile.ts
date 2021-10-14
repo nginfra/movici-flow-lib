@@ -5,8 +5,8 @@ import {
   EntityUpdate,
   ITapefile
 } from '@/types';
-import { TimelineDownloader } from '@//utils/timeline';
-import { DatasetDownloader } from '@//utils/DatasetDownloader';
+import { TimelineDownloader } from '@/utils/timeline';
+import { DatasetDownloader } from '@/utils/DatasetDownloader';
 import { VisualizerInfo } from '@/visualizers/VisualizerInfo';
 
 interface TapefileUpdate<T> {

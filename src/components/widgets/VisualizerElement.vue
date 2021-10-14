@@ -89,7 +89,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ComposableVisualizerInfo } from '@/visualizers/VisualizerInfo';
 import { colorTripleToHex } from '@/visualizers/maps/colorMaps';
 import { FlowVisualizerType, RGBAColor } from '@/types';
-import { ActionMenuItem } from '../global/ActionMenu.vue';
+import { ActionMenuItem } from '@/types';
 
 @Component({
   name: 'VisualizerElement'

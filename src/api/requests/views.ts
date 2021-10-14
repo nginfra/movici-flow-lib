@@ -1,7 +1,7 @@
 import { UUID, View, ViewCrudResponse } from '@/types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import uri, { dataEngineBase } from '@/api/requests/uri.js';
-import { Request } from '@/api/requests/base.js';
+import uri, { dataEngineBase } from '@/api/requests/uri';
+import { Request } from '@/api/requests/base';
 
 export class GetViews extends Request<View[]> {
   scenarioUUID: UUID;

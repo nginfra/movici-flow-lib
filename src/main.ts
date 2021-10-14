@@ -1,7 +1,20 @@
 import Vue_ from 'vue';
-import * as components from './components';
 import MovSnackBarProgramatic from './utils/snackbar';
 import { registerComponent, registerComponentProgrammatic } from './plugins';
+// export api client and interfaces and request classes for the api
+import * as api from './api';
+import * as stores from './store/store-accessor';
+// export all components
+import * as components from './components';
+// // export all types
+import * as types from './types';
+// export router
+import * as router from './router';
+// export utils and others
+import * as utils from './utils';
+import * as errors from './errors';
+import * as crs from './crs';
+import * as i18n from './i18n';
 
 export default (() => {
   const Flow_ = {
@@ -14,22 +27,17 @@ export default (() => {
       });
 
       registerComponentProgrammatic(Vue, 'snackbar', MovSnackBarProgramatic);
-    }
+    },
+    api,
+    stores,
+    components,
+    types,
+    router,
+    utils,
+    errors,
+    crs,
+    i18n
   };
 
   return Flow_;
 })();
-
-// export api client and interfaces and request classes for the api
-// export * from './api';
-// // export all components
-export * from './components';
-// // export all types
-export * from './types';
-// // export router
-// export * from './router';
-// // export utils and others
-export * from './utils';
-export * from './errors';
-// export * from './crs';
-// export * from './i18n';
