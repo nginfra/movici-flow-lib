@@ -1,4 +1,4 @@
-import { UUID } from '@/flow/types/general';
+import { UUID } from '~flow/types/general';
 
 export type AnalysisTemplate = Record<string, unknown>;
 export interface ShortScenario {

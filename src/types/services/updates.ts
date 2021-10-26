@@ -1,4 +1,4 @@
-import { ComponentProperty, Update, UpdateWithData, UUID } from '@/flow/types';
+import { ComponentProperty, Update, UpdateWithData, UUID } from '~flow/types';
 
 export default interface UpdatesService {
   get(

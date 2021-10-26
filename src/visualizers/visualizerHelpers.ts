@@ -6,7 +6,7 @@ import {
   StaticColorLayerSettings,
   UnknownLayerSettings,
   VisualizerConfigurationSettings
-} from '@/flow/types';
+} from '~flow/types';
 
 /**
  * Cleanup VisualizerConfigurationSettings. During configuration of a visualizer, it settings

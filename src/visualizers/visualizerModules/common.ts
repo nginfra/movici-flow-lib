@@ -1,12 +1,12 @@
-import { SinglePropertyTapefile } from '@/flow/visualizers/tapefile';
+import { SinglePropertyTapefile } from '~flow/visualizers/tapefile';
 import {
   Coordinate,
   LayerParams,
   Mapper,
   TopologyLayerData,
   VisualizerCallbacks
-} from '@/flow/types';
-import { ComposableVisualizerInfo } from '@/flow/visualizers/VisualizerInfo';
+} from '~flow/types';
+import { ComposableVisualizerInfo } from '~flow/visualizers/VisualizerInfo';
 
 export type VisualizerModuleParams = { info: ComposableVisualizerInfo };
 

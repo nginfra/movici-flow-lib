@@ -4,10 +4,10 @@ import {
   EntityGroupData,
   EntityUpdate,
   ITapefile
-} from '@/flow/types';
-import { TimelineDownloader } from '@/flow/utils/timeline';
-import { DatasetDownloader } from '@/flow/utils/DatasetDownloader';
-import { VisualizerInfo } from '@/flow/visualizers/VisualizerInfo';
+} from '~flow/types';
+import { TimelineDownloader } from '~flow/utils/timeline';
+import { DatasetDownloader } from '~flow/utils/DatasetDownloader';
+import { VisualizerInfo } from '~flow/visualizers/VisualizerInfo';
 
 interface TapefileUpdate<T> {
   timestamp: number;

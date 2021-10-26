@@ -6,7 +6,7 @@ import {
   SizeClause,
   TopologyLayerData,
   VisualizerCallbacks
-} from '@/flow/types';
+} from '~flow/types';
 import isEqual from 'lodash/isEqual';
 import { NumberSizeMap } from '../maps/sizeMaps';
 import { SinglePropertyTapefile } from '../tapefile';

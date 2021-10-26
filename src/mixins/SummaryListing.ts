@@ -5,8 +5,8 @@ import {
   EntityGroupSummary,
   PropertyType,
   ScenarioDataset
-} from '@/flow/types';
-import { flowStore } from '@/flow/store/store-accessor';
+} from '~flow/types';
+import { flowStore } from '~flow/store/store-accessor';
 
 @Component
 export default class SummaryListing extends Vue {

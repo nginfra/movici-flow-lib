@@ -126,9 +126,9 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import { ByValueSizeClause, PropertySummary, PropertyType, SizeClause } from '@/flow/types';
-import ValidationProvider from '@/flow/mixins/ValidationProvider';
-import { DIMENSIONS } from '@/flow/visualizers/visualizers';
+import { ByValueSizeClause, PropertySummary, PropertyType, SizeClause } from '~flow/types';
+import ValidationProvider from '~flow/mixins/ValidationProvider';
+import { DIMENSIONS } from '~flow/visualizers/visualizers';
 import cloneDeep from 'lodash/cloneDeep';
 
 @Component({})

@@ -94,10 +94,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { colorTripleToHex } from '@/flow/visualizers/maps/colorMaps';
-import { ColorMapping, RGBAColor } from '@/flow/types';
-import CustomSelect from '@/flow/components/global/CustomSelect.vue';
-import FlowColorPicker from '@/flow/components/configurators/color/FlowColorPicker.vue';
+import { colorTripleToHex } from '~flow/visualizers/maps/colorMaps';
+import { ColorMapping, RGBAColor } from '~flow/types';
+import CustomSelect from '~flow/components/global/CustomSelect.vue';
+import FlowColorPicker from '~flow/components/configurators/color/FlowColorPicker.vue';
 
 type modes = 'buckets' | 'gradient' | 'boolean';
 @Component({

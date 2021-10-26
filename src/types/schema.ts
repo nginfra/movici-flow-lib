@@ -1,4 +1,4 @@
-import { UUID } from '@/flow/types/general';
+import { UUID } from '~flow/types/general';
 import { Dataset } from './datasets';
 import { FlowVisualizerType } from './flowVisualizers';
 import { EntityGeometry } from './geometry';

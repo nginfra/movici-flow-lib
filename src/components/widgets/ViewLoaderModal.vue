@@ -34,7 +34,7 @@
 <script lang="ts">
 import View from '@deck.gl/core/views/view';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import Modal from '@/flow/components/global/Modal.vue';
+import Modal from '~flow/components/global/Modal.vue';
 
 @Component({
   name: 'ViewLoaderModal',

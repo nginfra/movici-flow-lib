@@ -1,4 +1,4 @@
-import { UUID } from '@/flow/types/general';
+import { UUID } from '~flow/types/general';
 
 export interface GeocodeSuggestion {
   text: string;

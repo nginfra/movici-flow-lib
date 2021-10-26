@@ -1,4 +1,4 @@
-import { Scenario, ShortScenario, UUID } from '@/flow/types';
+import { Scenario, ShortScenario, UUID } from '~flow/types';
 
 export default interface ScenarioService {
   get(scenario_uuid: UUID): Promise<Scenario | null>;

@@ -53,9 +53,9 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { FlowSection, FlowSectionItem, User } from '@/flow/types';
+import { FlowSection, FlowSectionItem, User } from '~flow/types';
 import FlowExport from './FlowExport.vue';
-import { flowStore, flowUIStore } from '@/flow/store/store-accessor'; // create getters for other store it interacts with?
+import { flowStore, flowUIStore } from '~flow/store/store-accessor'; // create getters for other store it interacts with?
 
 @Component({})
 export default class FlowMain extends Vue {

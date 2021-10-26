@@ -7,16 +7,16 @@ import {
   StaticColorClause,
   TopologyLayerData,
   VisualizerCallbacks
-} from '@/flow/types';
+} from '~flow/types';
 import isEqual from 'lodash/isEqual';
-import { NumberColorMap } from '@/flow/visualizers/maps/colorMaps';
-import { SinglePropertyTapefile } from '@/flow/visualizers/tapefile';
-import { interpolateColorMapping } from '@/flow/utils/colorUtils';
+import { NumberColorMap } from '~flow/visualizers/maps/colorMaps';
+import { SinglePropertyTapefile } from '~flow/visualizers/tapefile';
+import { interpolateColorMapping } from '~flow/utils/colorUtils';
 import {
   TapefileAccessor,
   VisualizerModule,
   VisualizerModuleParams
-} from '@/flow/visualizers/visualizerModules/common';
+} from '~flow/visualizers/visualizerModules/common';
 
 type ColorAccessor<D> = ((d: D) => RGBAColor) | RGBAColor;
 

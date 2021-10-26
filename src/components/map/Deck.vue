@@ -28,8 +28,8 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Deck as DeckGL, Layer } from '@deck.gl/core';
 import { DeckProps, PickInfo } from '@deck.gl/core/lib/deck';
-import { hasOwnProperty } from '@/flow/utils';
-import { CameraOptions, Nullable } from '@/flow/types';
+import { hasOwnProperty } from '~flow/utils';
+import { CameraOptions, Nullable } from '~flow/types';
 
 const DEFAULT_VIEWSTATE = {
   latitude: 51.992381,

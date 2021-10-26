@@ -1,7 +1,7 @@
-import { UUID, View, ViewCrudResponse } from '@/flow/types';
+import { UUID, View, ViewCrudResponse } from '~flow/types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import uri, { dataEngineBase } from '@/flow/api/requests/uri';
-import { Request } from '@/flow/api/requests/base';
+import uri, { dataEngineBase } from '~flow/api/requests/uri';
+import { Request } from '~flow/api/requests/base';
 
 export class GetViews extends Request<View[]> {
   scenarioUUID: UUID;

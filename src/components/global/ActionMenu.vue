@@ -39,7 +39,7 @@
 <script lang="ts">
 import { Component, Mixins, Prop, Ref } from 'vue-property-decorator';
 import FixedPosition from '../../mixins/FixedPosition';
-import { ActionMenuItem } from '@/flow/types';
+import { ActionMenuItem } from '~flow/types';
 
 @Component({ name: 'MovActionMenu' })
 export default class MovActionMenu extends Mixins(FixedPosition) {

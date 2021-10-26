@@ -43,8 +43,8 @@ import {
   ColorStaticLegendItem,
   ColorClause,
   ColorLegendItem
-} from '@/flow/types';
-import { ComposableVisualizerInfo } from '@/flow/visualizers/VisualizerInfo';
+} from '~flow/types';
+import { ComposableVisualizerInfo } from '~flow/visualizers/VisualizerInfo';
 import ColorBucketLegend from './ColorBucketLegend.vue';
 import ColorGradientLegend from './ColorGradientLegend.vue';
 
