@@ -62,8 +62,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { StaticSizeClause, SizeClause } from '@/types';
-import FlowColorPicker from '@/components/configurators/color/FlowColorPicker.vue';
+import { StaticSizeClause, SizeClause } from '@/flow/types';
+import FlowColorPicker from '@/flow/components/configurators/color/FlowColorPicker.vue';
 
 @Component({
   components: {

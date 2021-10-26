@@ -1,13 +1,9 @@
-import { UUID } from '@/types/general';
-import { ColorRuleSet } from '@/types/colors';
+import { UUID } from '@/flow/types/general';
+import { ColorRuleSet } from '@/flow/types/colors';
 
 export interface CrudResponse {
   result: string;
   message: string;
-}
-
-export interface OrganisationCrudResponse extends CrudResponse {
-  organisation_uuid: UUID;
 }
 
 export interface ProjectCrudResponse extends CrudResponse {
@@ -40,14 +36,6 @@ export interface EntityTypeCrudResponse extends CrudResponse {
 
 export interface PropertyTypeCrudResponse extends CrudResponse {
   property_type_uuid: UUID;
-}
-
-export interface DatasetGeneratorCrudResponse extends CrudResponse {
-  generator_uuid: UUID;
-}
-
-export interface ScopeCrudResponse extends CrudResponse {
-  scope_uuid: UUID;
 }
 
 export interface UserCrudResponse extends CrudResponse {

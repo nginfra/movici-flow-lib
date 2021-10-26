@@ -28,8 +28,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ComposableVisualizerInfo } from '@/visualizers/VisualizerInfo';
-import VisualizerElement from '@/components/widgets/VisualizerElement.vue';
+import { ComposableVisualizerInfo } from '@/flow/visualizers/VisualizerInfo';
+import VisualizerElement from '@/flow/components/widgets/VisualizerElement.vue';
 
 @Component({
   name: 'ExportLayerPicker',

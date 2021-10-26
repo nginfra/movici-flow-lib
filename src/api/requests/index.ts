@@ -6,3 +6,4 @@ export * from './scenarios';
 export * from './summary';
 export * from './updates';
 export * from './views';
+export * as uri from './uri';

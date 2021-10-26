@@ -36,9 +36,6 @@
     "select": "Select a @:(resources.dataset)",
     "selectRequiredTypes": "Select required :@(resources.dataset) types"
   },
-  "entityGroup": {
-    "select": "Select an @:(resources.entityGroup)"
-  },
   "flow": {
     "datasets": {
       "addDataset": "Add dataset",
@@ -55,6 +52,9 @@
       "searchPlaceholder": "Search datasets...",
       "usage": "Usage",
       "zeroEntities": "This dataset can't be visualised"
+    },
+    "entityGroup": {
+      "select": "Select an @:(resources.entityGroup)"
     },
     "export": {
       "custom": "Custom",
@@ -169,12 +169,16 @@
         "visualizers": "Visualisers"
       },
       "visualiserDisplayName": "Visualiser display name"
+    },
+    "visualizerGroup": {
+      "select": "Select an @:(resources.visualizerGroup)"
     }
   },
   "misc": {
     "no": "No",
     "of": "of",
     "properties": "Properties",
+    "timestamp": "Timestamp",
     "yes": "Yes"
   },
   "properties": {
@@ -260,16 +264,10 @@
     "minutes": "Minutes",
     "seconds": "Seconds"
   },
-  "timeline": {
-    "timestamp": "Timestamp"
-  },
   "units": {
     "meter": "metre",
     "meters": "@:(units.meter)s",
     "pixel": "pixel",
     "pixels": "@:(units.pixel)s"
-  },
-  "visualizerGroup": {
-    "select": "Select an @:(resources.visualizerGroup)"
-  }  
+  }
 }

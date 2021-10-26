@@ -6,8 +6,8 @@ import {
   Nullable,
   PropertyType,
   Mapper
-} from '@//types';
-import { propertyString } from '@//utils';
+} from '@/flow//types';
+import { propertyString } from '@/flow//utils';
 import isEmpty from 'lodash/isEmpty';
 import cloneDeep from 'lodash/cloneDeep';
 

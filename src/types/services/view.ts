@@ -1,9 +1,9 @@
-import { UUID, View } from '@/types';
+import { UUID, View, ViewCrudResponse } from '@/flow/types';
 
 export default interface ViewService {
-  create(scenarioUUID: UUID, view: View): Promise<{ view_uuid: UUID } | null>;
+  create(scenarioUUID: UUID, view: View): Promise<ViewCrudResponse | null>;
   list(scenarioUUID: UUID): Promise<View[] | null>;
   get(viewUUID: UUID): Promise<View | null>;
-  update(viewUUID: UUID, view: View): Promise<void | null>;
-  delete(viewUUID: UUID): Promise<void | null>;
+  update(viewUUID: UUID, view: View): Promise<ViewCrudResponse | null>;
+  delete(viewUUID: UUID): Promise<ViewCrudResponse | null>;
 }

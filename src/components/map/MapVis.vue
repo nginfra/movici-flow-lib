@@ -31,16 +31,16 @@ type SlotProps = {
 };
 
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { CameraOptions, PopupContent, TimeOrientedSimulationInfo } from '@/types';
+import { CameraOptions, PopupContent, TimeOrientedSimulationInfo } from '@/flow/types';
 import Deck from './Deck.vue';
 import Buildings from './mapLayers/Buildings.vue';
 import defaults from './defaults';
 import { Layer } from '@deck.gl/core';
-import VisualizerManager from '@/visualizers/VisualizerManager';
-import { Visualizer } from '@/visualizers';
-import { AnyVisualizerInfo } from '@/visualizers/VisualizerInfo';
-import { flowStore, flowUIStore } from '@/store/store-accessor';
-import Backend from '@/api/backend';
+import VisualizerManager from '@/flow/visualizers/VisualizerManager';
+import { Visualizer } from '@/flow/visualizers';
+import { AnyVisualizerInfo } from '@/flow/visualizers/VisualizerInfo';
+import { flowStore, flowUIStore } from '@/flow/store/store-accessor';
+import Backend from '@/flow/api/backend';
 
 @Component({
   name: 'MovMapVis',

@@ -1,5 +1,5 @@
-import { Line3DCoordinate, LineCoordinate, PolygonCoordinate } from '@/types/geometry';
-import { UUID } from '@/types/general';
+import { Line3DCoordinate, LineCoordinate, PolygonCoordinate } from '@/flow/types/geometry';
+import { UUID } from '@/flow/types/general';
 
 export interface DatasetCollection {
   datasets: Dataset[];

@@ -1,3 +1,6 @@
+<template>
+  <span></span>
+</template>
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';
 import LayerMixin from './LayerMixin';
@@ -7,14 +10,12 @@ import LayerMixin from './LayerMixin';
 })
 export default class Buildings extends Mixins(LayerMixin) {
   id = 'basemap-static-buildings';
-
   sources: Record<string, mapboxgl.AnySourceData> = {
     'custom-buildings': {
       type: 'vector',
       url: 'mapbox://movici.dh_buildings'
     }
   };
-
   layer: mapboxgl.AnyLayer = {
     id: this.id,
     source: 'custom-buildings',

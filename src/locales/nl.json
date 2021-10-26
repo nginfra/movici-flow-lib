@@ -36,9 +36,6 @@
     "select": "Selecteer een @:(resources.dataset)",
     "selectRequiredTypes": "Selecteer benodige :@(resources.dataset) types"
   },
-  "entityGroup": {
-    "select": "Selecteer een @:(resources.entityGroup)"
-  },
   "flow": {
     "datasets": {
       "addDataset": "@:(dataset.addNew)",
@@ -55,6 +52,9 @@
       "selectPlaceholder": "@:(dataset.select)",
       "usage": "Gebruik",
       "zeroEntities": "Deze dataset kan niet worden weergegeven :("
+    },
+    "entityGroup": {
+      "select": "Selecteer een @:(resources.entityGroup)"
     },
     "export": {
       "custom": "Custom",
@@ -169,12 +169,16 @@
         "visualizers": "Visualisers"
       },
       "visualiserDisplayName": "Visualiser weergavenaam"
+    },
+    "visualizerGroup": {
+      "select": "Selecteer een @:(resources.visualizerGroup)"
     }
   },
   "misc": {
     "no": "Nee",
     "of": "van",
     "properties": "Eigenschappen",
+    "timestamp": "Timestamp",
     "yes": "Ja"
   },
   "properties": {
@@ -260,16 +264,10 @@
     "minutes": "Minuten",
     "seconds": "Secondes"
   },
-  "timeline": {
-    "timestamp": "Timestamp"
-  },
   "units": {
     "meter": "meter",
     "meters": "@:(units.meter)s",
     "pixel": "pixel",
     "pixels": "@:(units.pixel)s"
-  },
-  "visualizerGroup": {
-    "select": "Selecteer een @:(resources.visualizerGroup)"
   }
 }

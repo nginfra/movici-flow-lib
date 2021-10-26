@@ -78,7 +78,7 @@
             :label="$t('flow.datasets.dataPreview')"
           >
             <MapVis :layer-infos="layers" :view-state.sync="viewState">
-              <template #control-left="{ map, onViewstateChange }">
+              <template #control-left="{ map, onViewstateChange, basemap, setBasemap }">
                 <SearchBar
                   v-if="hasGeocodeCapabilities"
                   :map="map"
@@ -142,19 +142,19 @@
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import pick from 'lodash/pick';
 import isEqual from 'lodash/isEqual';
-import { CameraOptions, Dataset, Nullable } from '@/types';
+import { CameraOptions, Dataset, Nullable } from '@/flow/types';
 import FlowContainer from './FlowContainer.vue';
-import MapVis from '@/components/map/MapVis.vue';
-import defaults from '@/components/map/defaults';
+import MapVis from '@/flow/components/map/MapVis.vue';
+import defaults from '@/flow/components/map/defaults';
 import EntitySelector from './widgets/EntitySelector.vue';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
-import SearchBar from '@/components/map/controls/SearchBar.vue';
-import NavigationControl from '@/components/map/controls/NavigationControl.vue';
-import BaseMapControl from '@/components/map/controls/BaseMapControl.vue';
-import DataViewContent from '@/components/map_widgets/DataViewContent.vue';
-import StaticDataView from '@/components/map_widgets/StaticDataView.vue';
-import { ComposableVisualizerInfo } from '@/visualizers/VisualizerInfo';
-import { flowStore, flowUIStore } from '@/store/store-accessor';
+import SearchBar from '@/flow/components/map/controls/SearchBar.vue';
+import NavigationControl from '@/flow/components/map/controls/NavigationControl.vue';
+import BaseMapControl from '@/flow/components/map/controls/BaseMapControl.vue';
+import DataViewContent from '@/flow/components/map_widgets/DataViewContent.vue';
+import StaticDataView from '@/flow/components/map_widgets/StaticDataView.vue';
+import { ComposableVisualizerInfo } from '@/flow/visualizers/VisualizerInfo';
+import { flowStore, flowUIStore } from '@/flow/store/store-accessor';
 
 @Component({
   components: {

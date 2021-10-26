@@ -5,10 +5,10 @@ import {
   TimelineCrudResponse,
   TimelineInfo,
   UUID
-} from '@/types';
+} from '@/flow/types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import uri, { dataEngineBase } from '@/api/requests/uri';
-import { Request } from '@/api/requests/base';
+import uri, { dataEngineBase } from '@/flow/api/requests/uri';
+import { Request } from '@/flow/api/requests/base';
 
 export class GetScenarios extends Request<ShortScenario[]> {
   projectUUID: UUID;

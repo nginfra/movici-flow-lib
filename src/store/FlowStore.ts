@@ -9,13 +9,13 @@ import {
   SimulationMode,
   TimeOrientedSimulationInfo,
   UUID,
-  User,
   View
-} from '@/types';
-import { ComposableVisualizerInfo } from '@/visualizers/VisualizerInfo';
-import { exportFromConfig } from '@/utils/DataExporter';
-import Backend from '@/api/backend';
-import FlowUIStore from '@/store/FlowUserInterfaceStore';
+} from '@/flow/types';
+import { User } from '@/flow/types/users';
+import { ComposableVisualizerInfo } from '@/flow/visualizers/VisualizerInfo';
+import { exportFromConfig } from '@/flow/utils/DataExporter';
+import Backend from '@/flow/api/backend';
+import FlowUIStore from '@/flow/store/FlowUserInterfaceStore';
 
 @Module({
   name: 'flow',

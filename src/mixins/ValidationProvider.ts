@@ -1,5 +1,5 @@
 import { Component, Vue } from 'vue-property-decorator';
-import FormValidator, { ErrorDict } from '@/utils/FormValidator';
+import FormValidator, { ErrorDict } from '@/flow/utils/FormValidator';
 
 /**
  * Mixin to use with form validation. Any error messages will be made available in the `this.errors`

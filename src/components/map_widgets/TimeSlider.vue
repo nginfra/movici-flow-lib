@@ -1,5 +1,5 @@
 <template>
-  <div class="box timeslider">
+  <div class="box timeslider" v-if="timelineInfo">
     <b-field>
       <b-slider
         :value="value"
@@ -12,7 +12,7 @@
         rounded
       ></b-slider>
     </b-field>
-    <div class="time-ticks">
+    <div class="time-ticks" v-if="timelineInfo">
       <strong>{{ toFormattedDateTime(timelineInfo.start_time) }}</strong>
       <p>{{ toFormattedDateTime(value) }}</p>
       <strong>{{ toFormattedDateTime(timelineInfo.start_time + timelineInfo.duration) }}</strong>
@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { SimulationMode, TimeOrientedSimulationInfo } from '@/types';
+import { SimulationMode, TimeOrientedSimulationInfo } from '@/flow/types';
 
 function defaultTimelineInfo(): TimeOrientedSimulationInfo {
   return {
@@ -39,7 +39,7 @@ function defaultTimelineInfo(): TimeOrientedSimulationInfo {
 export default class TimeSlider extends Vue {
   @Prop({ type: Number, default: 0 }) readonly value!: number;
   @Prop({ type: Boolean, default: true }) readonly tooltip!: boolean;
-  @Prop({ type: Object, default: defaultTimelineInfo })
+  @Prop({ type: Object, default: () => defaultTimelineInfo() })
   readonly timelineInfo!: TimeOrientedSimulationInfo;
   @Prop([Function]) readonly customTimeFormat?: (val: number) => string;
 

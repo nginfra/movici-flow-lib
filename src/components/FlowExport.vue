@@ -47,17 +47,17 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import { TimeOrientedSimulationInfo } from '@/types';
+import { TimeOrientedSimulationInfo } from '@/flow/types';
 import FlowContainer from './FlowContainer.vue';
 import FlowLayerPicker from './widgets/FlowLayerPicker.vue';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
 import ExportForm from './export/ExportForm.vue';
 import ExportLayerPicker from './export/ExportLayerPicker.vue';
-import { ComposableVisualizerInfo } from '@/visualizers/VisualizerInfo';
-import ValidationProvider from '@/mixins/ValidationProvider';
-import FormValidator from '@/utils/FormValidator';
-import { flowStore } from '@/store/store-accessor';
+import { ComposableVisualizerInfo } from '@/flow/visualizers/VisualizerInfo';
+import ValidationProvider from '@/flow/mixins/ValidationProvider';
+import FormValidator from '@/flow/utils/FormValidator';
+import { flowStore } from '@/flow/store/store-accessor';
 
 @Component({
   components: {

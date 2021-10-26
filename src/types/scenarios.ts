@@ -1,4 +1,4 @@
-import { UUID } from '@/types/general';
+import { UUID } from '@/flow/types/general';
 
 export type AnalysisTemplate = Record<string, unknown>;
 export interface ShortScenario {
@@ -15,6 +15,13 @@ export interface Scenario extends ShortScenario {
   datasets: ScenarioDataset[];
   simulation_info: SimulationInfo;
   has_timeline?: boolean;
+}
+
+export interface ScenarioWithModels extends Scenario {
+  models: {
+    type: string;
+    name: string;
+  }[];
 }
 
 export enum SimulationMode {

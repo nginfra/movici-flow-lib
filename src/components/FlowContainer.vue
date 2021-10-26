@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { flowUIStore } from '@/store/store-accessor';
+import { flowUIStore } from '@/flow/store/store-accessor';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})

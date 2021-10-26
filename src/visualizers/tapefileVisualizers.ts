@@ -1,4 +1,4 @@
-import { BaseVisualizer, VisualizerContext, DIMENSIONS } from '@/visualizers/visualizers';
+import { BaseVisualizer, VisualizerContext, DIMENSIONS } from '@/flow/visualizers/visualizers';
 import {
   RGBAColor,
   ColorMapLayerSettings,
@@ -12,18 +12,18 @@ import {
   PolygonCoordinate,
   PolygonGeometryData,
   TopologyLayerData
-} from '@/types';
+} from '@/flow/types';
 import { Layer } from '@deck.gl/core';
-import { layerInfoToTapefile, SinglePropertyTapefile } from '@/visualizers/tapefile';
+import { layerInfoToTapefile, SinglePropertyTapefile } from '@/flow/visualizers/tapefile';
 import { PathLayer, PolygonLayer, ScatterplotLayer } from '@deck.gl/layers';
 import { HeatmapLayer } from '@deck.gl/aggregation-layers';
 import {
   LineTopologyGetter,
   PointTopologyGetter,
   PolygonTopologyGetter
-} from '@/visualizers/geometry';
-import { IntColorMap, NumberColorMap } from '@/visualizers/maps/colorMaps';
-import { VisualizerInfo } from '@/visualizers/VisualizerInfo';
+} from '@/flow/visualizers/geometry';
+import { IntColorMap, NumberColorMap } from '@/flow/visualizers/maps/colorMaps';
+import { VisualizerInfo } from '@/flow/visualizers/VisualizerInfo';
 
 function colorMapFromLayerSettings(settings: ColorMapLayerSettings): NumberColorMap {
   return new IntColorMap(settings);

@@ -1,4 +1,4 @@
-import { ComponentData, EntityGroupData } from '@/types';
+import { ComponentData, EntityGroupData } from '@/flow/types';
 
 export function entityGroupToCSV(entityGroup: EntityGroupData<unknown>): string {
   return new CSVBuilder(entityGroup).buildCSV();

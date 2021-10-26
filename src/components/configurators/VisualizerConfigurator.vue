@@ -50,7 +50,7 @@
               :value="currentEntityName"
               @input="headerValidated('currentEntityName', $event)"
               :disabled="entityGroups.length < 1"
-              :placeholder="$t('entityGroup.select')"
+              :placeholder="$t('flow.entityGroup.select')"
               size="is-small"
               expanded
             >
@@ -81,7 +81,7 @@
           <b-field :label="$t('resources.visualizerGroup')">
             <b-select
               expanded
-              :placeholder="$t('visualizerGroup.select')"
+              :placeholder="$t('flow.visualizerGroup.select')"
               :value="vGroupIndex"
               size="is-small"
               @input="$emit('update:vGroupIndex', $event)"
@@ -132,27 +132,27 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import { flowStore } from '@/store/store-accessor';
+import { flowStore } from '@/flow/store/store-accessor';
 import {
   FlowVisualizerOptions,
   FlowVisualizerType,
   ScenarioDataset,
   VisualizationMode
-} from '@/types';
+} from '@/flow/types';
 import ValidationProvider from '../../mixins/ValidationProvider';
-import SummaryListing from '@/mixins/SummaryListing';
+import SummaryListing from '@/flow/mixins/SummaryListing';
 import GeometrySelector from '../widgets/GeometrySelector.vue';
-import { VisGroup } from '@/visualizers';
+import { VisGroup } from '@/flow/visualizers';
 import ColorConfigurator from './color/ColorConfigurator.vue';
 import SizeConfigurator from './size/SizeConfigurator.vue';
 import PopupConfigurator from './PopupConfigurator.vue';
-import FormValidator from '@/utils/FormValidator';
-import { ComposableVisualizerInfo } from '@/visualizers/VisualizerInfo';
-import { propertyString } from '@/utils';
+import FormValidator from '@/flow/utils/FormValidator';
+import { ComposableVisualizerInfo } from '@/flow/visualizers/VisualizerInfo';
+import { propertyString } from '@/flow/utils';
 import {
   getSingleLegendPlaceholder,
   PlaceholderType
-} from '@/components/configurators/helpers';
+} from '@/flow/components/configurators/helpers';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 

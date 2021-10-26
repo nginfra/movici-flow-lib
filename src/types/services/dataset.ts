@@ -1,4 +1,4 @@
-import { ComponentProperty, Dataset, DatasetWithData, UUID } from '@/types';
+import { ComponentProperty, Dataset, DatasetWithData, UUID } from '@/flow/types';
 
 export default interface DatasetService {
   list(project_uuid?: UUID): Promise<Dataset[]>;

@@ -10,14 +10,14 @@ import {
   PopupClause,
   SizeClause,
   VisualizerViewConfig
-} from '@/types';
-import { isLines, isPoints, isPolygons } from '@/visualizers/geometry';
-import { getEntitySummary, hasOwnProperty, propertyString } from '@//utils';
+} from '@/flow/types';
+import { isLines, isPoints, isPolygons } from '@/flow/visualizers/geometry';
+import { getEntitySummary, hasOwnProperty, propertyString } from '@/flow//utils';
 import {
   AnyVisualizerInfo,
   ComposableVisualizerInfo,
   VisualizerInfo
-} from '@/visualizers/VisualizerInfo';
+} from '@/flow/visualizers/VisualizerInfo';
 
 export function datasetValidator() {
   return function (info: AnyVisualizerInfo) {
