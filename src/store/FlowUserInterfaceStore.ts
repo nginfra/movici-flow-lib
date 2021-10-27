@@ -1,4 +1,4 @@
-import { FlowSection, FlowSectionItem } from '~flow/types';
+import { FlowSection, FlowSectionItem } from '../types';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 
 @Module({

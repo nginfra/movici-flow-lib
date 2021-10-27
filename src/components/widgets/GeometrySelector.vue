@@ -46,8 +46,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { FlowVisualizerType, PropertyType } from '~flow/types';
-import { isLines, isPoints, isPolygons } from '~flow/visualizers/geometry';
+import { FlowVisualizerType, PropertyType } from '../../types';
+import { isLines, isPoints, isPolygons } from '../../visualizers/geometry';
 
 function validFlowVisualizerType(val: unknown): val is FlowVisualizerType {
   if (typeof val !== 'string') return false;

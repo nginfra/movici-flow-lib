@@ -13,9 +13,9 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch, Ref } from 'vue-property-decorator';
-import { colorTripleToHex, hexToColorTriple } from '~flow/visualizers/maps/colorMaps';
+import { colorTripleToHex, hexToColorTriple } from '../../../visualizers/maps/colorMaps';
 import { Sketch } from 'vue-color';
-import { RGBAColor } from '~flow/types';
+import { RGBAColor } from '../../../types';
 
 @Component({
   name: 'FlowColorPicker',

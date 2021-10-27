@@ -1,4 +1,4 @@
-import { User } from '~flow/types';
+import { User } from '..';
 
 export default interface UserService {
   get(): Promise<User | null>;

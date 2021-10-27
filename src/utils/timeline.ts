@@ -1,5 +1,5 @@
-import { ComponentProperty, EntityGroupData, EntityUpdate, Update } from '~flow/types';
-import { DatasetDownloader } from '~flow/utils/DatasetDownloader';
+import { ComponentProperty, EntityGroupData, EntityUpdate, Update } from '../types';
+import { DatasetDownloader } from './DatasetDownloader';
 
 export class TimelineDownloader {
   entityGroup: string;

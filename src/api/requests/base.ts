@@ -1,4 +1,4 @@
-import Client from '~flow/api/client';
+import Client from '../client';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 export abstract class BaseRequest<Resp> {

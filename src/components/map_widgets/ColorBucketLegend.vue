@@ -20,8 +20,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { FlowVisualizerType, LegendItem, RGBAColor } from '~flow/types';
-import { colorTripleToHex } from '~flow/visualizers/maps/colorMaps';
+import { FlowVisualizerType, LegendItem, RGBAColor } from '../../types';
+import { colorTripleToHex } from '../../visualizers/maps/colorMaps';
 
 @Component({
   name: 'ColorBucketLegend'

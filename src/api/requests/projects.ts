@@ -1,7 +1,7 @@
-import { Project, ProjectCrudResponse, UUID } from '~flow/types';
+import { Project, ProjectCrudResponse, UUID } from '../../types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import uri, { dataEngineBase } from '~flow/api/requests/uri';
-import { Request } from '~flow/api/requests/base';
+import uri, { dataEngineBase } from './uri';
+import { Request } from './base';
 
 export class GetProjects extends Request<Project[]> {
   constructor() {

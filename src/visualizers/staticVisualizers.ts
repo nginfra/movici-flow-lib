@@ -10,7 +10,7 @@ import {
   PolygonGeometryData,
   StaticColorLayerSettings,
   TopologyLayerData
-} from '~flow/types';
+} from '../types';
 import { PathLayer, ScatterplotLayer, PolygonLayer } from '@deck.gl/layers';
 import { HeatmapLayer } from '@deck.gl/aggregation-layers';
 import { LineTopologyGetter, PointTopologyGetter, PolygonTopologyGetter } from './geometry';

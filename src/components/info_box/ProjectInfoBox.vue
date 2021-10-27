@@ -39,8 +39,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { flowStore } from '~flow/store/store-accessor';
-import { ActionMenuItem } from '~flow/types';
+import { flowStore } from '../../store/store-accessor';
+import { ActionMenuItem } from '../../types';
 
 @Component({
   name: 'ProjectInfoBox'

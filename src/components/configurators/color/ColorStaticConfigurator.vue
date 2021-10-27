@@ -28,9 +28,13 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { colorTripleToHex, hexToColorTriple, MoviciColors } from '~flow/visualizers/maps/colorMaps';
-import { ColorClause, RGBAColor, StaticColorClause } from '~flow/types';
-import FlowColorPicker from '~flow/components/configurators/color/FlowColorPicker.vue';
+import {
+  colorTripleToHex,
+  hexToColorTriple,
+  MoviciColors
+} from '../../../visualizers/maps/colorMaps';
+import { ColorClause, RGBAColor, StaticColorClause } from '../../../types';
+import FlowColorPicker from '../.././configurators/color/FlowColorPicker.vue';
 
 @Component({
   components: {

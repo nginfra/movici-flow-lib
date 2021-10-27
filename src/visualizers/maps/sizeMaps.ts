@@ -1,4 +1,4 @@
-import { Mapper, Nullable } from '~flow/types';
+import { Mapper, Nullable } from '../../types';
 
 type SizeMapConfig = {
   sizes: [number, number][];

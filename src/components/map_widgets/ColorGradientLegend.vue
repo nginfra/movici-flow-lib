@@ -11,8 +11,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { LegendItem } from '~flow/types';
-import { colorTripleToHex } from '~flow/visualizers/maps/colorMaps';
+import { LegendItem } from '../../types';
+import { colorTripleToHex } from '../../visualizers/maps/colorMaps';
 
 @Component({
   name: 'ColorGradientLegend'

@@ -6,15 +6,11 @@ import {
   PopupCallback,
   TopologyLayerData,
   VisualizerConfigurationSettings
-} from '~flow/types';
-import { TopologyGetter } from '~flow/visualizers/geometry';
-import { DatasetDownloader } from '~flow/utils/DatasetDownloader';
-import {
-  AnyVisualizerInfo,
-  ComposableVisualizerInfo,
-  VisualizerInfo
-} from '~flow/visualizers/VisualizerInfo';
-import { hasOwnProperty } from '~flow/utils';
+} from '../types';
+import { TopologyGetter } from './geometry';
+import { DatasetDownloader } from '../utils/DatasetDownloader';
+import { AnyVisualizerInfo, ComposableVisualizerInfo, VisualizerInfo } from './VisualizerInfo';
+import { hasOwnProperty } from '../utils';
 
 export interface VisualizerContext {
   datasetStore: DatasetDownloader;
