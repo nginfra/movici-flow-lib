@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { LegendOptions } from '@/flow/types';
+import { LegendOptions } from '../../../types';
 
 @Component({
   name: 'ColorLegendLabelsConfigurator'

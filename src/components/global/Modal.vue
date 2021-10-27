@@ -26,7 +26,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import ModalContent from '@/flow/components/global/ModalContent.vue';
+import ModalContent from './ModalContent.vue';
 
 @Component({
   name: 'Modal.vue',

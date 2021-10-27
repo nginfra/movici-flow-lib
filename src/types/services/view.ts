@@ -1,4 +1,4 @@
-import { UUID, View, ViewCrudResponse } from '@/flow/types';
+import { UUID, View, ViewCrudResponse } from '..';
 
 export default interface ViewService {
   create(scenarioUUID: UUID, view: View): Promise<ViewCrudResponse | null>;

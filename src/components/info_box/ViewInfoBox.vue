@@ -30,9 +30,9 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ActionMenuItem } from '@/flow/types';
-import { flowStore } from '@/flow/store/store-accessor';
-import ViewLoaderModal from '@/flow/components/widgets/ViewLoaderModal.vue';
+import { ActionMenuItem } from '../../types';
+import { flowStore } from '../../store/store-accessor';
+import ViewLoaderModal from '.././widgets/ViewLoaderModal.vue';
 
 @Component({
   name: 'ViewInfoBox',

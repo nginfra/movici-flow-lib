@@ -1,4 +1,4 @@
-import { UUID } from '@/flow/types/general';
+import { UUID } from './general';
 
 export type ProjectCollection = {
   projects: Project[];

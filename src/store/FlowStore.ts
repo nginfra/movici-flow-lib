@@ -10,12 +10,12 @@ import {
   TimeOrientedSimulationInfo,
   UUID,
   View
-} from '@/flow/types';
-import { User } from '@/flow/types/users';
-import { ComposableVisualizerInfo } from '@/flow/visualizers/VisualizerInfo';
-import { exportFromConfig } from '@/flow/utils/DataExporter';
-import Backend from '@/flow/api/backend';
-import FlowUIStore from '@/flow/store/FlowUserInterfaceStore';
+} from '../types';
+import { User } from '../types/users';
+import { ComposableVisualizerInfo } from '../visualizers/VisualizerInfo';
+import { exportFromConfig } from '../utils/DataExporter';
+import Backend from '../api/backend';
+import FlowUIStore from '../store/FlowUserInterfaceStore';
 
 @Module({
   name: 'flow',

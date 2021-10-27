@@ -1,5 +1,5 @@
-import { UUID } from '@/flow/types/general';
-import { ColorRuleSet } from '@/flow/types/colors';
+import { UUID } from './general';
+import { ColorRuleSet } from './colors';
 
 export interface CrudResponse {
   result: string;

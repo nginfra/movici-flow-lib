@@ -1,4 +1,4 @@
-import { CameraOptions, Project, VisualizationMode, VisualizationSettings } from '@/flow/types';
+import { CameraOptions, Project, VisualizationMode, VisualizationSettings } from '../../types';
 
 function defaultProject(): Project {
   return {

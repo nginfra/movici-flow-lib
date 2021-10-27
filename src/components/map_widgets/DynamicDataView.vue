@@ -39,7 +39,7 @@ interface DynamicPositionOpts {
 }
 
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { CameraOptions, PopupContent } from '@/flow/types';
+import { CameraOptions, PopupContent } from '../../types';
 
 @Component({
   name: 'DynamicDataView'

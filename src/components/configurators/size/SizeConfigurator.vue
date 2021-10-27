@@ -30,11 +30,11 @@
 </template>
 
 <script lang="ts">
-import { ByValueSizeClause, SizeClause, StaticSizeClause, PropertySummary } from '@/flow/types';
+import { ByValueSizeClause, SizeClause, StaticSizeClause, PropertySummary } from '../../../types';
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import SizeStaticConfigurator from './SizeStaticConfigurator.vue';
 import SizeByValueConfigurator from './SizeByValueConfigurator.vue';
-import FormValidator from '@/flow/utils/FormValidator';
+import FormValidator from '../../../utils/FormValidator';
 
 @Component({
   components: {
