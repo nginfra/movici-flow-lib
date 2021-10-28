@@ -1,5 +1,5 @@
 import { Store } from 'vuex';
-import { getModule } from 'vuex-module-decorators';
+import { getModule, VuexModule } from 'vuex-module-decorators';
 import FlowStore from '../store/FlowStore';
 import FlowUIStore from '../store/FlowUserInterfaceStore';
 import GeocodeStore from '../store/GeocodeStore';

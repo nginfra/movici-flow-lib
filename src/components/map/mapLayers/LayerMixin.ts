@@ -1,16 +1,15 @@
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class LayerMixin extends Vue {
   id = '';
   sources: Record<string, mapboxgl.AnySourceData> | null = null;
   layer: mapboxgl.AnyLayer | null = null;
-  map: mapboxgl.Map | null = null;
+  @Prop() map!: mapboxgl.Map;
 
   attach() {
     this.addSources();
     const layer = { ...this.layer, id: this.id } as mapboxgl.AnyLayer;
-
     this.map?.addLayer(layer);
     this.map?.off('idle', this.attach);
   }

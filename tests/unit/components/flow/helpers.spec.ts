@@ -1,7 +1,7 @@
 import {
   RecalculateMappingValueParams,
   recalculateMappingValues
-} from '@movici-flow-common/components/flow/configurators/helpers';
+} from '@movici-flow-common/components/configurators/helpers';
 
 describe('recalculateMappingValues', () => {
   it.each([

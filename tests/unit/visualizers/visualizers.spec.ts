@@ -7,8 +7,8 @@ import {
 } from '@movici-flow-common/visualizers/staticVisualizers';
 import { VisualizerConfigurationSettings, LayerKind } from '@movici-flow-common/types';
 import { EntityGeometry } from '@movici-flow-common/types/geometry';
-import { DatasetDownloader } from '@movici-flow-common/api/DatasetDownloader';
 import { VisualizerInfo } from '@movici-flow-common/visualizers';
+import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
 
 function fakeStore(result: unknown): DatasetDownloader {
   return ({
@@ -108,11 +108,11 @@ describe('StaticDatasetVisualizer', () => {
       ...config,
       onError: onError,
       datasetStore: (fakeStore(() => {
-        throw new Error('Some error');
+        throw 'Some error';
       }) as unknown) as DatasetDownloader
     });
     await visualizer.load();
-    expect(onError).toBeCalledWith(new Error('Some error'));
+    expect(onError).toBeCalledWith(Error('Some error'));
   });
   it('has the right priority', () => {
     const v1 = getPointVisualizer(LayerKind.STATIC_COLOR);

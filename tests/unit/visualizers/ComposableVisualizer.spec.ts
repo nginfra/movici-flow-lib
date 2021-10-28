@@ -69,7 +69,7 @@ describe('ColorModule', () => {
           [0, [0, 0, 0]],
           [1, [1, 1, 1]]
         ],
-        attribute: { name: 'some_prop', component: null, data_type: 'INT' }
+        attribute: { name: 'some_prop', component: null, data_type: 'INT', min_val: 0, max_val: 1 }
       }
     });
     const visualizer = pointVisualizer();
@@ -86,14 +86,20 @@ describe('ColorModule', () => {
           [0, [0, 0, 0]],
           [1, [1, 1, 1]]
         ],
-        attribute: { name: 'some_prop', component: null, data_type: 'INT' }
+        attribute: { name: 'some_prop', component: null, data_type: 'INT', min_val: 0, max_val: 1 }
       }
     });
     const visualizer = pointVisualizer();
     new ColorModule({ info }).compose({ type: ScatterplotLayer, props: {} }, visualizer);
 
     const call = visualizer.requestTapefile.mock.calls[0];
-    expect(call[0]).toStrictEqual({ name: 'some_prop', component: null, data_type: 'INT' });
+    expect(call[0]).toStrictEqual({
+      name: 'some_prop',
+      component: null,
+      data_type: 'INT',
+      min_val: 0,
+      max_val: 1
+    });
     expect(call[1]).toBeInstanceOf(Function);
   });
   it('prepares Colors for gradients', () => {
@@ -103,7 +109,7 @@ describe('ColorModule', () => {
         [0, [0, 0, 0]],
         [1, [1, 1, 1]]
       ],
-      attribute: { name: 'some_prop', component: null, data_type: 'INT' }
+      attribute: { name: 'some_prop', component: null, data_type: 'INT', min_val: 0, max_val: 1 }
     };
     const info = getInfoWithColorClause({
       byValue: clause
@@ -121,7 +127,13 @@ describe('ColorModule', () => {
           [0, [10, 10, 10]],
           [1, [11, 11, 11]]
         ],
-        attribute: { name: 'some_prop', component: null, data_type: 'INT' }
+        attribute: {
+          name: 'some_prop',
+          component: null,
+          data_type: 'INT',
+          min_val: 0,
+          max_val: 100
+        }
       }
     });
     const visualizer = pointVisualizer();

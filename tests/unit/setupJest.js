@@ -7,10 +7,8 @@ jest.mock('mapbox-gl/dist/mapbox-gl', () => ({
   NavigationControl: jest.fn(() => {})
 }));
 
-jest.mock('@movici-flow-common/locales', () => {
-  let obj = jest.fn();
-  obj.keys = () => {
-    return [];
-  };
-  return obj;
-});
+module.exports = {
+  moduleNameMapper: {
+    '@movici-flow-common/(.*)': '<rootDir>/movici-flow-common/$1'
+  }
+};

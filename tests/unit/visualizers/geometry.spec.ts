@@ -1,5 +1,5 @@
 import { LineTopologyGetter, PointTopologyGetter } from '@movici-flow-common/visualizers/geometry';
-import { DatasetDownloader } from '@movici-flow-common/api/DatasetDownloader';
+import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
 
 function newFakeStore(datasetData: unknown): DatasetDownloader {
   return ({
