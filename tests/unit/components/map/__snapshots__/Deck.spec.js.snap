@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Deck.vue renders correctly 1`] = `
+<div>
+  <div
+    id="mapbox-container"
+  >
+    <div
+      id="map"
+    />
+     
+    <canvas
+      id="deckgl-overlay"
+    />
+     
+    <!---->
+     
+    <!---->
+     
+    <!---->
+     
+    <!---->
+     
+    <!---->
+  </div>
+</div>
+`;
