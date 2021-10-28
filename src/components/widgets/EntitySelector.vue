@@ -36,14 +36,14 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import { hexToColorTriple, MoviciColors } from '../../visualizers/maps/colorMaps';
-import { EntityGroupSummary, ScenarioDataset, VisualizationMode } from '../../types';
+import { hexToColorTriple, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
+import { EntityGroupSummary, ScenarioDataset, VisualizationMode } from '@movici-flow-common/types';
 
-import { isLines, isPoints, isPolygons } from '../../visualizers/geometry';
+import { isLines, isPoints, isPolygons } from '@movici-flow-common/visualizers/geometry';
 
-import SummaryListing from '../../mixins/SummaryListing';
+import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
 import GeometrySelector from './GeometrySelector.vue';
-import { ComposableVisualizerInfo } from '../../visualizers/VisualizerInfo';
+import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 
 @Component({
   components: {

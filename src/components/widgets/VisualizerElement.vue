@@ -86,10 +86,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ComposableVisualizerInfo } from '../../visualizers/VisualizerInfo';
-import { colorTripleToHex } from '../../visualizers/maps/colorMaps';
-import { FlowVisualizerType, RGBAColor } from '../../types';
-import { ActionMenuItem } from '../../types';
+import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
+import { colorTripleToHex } from '@movici-flow-common/visualizers/maps/colorMaps';
+import { FlowVisualizerType, RGBAColor } from '@movici-flow-common/types';
+import { ActionMenuItem } from '@movici-flow-common/types';
 
 @Component({
   name: 'VisualizerElement'

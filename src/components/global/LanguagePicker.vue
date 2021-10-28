@@ -9,7 +9,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import upperFirst from 'lodash/upperFirst';
-import { flowUIStore } from '../../store/store-accessor';
+import { flowUIStore } from '@movici-flow-common/store/store-accessor';
 
 @Component({ name: 'MovLanguagePicker' })
 export default class MovLanguagePicker extends Vue {

@@ -34,7 +34,7 @@ import FormValidator, { ErrorDict } from '../utils/FormValidator';
  * <script lang="ts">
  * import { Component, Mixins } from 'vue-property-decorator';
  * import ValidationProvider from './ValidationProvider';
- * import FormValidator from '../../utils/formValidator';
+ * import FormValidator from '@movici-flow-common/utils/formValidator';
  *
  * @Component({ name: 'MyComponent' })
  * export default class MyComponent extends Mixins(ValidationProvider) {

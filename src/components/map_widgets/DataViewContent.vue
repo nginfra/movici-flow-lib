@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { PopupContent, PropertyType } from '../../types';
+import { PopupContent, PropertyType } from '@movici-flow-common/types';
 
 @Component({
   name: 'DataViewContent'

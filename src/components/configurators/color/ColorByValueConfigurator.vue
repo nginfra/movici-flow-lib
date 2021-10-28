@@ -124,18 +124,18 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import { hexToColorTriple, MoviciColors } from '../../../visualizers/maps/colorMaps';
+import { hexToColorTriple, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
 import {
   ByValueColorClause,
   ColorMapping,
   PropertySummary,
   PropertyType,
   RGBAColor
-} from '../../../types';
-import CustomSelect from '../../global/CustomSelect.vue';
-import ValidationProvider from '../../../mixins/ValidationProvider';
-import ByValueColorList from '../../configurators/color/ByValueColorList.vue';
-import { recalculateColorMapping } from '../../configurators/helpers';
+} from '@movici-flow-common/types';
+import CustomSelect from '@movici-flow-common/global/CustomSelect.vue';
+import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
+import ByValueColorList from '@movici-flow-common/configurators/color/ByValueColorList.vue';
+import { recalculateColorMapping } from '@movici-flow-common/configurators/helpers';
 import ColorPalettes, { DEFAULT_COLOR_PALETTES } from './colorPalettes';
 
 interface RecalculateColorsParams {

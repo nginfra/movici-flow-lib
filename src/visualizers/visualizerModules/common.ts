@@ -5,7 +5,7 @@ import {
   Mapper,
   TopologyLayerData,
   VisualizerCallbacks
-} from '../../types';
+} from '@movici-flow-common/types';
 import { ComposableVisualizerInfo } from '../VisualizerInfo';
 
 export type VisualizerModuleParams = { info: ComposableVisualizerInfo };

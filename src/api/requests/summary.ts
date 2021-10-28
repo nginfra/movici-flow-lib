@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
 import uri, { dataEngineBase } from './uri';
-import { DatasetSummary, UUID } from '../../types';
+import { DatasetSummary, UUID } from '@movici-flow-common/types';
 import { Request } from './base';
 
 export class GetDatasetSummary extends Request<DatasetSummary> {

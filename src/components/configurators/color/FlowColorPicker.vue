@@ -13,9 +13,9 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch, Ref } from 'vue-property-decorator';
-import { colorTripleToHex, hexToColorTriple } from '../../../visualizers/maps/colorMaps';
+import { colorTripleToHex, hexToColorTriple } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { Sketch } from 'vue-color';
-import { RGBAColor } from '../../../types';
+import { RGBAColor } from '@movici-flow-common/types';
 
 @Component({
   name: 'FlowColorPicker',
