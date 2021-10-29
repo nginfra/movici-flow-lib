@@ -96,8 +96,8 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { colorTripleToHex } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { ColorMapping, RGBAColor } from '@movici-flow-common/types';
-import CustomSelect from '@movici-flow-common/global/CustomSelect.vue';
-import FlowColorPicker from '@movici-flow-common/configurators/color/FlowColorPicker.vue';
+import CustomSelect from '@movici-flow-common/components/global/CustomSelect.vue';
+import FlowColorPicker from './FlowColorPicker.vue';
 
 type modes = 'buckets' | 'gradient' | 'boolean';
 @Component({

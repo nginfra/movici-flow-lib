@@ -132,10 +132,10 @@ import {
   PropertyType,
   RGBAColor
 } from '@movici-flow-common/types';
-import CustomSelect from '@movici-flow-common/global/CustomSelect.vue';
+import CustomSelect from '@movici-flow-common/components/global/CustomSelect.vue';
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
-import ByValueColorList from '@movici-flow-common/configurators/color/ByValueColorList.vue';
-import { recalculateColorMapping } from '@movici-flow-common/configurators/helpers';
+import ByValueColorList from './ByValueColorList.vue';
+import { recalculateColorMapping } from '../../configurators/helpers';
 import ColorPalettes, { DEFAULT_COLOR_PALETTES } from './colorPalettes';
 
 interface RecalculateColorsParams {

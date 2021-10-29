@@ -34,7 +34,7 @@ import {
   MoviciColors
 } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { ColorClause, RGBAColor, StaticColorClause } from '@movici-flow-common/types';
-import FlowColorPicker from '@movici-flow-common/./configurators/color/FlowColorPicker.vue';
+import FlowColorPicker from './FlowColorPicker.vue';
 
 @Component({
   components: {
