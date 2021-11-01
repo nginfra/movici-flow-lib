@@ -6,9 +6,3 @@ jest.mock('mapbox-gl/dist/mapbox-gl', () => ({
   })),
   NavigationControl: jest.fn(() => {})
 }));
-
-module.exports = {
-  moduleNameMapper: {
-    '@movici-flow-common/(.*)': '<rootDir>/movici-flow-common/$1'
-  }
-};
