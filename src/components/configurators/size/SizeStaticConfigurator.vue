@@ -62,7 +62,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { StaticSizeClause, SizeClause } from '../../../types';
+import { StaticSizeClause, SizeClause } from '@movici-flow-common/types';
 import FlowColorPicker from '../color/FlowColorPicker.vue';
 
 @Component({

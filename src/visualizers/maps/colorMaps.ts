@@ -6,8 +6,8 @@ import {
   Nullable,
   PropertyType,
   Mapper
-} from '../../types';
-import { propertyString } from '../../utils';
+} from '@movici-flow-common/types';
+import { propertyString } from '@movici-flow-common/utils';
 import isEmpty from 'lodash/isEmpty';
 import cloneDeep from 'lodash/cloneDeep';
 

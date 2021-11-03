@@ -1,4 +1,4 @@
-import { UUID, View, ViewCrudResponse } from '../../types';
+import { UUID, View, ViewCrudResponse } from '@movici-flow-common/types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import uri, { dataEngineBase } from './uri';
 import { Request } from './base';

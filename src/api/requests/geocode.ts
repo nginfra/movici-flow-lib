@@ -6,7 +6,7 @@ import {
   ReverseGeocodeSearchQuery,
   ReverseGeocodeSearchResult,
   UUID
-} from '../../types';
+} from '@movici-flow-common/types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Request } from './base';
 

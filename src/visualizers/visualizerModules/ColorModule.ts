@@ -7,11 +7,11 @@ import {
   StaticColorClause,
   TopologyLayerData,
   VisualizerCallbacks
-} from '../../types';
+} from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
 import { NumberColorMap } from '../maps/colorMaps';
 import { SinglePropertyTapefile } from '../tapefile';
-import { interpolateColorMapping } from '../../utils/colorUtils';
+import { interpolateColorMapping } from '@movici-flow-common/utils/colorUtils';
 import {
   TapefileAccessor,
   VisualizerModule,

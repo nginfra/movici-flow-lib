@@ -68,7 +68,7 @@ import {
   LegendOptions,
   PropertyType,
   StaticColorClause
-} from '../../../types';
+} from '@movici-flow-common/types';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import ColorStaticConfigurator from './ColorStaticConfigurator.vue';
 import ColorByValueConfigurator from './ColorByValueConfigurator.vue';

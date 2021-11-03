@@ -124,17 +124,17 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import { hexToColorTriple, MoviciColors } from '../../../visualizers/maps/colorMaps';
+import { hexToColorTriple, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
 import {
   ByValueColorClause,
   ColorMapping,
   PropertySummary,
   PropertyType,
   RGBAColor
-} from '../../../types';
-import CustomSelect from '../../global/CustomSelect.vue';
-import ValidationProvider from '../../../mixins/ValidationProvider';
-import ByValueColorList from '../../configurators/color/ByValueColorList.vue';
+} from '@movici-flow-common/types';
+import CustomSelect from '@movici-flow-common/components/global/CustomSelect.vue';
+import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
+import ByValueColorList from './ByValueColorList.vue';
 import { recalculateColorMapping } from '../../configurators/helpers';
 import ColorPalettes, { DEFAULT_COLOR_PALETTES } from './colorPalettes';
 

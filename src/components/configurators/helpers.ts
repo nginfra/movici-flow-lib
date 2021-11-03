@@ -1,5 +1,5 @@
-import { ColorMapping, RGBAColor } from '../../types';
-import { hexToColorTriple, MoviciColors } from '../../visualizers/maps/colorMaps';
+import { ColorMapping, RGBAColor } from '@movici-flow-common/types';
+import { hexToColorTriple, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
 
 export type PlaceholderType = 'single' | 'range';
 

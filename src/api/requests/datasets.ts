@@ -4,7 +4,7 @@ import {
   DatasetCrudResponse,
   DatasetWithData,
   UUID
-} from '../../types';
+} from '@movici-flow-common/types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import uri, { dataEngineBase } from './uri';
 import { Request } from './base';

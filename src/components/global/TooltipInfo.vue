@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Ref } from 'vue-property-decorator';
-import FixedPosition from '../../mixins/FixedPosition';
+import FixedPosition from '@movici-flow-common/mixins/FixedPosition';
 
 @Component({ name: 'MovTooltipInfo' })
 export default class MovTooltipInfo extends Mixins(FixedPosition) {

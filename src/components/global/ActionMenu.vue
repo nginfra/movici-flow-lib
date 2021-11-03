@@ -38,8 +38,8 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Ref } from 'vue-property-decorator';
-import FixedPosition from '../../mixins/FixedPosition';
-import { ActionMenuItem } from '../../types';
+import FixedPosition from '@movici-flow-common/mixins/FixedPosition';
+import { ActionMenuItem } from '@movici-flow-common/types';
 
 @Component({ name: 'MovActionMenu' })
 export default class MovActionMenu extends Mixins(FixedPosition) {

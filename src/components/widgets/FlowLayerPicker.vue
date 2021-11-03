@@ -45,12 +45,12 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ComposableVisualizerInfo } from '../../visualizers/VisualizerInfo';
+import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import VisualizerElement from './VisualizerElement.vue';
 import VisualizerConfigurator from '../configurators/VisualizerConfigurator.vue';
-import { Scenario, TimeOrientedSimulationInfo } from '../../types';
+import { Scenario, TimeOrientedSimulationInfo } from '@movici-flow-common/types';
 import Draggable from 'vuedraggable';
-import { flowStore } from '../../store/store-accessor';
+import { flowStore } from '@movici-flow-common/store/store-accessor';
 
 @Component({
   name: 'FlowLayerPicker',

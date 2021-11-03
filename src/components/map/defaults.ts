@@ -1,4 +1,9 @@
-import { CameraOptions, Project, VisualizationMode, VisualizationSettings } from '../../types';
+import {
+  CameraOptions,
+  Project,
+  VisualizationMode,
+  VisualizationSettings
+} from '@movici-flow-common/types';
 
 function defaultProject(): Project {
   return {

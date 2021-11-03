@@ -44,8 +44,8 @@ import {
   GeocodeSearchQuery,
   GeocodeSearchResult,
   GeocodeSuggestion
-} from '../../../types';
-import { flowUIStore, geocodeStore } from '../../../store/store-accessor';
+} from '@movici-flow-common/types';
+import { flowUIStore, geocodeStore } from '@movici-flow-common/store/store-accessor';
 import mapboxgl from 'mapbox-gl';
 
 @Component({

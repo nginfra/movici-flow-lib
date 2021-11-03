@@ -30,8 +30,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ActionMenuItem } from '../../types';
-import { flowStore } from '../../store/store-accessor';
+import { ActionMenuItem } from '@movici-flow-common/types';
+import { flowStore } from '@movici-flow-common/store/store-accessor';
 import ViewLoaderModal from '.././widgets/ViewLoaderModal.vue';
 
 @Component({

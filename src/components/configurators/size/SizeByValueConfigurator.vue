@@ -126,9 +126,14 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import { ByValueSizeClause, PropertySummary, PropertyType, SizeClause } from '../../../types';
-import ValidationProvider from '../../../mixins/ValidationProvider';
-import { DIMENSIONS } from '../../../visualizers/visualizers';
+import {
+  ByValueSizeClause,
+  PropertySummary,
+  PropertyType,
+  SizeClause
+} from '@movici-flow-common/types';
+import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
+import { DIMENSIONS } from '@movici-flow-common/visualizers/visualizers';
 import cloneDeep from 'lodash/cloneDeep';
 
 @Component({})

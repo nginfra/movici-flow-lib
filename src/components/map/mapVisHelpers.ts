@@ -1,6 +1,6 @@
-import { Nullable } from '../../types';
-import { getVisualizerType, VisualizerConstructor } from '../../visualizers';
-import { AnyVisualizerInfo } from '../../visualizers/VisualizerInfo';
+import { Nullable } from '@movici-flow-common/types';
+import { getVisualizerType, VisualizerConstructor } from '@movici-flow-common/visualizers';
+import { AnyVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 
 export function determineChanges(
   newLayers: AnyVisualizerInfo[],

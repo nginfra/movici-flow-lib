@@ -7,7 +7,7 @@ interface ErrorHandlingConfig {
   http?: (e: HTTPErrorPayload) => void;
   all?: (e: Error | unknown) => void;
 }
-interface HTTPErrorPayload {
+export interface HTTPErrorPayload {
   status?: number;
   message: string;
 }

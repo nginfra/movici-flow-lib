@@ -5,7 +5,7 @@ import {
   PopupContent,
   TopologyLayerData,
   VisualizerCallbacks
-} from '../../types';
+} from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
 import { PickInfo } from '@deck.gl/core/lib/deck';
 import { SinglePropertyTapefile } from '../tapefile';

@@ -1,4 +1,10 @@
-import { ComponentProperty, TimelineFilter, Update, UpdateWithData, UUID } from '../../types';
+import {
+  ComponentProperty,
+  TimelineFilter,
+  Update,
+  UpdateWithData,
+  UUID
+} from '@movici-flow-common/types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import uri, { dataEngineBase } from './uri';
 import { getDatasetFilterParams } from './datasets';

@@ -37,9 +37,9 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { flowStore } from '../../store/store-accessor';
-import { ActionMenuItem } from '../../types';
-import { getClassFromStatus } from '../../utils';
+import { flowStore } from '@movici-flow-common/store/store-accessor';
+import { ActionMenuItem } from '@movici-flow-common/types';
+import { getClassFromStatus } from '@movici-flow-common/utils';
 
 @Component({
   name: 'ScenarioInfoBox'

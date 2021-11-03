@@ -132,23 +132,23 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import { flowStore } from '../../store/store-accessor';
+import { flowStore } from '@movici-flow-common/store/store-accessor';
 import {
   FlowVisualizerOptions,
   FlowVisualizerType,
   ScenarioDataset,
   VisualizationMode
-} from '../../types';
-import ValidationProvider from '../../mixins/ValidationProvider';
-import SummaryListing from '../../mixins/SummaryListing';
+} from '@movici-flow-common/types';
+import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
+import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
 import GeometrySelector from '../widgets/GeometrySelector.vue';
-import { VisGroup } from '../../visualizers';
+import { VisGroup } from '@movici-flow-common/visualizers';
 import ColorConfigurator from './color/ColorConfigurator.vue';
 import SizeConfigurator from './size/SizeConfigurator.vue';
 import PopupConfigurator from './PopupConfigurator.vue';
-import FormValidator from '../../utils/FormValidator';
-import { ComposableVisualizerInfo } from '../../visualizers/VisualizerInfo';
-import { propertyString } from '../../utils';
+import FormValidator from '@movici-flow-common/utils/FormValidator';
+import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
+import { propertyString } from '@movici-flow-common/utils';
 import { getSingleLegendPlaceholder, PlaceholderType } from '.././configurators/helpers';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';

@@ -30,11 +30,16 @@
 </template>
 
 <script lang="ts">
-import { ByValueSizeClause, SizeClause, StaticSizeClause, PropertySummary } from '../../../types';
+import {
+  ByValueSizeClause,
+  SizeClause,
+  StaticSizeClause,
+  PropertySummary
+} from '@movici-flow-common/types';
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import SizeStaticConfigurator from './SizeStaticConfigurator.vue';
 import SizeByValueConfigurator from './SizeByValueConfigurator.vue';
-import FormValidator from '../../../utils/FormValidator';
+import FormValidator from '@movici-flow-common/utils/FormValidator';
 
 @Component({
   components: {
