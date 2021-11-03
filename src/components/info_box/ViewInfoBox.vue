@@ -31,7 +31,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ActionMenuItem } from '@movici-flow-common/types';
-import { flowStore } from '@movici-flow-common/store/store-accessor';
+import { flowVisualizationStore } from '@movici-flow-common/store/store-accessor';
 import ViewLoaderModal from '.././widgets/ViewLoaderModal.vue';
 
 @Component({
@@ -80,11 +80,11 @@ export default class ViewInfoBox extends Vue {
   loadViewDialog = false;
 
   get views() {
-    return flowStore.views;
+    return flowVisualizationStore.views;
   }
 
   async startLoadingView() {
-    await flowStore.getViewsByScenario();
+    await flowVisualizationStore.getViewsByScenario();
     this.loadViewDialog = true;
   }
 

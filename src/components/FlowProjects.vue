@@ -71,7 +71,8 @@ import SearchBar from './map/controls/SearchBar.vue';
 import NavigationControl from './map/controls/NavigationControl.vue';
 import BaseMapControl from './map/controls/BaseMapControl.vue';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
-import { flowStore, flowUIStore } from '../store/store-accessor';
+import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
+import { buildFlowUrl } from '@movici-flow-common/utils';
 
 @Component({
   components: {
@@ -98,11 +99,17 @@ export default class FlowProjects extends Vue {
   }
 
   get toDatasets() {
-    return '/flow/datasets?' + this.queryString;
+    return buildFlowUrl('/flow/datasets', {
+      project: this.currentProjectName,
+      scenario: this.currentScenarioName
+    });
   }
 
   get toScenario() {
-    return '/flow/scenario?' + this.queryString;
+    return buildFlowUrl('/flow/scenario', {
+      project: this.currentProjectName,
+      scenario: this.currentScenarioName
+    });
   }
 
   get details() {
@@ -126,10 +133,6 @@ export default class FlowProjects extends Vue {
     return [];
   }
 
-  get queryString() {
-    return flowStore.queryString;
-  }
-
   get hasGeocodeCapabilities() {
     return flowStore.hasGeocodeCapabilities;
   }
@@ -143,26 +146,27 @@ export default class FlowProjects extends Vue {
 
     // this replaces the query string with project
     if (this.currentProjectName !== project.name) {
-      debugger;
-      await this.$router.push({
-        name: 'FlowProjects',
-        query: { project: project?.name }
-      });
-      flowStore.updateCurrentView(null);
+      await this.$router.push(buildFlowUrl('/flow/projects', { project: project?.name }));
+      flowVisualizationStore.updateCurrentView(null);
     }
   }
 
   async mounted() {
-    const config = { currentProjectName: this.currentProjectName };
+    // If we don't have projects, go directly do datasets
+    if (!flowStore.hasProjectsCapabilities) {
+      await this.$router.push(buildFlowUrl('/flow/datasets', { project: 'local_project' }));
+    } else {
+      const config = { currentProjectName: this.currentProjectName };
 
-    flowUIStore.setLoading({ value: true, msg: 'Loading workspaces...' });
+      flowUIStore.setLoading({ value: true, msg: 'Loading workspaces...' });
 
-    try {
-      await flowStore.setupFlowStore({ config });
-      flowUIStore.setLoading({ value: false });
-    } catch (error) {
-      console.error(error);
-      flowUIStore.setLoading({ value: false });
+      try {
+        await flowStore.setupFlowStore({ config });
+        flowUIStore.setLoading({ value: false });
+      } catch (error) {
+        console.error(error);
+        flowUIStore.setLoading({ value: false });
+      }
     }
   }
 

@@ -69,6 +69,13 @@ export function getBaseURL(): string {
   );
 }
 
+export function buildFlowUrl(path: string, query: Record<string, string | undefined> = {}) {
+  return {
+    path,
+    query
+  };
+}
+
 /**
  * Receives a scenario status and returns a Bulma class for the color
  * @param status

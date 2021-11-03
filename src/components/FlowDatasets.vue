@@ -1,7 +1,7 @@
 <template>
   <FlowContainer class="flow-datasets">
     <template #leftPanel>
-      <ProjectInfoBox class="mb-2" />
+      <ProjectInfoBox class="mb-2" v-if="hasProjectsCapabilities" />
       <span class="is-size-7">
         {{ $t('flow.datasets.label') }}
         <span class="count"
@@ -179,6 +179,10 @@ export default class FlowDatasets extends Vue {
   datasets: Dataset[] = [];
   layers: ComposableVisualizerInfo[] = [];
 
+  get hasProjectsCapabilities() {
+    return flowStore.hasProjectsCapabilities;
+  }
+
   /**
    * return object with details of currentDataset while also adding filters to date attributes
    */
@@ -241,7 +245,6 @@ export default class FlowDatasets extends Vue {
 
     try {
       await flowStore.setupFlowStore({ config });
-
       const currentProject = flowStore.project;
 
       if (currentProject) {

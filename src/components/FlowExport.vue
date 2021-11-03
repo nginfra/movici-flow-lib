@@ -57,7 +57,7 @@ import ExportLayerPicker from './export/ExportLayerPicker.vue';
 import { ComposableVisualizerInfo } from '../visualizers/VisualizerInfo';
 import ValidationProvider from '../mixins/ValidationProvider';
 import FormValidator from '../utils/FormValidator';
-import { flowStore } from '../store/store-accessor';
+import { flowStore, flowVisualizationStore } from '../store/store-accessor';
 
 @Component({
   components: {
@@ -77,7 +77,7 @@ export default class FlowExport extends Mixins(ValidationProvider) {
 
   // mapVis vars
   get visualizers() {
-    return flowStore.visualizers;
+    return flowVisualizationStore.visualizers;
   }
 
   get currentScenario() {
@@ -85,7 +85,7 @@ export default class FlowExport extends Mixins(ValidationProvider) {
   }
 
   get timestamp() {
-    return flowStore.timestamp;
+    return flowVisualizationStore.timestamp;
   }
 
   // Map Vis getters

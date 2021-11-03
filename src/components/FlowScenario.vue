@@ -1,7 +1,7 @@
 <template>
   <FlowContainer class="flow-scenarios">
     <template #leftPanel>
-      <ProjectInfoBox class="mb-2" />
+      <ProjectInfoBox class="mb-2" v-if="hasProjectsCapabilities" />
       <ScenarioInfoBox @setScenarioUUID="setScenarioUUID" class="mb-2" edit />
       <template v-if="currentScenario">
         <span class="is-size-7 mb-4 mt-1"> {{ $t('flow.scenarios.usedInScenario') }}: </span>
@@ -102,8 +102,8 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { UUID } from '../types';
 import FlowContainer from './FlowContainer.vue';
-import { flowStore, flowUIStore } from '../store/store-accessor';
-import { getClassFromStatus } from '../utils';
+import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
+import { buildFlowUrl, getClassFromStatus } from '../utils';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
 
@@ -118,6 +118,10 @@ export default class FlowScenario extends Vue {
   @Prop([String]) currentProjectName?: string;
   @Prop([String]) currentScenarioName?: string;
   initialRawData!: string;
+
+  get hasProjectsCapabilities() {
+    return flowStore.hasProjectsCapabilities;
+  }
 
   get currentProject() {
     return flowStore.project;
@@ -153,18 +157,18 @@ export default class FlowScenario extends Vue {
 
     if (fullScenario) {
       await flowStore.setCurrentFlowScenario(fullScenario);
+      await flowVisualizationStore?.getViewsByScenario(fullScenario.uuid);
     }
 
     // this replaces the query string with project
     if (this.currentScenarioName !== this.currentScenario?.name) {
-      await this.$router.push({
-        name: 'FlowScenario',
-        query: {
+      await this.$router.push(
+        buildFlowUrl('/flow/scenario', {
           project: this.currentProject?.name,
           scenario: this.currentScenario?.name
-        }
-      });
-      flowStore.updateCurrentView(null);
+        })
+      );
+      flowVisualizationStore.updateCurrentView(null);
     }
 
     flowUIStore.setLoading({ value: false });

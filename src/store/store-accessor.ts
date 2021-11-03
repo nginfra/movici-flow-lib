@@ -4,19 +4,25 @@ import FlowStore from '../store/FlowStore';
 import FlowUIStore from '../store/FlowUserInterfaceStore';
 import GeocodeStore from '../store/GeocodeStore';
 import Backend from '../api/backend';
+import FlowVisualizationStore from './FlowVisualizationStore';
 
-let flowStore: FlowStore, flowUIStore: FlowUIStore, geocodeStore: GeocodeStore;
+let flowStore: FlowStore,
+  flowUIStore: FlowUIStore,
+  flowVisualizationStore: FlowVisualizationStore,
+  geocodeStore: GeocodeStore;
 
 function initFlowStores(store: Store<unknown>): void {
   flowStore = getModule(FlowStore, store);
   flowUIStore = getModule(FlowUIStore, store);
+  flowVisualizationStore = getModule(FlowVisualizationStore, store);
   geocodeStore = getModule(GeocodeStore, store);
 }
 
 function bindAPI(backend: Backend) {
-  flowStore.setApiClient(backend);
   flowStore.setUIStore(flowUIStore);
+  flowStore.setApiClient(backend);
   flowUIStore.setLanguage('en');
+  flowVisualizationStore.setApiClient(backend);
 }
 
-export { bindAPI, initFlowStores, flowStore, flowUIStore, geocodeStore };
+export { bindAPI, initFlowStores, flowStore, flowUIStore, flowVisualizationStore, geocodeStore };
