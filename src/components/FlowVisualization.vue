@@ -207,7 +207,7 @@ export default class FlowVisualization extends Vue {
 
   async reloadWithViewUrl(viewUUID: string) {
     await this.$router.push(
-      buildFlowUrl('/flow/visualization', {
+      buildFlowUrl('FlowVisualization', {
         project: this.currentProject?.name,
         scenario: this.currentScenario?.name,
         view: viewUUID
@@ -476,7 +476,7 @@ export default class FlowVisualization extends Vue {
       this.updateTabHeight();
     } catch (error) {
       console.error(error);
-      await this.$router.push({ name: 'FlowProjects' });
+      await this.$router.push({ name: 'FlowProject' });
       flowUIStore.setLoading({ value: false });
     }
   }

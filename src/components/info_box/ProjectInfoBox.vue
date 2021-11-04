@@ -22,7 +22,7 @@
           custom
           v-slot="{ navigate }"
           :to="{
-            name: 'FlowProjects',
+            name: 'FlowProject',
             query: { project: currentProject.name }
           }"
           class="display-name is-flex-grow-1"

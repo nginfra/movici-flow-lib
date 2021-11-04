@@ -110,8 +110,8 @@ export default class FlowMain extends Vue {
     }
   }
 
-  isActive(url: string) {
-    return this.$route.path.includes(url);
+  isActive(name: string) {
+    return this.$route.name?.includes(name);
   }
 
   toggleCollapse(value?: boolean) {
@@ -127,7 +127,7 @@ export default class FlowMain extends Vue {
           icon: 'fa-dataset',
           iconPack: 'fak',
           enabled: !this.hasProjectsCapabilities,
-          to: '/flow/datasets',
+          to: 'FlowDataset',
           type: 'route'
         },
         {
@@ -136,7 +136,7 @@ export default class FlowMain extends Vue {
           icon: 'fa-scenario',
           iconPack: 'fak',
           enabled: !this.hasProjectsCapabilities,
-          to: '/flow/scenario',
+          to: 'FlowScenario',
           type: 'route'
         },
         {
@@ -145,7 +145,7 @@ export default class FlowMain extends Vue {
           icon: 'map',
           iconPack: 'far',
           enabled: false,
-          to: '/flow/visualization',
+          to: 'FlowVisualization',
           type: 'route'
         },
         {
@@ -175,7 +175,7 @@ export default class FlowMain extends Vue {
         icon: 'fa-workspace',
         iconPack: 'fak',
         enabled: true,
-        to: '/flow/workspace',
+        to: 'FlowProject',
         type: 'route'
       });
     }

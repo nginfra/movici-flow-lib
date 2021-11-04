@@ -69,9 +69,9 @@ export function getBaseURL(): string {
   );
 }
 
-export function buildFlowUrl(path: string, query: Record<string, string | undefined> = {}) {
+export function buildFlowUrl(name: string, query: Record<string, string | undefined> = {}) {
   return {
-    path,
+    name,
     query
   };
 }

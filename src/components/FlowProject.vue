@@ -84,7 +84,7 @@ import { buildFlowUrl } from '@movici-flow-common/utils';
     BaseMapControl
   }
 })
-export default class FlowProjects extends Vue {
+export default class FlowProject extends Vue {
   @Prop([String]) currentProjectName?: string;
   @Prop([String]) currentScenarioName?: string;
 
@@ -99,14 +99,14 @@ export default class FlowProjects extends Vue {
   }
 
   get toDatasets() {
-    return buildFlowUrl('/flow/datasets', {
+    return buildFlowUrl('FlowDataset', {
       project: this.currentProjectName,
       scenario: this.currentScenarioName
     });
   }
 
   get toScenario() {
-    return buildFlowUrl('/flow/scenario', {
+    return buildFlowUrl('FlowScenario', {
       project: this.currentProjectName,
       scenario: this.currentScenarioName
     });
@@ -146,7 +146,7 @@ export default class FlowProjects extends Vue {
 
     // this replaces the query string with project
     if (this.currentProjectName !== project.name) {
-      await this.$router.push(buildFlowUrl('/flow/projects', { project: project?.name }));
+      await this.$router.push(buildFlowUrl('FlowProject', { project: project?.name }));
       flowVisualizationStore.updateCurrentView(null);
     }
   }
@@ -154,7 +154,7 @@ export default class FlowProjects extends Vue {
   async mounted() {
     // If we don't have projects, go directly do datasets
     if (!flowStore.hasProjectsCapabilities) {
-      await this.$router.push(buildFlowUrl('/flow/datasets', { project: 'local_project' }));
+      await this.$router.push(buildFlowUrl('FlowDataset', { project: 'local_project' }));
     } else {
       const config = { currentProjectName: this.currentProjectName };
 

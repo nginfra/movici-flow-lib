@@ -169,7 +169,7 @@ import { flowStore, flowUIStore } from '../store/store-accessor';
     StaticDataView
   }
 })
-export default class FlowDatasets extends Vue {
+export default class FlowDataset extends Vue {
   @Prop([String]) currentProjectName?: string;
   @Prop([String]) currentScenarioName?: string;
   currentDataset: Dataset | null = null;
@@ -251,11 +251,11 @@ export default class FlowDatasets extends Vue {
         this.datasets = (await flowStore.getDatasets(currentProject.uuid)) || [];
         flowUIStore.setLoading({ value: false });
       } else {
-        await this.$router.push({ name: 'FlowProjects' });
+        await this.$router.push({ name: 'FlowProject' });
       }
     } catch (error) {
       console.error(error);
-      await this.$router.push({ name: 'FlowProjects' });
+      await this.$router.push({ name: 'FlowProject' });
     }
   }
 }

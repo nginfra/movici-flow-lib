@@ -163,7 +163,7 @@ export default class FlowScenario extends Vue {
     // this replaces the query string with project
     if (this.currentScenarioName !== this.currentScenario?.name) {
       await this.$router.push(
-        buildFlowUrl('/flow/scenario', {
+        buildFlowUrl('FlowScenario', {
           project: this.currentProject?.name,
           scenario: this.currentScenario?.name
         })
@@ -200,7 +200,7 @@ export default class FlowScenario extends Vue {
       flowUIStore.setLoading({ value: false });
     } catch (error) {
       console.error(error);
-      await this.$router.push({ name: 'FlowProjects' });
+      await this.$router.push({ name: 'FlowProject' });
     }
   }
 }

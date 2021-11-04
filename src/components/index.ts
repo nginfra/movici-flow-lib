@@ -1,8 +1,8 @@
 import FlowContainer from './FlowContainer.vue';
-import FlowDatasets from './FlowDatasets.vue';
+import FlowDataset from './FlowDataset.vue';
 import FlowExport from './FlowExport.vue';
 import FlowMain from './FlowMain.vue';
-import FlowProjects from './FlowProjects.vue';
+import FlowProject from './FlowProject.vue';
 import FlowScenario from './FlowScenario.vue';
 import FlowVisualization from './FlowVisualization.vue';
 import MovAction from './global/Action.vue';
@@ -16,10 +16,10 @@ import MovTooltipInfo from './global/TooltipInfo.vue';
 
 export {
   FlowContainer,
-  FlowDatasets,
+  FlowDataset,
   FlowExport,
   FlowMain,
-  FlowProjects,
+  FlowProject,
   FlowScenario,
   FlowVisualization,
   MovAction,
