@@ -22,4 +22,10 @@ export {
   ViewService
 };
 
+export enum CAPABILITIES {
+  USER = 'user',
+  GEOCODE = 'geocode',
+  PROJECTS = 'projects'
+}
+
 export * from './requests';

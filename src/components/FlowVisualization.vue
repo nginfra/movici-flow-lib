@@ -1,7 +1,7 @@
 <template>
   <FlowContainer class="flow-visualization">
     <template #leftPanel>
-      <ProjectInfoBox class="mb-2" />
+      <ProjectInfoBox class="mb-2" v-if="hasProjectsCapabilities" />
       <ScenarioInfoBox class="mb-2" />
       <ViewInfoBox
         class="mb-3"
@@ -92,12 +92,12 @@ import NavigationControl from './map/controls/NavigationControl.vue';
 import BaseMapControl from './map/controls/BaseMapControl.vue';
 import TimeSlider from './map_widgets/TimeSlider.vue';
 import { simplifiedCamera, visualizerSettingsValidator } from '../visualizers/viewHelpers';
-import { getEntitySummary } from '../utils';
+import { buildFlowUrl, getEntitySummary } from '../utils';
 import isEqual from 'lodash/isEqual';
 import isError from 'lodash/isError';
 import FlowLegend from './map_widgets/FlowLegend.vue';
 import { successMessage } from '../utils/snackbar';
-import { flowStore, flowUIStore } from '../store/store-accessor';
+import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
 
 @Component({
   components: {
@@ -144,20 +144,24 @@ export default class FlowVisualization extends Vue {
   viewName = 'Untitled';
   viewState: CameraOptions = defaults.viewState();
 
+  get views(): View[] {
+    return flowVisualizationStore.views;
+  }
+
   get view(): View | null {
-    return flowStore.view;
+    return flowVisualizationStore.view;
   }
 
   set view(view: View | null) {
-    flowStore.updateCurrentView(view);
+    flowVisualizationStore.updateCurrentView(view);
   }
 
   get visualizers() {
-    return flowStore.visualizers;
+    return flowVisualizationStore.visualizers;
   }
 
   set visualizers(updatedCVIs: ComposableVisualizerInfo[]) {
-    flowStore.updateVisualizers(updatedCVIs);
+    flowVisualizationStore.updateVisualizers(updatedCVIs);
   }
 
   get currentProject() {
@@ -174,11 +178,11 @@ export default class FlowVisualization extends Vue {
   }
 
   get timestamp() {
-    return flowStore.timestamp;
+    return flowVisualizationStore.timestamp;
   }
 
   set timestamp(val: number) {
-    flowStore.setTimestamp(val);
+    flowVisualizationStore.setTimestamp(val);
   }
 
   get popupBorderPadding() {
@@ -197,15 +201,18 @@ export default class FlowVisualization extends Vue {
     return flowStore.hasGeocodeCapabilities;
   }
 
+  get hasProjectsCapabilities() {
+    return flowStore.hasProjectsCapabilities;
+  }
+
   async reloadWithViewUrl(viewUUID: string) {
-    await this.$router.push({
-      name: 'FlowVisualization',
-      query: {
+    await this.$router.push(
+      buildFlowUrl('FlowVisualization', {
         project: this.currentProject?.name,
         scenario: this.currentScenario?.name,
         view: viewUUID
-      }
-    });
+      })
+    );
   }
 
   /**
@@ -312,14 +319,14 @@ export default class FlowVisualization extends Vue {
   }
 
   async updateView({ view, viewUUID }: { view: View; viewUUID: UUID }) {
-    const resp = await flowStore.updateView({ viewUUID, view });
+    const resp = await flowVisualizationStore.updateView({ viewUUID, view });
     if (resp) {
       successMessage('' + this.$t('flow.visualization.dialogs.viewUpdateSuccess'));
     }
   }
 
   async deleteView({ viewUUID }: { viewUUID: UUID }) {
-    const resp = await flowStore.deleteView(viewUUID);
+    const resp = await flowVisualizationStore.deleteView(viewUUID);
     if (resp) {
       successMessage('' + this.$t('flow.visualization.dialogs.viewDeleteSuccess'));
     }
@@ -328,7 +335,7 @@ export default class FlowVisualization extends Vue {
 
   async createView({ view }: { view: View }) {
     if (this.currentScenario?.uuid) {
-      const resp = await flowStore.createView({
+      const resp = await flowVisualizationStore.createView({
         scenarioUUID: this.currentScenario.uuid,
         view
       });
@@ -425,7 +432,7 @@ export default class FlowVisualization extends Vue {
     this.tabHeight = { height: `calc(100vh - 2rem - ${top}px)` };
   }
 
-  resetView() {
+  async resetView() {
     this.view = null;
     this.viewName = 'Untitled';
     this.visualizers = [];
@@ -452,10 +459,13 @@ export default class FlowVisualization extends Vue {
     try {
       await flowStore.setupFlowStore({ config, reset: false });
 
-      let view = flowStore.view;
-      if (!view && this.currentViewUUID && this.currentScenario) {
-        const views = await flowStore.getViewsByScenario(this.currentScenario.uuid);
-        view = views.find(v => v.uuid === this.currentViewUUID) ?? null;
+      if (!flowVisualizationStore.views.length && this.currentScenario?.uuid) {
+        await flowVisualizationStore.getViewsByScenario(this.currentScenario.uuid);
+      }
+
+      let view = flowVisualizationStore.view;
+      if (!view && this.currentViewUUID) {
+        view = this.views.find(v => v.uuid === this.currentViewUUID) ?? null;
       }
 
       if (view) {
@@ -466,8 +476,7 @@ export default class FlowVisualization extends Vue {
       this.updateTabHeight();
     } catch (error) {
       console.error(error);
-
-      await this.$router.push({ name: 'FlowProjects' });
+      await this.$router.push({ name: 'FlowProject' });
       flowUIStore.setLoading({ value: false });
     }
   }

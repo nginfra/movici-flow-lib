@@ -1,7 +1,7 @@
 <template>
   <FlowContainer class="flow-datasets">
     <template #leftPanel>
-      <ProjectInfoBox class="mb-2" />
+      <ProjectInfoBox class="mb-2" v-if="hasProjectsCapabilities" />
       <span class="is-size-7">
         {{ $t('flow.datasets.label') }}
         <span class="count"
@@ -169,7 +169,7 @@ import { flowStore, flowUIStore } from '../store/store-accessor';
     StaticDataView
   }
 })
-export default class FlowDatasets extends Vue {
+export default class FlowDataset extends Vue {
   @Prop([String]) currentProjectName?: string;
   @Prop([String]) currentScenarioName?: string;
   currentDataset: Dataset | null = null;
@@ -178,6 +178,10 @@ export default class FlowDatasets extends Vue {
   viewState: Nullable<CameraOptions> = defaults.viewState();
   datasets: Dataset[] = [];
   layers: ComposableVisualizerInfo[] = [];
+
+  get hasProjectsCapabilities() {
+    return flowStore.hasProjectsCapabilities;
+  }
 
   /**
    * return object with details of currentDataset while also adding filters to date attributes
@@ -241,18 +245,17 @@ export default class FlowDatasets extends Vue {
 
     try {
       await flowStore.setupFlowStore({ config });
-
       const currentProject = flowStore.project;
 
       if (currentProject) {
         this.datasets = (await flowStore.getDatasets(currentProject.uuid)) || [];
         flowUIStore.setLoading({ value: false });
       } else {
-        await this.$router.push({ name: 'FlowProjects' });
+        await this.$router.push({ name: 'FlowProject' });
       }
     } catch (error) {
       console.error(error);
-      await this.$router.push({ name: 'FlowProjects' });
+      await this.$router.push({ name: 'FlowProject' });
     }
   }
 }

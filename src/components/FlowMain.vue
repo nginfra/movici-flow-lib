@@ -56,6 +56,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { FlowSection, FlowSectionItem, User } from '../types';
 import FlowExport from './FlowExport.vue';
 import { flowStore, flowUIStore } from '../store/store-accessor'; // create getters for other store it interacts with?
+import { buildFlowUrl } from '@movici-flow-common/utils';
 
 @Component({})
 export default class FlowMain extends Vue {
@@ -78,6 +79,10 @@ export default class FlowMain extends Vue {
     return flowStore.hasUserCapabilities;
   }
 
+  get hasProjectsCapabilities() {
+    return flowStore.hasProjectsCapabilities;
+  }
+
   // WIP: getCapabilities
   get currentUser(): User | null {
     return flowStore.currentUser;
@@ -88,23 +93,25 @@ export default class FlowMain extends Vue {
     return firstname.slice(0, 1) + lastname.slice(0, 1);
   }
 
-  buildUrl(routeBase: string) {
-    return flowStore.queryString ? routeBase + '?' + flowStore.queryString : routeBase;
-  }
-
   click(section: FlowSection) {
     if (section.type === 'callback') {
       section.callback();
     } else if (this.$route.path !== section.to) {
       this.toggleCollapse(false);
-      this.$router.push(this.buildUrl(section.to));
+
+      this.$router.push(
+        buildFlowUrl(section.to, {
+          project: flowStore.project?.name,
+          scenario: flowStore.scenario?.name
+        })
+      );
     } else {
       this.toggleCollapse(!this.collapse);
     }
   }
 
-  isActive(url: string) {
-    return this.$route.path.includes(url);
+  isActive(name: string) {
+    return this.$route.name?.includes(name);
   }
 
   toggleCollapse(value?: boolean) {
@@ -112,64 +119,68 @@ export default class FlowMain extends Vue {
   }
 
   createFlowSections() {
-    const sections: FlowSection[] = [];
+    const sections: FlowSection[] = [],
+      defaultSections: FlowSection[] = [
+        {
+          name: FlowSectionItem.DATASETS,
+          label: 'flow.datasets.label',
+          icon: 'fa-dataset',
+          iconPack: 'fak',
+          enabled: !this.hasProjectsCapabilities,
+          to: 'FlowDataset',
+          type: 'route'
+        },
+        {
+          name: FlowSectionItem.SCENARIO,
+          label: 'flow.scenarios.label',
+          icon: 'fa-scenario',
+          iconPack: 'fak',
+          enabled: !this.hasProjectsCapabilities,
+          to: 'FlowScenario',
+          type: 'route'
+        },
+        {
+          name: FlowSectionItem.VISUALIZATION,
+          label: 'flow.visualization.label',
+          icon: 'map',
+          iconPack: 'far',
+          enabled: false,
+          to: 'FlowVisualization',
+          type: 'route'
+        },
+        {
+          name: FlowSectionItem.EXPORT,
+          label: 'flow.export.label',
+          iconPack: 'fal',
+          icon: 'file-download',
+          enabled: false,
+          type: 'callback',
+          callback: () => {
+            this.$buefy.modal.open({
+              parent: this,
+              width: 720,
+              component: FlowExport,
+              canCancel: ['x', 'escape'],
+              customClass: 'overflow-visible',
+              hasModalCard: false
+            });
+          }
+        }
+      ];
 
-    sections.push(
-      {
+    if (this.hasProjectsCapabilities) {
+      sections.push({
         name: FlowSectionItem.PROJECT,
         label: 'flow.projects.label',
         icon: 'fa-workspace',
         iconPack: 'fak',
         enabled: true,
-        to: '/flow/workspace',
+        to: 'FlowProject',
         type: 'route'
-      },
-      {
-        name: FlowSectionItem.DATASETS,
-        label: 'flow.datasets.label',
-        icon: 'fa-dataset',
-        iconPack: 'fak',
-        enabled: false,
-        to: '/flow/datasets',
-        type: 'route'
-      },
-      {
-        name: FlowSectionItem.SCENARIO,
-        label: 'flow.scenarios.label',
-        icon: 'fa-scenario',
-        iconPack: 'fak',
-        enabled: false,
-        to: '/flow/scenario',
-        type: 'route'
-      },
-      {
-        name: FlowSectionItem.VISUALIZATION,
-        label: 'flow.visualization.label',
-        icon: 'map',
-        iconPack: 'far',
-        enabled: false,
-        to: '/flow/visualization',
-        type: 'route'
-      },
-      {
-        name: FlowSectionItem.EXPORT,
-        label: 'flow.export.label',
-        iconPack: 'fal',
-        icon: 'file-download',
-        enabled: false,
-        type: 'callback',
-        callback: () => {
-          this.$buefy.modal.open({
-            parent: this,
-            width: 720,
-            component: FlowExport,
-            canCancel: ['x', 'escape'],
-            customClass: 'overflow-visible',
-            hasModalCard: false
-          });
-        }
-      }
-    );
+      });
+    }
+
+    sections.push(...defaultSections);
 
     flowUIStore.setSections(sections);
   }
@@ -183,7 +194,6 @@ export default class FlowMain extends Vue {
 </script>
 
 <style scoped lang="scss">
-// needs to be NOT scoped to style inside buefy components
 .flow {
   height: 100vh;
   margin: 0 !important;

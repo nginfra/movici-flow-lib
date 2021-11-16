@@ -8,62 +8,37 @@ import {
   ShortScenario,
   SimulationMode,
   TimeOrientedSimulationInfo,
-  UUID,
-  View
+  UUID
 } from '../types';
 import { User } from '../types/users';
-import { ComposableVisualizerInfo } from '../visualizers/VisualizerInfo';
 import { exportFromConfig } from '../utils/DataExporter';
 import Backend from '../api/backend';
 import FlowUIStore from '../store/FlowUserInterfaceStore';
+
+const LOCAL_PROJECT = {
+  created_on: 0,
+  dataset_count: 0,
+  display_name: 'Local Project',
+  name: 'local_project',
+  scenario_count: 0,
+  uuid: '0'
+};
 
 @Module({
   name: 'flow',
   namespaced: true
 })
-class FlowStore extends VuexModule {
-  visualizers: ComposableVisualizerInfo[] = [];
-  view: View | null = null;
-  views: View[] = [];
+export default class FlowStore extends VuexModule {
   project: Project | null = null;
   projects: Project[] = [];
   scenarios: ShortScenario[] = [];
   scenario: Scenario | null = null;
-  timestamp = 0;
-  currentUser: User | null = null;
-  datasetSummaries: Record<UUID, DatasetSummary> = {};
   scenarioSummaries: Record<UUID, Record<UUID, DatasetSummary>> = {};
+  datasetSummaries: Record<UUID, DatasetSummary> = {};
+  currentUser: User | null = null;
   // injected resources
   backend_: Backend | null = null;
   flowUIStore_: FlowUIStore | null = null;
-
-  get hasProject(): boolean {
-    return !!this.project;
-  }
-
-  get hasScenario(): boolean {
-    return !!this.scenario;
-  }
-
-  // TODO: try to use router link options to do this
-  get queryString() {
-    const params: Record<string, string | undefined> = {
-      project: this.project?.name,
-      scenario: this.scenario?.name
-    };
-
-    return Object.keys(params)
-      .filter((key: string) => params[key])
-      .map((key: string) => key + '=' + params[key])
-      .join('&');
-  }
-
-  get timelineInfo(): TimeOrientedSimulationInfo | null {
-    if (this.scenario?.simulation_info.mode === SimulationMode.TIME_ORIENTED) {
-      return this.scenario.simulation_info;
-    }
-    return null;
-  }
 
   get backend() {
     return this.backend_;
@@ -74,16 +49,30 @@ class FlowStore extends VuexModule {
   }
 
   get hasGeocodeCapabilities() {
-    return this.capabilities?.indexOf('geocode') != -1;
+    return this.capabilities?.indexOf('geocode') !== -1;
   }
 
   get hasUserCapabilities() {
-    return this.capabilities?.indexOf('user') != -1;
+    return this.capabilities?.indexOf('user') !== -1;
   }
 
-  @Mutation
-  UPDATE_VISUALIZERS(visualizers: ComposableVisualizerInfo[]) {
-    this.visualizers = visualizers;
+  get hasProjectsCapabilities() {
+    return this.capabilities?.indexOf('projects') !== -1;
+  }
+
+  get hasProject(): boolean {
+    return !!this.project;
+  }
+
+  get hasScenario(): boolean {
+    return !!this.scenario;
+  }
+
+  get timelineInfo(): TimeOrientedSimulationInfo | null {
+    if (this.scenario?.simulation_info.mode === SimulationMode.TIME_ORIENTED) {
+      return this.scenario.simulation_info;
+    }
+    return null;
   }
 
   @Mutation
@@ -104,21 +93,6 @@ class FlowStore extends VuexModule {
   @Mutation
   SET_SCENARIOS(scenarios: ShortScenario[]) {
     this.scenarios = scenarios;
-  }
-
-  @Mutation
-  UPDATE_VIEW(view: View | null) {
-    this.view = view;
-  }
-
-  @Mutation
-  SET_VIEWS(views: View[]) {
-    this.views = views;
-  }
-
-  @Mutation
-  SET_TIMESTAMP(timestamp: number) {
-    this.timestamp = timestamp;
   }
 
   @Mutation
@@ -157,16 +131,6 @@ class FlowStore extends VuexModule {
   }
 
   @Action({ rawError: true })
-  updateCurrentView(view: View | null) {
-    this.UPDATE_VIEW(view);
-  }
-
-  @Action({ rawError: true })
-  updateVisualizers(visualizers: ComposableVisualizerInfo[]) {
-    this.UPDATE_VISUALIZERS(visualizers);
-  }
-
-  @Action({ rawError: true })
   async getProjects() {
     this.SET_PROJECTS((await this.backend?.project.list()) ?? []);
   }
@@ -192,15 +156,6 @@ class FlowStore extends VuexModule {
   }
 
   @Action({ rawError: true })
-  async setCurrentFlowScenario(scenario: Scenario) {
-    this.SET_CURRENT_SCENARIO(scenario);
-
-    this.flowUIStore_?.enableSection({ visualization: !!scenario, export: !!scenario });
-
-    await this.getViewsByScenario(scenario.uuid);
-  }
-
-  @Action({ rawError: true })
   async getDatasets(projectUUID: UUID): Promise<Dataset[] | null> {
     const activeProjectUUID = this.project?.uuid || projectUUID,
       datasets = activeProjectUUID
@@ -211,26 +166,9 @@ class FlowStore extends VuexModule {
   }
 
   @Action({ rawError: true })
-  async getScenariosByProject(projectUUID?: UUID) {
-    const activeProjectUUID = projectUUID ?? this.project?.uuid,
-      scenarios: ShortScenario[] = activeProjectUUID
-        ? (await this.backend?.scenario.list(activeProjectUUID)) ?? []
-        : [];
-
-    this.SET_SCENARIOS(scenarios);
-    return scenarios;
-  }
-
-  @Action({ rawError: true })
-  async getViewsByScenario(scenarioUUID?: string): Promise<View[]> {
-    const currentScenarioUUID = scenarioUUID ?? this.scenario?.uuid;
-    if (currentScenarioUUID) {
-      const views = (await this.backend?.view.list(currentScenarioUUID)) ?? [];
-      this.SET_VIEWS(views);
-      return views;
-    }
-
-    return [];
+  async setCurrentFlowScenario(scenario: Scenario) {
+    this.SET_CURRENT_SCENARIO(scenario);
+    this.flowUIStore_?.enableSection({ visualization: !!scenario, export: !!scenario });
   }
 
   @Action({ rawError: true })
@@ -242,8 +180,14 @@ class FlowStore extends VuexModule {
   }
 
   @Action({ rawError: true })
-  setTimestamp(value: number) {
-    this.SET_TIMESTAMP(value);
+  async getScenariosByProject(projectUUID?: UUID) {
+    const activeProjectUUID = projectUUID ?? this.project?.uuid,
+      scenarios: ShortScenario[] = activeProjectUUID
+        ? (await this.backend?.scenario.list(activeProjectUUID)) ?? []
+        : [];
+
+    this.SET_SCENARIOS(scenarios);
+    return scenarios;
   }
 
   /**
@@ -318,7 +262,7 @@ class FlowStore extends VuexModule {
           projectName: this.project?.display_name,
           scenario: this.scenario,
           entityName: payload.entityGroup,
-          timestamp: payload.timestamp ?? this.timestamp
+          timestamp: payload.timestamp
         },
         timelineInfo: this.timelineInfo,
         backend: this.backend
@@ -334,33 +278,6 @@ class FlowStore extends VuexModule {
     this.SET_CURRENT_PROJECT(null);
     this.SET_SCENARIOS([]);
     this.SET_CURRENT_SCENARIO(null);
-    this.SET_TIMESTAMP(0);
-    this.UPDATE_VISUALIZERS([]);
-  }
-
-  @Action({ rawError: true })
-  async createView({ scenarioUUID, view }: { scenarioUUID: UUID; view: View }) {
-    return await this.backend?.view.create(scenarioUUID, view);
-  }
-
-  @Action({ rawError: true })
-  async getViews(scenarioUUID: UUID) {
-    return await this.backend?.view.list(scenarioUUID);
-  }
-
-  @Action({ rawError: true })
-  async getView(viewUUID: UUID) {
-    return await this.backend?.view.get(viewUUID);
-  }
-
-  @Action({ rawError: true })
-  async updateView({ viewUUID, view }: { viewUUID: UUID; view: View }) {
-    return await this.backend?.view.update(viewUUID, view);
-  }
-
-  @Action({ rawError: true })
-  async deleteView(viewUUID: UUID) {
-    return await this.backend?.view.delete(viewUUID);
   }
 
   /**
@@ -377,47 +294,74 @@ class FlowStore extends VuexModule {
       this.clearSummaries();
     }
 
-    if (!this.currentUser) {
-      const user = await this.backend?.user.get();
+    await this.setupUser();
+    await this.setupProjects(config);
+    await this.setupScenarios(config);
 
-      if (user) {
-        this.SET_USER(user);
+    this.flowUIStore_?.enableSection({
+      datasets: this.hasProject,
+      scenario: this.hasProject,
+      visualization: this.hasScenario,
+      export: this.hasScenario
+    });
+
+    this.flowUIStore_?.setDisableCollapser(!!config.disableCollapser);
+  }
+
+  @Action({ rawError: true })
+  async setupUser() {
+    // still needs a condition for when there's no user (local flow)
+    if (this.hasUserCapabilities) {
+      if (!this.currentUser) {
+        const user = await this.backend?.user.get();
+
+        if (user) {
+          this.SET_USER(user);
+        } else {
+          throw new Error('No user found');
+        }
       }
     }
+  }
 
-    if (!this.projects || !this.projects.length) {
-      await this.getProjects();
-    }
+  @Action({ rawError: true })
+  async setupProjects(config: FlowStoreConfig) {
+    if (!this.hasProjectsCapabilities) {
+      await this.SET_PROJECTS([LOCAL_PROJECT]);
+      await this.setCurrentFlowProject(LOCAL_PROJECT);
+    } else {
+      const { currentProjectName, getProject = false } = config;
 
-    const {
-      currentProjectName,
-      currentScenarioName,
-      getProject = false,
-      getScenario = false,
-      disableCollapser = false
-    } = config;
+      if (!this.projects || !this.projects.length) {
+        await this.getProjects();
+      }
 
-    // needs a project but doesn't provide project name
-    if (getProject && !currentProjectName) {
-      throw new Error('Project name not provided');
-    }
+      // needs a project but doesn't provide project name
+      if (getProject && !currentProjectName) {
+        throw new Error('Project name not provided');
+      }
 
-    // project is not set and provides a project name
-    if (!this.project && currentProjectName) {
-      const currentProject = this.projects.find((p: Project) => p.name === currentProjectName);
+      // project is not set and provides a project name
+      if (!this.project && currentProjectName) {
+        const currentProject = this.projects.find((p: Project) => p.name === currentProjectName);
 
-      if (currentProject?.uuid) {
-        await this.setCurrentFlowProject(currentProject);
-      } else {
-        // project name is invalid
-        this.resetFlowStore();
-
-        throw new Error('Invalid project');
+        if (currentProject?.uuid) {
+          await this.setCurrentFlowProject(currentProject);
+        } else {
+          // project name is invalid
+          this.resetFlowStore();
+          throw new Error('Invalid Project');
+        }
       }
     }
+  }
 
+  @Action({ rawError: true })
+  async setupScenarios(config: FlowStoreConfig) {
     // has a project (either previously set on the store, or by last if and needs the scenario)
     // needs a scenario and provided a scenario name
+    const { currentScenarioName, getScenario = false } = config;
+
     if (this.project && getScenario) {
       const scenarios = (await this.getScenariosByProject(this.project.uuid)) || [];
 
@@ -432,27 +376,14 @@ class FlowStore extends VuexModule {
             await this.setCurrentFlowScenario(scenario);
           } else {
             this.resetFlowStore();
-
-            throw new Error('Invalid full scenario');
+            throw new Error('Invalid Scenario');
           }
         } else {
           // scenario name is invalid
           this.resetFlowStore();
-
           throw new Error('Invalid short Scenario');
         }
       }
     }
-
-    this.flowUIStore_?.enableSection({
-      datasets: this.hasProject,
-      scenario: this.hasProject,
-      visualization: this.hasScenario,
-      export: this.hasScenario
-    });
-
-    this.flowUIStore_?.setDisableCollapser(disableCollapser);
   }
 }
-
-export default FlowStore;

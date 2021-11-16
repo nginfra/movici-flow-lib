@@ -1,7 +1,7 @@
 import { Route, RouteConfig } from 'vue-router';
 import FlowMain from './components/FlowMain.vue';
-import FlowProjects from './components/FlowProjects.vue';
-import FlowDatasets from './components/FlowDatasets.vue';
+import FlowProject from './components/FlowProject.vue';
+import FlowDataset from './components/FlowDataset.vue';
 import FlowScenario from './components/FlowScenario.vue';
 import FlowVisualization from './components/FlowVisualization.vue';
 import FlowExport from './components/FlowExport.vue';
@@ -11,13 +11,13 @@ function getFlowRoutes(baseURL: string): RouteConfig[] {
     {
       path: baseURL,
       name: 'FlowMain',
-      redirect: { name: 'FlowProjects' },
+      redirect: { name: 'FlowProject' },
       component: FlowMain,
       children: [
         {
           path: 'workspace',
-          name: 'FlowProjects',
-          component: FlowProjects,
+          name: 'FlowProject',
+          component: FlowProject,
           props: (route: Route) => {
             const { project } = route.query;
             return { currentProjectName: project };
@@ -25,8 +25,8 @@ function getFlowRoutes(baseURL: string): RouteConfig[] {
         },
         {
           path: 'datasets',
-          name: 'FlowDatasets',
-          component: FlowDatasets,
+          name: 'FlowDataset',
+          component: FlowDataset,
           props: (route: Route) => {
             const { project } = route.query;
             return { currentProjectName: project };
