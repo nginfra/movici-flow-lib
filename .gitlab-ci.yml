@@ -1,0 +1,65 @@
+image: eu.gcr.io/movici-develop/toolbox:latest
+
+stages:
+  - verify
+  - test
+  - report
+  - build
+  - tag
+  - staging
+
+variables:
+  DOCKER_REGISTRY: eu.gcr.io
+  GCLOUD_PROJECT_ID: movici-develop
+  IMAGE: $DOCKER_REGISTRY/$GCLOUD_PROJECT_ID/webconsole
+  GIT_SUBMODULE_STRATEGY: recursive
+
+.testing:
+  stage: test
+  image: node:14
+  only:
+    - master
+    - merge_requests
+  variables:
+    KUBERNETES_MEMORY_REQUEST: 2048Mi
+    KUBERNETES_MEMORY_LIMIT: 2048Mi
+    KUBERNETES_CPU_REQUEST: 1500m
+    KUBERNETES_CPU_LIMIT: 2000m
+  before_script:
+    - npm install
+
+check_version_upgrade:
+  stage: verify
+  image: alpine/git
+  only:
+    refs:
+      - merge_requests
+    changes:
+      - public/**/*
+      - src/**/*
+      - .env
+      - package.json
+      - VERSION
+      - vue.config.js
+  except:
+    refs:
+      - /^dependabot\/.*$/
+  variables:
+    VERSION_FILES: "VERSION"
+  script:
+    - git fetch origin master
+    - |-
+      if [[ -z $(git diff origin/master --name-only ${VERSION_FILES}) ]]; then
+        echo "All merge requests require a version upgrade. Please update your version"
+        exit 1
+      fi
+
+
+test:unit:
+  extends: .testing
+  artifacts:
+    paths:
+      - coverage/lcov.info
+  script:
+    - npm run test:unit -- --coverage
+
