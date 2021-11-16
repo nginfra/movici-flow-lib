@@ -56,7 +56,6 @@ export interface TimelineFilter {
 
 export interface ApplicationSettings {
   ApiAddress: string;
-  localhost?: boolean;
   features?: string[];
   Language: string;
   colorRuleSet: ColorRuleSet;

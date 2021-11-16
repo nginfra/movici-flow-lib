@@ -137,16 +137,16 @@ export default class MovMapVis extends Vue {
     this.layers = (visualizers?.getVisualizers() ?? [])
       .sort((a, b) => (a.priority === b.priority ? a.order - b.order : a.priority - b.priority))
       .map((v, idx) => {
-        // typescript for some reason can't figure out the type of `v` so we make sure to cast it to the
-        // type that it should be (Visualizer)
-        const visualizer: Visualizer = v;
+        // // typescript for some reason can't figure out the type of `v` so we make sure to cast it to the
+        // // type that it should be (Visualizer)
+        // const visualizer: Visualizer = v;
 
-        visualizer.setCallbacks({
+        v.setCallbacks({
           onClick: (content: PopupContent | null) => {
-            this.setPopup({ id: visualizer.info.id, content });
+            this.setPopup({ id: v.info.id, content });
           },
           onHover: (content: PopupContent | null) => {
-            this.setPopup({ id: visualizer.info.id, content });
+            this.setPopup({ id: v.info.id, content });
           }
         });
         v.setLayerOrder(idx);
