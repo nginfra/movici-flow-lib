@@ -2,7 +2,7 @@
   <section class="flow columns is-gapless is-margin-less">
     <b-menu class="column flow-menu" :activable="false">
       <b-menu-list aria-role="menu">
-        <b-menu-item class="home">
+        <b-menu-item class="home" tag="router-link" :to="homeRoute">
           <template #label>
             <b-image
               src="/static/movici-logo.svg"
@@ -23,7 +23,7 @@
           size="is-medium"
           tag="a"
         ></b-menu-item>
-        <b-menu-item v-if="hasUserCapabilities" class="bottom">
+        <b-menu-item v-if="userInitials" class="bottom">
           <template #label>
             <span class="is-small icon user-initials">
               {{ userInitials }}
@@ -75,22 +75,22 @@ export default class FlowMain extends Vue {
     return flowUIStore.disableCollapser;
   }
 
-  get hasUserCapabilities() {
-    return flowStore.hasUserCapabilities;
-  }
-
   get hasProjectsCapabilities() {
     return flowStore.hasProjectsCapabilities;
   }
 
-  // WIP: getCapabilities
   get currentUser(): User | null {
     return flowStore.currentUser;
   }
 
-  get userInitials(): string {
-    const { firstname, lastname } = this.currentUser || { firstname: 'Test', lastname: 'User' };
-    return firstname.slice(0, 1) + lastname.slice(0, 1);
+  get userInitials(): string | null {
+    return this.currentUser
+      ? this.currentUser.firstname.slice(0, 1) + this.currentUser.lastname.slice(0, 1)
+      : null;
+  }
+
+  get homeRoute() {
+    return this.$flow.settings?.homeRoute ?? '';
   }
 
   click(section: FlowSection) {
