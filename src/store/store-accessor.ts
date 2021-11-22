@@ -17,12 +17,12 @@ function initFlowStores(store: Store<unknown>): void {
   flowVisualizationStore = getModule(FlowVisualizationStore, store);
   geocodeStore = getModule(GeocodeStore, store);
   flowStore.setUIStore(flowUIStore);
-
 }
 
 function bindAPI(backend: Backend) {
   flowStore.setApiClient(backend);
   flowVisualizationStore.setApiClient(backend);
+  geocodeStore.setApiClient(backend);
 }
 
 export { bindAPI, initFlowStores, flowStore, flowUIStore, flowVisualizationStore, geocodeStore };

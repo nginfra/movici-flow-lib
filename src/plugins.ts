@@ -4,11 +4,11 @@ export const registerComponent = (Vue: typeof Vue_, component: typeof Vue, name:
   Vue.component(name, component);
 };
 
-export const registerComponentProgrammatic = (
+export const registerInNamespace = (
   Vue: typeof Vue_,
   property: string,
-  component: unknown
+  obj: unknown
 ) => {
   if (!Vue.prototype.$flow) Vue.prototype.$flow = {};
-  Vue.prototype.$flow[property] = component;
+  Vue.prototype.$flow[property] = obj;
 };

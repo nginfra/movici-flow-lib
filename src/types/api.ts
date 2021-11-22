@@ -1,5 +1,4 @@
 import { UUID } from './general';
-import { ColorRuleSet } from './colors';
 
 export interface CrudResponse {
   result: string;
@@ -58,5 +57,4 @@ export interface ApplicationSettings {
   ApiAddress: string;
   features?: string[];
   Language: string;
-  colorRuleSet: ColorRuleSet;
 }
