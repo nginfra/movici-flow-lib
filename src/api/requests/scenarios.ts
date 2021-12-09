@@ -49,7 +49,7 @@ export class GetScenario extends Request<Scenario> {
     const data = resp.data;
     data.has_simulation = data.has_simulation ? data.has_simulation : false;
 
-    return (data as unknown) as Scenario;
+    return data as unknown as Scenario;
   }
 }
 

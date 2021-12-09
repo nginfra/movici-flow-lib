@@ -10,7 +10,7 @@ export abstract class BaseRequest<Resp> {
   }
 
   makeResponse(resp: AxiosResponse): Resp {
-    return (resp.data as unknown) as Resp;
+    return resp.data as unknown as Resp;
   }
 }
 

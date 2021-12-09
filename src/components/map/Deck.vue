@@ -92,7 +92,7 @@ export default class Deck extends Vue {
       this.loaded = true;
     });
 
-    this.deck = new DeckGL(({
+    this.deck = new DeckGL({
       canvas: 'deckgl-overlay',
       width: '100%',
       height: '100%',
@@ -112,7 +112,7 @@ export default class Deck extends Vue {
           return `${object.onHoverText}`;
         }
       }
-    } as unknown) as DeckProps);
+    } as unknown as DeckProps);
   }
 
   @Watch('layers')

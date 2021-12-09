@@ -213,9 +213,9 @@ export default class DynamicDataView extends Vue {
     containerSize: { width: number; height: number },
     contentSize: { width: number; height: number }
   ) {
-    if (this.map && this.value) {
+    if (this.map && this.value?.pickInfo) {
       const mapContainer = this.map.getCanvasContainer(),
-        { coordinate } = this.value?.pickInfo,
+        coordinate = this.value.pickInfo.coordinate,
         { x, y } = this.map.project(coordinate as [number, number]);
 
       this.anchorDirection = this.getDynamicPosition({
@@ -274,19 +274,24 @@ export default class DynamicDataView extends Vue {
   max-width: 500px;
   padding: 0.75rem;
 }
+
 .header {
   min-height: 1.5rem;
+
   .label {
     margin: 0;
   }
 }
+
 .attributes {
   color: $black;
+
   .value {
     min-width: 50px;
     text-align: right;
   }
 }
+
 .close {
   margin: -0.25rem -0.25rem 0 0;
 }

@@ -31,10 +31,11 @@ abstract class ComposableVisualizer<
     Layer_ extends Layer<LData>
   >
   extends BaseVisualizer<EntityData, Coordinate, LData, Layer_>
-  implements VisualizerCallbacks {
+  implements VisualizerCallbacks
+{
   attributes: Record<string, ((t: SinglePropertyTapefile<VisualizableDataTypes>) => void)[]>;
   tapefiles: Record<string, SinglePropertyTapefile<VisualizableDataTypes>>;
-  topology?: LData[];
+  declare topology?: LData[];
   modules: VisualizerModule<Coord, LData>[] | null;
 
   constructor(config: VisualizerContext) {
@@ -43,6 +44,7 @@ abstract class ComposableVisualizer<
     this.tapefiles = {};
     this.modules = null;
   }
+
   abstract getModules(): VisualizerModule<Coord, LData>[];
 
   abstract getDefaultParams(): LayerParams<LData, Coord>;
@@ -122,6 +124,7 @@ abstract class ComposableVisualizer<
       }
     }
   }
+
   updateTimestamp(timestamp: number) {
     for (const tapefile of Object.values(this.tapefiles)) {
       tapefile.moveTo(timestamp);
@@ -151,9 +154,11 @@ export class ComposablePointVisualizer extends ComposableVisualizer<
       ? getCommonModules<PointCoordinate, TopologyLayerData<PointCoordinate>>(this.info)
       : [];
   }
+
   get topologyGetter(): PointTopologyGetter {
     return new PointTopologyGetter(this.datasetStore, this.info.entityGroup);
   }
+
   getDefaultParams(): LayerParams<TopologyLayerData<PointCoordinate>, PointCoordinate> {
     return {
       type: ScatterplotLayer as LayerConstructor<TopologyLayerData<PointCoordinate>>,
@@ -181,6 +186,7 @@ export class ComposableLineVisualizer extends ComposableVisualizer<
   get topologyGetter(): LineTopologyGetter {
     return new LineTopologyGetter(this.datasetStore, this.info.entityGroup);
   }
+
   getModules() {
     return this.info instanceof ComposableVisualizerInfo
       ? getCommonModules<LineCoordinate, TopologyLayerData<LineCoordinate>>(this.info)
@@ -214,6 +220,7 @@ export class ComposablePolygonVisualizer extends ComposableVisualizer<
   get topologyGetter(): PolygonTopologyGetter {
     return new PolygonTopologyGetter(this.datasetStore, this.info.entityGroup);
   }
+
   getModules() {
     return this.info instanceof ComposableVisualizerInfo
       ? getCommonModules<PolygonCoordinate, TopologyLayerData<PolygonCoordinate>>(this.info)

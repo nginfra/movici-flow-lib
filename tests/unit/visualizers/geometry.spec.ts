@@ -2,10 +2,10 @@ import { LineTopologyGetter, PointTopologyGetter } from '@movici-flow-common/vis
 import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
 
 function newFakeStore(datasetData: unknown): DatasetDownloader {
-  return ({
+  return {
     getInitialData: jest.fn(() => datasetData),
     getDatasetState: jest.fn(() => datasetData)
-  } as unknown) as DatasetDownloader;
+  } as unknown as DatasetDownloader;
 }
 describe('PointTopologyGetter', () => {
   it('asks for point_properties', async () => {
