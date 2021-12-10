@@ -40,8 +40,8 @@
           <b-image src="/static/no-resources.png" />
         </div>
       </template>
-      <template v-else class="is-flex is-flex-direction-column">
-        <header>
+      <template v-else>
+        <header class="is-flex is-flex-direction-column">
           <div class="title-section is-flex">
             <h1
               class="is-size-4 is-flex-grow-1 has-text-weight-bold"

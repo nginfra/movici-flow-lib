@@ -37,7 +37,6 @@ import Buildings from './mapLayers/Buildings.vue';
 import defaults from './defaults';
 import { Layer } from '@deck.gl/core';
 import VisualizerManager from '@movici-flow-common/visualizers/VisualizerManager';
-import { Visualizer } from '@movici-flow-common/visualizers';
 import { AnyVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { flowStore, flowUIStore } from '@movici-flow-common/store/store-accessor';
 import Backend from '@movici-flow-common/api/backend';

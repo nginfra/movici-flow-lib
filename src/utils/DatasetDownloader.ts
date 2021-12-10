@@ -34,7 +34,7 @@ export class DatasetDownloader {
       throw new Error(`${params.entityGroup} not found in dataset ${this.datasetUUID}`);
     }
 
-    return (entityData as unknown) as T;
+    return entityData as unknown as T;
   }
 
   async getDatasetState<T>(params: {
@@ -59,7 +59,7 @@ export class DatasetDownloader {
     if (!entityData) {
       throw new Error(`${params.entityGroup} not found in dataset ${this.datasetUUID}`);
     }
-    return (entityData as unknown) as T;
+    return entityData as unknown as T;
   }
 
   async getUpdateList() {

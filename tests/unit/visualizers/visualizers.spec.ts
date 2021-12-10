@@ -11,14 +11,14 @@ import { VisualizerInfo } from '@movici-flow-common/visualizers';
 import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
 
 function fakeStore(result: unknown): DatasetDownloader {
-  return ({
+  return {
     getInitialData: jest.fn(() => {
       return result;
     }),
     getDatasetState: jest.fn(() => {
       return result;
     })
-  } as unknown) as DatasetDownloader;
+  } as unknown as DatasetDownloader;
 }
 
 function getPointVisualizer(
@@ -41,7 +41,7 @@ function getLineVisualizer(
 ) {
   config = config || {};
   return new StaticLineVisualizer({
-    datasetStore: (fakeStore({}) as unknown) as DatasetDownloader,
+    datasetStore: fakeStore({}) as unknown as DatasetDownloader,
     info: new VisualizerInfo({
       settings: getLayerKindSettings(kind)
     }),
@@ -87,11 +87,11 @@ describe('StaticDatasetVisualizer', () => {
   }
   const config = {
     geometry: EntityGeometry.POINT,
-    datasetStore: (fakeStore(
+    datasetStore: fakeStore(
       jest.fn(() => {
         return { id: [] };
       })
-    ) as unknown) as DatasetDownloader,
+    ) as unknown as DatasetDownloader,
     info: new VisualizerInfo({
       entityGroup: 'some_entities'
     })
@@ -107,9 +107,9 @@ describe('StaticDatasetVisualizer', () => {
     visualizer = new StaticPointVisualizer({
       ...config,
       onError: onError,
-      datasetStore: (fakeStore(() => {
+      datasetStore: fakeStore(() => {
         throw 'Some error';
-      }) as unknown) as DatasetDownloader
+      }) as unknown as DatasetDownloader
     });
     await visualizer.load();
     expect(onError).toBeCalledWith(Error('Some error'));

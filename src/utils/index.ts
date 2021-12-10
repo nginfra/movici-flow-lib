@@ -16,7 +16,7 @@ import upperFirst from 'lodash/upperFirst';
  * @returns {boolean}
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function hasOwnProperty<O extends any, K extends PropertyKey>(
+export function hasOwnProperty<O, K extends PropertyKey>(
   obj: O,
   property: K
 ): obj is O & Record<K, unknown> {
