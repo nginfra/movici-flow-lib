@@ -7,7 +7,6 @@ const API_CONCURRENCY = 10;
 
 interface ErrorHandlingConfig {
   [k: number]: (e: HTTPErrorPayload) => void;
-
   http?: (e: HTTPErrorPayload) => void;
   all?: (e: Error | unknown) => void;
 }
