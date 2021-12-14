@@ -1,12 +1,17 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { BaseRequest } from './requests';
 import { ConcurrencyManager } from './concurrency';
+import { failMessage } from '@movici-flow-common/utils/snackbar';
+
+const API_CONCURRENCY = 10;
 
 interface ErrorHandlingConfig {
   [k: number]: (e: HTTPErrorPayload) => void;
+
   http?: (e: HTTPErrorPayload) => void;
   all?: (e: Error | unknown) => void;
 }
+
 export interface HTTPErrorPayload {
   status?: number;
   message: string;
@@ -20,8 +25,8 @@ interface ClientConfig {
 }
 
 export default class Client {
-  readonly baseURL: string;
   readonly onError: ErrorHandlingConfig;
+  baseURL: string;
   apiToken: string | null;
   private readonly http: AxiosInstance;
 
@@ -73,6 +78,23 @@ export default class Client {
     }
     throw e;
   }
+}
+
+export function defaultClient(settings?: {
+  baseURL: string;
+  apiToken?: string | null;
+  callbacks?: ErrorHandlingConfig;
+}): Client {
+  return new Client({
+    baseURL: settings?.baseURL ?? '/',
+    apiToken: settings?.apiToken,
+    concurrency: API_CONCURRENCY,
+    defaultCallbacks: settings?.callbacks ?? {
+      http(e: HTTPErrorPayload) {
+        failMessage(e.message);
+      }
+    }
+  });
 }
 
 const HTTPS_STATUS_CODES: Record<number, string> = {
