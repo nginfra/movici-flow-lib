@@ -9,7 +9,6 @@ import {
   TapefilePointVisualizer,
   TapefilePolygonVisualizer
 } from './tapefileVisualizers';
-import { ActivePointVisualizer } from './activeEntityVisualizers';
 import { FlowVisualizerType, LayerKind, Nullable, EntityGeometry } from '../types';
 import { AnyVisualizerInfo, ComposableVisualizerInfo, VisualizerInfo } from './VisualizerInfo';
 import {
@@ -26,7 +25,6 @@ export type Visualizer =
   | TapefilePointVisualizer
   | TapefileLineVisualizer
   | TapefilePolygonVisualizer
-  | ActivePointVisualizer
   | ComposablePointVisualizer
   | ComposableLineVisualizer
   | ComposablePolygonVisualizer;
@@ -50,7 +48,7 @@ const SUPPORTED_VISUALIZERS: Record<
     [EntityGeometry.POLYGON]: null
   },
   [LayerKind.ACTIVE_ENTITY]: {
-    [EntityGeometry.POINT]: ActivePointVisualizer,
+    [EntityGeometry.POINT]: null,
     [EntityGeometry.LINE]: null,
     [EntityGeometry.POLYGON]: null
   },

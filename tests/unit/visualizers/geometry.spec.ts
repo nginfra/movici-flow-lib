@@ -8,21 +8,19 @@ function newFakeStore(datasetData: unknown): DatasetDownloader {
   } as unknown as DatasetDownloader;
 }
 describe('PointTopologyGetter', () => {
-  it('asks for point_properties', async () => {
+  it('asks for point geometry', async () => {
     const store: DatasetDownloader = newFakeStore({
       id: [1],
-      point_properties: {
-        position_x: [0],
-        position_y: [0]
-      }
+      'geometry.x': [0],
+      'geometry.y': [0]
     });
     const topoGetter = new PointTopologyGetter(store, 'some_entities');
     await topoGetter.getTopology();
     expect(store.getDatasetState).toBeCalledWith({
       entityGroup: 'some_entities',
       properties: [
-        { component: 'point_properties', name: 'position_x' },
-        { component: 'point_properties', name: 'position_y' }
+        { component: null, name: 'geometry.x' },
+        { component: null, name: 'geometry.y' }
       ]
     });
   });
@@ -32,25 +30,20 @@ describe('LineTopologyGetter', () => {
   it('asks for linestrings', async () => {
     const store: DatasetDownloader = newFakeStore({
       id: [1],
-      shape_properties: {
-        linestring_2d: [
-          [
-            [0, 0],
-            [1, 1]
-          ]
+      'geometry.linestring_2d': [
+        [
+          [0, 0],
+          [1, 1]
         ]
-      }
+      ]
     });
     const topoGetter = new LineTopologyGetter(store, 'some_entities');
     await topoGetter.getTopology();
     expect(store.getDatasetState).toBeCalledWith({
       entityGroup: 'some_entities',
       properties: [
-        { component: 'shape_properties', name: 'linestring_2d' },
-        {
-          component: 'shape_properties',
-          name: 'linestring_3d'
-        }
+        { component: null, name: 'geometry.linestring_2d' },
+        { component: null, name: 'geometry.linestring_3d' }
       ]
     });
   });
