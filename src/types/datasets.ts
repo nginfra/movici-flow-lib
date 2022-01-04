@@ -76,24 +76,18 @@ export interface ComponentData<T> {
 }
 
 interface PointGeometryProperties extends EntityGroupData<number> {
-  point_properties: {
-    position_x: number[];
-    position_y: number[];
-  };
+  'geometry.x': number[];
+  'geometry.y': number[];
 }
 export type PointGeometryData = BaseEntityGroup & PointGeometryProperties;
 
 interface LineGeometryProperties extends EntityGroupProperties<LineCoordinate | Line3DCoordinate> {
-  shape_properties: {
-    linestring_2d: LineCoordinate[];
-    linestring_3d: Line3DCoordinate[];
-  };
+  'geometry.linestring_2d': LineCoordinate[];
+  'geometry.linestring_3d': Line3DCoordinate[];
 }
 export type LineGeometryData = BaseEntityGroup & LineGeometryProperties;
 
 interface PolygonGeometryProperties extends EntityGroupProperties<PolygonCoordinate> {
-  shape_properties: {
-    polygon: PolygonCoordinate[];
-  };
+  'geometry.polygon': PolygonCoordinate[];
 }
 export type PolygonGeometryData = BaseEntityGroup & PolygonGeometryProperties;
