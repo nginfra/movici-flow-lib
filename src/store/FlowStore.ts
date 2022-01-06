@@ -1,5 +1,6 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import {
+  Backend,
   Dataset,
   DatasetSummary,
   FlowStoreConfig,
@@ -12,7 +13,6 @@ import {
 } from '../types';
 import { User } from '../types/users';
 import { exportFromConfig } from '../utils/DataExporter';
-import Backend from '../api/backend';
 import FlowUIStore from '../store/FlowUserInterfaceStore';
 
 const LOCAL_PROJECT = {

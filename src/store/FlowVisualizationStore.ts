@@ -1,5 +1,4 @@
-import { Backend } from '@movici-flow-common/api';
-import { UUID, View } from '@movici-flow-common/types';
+import { Backend, UUID, View } from '@movici-flow-common/types';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 

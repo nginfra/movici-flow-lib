@@ -1,5 +1,5 @@
 import { ComponentProperty, Update, UpdateWithData } from '../types';
-import Backend from '../api/backend';
+import {Backend} from '../types/backend';
 
 export interface DatasetStoreConfig {
   backend: Backend;

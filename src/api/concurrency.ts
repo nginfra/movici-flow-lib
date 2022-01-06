@@ -28,8 +28,7 @@ import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 interface RequestHandler {
   request: AxiosRequestConfig;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  resolver: any;
+  resolver: (value: AxiosRequestConfig) => void;
 }
 export const ConcurrencyManager = (axios: AxiosInstance, MAX_CONCURRENT = 10) => {
   if (MAX_CONCURRENT < 1) throw 'Concurrency Manager Error: minimun concurrent requests is 1';
