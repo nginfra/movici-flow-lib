@@ -31,7 +31,12 @@ type SlotProps = {
 };
 
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Backend, CameraOptions, PopupContent, TimeOrientedSimulationInfo } from '@movici-flow-common/types';
+import {
+  Backend,
+  CameraOptions,
+  PopupContent,
+  TimeOrientedSimulationInfo
+} from '@movici-flow-common/types';
 import Deck from './Deck.vue';
 import Buildings from './mapLayers/Buildings.vue';
 import defaults from './defaults';
@@ -39,7 +44,6 @@ import { Layer } from '@deck.gl/core';
 import VisualizerManager from '@movici-flow-common/visualizers/VisualizerManager';
 import { AnyVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { flowStore, flowUIStore } from '@movici-flow-common/store/store-accessor';
-
 
 @Component({
   name: 'MovMapVis',

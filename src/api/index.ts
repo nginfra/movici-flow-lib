@@ -1,6 +1,5 @@
 import Client from './client';
 
-
 export enum CAPABILITIES {
   USER = 'user',
   GEOCODE = 'geocode',

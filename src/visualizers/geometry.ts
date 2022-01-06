@@ -134,11 +134,11 @@ function containsAttributes(
   minFound: number
 ): (attributes: PropertyType[]) => boolean {
   return (attributes: PropertyType[]): boolean => {
-  return (
+    return (
       attributes.filter(p => {
         return attributeNames.includes(p.name);
       }).length >= minFound
-  );
+    );
   };
 }
 
