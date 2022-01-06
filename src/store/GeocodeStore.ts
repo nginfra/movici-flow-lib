@@ -1,7 +1,7 @@
 import { GeocodeSearchQuery, GeocodeSearchResult, GeocodeSuggestion } from '../types';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import { transform, reverseTransform } from '../crs';
-import Backend from '../api/backend';
+import { Backend } from '../types';
 
 function transformResult(result: GeocodeSearchResult): GeocodeSearchResult {
   return Object.assign({}, result, {

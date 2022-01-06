@@ -3,7 +3,7 @@ import { getModule } from 'vuex-module-decorators';
 import FlowStore from '../store/FlowStore';
 import FlowUIStore from '../store/FlowUserInterfaceStore';
 import GeocodeStore from '../store/GeocodeStore';
-import Backend from '../api/backend';
+import { Backend } from '../types/backend';
 import FlowVisualizationStore from './FlowVisualizationStore';
 
 let flowStore: FlowStore,
