@@ -48,16 +48,12 @@ export default class SummaryListing extends Vue {
     }
 
     if (!this.summary || !this.summary.entity_groups.find(e => e.name === this.currentEntityName)) {
-      // reset the current entitygroup only if we're it doesn't exist on the current dataset
+      // reset the current entitygroup only if it doesn't exist on the current dataset
       this.currentEntityName = null;
     }
   }
 
   async getAvailableDatasets() {
-    const projectUUID = flowStore.project?.uuid;
-
-    if (projectUUID) {
-      this.datasets = (await flowStore.getDatasets(projectUUID)) || [];
-    }
+    this.datasets = await flowStore.getDatasets() ?? []
   }
 }

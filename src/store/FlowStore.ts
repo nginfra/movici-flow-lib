@@ -67,6 +67,9 @@ export default class FlowStore extends VuexModule {
   get hasScenario(): boolean {
     return !!this.scenario;
   }
+  get requiresProject(): boolean {
+    return this.hasProjectsCapabilities && !this.project;
+  }
 
   get timelineInfo(): TimeOrientedSimulationInfo | null {
     if (this.scenario?.simulation_info.mode === SimulationMode.TIME_ORIENTED) {
@@ -156,13 +159,8 @@ export default class FlowStore extends VuexModule {
   }
 
   @Action({ rawError: true })
-  async getDatasets(projectUUID: UUID): Promise<Dataset[] | null> {
-    const activeProjectUUID = this.project?.uuid || projectUUID,
-      datasets = activeProjectUUID
-        ? (await this.backend?.dataset.list(activeProjectUUID)) ?? []
-        : [];
-
-    return datasets;
+  async getDatasets(): Promise<Dataset[] | null> {
+    return (await this.backend?.dataset.list(this.project?.uuid)) ?? null;
   }
 
   @Action({ rawError: true })
@@ -180,12 +178,8 @@ export default class FlowStore extends VuexModule {
   }
 
   @Action({ rawError: true })
-  async getScenariosByProject(projectUUID?: UUID) {
-    const activeProjectUUID = projectUUID ?? this.project?.uuid,
-      scenarios: ShortScenario[] = activeProjectUUID
-        ? (await this.backend?.scenario.list(activeProjectUUID)) ?? []
-        : [];
-
+  async getScenarios() {
+    const scenarios = (await this.backend?.scenario.list(this.project?.uuid)) ?? [];
     this.SET_SCENARIOS(scenarios);
     return scenarios;
   }
@@ -248,9 +242,7 @@ export default class FlowStore extends VuexModule {
   }) {
     this.flowUIStore_?.setLoading({ value: true, msg: 'Exporting data...' });
 
-    const datasets = (await this.getDatasets(this.project?.uuid ?? '<unknown project>'))?.reduce<
-      Record<string, Dataset>
-    >((obj, curr) => {
+    const datasets = (await this.getDatasets())?.reduce<Record<string, Dataset>>((obj, curr) => {
       obj[curr.name] = curr;
       return obj;
     }, {});
@@ -297,10 +289,9 @@ export default class FlowStore extends VuexModule {
     await this.setupUser();
     await this.setupProjects(config);
     await this.setupScenarios(config);
-
     this.flowUIStore_?.enableSection({
-      datasets: this.hasProject,
-      scenario: this.hasProject,
+      datasets: !this.requiresProject,
+      scenario: !this.requiresProject,
       visualization: this.hasScenario,
       export: this.hasScenario
     });
@@ -326,10 +317,7 @@ export default class FlowStore extends VuexModule {
 
   @Action({ rawError: true })
   async setupProjects(config: FlowStoreConfig) {
-    if (!this.hasProjectsCapabilities) {
-      await this.SET_PROJECTS([LOCAL_PROJECT]);
-      await this.setCurrentFlowProject(LOCAL_PROJECT);
-    } else {
+    if (this.hasProjectsCapabilities) {
       const { currentProjectName, getProject = false } = config;
 
       if (!this.projects || !this.projects.length) {
@@ -353,6 +341,11 @@ export default class FlowStore extends VuexModule {
           throw new Error('Invalid Project');
         }
       }
+    } else {
+      this.flowUIStore_?.enableSection({
+        datasets: true,
+        scenario: true
+      });
     }
   }
 
@@ -361,28 +354,28 @@ export default class FlowStore extends VuexModule {
     // has a project (either previously set on the store, or by last if and needs the scenario)
     // needs a scenario and provided a scenario name
     const { currentScenarioName, getScenario = false } = config;
+    if (!getScenario || (this.hasProjectsCapabilities && !this.project)) {
+      return;
+    }
+    const scenarios = (await this.getScenarios()) || [];
 
-    if (this.project && getScenario) {
-      const scenarios = (await this.getScenariosByProject(this.project.uuid)) || [];
+    if (currentScenarioName) {
+      const shortScenario = scenarios.find(p => p.name === currentScenarioName);
 
-      if (currentScenarioName) {
-        const shortScenario = scenarios.find(p => p.name === currentScenarioName);
+      if (shortScenario) {
+        const scenario = await this.getScenario(shortScenario.uuid);
 
-        if (shortScenario) {
-          const scenario = await this.getScenario(shortScenario.uuid);
-
-          // full scenario not found
-          if (scenario) {
-            await this.setCurrentFlowScenario(scenario);
-          } else {
-            this.resetFlowStore();
-            throw new Error('Invalid Scenario');
-          }
+        // full scenario not found
+        if (scenario) {
+          await this.setCurrentFlowScenario(scenario);
         } else {
-          // scenario name is invalid
           this.resetFlowStore();
-          throw new Error('Invalid short Scenario');
+          throw new Error('Invalid Scenario');
         }
+      } else {
+        // scenario name is invalid
+        this.resetFlowStore();
+        throw new Error('Invalid short Scenario');
       }
     }
   }

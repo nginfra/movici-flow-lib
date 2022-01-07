@@ -149,7 +149,7 @@ export default class ExportForm extends Mixins(SummaryListing, ValidationProvide
 
   async getDatasets() {
     if (this.currentProject)
-      this.datasets = (await flowStore.getDatasets(this.currentProject?.uuid)) || [];
+      this.datasets = (await flowStore.getDatasets()) || [];
   }
 
   @Watch('datasetName')

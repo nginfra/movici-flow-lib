@@ -100,7 +100,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { UUID } from '../types';
+import { Scenario, UUID } from '../types';
 import FlowContainer from './FlowContainer.vue';
 import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
 import { buildFlowUrl, getClassFromStatus } from '../utils';
@@ -115,8 +115,8 @@ import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
   }
 })
 export default class FlowScenario extends Vue {
-  @Prop([String]) currentProjectName?: string;
-  @Prop([String]) currentScenarioName?: string;
+  @Prop([String]) currentProjectName!: string | null;
+  @Prop([String]) currentScenarioName!: string | null;
   initialRawData!: string;
 
   get hasProjectsCapabilities() {
@@ -135,7 +135,7 @@ export default class FlowScenario extends Vue {
     return flowStore.scenario?.uuid;
   }
 
-  get currentScenario() {
+  get currentScenario(): Scenario | null {
     return flowStore.scenario;
   }
 

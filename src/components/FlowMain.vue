@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { FlowSection, FlowSectionItem, User } from '../types';
 import FlowExport from './FlowExport.vue';
 import { flowStore, flowUIStore } from '../store/store-accessor'; // create getters for other store it interacts with?
@@ -60,9 +60,6 @@ import { buildFlowUrl } from '@movici-flow-common/utils';
 
 @Component({})
 export default class FlowMain extends Vue {
-  @Prop([String]) currentProjectName!: string;
-  @Prop([String]) currentScenarioName!: string;
-
   get sectionMenu() {
     return flowUIStore.flowSections ?? [];
   }
