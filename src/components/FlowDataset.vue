@@ -245,14 +245,12 @@ export default class FlowDataset extends Vue {
 
     try {
       await flowStore.setupFlowStore({ config });
-      const currentProject = flowStore.project;
 
-      if (currentProject) {
-        this.datasets = (await flowStore.getDatasets(currentProject.uuid)) || [];
-        flowUIStore.setLoading({ value: false });
-      } else {
+      if (flowStore.hasProjectsCapabilities && !flowStore.hasProject) {
         await this.$router.push({ name: 'FlowProject' });
       }
+      this.datasets = (await flowStore.getDatasets()) || [];
+      flowUIStore.setLoading({ value: false });
     } catch (error) {
       console.error(error);
       await this.$router.push({ name: 'FlowProject' });

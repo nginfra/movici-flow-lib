@@ -15,15 +15,14 @@ export interface Scenario extends ShortScenario {
   datasets: ScenarioDataset[];
   simulation_info: SimulationInfo;
   has_timeline?: boolean;
+  models?: ScenarioModel[];
 }
 
-export interface ScenarioWithModels extends Scenario {
-  models: {
-    type: string;
-    name: string;
-  }[];
+export interface ScenarioModel {
+  type: string;
+  name: string;
+  [key: string]: unknown;
 }
-
 export enum SimulationMode {
   TIME_ORIENTED = 'time_oriented',
   EVENT_ORIENTED = 'event_oriented'

@@ -50,15 +50,6 @@ export function getEntitySummary(
   return summary.entity_groups[index];
 }
 
-export function copyToClipboard(text: string) {
-  const el = document.createElement('textarea');
-  el.value = text;
-  document.body.appendChild(el);
-  el.select();
-  document.execCommand('copy');
-  document.body.removeChild(el);
-}
-
 export function getBaseURL(): string {
   return (
     window.location.protocol +
@@ -72,10 +63,18 @@ export function getBaseURL(): string {
 export function buildFlowUrl(name: string, query: Record<string, string | undefined> = {}) {
   return {
     name,
-    query
+    query: extractDefinedValues(query) as Record<string, string>
   };
 }
 
+function extractDefinedValues(obj: Record<string, string | undefined>) {
+  return Object.entries(obj).reduce((prev, [key, val]) => {
+    if (val) {
+      prev[key] = val;
+    }
+    return prev;
+  }, {} as Record<string, string>);
+}
 /**
  * Receives a scenario status and returns a Bulma class for the color
  * @param status

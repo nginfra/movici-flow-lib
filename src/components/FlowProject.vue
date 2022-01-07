@@ -154,7 +154,7 @@ export default class FlowProject extends Vue {
   async mounted() {
     // If we don't have projects, go directly do datasets
     if (!flowStore.hasProjectsCapabilities) {
-      await this.$router.push(buildFlowUrl('FlowDataset', { project: 'local_project' }));
+      await this.$router.push(buildFlowUrl('FlowDataset'));
     } else {
       const config = { currentProjectName: this.currentProjectName };
 
