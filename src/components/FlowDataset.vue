@@ -245,7 +245,7 @@ export default class FlowDataset extends Vue {
 
     try {
       await flowStore.setupFlowStore({ config });
-      
+
       if (flowStore.hasProjectsCapabilities && !flowStore.hasProject) {
         await this.$router.push({ name: 'FlowProject' });
       }

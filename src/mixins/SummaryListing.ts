@@ -54,6 +54,6 @@ export default class SummaryListing extends Vue {
   }
 
   async getAvailableDatasets() {
-    this.datasets = await flowStore.getDatasets() ?? []
+    this.datasets = (await flowStore.getDatasets()) ?? [];
   }
 }

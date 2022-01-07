@@ -15,15 +15,6 @@ import { User } from '../types/users';
 import { exportFromConfig } from '../utils/DataExporter';
 import FlowUIStore from '../store/FlowUserInterfaceStore';
 
-const LOCAL_PROJECT = {
-  created_on: 0,
-  dataset_count: 0,
-  display_name: 'Local Project',
-  name: 'local_project',
-  scenario_count: 0,
-  uuid: '0'
-};
-
 @Module({
   name: 'flow',
   namespaced: true
