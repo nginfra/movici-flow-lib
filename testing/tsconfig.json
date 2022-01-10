@@ -12,14 +12,14 @@
     "sourceMap": false,
     "experimentalDecorators": true,
     "declaration": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/@danmarshall/deckgl-typings"
     ],
     "paths": {
       "@movici-flow-common/*": [
-        "src/*"
+        "../src/*"
       ]
     },
     "allowJs": true,
@@ -31,9 +31,9 @@
     ]
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
+    "../src/**/*.ts",
+    "../src/**/*.tsx",
+    "../src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.js"
   ],
