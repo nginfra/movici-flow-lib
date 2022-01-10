@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { MoviciError, ValidationError } from '../../src/errors';
+import { MoviciError, ValidationError } from '@movici-flow-common/errors';
 
 describe('errors.ts/ValidationError', () => {
   const error = new ValidationError('error message');

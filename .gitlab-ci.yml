@@ -26,7 +26,7 @@ variables:
     KUBERNETES_CPU_REQUEST: 1500m
     KUBERNETES_CPU_LIMIT: 2000m
   before_script:
-    - npm install
+    - make install
 
 check_version_upgrade:
   stage: verify
@@ -37,10 +37,6 @@ check_version_upgrade:
     changes:
       - public/**/*
       - src/**/*
-      - .env
-      - package.json
-      - VERSION
-      - vue.config.js
   except:
     refs:
       - /^dependabot\/.*$/
@@ -57,9 +53,6 @@ check_version_upgrade:
 
 test:unit:
   extends: .testing
-  artifacts:
-    paths:
-      - coverage/lcov.info
   script:
-    - npm run test:unit -- --coverage
+    - npm --prefix testing/ run test:unit
 

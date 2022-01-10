@@ -1,4 +1,5 @@
 jest.mock('@deck.gl/core');
+
 import Deck from '@movici-flow-common/components/map/Deck';
 import { Deck as DeckGL } from '@deck.gl/core';
 import { createComponentWrapper } from '../../helpers';
