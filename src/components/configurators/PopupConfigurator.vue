@@ -218,13 +218,13 @@ export default class PopupConfigurator extends Mixins(ValidationProvider) {
   }
 
   addItem(prop: PropertyType) {
-    this.items.push({ name: '', attribute: prop });
+    this.items = this.items.concat({ name: '', attribute: prop });
     this.updateValue({ items: this.items });
     this.validator.touch('popup-items');
   }
 
   removeItem(idx: number) {
-    this.items.splice(idx, 1);
+    this.items = this.items.filter((item, x) => idx !== x);
     this.updateValue({ items: this.items });
     this.validator.touch('popup-items');
   }

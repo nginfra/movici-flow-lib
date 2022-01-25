@@ -63,6 +63,8 @@ class FlowVisualizationStore extends VuexModule {
   async getViewsByScenario(scenarioUUID?: string): Promise<View[]> {
     if (scenarioUUID) {
       const views = (await this.backend?.view.list(scenarioUUID)) ?? [];
+      this.updateCurrentView(null);
+      this.updateVisualizers([]);
       this.SET_VIEWS(views);
       return views;
     }

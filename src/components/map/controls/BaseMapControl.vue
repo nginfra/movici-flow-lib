@@ -1,5 +1,5 @@
 <template>
-  <div class="basemap-control" :class="{ 'is-right': isRight }">
+  <div class="basemap-control" :class="{ 'is-right': isRight }" title="Base Maps">
     <b-button
       class="toggler"
       size="is-small"
@@ -45,10 +45,7 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 })
 export default class BaseMapControl extends Vue {
   @Prop({ type: Boolean, default: false }) readonly isRight!: boolean;
-  @Prop({
-    default: 'mapbox://styles/mapbox/light-v10',
-    type: String
-  })
+  @Prop({ default: 'mapbox://styles/mapbox/light-v10', type: String })
   value!: string;
   value_ = '';
   toggle = false;

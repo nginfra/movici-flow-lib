@@ -1,7 +1,10 @@
 <template>
   <div>
     <div v-if="value">
-      <label class="label">{{ $t('flow.visualization.legendLabel') }}</label>
+      <span class="is-flex">
+        <label class="label is-flex-grow-1">{{ $t('flow.visualization.legendLabel') }}</label>
+        <MovActionMenu :value="actions" @eraseAll="eraseAll" />
+      </span>
       <b-field v-for="(item, index) in orderedItems" :key="index">
         <b-input
           :value="item"
@@ -16,38 +19,33 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { LegendOptions } from '@movici-flow-common/types';
+import { ActionMenuItem, LegendOptions } from '@movici-flow-common/types';
 
 @Component({
   name: 'ColorLegendLabelsConfigurator'
 })
 export default class ColorLegendLabelsConfigurator extends Vue {
-  @Prop({
-    type: Object,
-    default: null
-  })
-  readonly value!: LegendOptions | null;
-
-  @Prop({
-    type: Number,
-    required: true
-  })
-  readonly nItems!: number;
-
-  @Prop({
-    type: Array,
-    default: null
-  })
-  readonly placeholders!: string[] | null;
-
-  @Prop({
-    type: Boolean,
-    default: false
-  })
-  readonly reversed!: boolean;
+  @Prop({ type: Object, default: null }) readonly value!: LegendOptions | null;
+  @Prop({ type: Number, required: true }) readonly nItems!: number;
+  @Prop({ type: Array, default: null }) readonly placeholders!: string[] | null;
+  @Prop({ type: Boolean, default: false }) readonly reversed!: boolean;
+  actions: ActionMenuItem[] = [
+    {
+      label: '' + this.$t('flow.visualization.legendsConfig.reset'),
+      icon: 'undo',
+      iconPack: 'far',
+      event: 'eraseAll'
+    }
+  ];
 
   get labels(): string[] | null {
     return this.value?.labels ?? null;
+  }
+
+  eraseAll() {
+    const labels = new Array(this.labels?.length).fill('');
+
+    this.emitLabels(labels);
   }
 
   get orderedItems(): string[] | null {

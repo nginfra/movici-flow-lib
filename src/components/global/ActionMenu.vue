@@ -9,10 +9,10 @@
       role="button"
       aria-haspopup="true"
       class="dropdown-trigger"
-      @click="toggle"
+      @click="toggle(!visible)"
     >
       <span class="ellipsis">
-        <b-icon size="is-small" pack="far" icon="ellipsis-v"></b-icon>
+        <b-icon size="is-small" pack="far" :icon="visible ? 'angle-right' : 'ellipsis-v'"></b-icon>
       </span>
     </div>
     <div ref="popupRef" class="dropdown-menu" :style="style" v-show="visible">
@@ -48,7 +48,7 @@ export default class MovActionMenu extends Mixins(FixedPosition) {
   @Ref('popupRef') declare readonly popupRef: HTMLElement;
   adjust = {
     top: -12,
-    left: 8
+    left: 4
   };
 
   emitAndClose(event: string, value: unknown) {
@@ -61,9 +61,15 @@ export default class MovActionMenu extends Mixins(FixedPosition) {
 <style scoped lang="scss">
 .dropdown {
   .dropdown-trigger {
+    border: 0;
+    background: transparent;
     .ellipsis {
       cursor: pointer;
     }
+  }
+  .dropdown-content {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
   }
 
   .dropdown-menu {

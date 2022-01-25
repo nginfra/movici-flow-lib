@@ -2,11 +2,6 @@
   <div class="is-flex mb-0 is-variable is-1">
     <div class="is-flex-shrink-1 mr-4 colors">
       <div class="color-selection-container is-flex">
-        <div class="gradient-container is-flex-shrink-1" v-if="isMode('gradient')">
-          <span class="max">max</span>
-          <div class="gradient" :style="gradientColorStyle"></div>
-          <span class="min">min</span>
-        </div>
         <div class="fields-container is-flex-grow-1 is-flex is-flex-direction-column">
           <FlowColorPicker
             :value="colors[selectedIndex]"
@@ -16,16 +11,30 @@
             @close="showColorPicker = false"
             :translateY="translateY"
           />
-          <label class="label">{{ $t('flow.visualization.colorConfig.color') }}</label>
-          <b-field class="is-flex color-item" v-for="(color, index) in hexColors" :key="index">
-            <span class="caret" v-if="isMode('gradient')"></span>
-            <span
-              class="color-wrap"
-              :class="{ active: selectedIndex === index }"
-              :style="{ 'background-color': color }"
-              @click="openColorPicker(index)"
-            ></span>
-          </b-field>
+          <span class="is-flex">
+            <label class="label mr-1 is-flex-grow-1">{{
+              $t('flow.visualization.colorConfig.color')
+            }}</label>
+            <MovActionMenu :value="actions" @invertColors="invertColors" />
+          </span>
+          <span class="is-flex">
+            <div class="gradient-container is-flex-shrink-1" v-if="isMode('gradient')">
+              <span class="max">max</span>
+              <div class="gradient" :style="gradientColorStyle"></div>
+              <span class="min">min</span>
+            </div>
+            <div class="field-container">
+              <b-field class="is-flex color-item" v-for="(color, index) in hexColors" :key="index">
+                <span class="caret" v-if="isMode('gradient')"></span>
+                <span
+                  class="color-wrap"
+                  :class="{ active: selectedIndex === index }"
+                  :style="{ 'background-color': color }"
+                  @click="openColorPicker(index)"
+                ></span>
+              </b-field>
+            </div>
+          </span>
         </div>
       </div>
     </div>
@@ -95,7 +104,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { colorTripleToHex } from '@movici-flow-common/visualizers/maps/colorMaps';
-import { ColorMapping, RGBAColor } from '@movici-flow-common/types';
+import { ActionMenuItem, ColorMapping, RGBAColor } from '@movici-flow-common/types';
 import CustomSelect from '@movici-flow-common/components/global/CustomSelect.vue';
 import FlowColorPicker from './FlowColorPicker.vue';
 
@@ -117,6 +126,14 @@ export default class ByValueColorList extends Vue {
 
   selectedIndex = -1;
   showColorPicker = false;
+  actions: ActionMenuItem[] = [
+    {
+      label: '' + this.$t('flow.visualization.colorConfig.invertColors'),
+      icon: 'sort',
+      iconPack: 'far',
+      event: 'invertColors'
+    }
+  ];
 
   get orderedValue(): ColorMapping {
     return this.reversed ? this.value.slice().reverse() : this.value;
@@ -139,20 +156,30 @@ export default class ByValueColorList extends Vue {
       : this.$t('flow.visualization.colorConfig.value');
   }
 
-  isMode(mode: modes) {
-    return this.mode === mode;
-  }
-
   get translateY() {
     return this.selectedIndex * 42 - 10;
+  }
+
+  invertColors() {
+    this.emitOriginalOrder(
+      this.orderedValue.map((val, i) => {
+        return [val[0], this.value[i][1]];
+      })
+    );
+  }
+
+  isMode(mode: modes) {
+    return this.mode === mode;
   }
 
   isMaxIndex(index: number) {
     return this.reversed ? index === 0 : index === this.orderedValue.length - 1;
   }
+
   bucketEndIndex(index: number) {
     return this.reversed ? index - 1 : index + 1;
   }
+
   updateMappingValue(idx: number, newValue: number) {
     this.emitOriginalOrder(
       this.orderedValue.map((item, arrayIdx) => {
@@ -160,6 +187,7 @@ export default class ByValueColorList extends Vue {
       })
     );
   }
+
   updateColor(idx: number, newValue: RGBAColor) {
     this.emitOriginalOrder(
       this.orderedValue.map((item, arrayIdx) => {
@@ -167,6 +195,7 @@ export default class ByValueColorList extends Vue {
       })
     );
   }
+
   updateMaxValue(val: number) {
     this.$emit('update:max-value', val);
   }
@@ -211,18 +240,18 @@ export default class ByValueColorList extends Vue {
     position: relative;
     margin-right: 12px;
     padding-left: 24px;
-    padding-top: 37px;
-    padding-bottom: 13px;
+    padding-top: 12px;
+    padding-bottom: 12px;
     span {
       position: absolute;
       left: 0;
       font-size: 11px;
       color: $grey;
       &.min {
-        bottom: 5px;
+        bottom: 8px;
       }
       &.max {
-        top: 25px;
+        top: 8px;
       }
     }
     .gradient {

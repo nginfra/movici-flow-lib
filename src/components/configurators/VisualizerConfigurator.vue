@@ -111,21 +111,34 @@
       </template>
     </div>
     <div class="bottom">
-      <b-button outlined type="is-primary" v-if="isDirty" @click="submit(true)" size="is-small">
-        {{ $t('flow.visualization.saveAndClose') }}
-      </b-button>
-      <b-button outlined type="is-primary" v-else @click="$emit('close')" size="is-small">
-        {{ $t('actions.cancel') }}
-      </b-button>
-      <b-button
-        type="is-primary"
-        :disabled="!isDirty"
-        @click="submit(false)"
-        class="ml-2"
-        size="is-small"
-      >
-        {{ $t('flow.visualization.save') }}
-      </b-button>
+      <div class="left is-flex is-flex-grow-1"></div>
+      <div class="right is-flex">
+        <b-button
+          class="is-transparent has-text-primary is-borderless"
+          @click="close"
+          size="is-small"
+        >
+          {{ $t('actions.cancel') }}
+        </b-button>
+        <b-button
+          type="is-primary"
+          :disabled="!isDirty"
+          @click="submit(false)"
+          class="mr-2"
+          size="is-small"
+        >
+          {{ $t('flow.visualization.save') }}
+        </b-button>
+        <b-button
+          outlined
+          type="is-primary"
+          :disabled="!isDirty"
+          @click="submit(true)"
+          size="is-small"
+        >
+          {{ $t('flow.visualization.saveAndClose') }}
+        </b-button>
+      </div>
     </div>
   </section>
 </template>
@@ -469,7 +482,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   width: 45vw;
   max-width: 900px;
   background-color: var(--visualizer-editor-bg-color);
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 0 10px 0 rgba(0, 0, 0, 0.1);
   z-index: 1;
   padding: 0 24px;
   transition: transform 0.5s;
@@ -483,7 +496,9 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   .editor-content {
     ::v-deep {
       .label {
-        font-size: 0.75rem;
+        font-size: 0.75rem !important;
+        margin-top: 0.25em !important;
+        margin-bottom: 0.5em !important;
       }
       .close {
         position: absolute;
@@ -507,7 +522,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
     padding: 16px 0 24px 0;
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+
     .button {
       display: flex;
     }

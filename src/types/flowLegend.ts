@@ -9,13 +9,15 @@ import {
 export class ColorLegendItem {
   title: string;
   label?: string;
+  unit?: string;
   visualizerType?: FlowVisualizerType;
   colorType: 'buckets' | 'gradient';
   colorLegends: [string, RGBAColor][];
 
-  constructor({ title, label, visualizerType, colorType, colorLegends }: ColorLegendItem) {
+  constructor({ title, label, visualizerType, colorType, colorLegends, unit }: ColorLegendItem) {
     this.title = title;
     this.label = label;
+    this.unit = unit;
     this.visualizerType = visualizerType;
     this.colorType = colorType;
     this.colorLegends = colorLegends ?? [];
