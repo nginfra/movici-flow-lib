@@ -1,5 +1,6 @@
 <template>
   <b-field
+    title="Search"
     class="search"
     :class="{ expand: expand, 'is-right': isRight }"
     @keydown.native.enter="getFirstSearchResult"

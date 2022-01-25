@@ -1,13 +1,16 @@
 <template>
-  <div v-if="legendList.length" class="popup-fixed">
+  <div v-if="legendList.length" class="legends popup-fixed" :class="{ minimized: !isOpen }">
     <div class="box">
-      <b-collapse animation="slide" aria-id="legend-container">
+      <b-collapse animation="none " aria-id="legend-container" v-model="isOpen">
         <template #trigger="{ open }">
-          <div class="is-flex is-align-items-center" aria-controls="legend-container">
-            <label class="label is-flex-grow-1 is-size-6 mb-0">
+          <div
+            class="is-flex-direction-row-reverse is-align-content-space-between is-flex is-align-items-center is-clickable"
+            aria-controls="legend-container"
+          >
+            <b-icon title="Legend" pack="far" :icon="!open ? 'list' : 'expand'"></b-icon>
+            <label class="label is-flex-grow-1 is-size-6 mb-0" v-show="open">
               {{ $t('flow.legend.label') }}
             </label>
-            <b-icon size="is-small" pack="far" :icon="!open ? 'expand' : 'compress'"></b-icon>
           </div>
         </template>
         <div class="legend-container mt-2 pr-2 overflow">
@@ -17,10 +20,11 @@
                 {{ legendItem.title }}
               </label>
               <label
-                class="label has-text-weight-light is-uppercase is-size-7 has-text-grey"
+                class="label has-text-weight-light is-size-7 has-text-grey"
                 v-if="legendItem.label"
               >
                 {{ legendItem.label }}
+                <strong v-if="legendItem.unit">({{ legendItem.unit }})</strong>
               </label>
             </div>
             <!-- Color Buckets -->
@@ -55,6 +59,7 @@ import ColorGradientLegend from './ColorGradientLegend.vue';
 export default class FlowLegend extends Vue {
   @Prop({ type: Array, default: () => [] }) value!: ComposableVisualizerInfo[];
   legendList: LegendItem[] = [];
+  isOpen = true;
 
   isBuckets(legendItem: LegendItem) {
     return legendItem.colorType === 'buckets';
@@ -69,7 +74,12 @@ export default class FlowLegend extends Vue {
     const legendList: LegendItem[] = [];
     for (const { settings, name, visible } of value) {
       if (visible && settings?.color) {
-        const item = this.createColorLegendItem(settings.color, name, settings.type);
+        const item = this.createColorLegendItem(
+          settings.color,
+          name,
+          settings.type,
+          settings.color?.byValue?.attribute?.unit
+        );
         if (item) {
           legendList.push(item);
         }
@@ -80,13 +90,15 @@ export default class FlowLegend extends Vue {
   private createColorLegendItem(
     clause: ColorClause,
     name: string,
-    type: FlowVisualizerType
+    type: FlowVisualizerType,
+    unit?: string
   ): ColorLegendItem | null {
     const legend = clause.legend,
       baseConfig = {
         title: name,
         visualizerType: type,
-        colorLegends: []
+        colorLegends: [],
+        unit
       };
 
     if (!legend) return null;
@@ -98,7 +110,6 @@ export default class FlowLegend extends Vue {
           colorType: clause.byValue.type,
           label: legend.title || clause.byValue.attribute?.name
         },
-
         clause.byValue,
         legend
       );
@@ -119,18 +130,19 @@ export default class FlowLegend extends Vue {
 </script>
 
 <style scoped lang="scss">
-.box {
-  min-width: 250px;
-  max-width: 500px;
-  padding: 0.75rem;
-}
 .legends {
-  max-height: 400px;
-  .legend {
-    border-bottom: 1px solid $grey-lighter;
-    &:last-child {
-      border-bottom: none;
+  &.minimized {
+    max-width: 3rem;
+    max-height: 3rem;
+    .box {
+      min-width: auto;
+      max-width: auto;
     }
+  }
+  .box {
+    min-width: 200px;
+    max-width: 300px;
+    padding: 0.75rem;
   }
 }
 </style>

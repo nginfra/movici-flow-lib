@@ -111,7 +111,11 @@
         "steps": "Steps",
         "type": "Colour type",
         "value": "Value",
-        "valueRange": "Value (range)"
+        "valueRange": "Value (range)",
+        "invertColors": "Invert color order"
+      },
+      "legendsConfig": {
+        "reset": "Reset to default"
       },
       "dialogs": {
         "closeConfigurator": "Close current configurator?",

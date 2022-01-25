@@ -111,7 +111,11 @@
         "steps": "Stappen",
         "type": "palet-type",
         "value": "Waarde",
-        "valueRange": "Waarde (bereik)"
+        "valueRange": "Waarde (bereik)",
+        "invertColors": "Kleurvolgorde omkeren"
+      },
+      "legendsConfig": {
+        "reset": "Terugzetten naar beginwaardes"
       },
       "dialogs": {
         "closeConfigurator": "Huidige configurator sluiten?",

@@ -41,7 +41,7 @@
           <div class="steps mt-3 is-flex is-flex-direction-row">
             <b-field class="is-flex-shrink-1" :label="$t('flow.visualization.colorConfig.steps')">
               <b-select :value="colorMapping.length" @input="updateSteps" size="is-small" expanded>
-                <option v-for="index in 8" :key="index" :value="index">{{ index }}</option>
+                <option v-for="index in stepArray" :key="index" :value="index">{{ index }}</option>
               </b-select>
             </b-field>
             <b-field class="is-flex-grow-1 ml-2" :label="$t('flow.visualization.colorConfig.type')">
@@ -165,6 +165,7 @@ export default class ColorByValueConfigurator extends Mixins(ValidationProvider)
   selectedColorPaletteIndex = 0;
   selectedColorType: keyof typeof DEFAULT_COLOR_PALETTES = 'Sequential';
   currentMaxValue = 1;
+  stepArray: number[] = [2, 3, 4, 5, 6, 7, 8];
 
   get mappingValues(): number[] {
     return this.colorMapping.map(val => val[0]);

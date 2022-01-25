@@ -130,8 +130,8 @@ export const DEFAULT_COLOR_PALETTES = addReversedColorPalettes({
     new ColorPalette({
       name: 'Green - Red',
       colors: [
-        '#009392',
-        '#CF597E',
+        '#1AB67E',
+        '#e54b4b',
         '#E9E29C',
         '#9CCB86',
         '#EEB479',
@@ -159,7 +159,7 @@ export const DEFAULT_COLOR_PALETTES = addReversedColorPalettes({
     new ColorPalette({
       name: 'Blue - Red',
       colors: [
-        '#4962D1',
+        '#5571F2',
         '#E54B4B',
         '#F6F6F6',
         '#A9A9E5',
