@@ -154,7 +154,8 @@
         "showPopup": "Show popup",
         "static": "Static",
         "title": "Popup title",
-        "titlePlaceholder": "My visualiser"
+        "titlePlaceholder": "My visualiser",
+        "setAsDynamicTitle": "Set as title"
       },
       "save": "Save",
       "saveAndClose": "Save and close",

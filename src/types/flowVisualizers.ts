@@ -88,6 +88,7 @@ export interface ByValueSizeClause {
 
 export interface PopupClause {
   title: string;
+  dynamicTitle?: boolean;
   when: 'onClick' | 'onHover';
   position: 'dynamic' | 'static';
   items: PopupItem[];
@@ -114,6 +115,7 @@ export interface Mapper<In, Out> {
 
 export interface PopupContent<D = unknown> {
   title: string;
+  dynamicTitle?: boolean;
   pickInfo: PickInfo<D>;
   position: 'dynamic' | 'static';
   when: 'onClick' | 'onHover';

@@ -61,6 +61,7 @@
             @input="updateValue({ title: $event })"
             :placeholder="$t('flow.visualization.popup.titlePlaceholder')"
             size="is-small"
+            :disabled="dynamicTitle"
           ></b-input>
         </b-field>
       </div>
@@ -129,8 +130,12 @@
               <b-input
                 :placeholder="propertyString(item.attribute)"
                 v-model="item.name"
+                :disabled="idx === 0 && dynamicTitle"
                 size="is-small"
               ></b-input>
+              <b-checkbox class="ml-2" v-if="idx === 0" size="is-small" v-model="dynamicTitle">
+                {{ $t('flow.visualization.popup.setAsDynamicTitle') }}
+              </b-checkbox>
               <b-button
                 class="is-transparent is-borderless ml-2 has-text-danger"
                 icon-left="minus-circle"
@@ -168,6 +173,7 @@ export default class PopupConfigurator extends Mixins(ValidationProvider) {
   items: PopupItem[] = [];
   showPopup = false;
   drag = false; // start your engines...
+  dynamicTitle = false;
   propertyString = propertyString;
 
   get defaults() {
@@ -176,7 +182,8 @@ export default class PopupConfigurator extends Mixins(ValidationProvider) {
       when: 'onHover',
       position: 'dynamic',
       items: [],
-      show: false
+      show: false,
+      dynamicTitle: false
     };
   }
 
@@ -212,6 +219,11 @@ export default class PopupConfigurator extends Mixins(ValidationProvider) {
   }
 
   // saves a last version of the clause, then emit whole settings object with new clause
+  @Watch('dynamicTitle')
+  updateDynamicTitle(dynamicTitle: boolean) {
+    this.updateValue(Object.assign(this.currentClause, { dynamicTitle }));
+  }
+
   @Watch('showPopup')
   updateSettings(showPopup: boolean) {
     this.updateValue(Object.assign(this.currentClause, { show: showPopup }));
@@ -262,6 +274,7 @@ export default class PopupConfigurator extends Mixins(ValidationProvider) {
   mounted() {
     this.items = this.currentClause?.items ?? [];
     this.showPopup = this.currentClause ? this.currentClause.show ?? true : false;
+    this.dynamicTitle = !!this.currentClause.dynamicTitle;
     this.setupValidator();
   }
 }

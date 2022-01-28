@@ -420,6 +420,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
         title: settings.popup.title,
         when: settings.popup.when,
         show: settings.popup.show,
+        dynamicTitle: settings.popup.dynamicTitle,
         position: settings.popup.when === 'onClick' ? settings.popup.position : 'dynamic',
         items: settings.popup.items.map(item => {
           return {

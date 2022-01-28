@@ -117,6 +117,7 @@ export class PopupContentAccessor {
     return {
       title: this.popup.title,
       pickInfo,
+      dynamicTitle: this.popup.dynamicTitle,
       when: this.popup.when,
       position: this.popup.position,
       items: this.popup.items.map((item, idx) => {
