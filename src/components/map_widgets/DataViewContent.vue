@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="header align-items-center is-flex mb-1">
-      <label class="label is-size-6-half is-flex-grow-1 has-text-weight-bold">{{
-        value.title
-      }}</label>
+      <label class="label is-size-6-half is-flex-grow-1 has-text-weight-bold">
+        {{ title }}
+      </label>
       <b-button
         class="close is-borderless is-transparent"
         icon-pack="far"
@@ -15,12 +15,12 @@
       </b-button>
     </div>
     <ul class="attributes">
-      <li class="is-flex is-size-7" v-for="(item, idx) in items" :key="idx">
+      <li class="is-flex is-size-7" v-for="(item, idx) in filteredItems" :key="idx">
         <span class="name is-flex-grow-1 mr-2">
-          {{ item.name
-          }}<span class="unit" v-if="item.attribute.unit"> ({{ item.attribute.unit }})</span>:
+          {{ item.name }}
+          <span class="unit" v-if="item.attribute.unit"> ({{ item.attribute.unit }})</span>:
         </span>
-        <span class="value has-text-weight-bold">{{ filterValue(item) }}</span>
+        <span class="value has-text-weight-bold">{{ formatValue(item) }}</span>
       </li>
     </ul>
   </div>
@@ -37,6 +37,15 @@ export default class DataViewContent extends Vue {
   @Prop({ type: Object, default: null }) readonly value!: PopupContent | null;
   @Prop({ type: Number, default: null }) readonly timestamp!: number | null;
 
+  get title() {
+    if (this.value?.dynamicTitle) {
+      const { value, attribute } = this.items[0];
+      return this.formatValue({ value, attribute });
+    } else {
+      return this.value?.title;
+    }
+  }
+
   get items(): {
     name: string;
     value: unknown;
@@ -45,6 +54,7 @@ export default class DataViewContent extends Vue {
     if (!this.value) {
       return [];
     }
+
     const index = this.value.index;
     return this.value.items.map(item => {
       if (this.timestamp !== null) {
@@ -59,7 +69,11 @@ export default class DataViewContent extends Vue {
     });
   }
 
-  filterValue({ value, attribute }: { value: boolean | number | null; attribute: PropertyType }) {
+  get filteredItems() {
+    return this.value?.dynamicTitle ? this.items.filter((val, idx) => idx !== 0) : this.items;
+  }
+
+  formatValue({ value, attribute }: { value: unknown; attribute: PropertyType }) {
     let rv;
 
     if (typeof value === 'undefined' || value === null) return 'N/A';

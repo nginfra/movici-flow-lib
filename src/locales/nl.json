@@ -154,7 +154,8 @@
         "showPopup": "Popup weergeven",
         "static": "Statisch",
         "title": "Popup titel",
-        "titlePlaceholder": "Mijn Visualiser"
+        "titlePlaceholder": "Mijn Visualiser",
+        "setAsDynamicTitle": "Als titel weergeven"
       },
       "save": "Opslaan",
       "saveAndClose": "Opslaan en sluiten",
