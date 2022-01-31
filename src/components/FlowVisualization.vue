@@ -447,25 +447,33 @@ export default class FlowVisualization extends Vue {
    * TODO: validate scenario status, otherwise redirect to scenario config
    */
   async mounted() {
-    const config = {
-      currentProjectName: this.currentProjectName,
-      getProject: true,
-      currentScenarioName: this.currentScenarioName,
-      getScenario: true
-    };
-
-    flowUIStore.setLoading({ value: true, msg: 'Loading visualization...' });
-
     try {
-      await flowStore.setupFlowStore({ config, reset: false });
+      let view: View | null = null;
 
-      if (!flowVisualizationStore.views.length && this.currentScenario?.uuid) {
-        await flowVisualizationStore.getViewsByScenario(this.currentScenario.uuid);
-      }
+      flowUIStore.setLoading({ value: true, msg: 'Loading visualization...' });
 
-      let view = flowVisualizationStore.view;
-      if (!view && this.currentViewUUID) {
-        view = this.views.find(v => v.uuid === this.currentViewUUID) ?? null;
+      if (!this.currentProjectName || !this.currentScenarioName) {
+        if (this.currentViewUUID) {
+          view = await flowVisualizationStore.getViewById(this.currentViewUUID);
+          await flowStore.setupFlowStoreByView(view);
+        }
+      } else {
+        await flowStore.setupFlowStore({
+          config: {
+            currentProjectName: this.currentProjectName,
+            getProject: true,
+            currentScenarioName: this.currentScenarioName,
+            getScenario: true
+          },
+          reset: false
+        });
+
+        if (!view && this.currentScenario?.uuid) {
+          await flowVisualizationStore.getViewsByScenario(this.currentScenario.uuid);
+          if (this.currentViewUUID) {
+            view = this.views.find(v => v.uuid === this.currentViewUUID) ?? null;
+          }
+        }
       }
 
       if (view) {

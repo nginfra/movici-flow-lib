@@ -234,22 +234,25 @@ export default class FlowDataset extends Vue {
    * Else, redirect to beggining of Flow.
    */
   async mounted() {
-    const config = {
-      currentProjectName: this.currentProjectName,
-      getProject: true,
-      currentScenarioName: this.currentScenarioName,
-      getScenario: true,
-      disableCollapser: true
-    };
     flowUIStore.setLoading({ value: true, msg: 'Loading datasets...' });
 
     try {
-      await flowStore.setupFlowStore({ config });
+      await flowStore.setupFlowStore({
+        config: {
+          currentProjectName: this.currentProjectName,
+          getProject: true,
+          currentScenarioName: this.currentScenarioName,
+          getScenario: true,
+          disableCollapser: true
+        }
+      });
 
       if (flowStore.hasProjectsCapabilities && !flowStore.hasProject) {
         await this.$router.push({ name: 'FlowProject' });
       }
+
       this.datasets = (await flowStore.getDatasets()) || [];
+
       flowUIStore.setLoading({ value: false });
     } catch (error) {
       console.error(error);

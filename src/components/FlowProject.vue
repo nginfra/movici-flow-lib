@@ -156,12 +156,10 @@ export default class FlowProject extends Vue {
     if (!flowStore.hasProjectsCapabilities) {
       await this.$router.push(buildFlowUrl('FlowDataset'));
     } else {
-      const config = { currentProjectName: this.currentProjectName };
-
       flowUIStore.setLoading({ value: true, msg: 'Loading workspaces...' });
 
       try {
-        await flowStore.setupFlowStore({ config });
+        await flowStore.setupFlowStore({ config: { currentProjectName: this.currentProjectName } });
         flowUIStore.setLoading({ value: false });
       } catch (error) {
         console.error(error);

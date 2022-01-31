@@ -31,8 +31,7 @@ abstract class ComposableVisualizer<
     Layer_ extends Layer<LData>
   >
   extends BaseVisualizer<EntityData, Coordinate, LData, Layer_>
-  implements VisualizerCallbacks
-{
+  implements VisualizerCallbacks {
   attributes: Record<string, ((t: SinglePropertyTapefile<VisualizableDataTypes>) => void)[]>;
   tapefiles: Record<string, SinglePropertyTapefile<VisualizableDataTypes>>;
   declare topology?: LData[];
