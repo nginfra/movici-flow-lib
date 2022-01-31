@@ -17,9 +17,11 @@ import {
   VisualizerModule,
   VisualizerModuleParams
 } from '../visualizerModules/common';
-
+import {
+  DEFAULT_SPECIAL_COLOR_TRIPLE,
+  DEFAULT_UNDEFINED_COLOR_TRIPLE
+} from '../../utils/colorUtils';
 type ColorAccessor<D> = ((d: D) => RGBAColor) | RGBAColor;
-
 export default class ColorModule<
   Coord extends Coordinate,
   LData extends TopologyLayerData<Coord>
@@ -91,9 +93,10 @@ export default class ColorModule<
     if (clause?.byValue?.attribute) {
       const colorMap = new NumberColorMap({
         colors: this.prepareColors(clause.byValue),
-        specialColor: clause.byValue.specialColor ?? [0, 0, 0],
-        undefinedColor: clause.byValue.undefinedColor ?? [0, 0, 0]
+        specialColor: clause.advanced?.specialColor ?? DEFAULT_SPECIAL_COLOR_TRIPLE,
+        undefinedColor: clause.advanced?.undefinedColor ?? DEFAULT_UNDEFINED_COLOR_TRIPLE
       });
+
       const accessor = new TapefileAccessor(colorMap);
       visualizer.requestTapefile(clause.byValue.attribute, t => {
         accessor.setTapefile(t as SinglePropertyTapefile<number>);
@@ -103,7 +106,8 @@ export default class ColorModule<
     if (clause?.static) {
       return clause.static.color;
     }
-    return [0, 0, 0];
+
+    return DEFAULT_UNDEFINED_COLOR_TRIPLE;
   }
   private setOpacity(accessor: ColorAccessor<LData>, opacity: number): ColorAccessor<LData> {
     if (Array.isArray(accessor)) {

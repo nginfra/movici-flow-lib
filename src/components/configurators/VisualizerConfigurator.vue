@@ -162,7 +162,6 @@ import PopupConfigurator from './PopupConfigurator.vue';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { propertyString } from '@movici-flow-common/utils';
-import { getSingleLegendPlaceholder, PlaceholderType } from '.././configurators/helpers';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 
@@ -228,7 +227,8 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
         vBind: {
           entityProps: this.entitySummaryProps,
           value: this.settings?.color,
-          validator: this.validator
+          validator: this.validator,
+          geometry: this.geometry
         },
         vOn: {
           input: (event: FlowVisualizerOptions['color']) => this.updateSettings(event, 'color')
@@ -399,19 +399,6 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
     const settings = this.composedVisualizer.settings;
     if (!settings) return null;
     const rv = Object.assign({}, settings);
-    // finalize legend of byValue color clause
-    // if user puts legends as true, but doesn't provide legends
-    // we use the range as the legend
-    if (rv.color?.legend && rv.color.byValue) {
-      const values = rv.color.byValue.colors.map(c => c[0]);
-      const maxValue = rv.color.byValue.maxValue;
-      const type: PlaceholderType = rv.color.byValue.type === 'gradient' ? 'single' : 'range';
-
-      rv.color.legend.labels =
-        rv.color.legend.labels?.map(
-          (label, idx) => label || getSingleLegendPlaceholder(values, type, maxValue, idx)
-        ) ?? [];
-    }
 
     // if popup clause is provided but user doesn't set labels
     // for the attributes, we use its propertyString

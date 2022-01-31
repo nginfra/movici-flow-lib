@@ -2,6 +2,7 @@ import { RGBAColor } from './colors';
 import { PropertySummary, PropertyType } from './schema';
 import { CameraOptions, ITapefile } from './visualization';
 import { PickInfo } from '@deck.gl/core/lib/deck';
+import { RenderOrderType } from '.';
 
 export enum FlowVisualizerType {
   POINTS = 'points',
@@ -43,7 +44,7 @@ export type FlowVisualizerOptions =
   | ArcVisualizerOptions;
 
 export interface LegendOptions {
-  title: string;
+  title?: string;
   labels?: string[];
 }
 export interface StaticColorClause {
@@ -52,18 +53,25 @@ export interface StaticColorClause {
 
 export interface ByValueColorClause {
   type: 'buckets' | 'gradient';
-  attribute: PropertySummary | null; // talk with pelle
+  attribute: PropertySummary | null;
   colors: [number, RGBAColor][];
-  specialColor?: RGBAColor;
-  undefinedColor?: RGBAColor;
   minValue?: number;
   maxValue?: number;
+}
+
+export interface ColorAdvancedSettings {
+  fillOpacity?: number;
+  renderOrder?: RenderOrderType;
+  specialColor: RGBAColor;
+  undefinedColor: RGBAColor;
+  legend?: LegendOptions;
 }
 
 export interface ColorClause {
   static?: StaticColorClause;
   byValue?: ByValueColorClause;
   legend?: LegendOptions;
+  advanced?: ColorAdvancedSettings;
 }
 
 export interface SizeClause {

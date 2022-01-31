@@ -20,6 +20,7 @@ import { HeatmapLayer } from '@deck.gl/aggregation-layers';
 import { LineTopologyGetter, PointTopologyGetter, PolygonTopologyGetter } from './geometry';
 import { IntColorMap, NumberColorMap } from './maps/colorMaps';
 import { VisualizerInfo } from './VisualizerInfo';
+import { DEFAULT_UNDEFINED_COLOR_TRIPLE } from '../utils/colorUtils';
 
 function colorMapFromLayerSettings(settings: ColorMapLayerSettings): NumberColorMap {
   return new IntColorMap(settings);
@@ -58,7 +59,7 @@ export abstract class TapefileVisualizer<
       const val = this.state ? this.state[obj.idx] : this.colorMap.undefined;
       return this.colorMap.getValue(val);
     } else {
-      return [0, 0, 0];
+      return DEFAULT_UNDEFINED_COLOR_TRIPLE;
     }
   }
   updateColorMap() {

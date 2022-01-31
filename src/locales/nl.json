@@ -112,10 +112,19 @@
         "type": "palet-type",
         "value": "Waarde",
         "valueRange": "Waarde (bereik)",
-        "invertColors": "Kleurvolgorde omkeren"
+        "invertColors": "Kleurvolgorde omkeren",
+        "advanced": {
+          "title": "Geavanceerd",
+          "fillOpacity": "Fill opacity",
+          "renderOrder": "Rendervolgorde",
+          "none": "Geen",
+          "fixed": "Op volgorde",
+          "invert": "Omgekeerde volgorde",
+          "advColours": "Geavanceerde kleuren"
+        }
       },
       "legendsConfig": {
-        "reset": "Terugzetten naar beginwaardes"
+        "reset": "Standaardwaardes invullen"
       },
       "dialogs": {
         "closeConfigurator": "Huidige configurator sluiten?",

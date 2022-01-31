@@ -157,7 +157,7 @@ export default class ByValueColorList extends Vue {
   }
 
   get translateY() {
-    return this.selectedIndex * 42 - 10;
+    return this.selectedIndex * 42 - 7;
   }
 
   invertColors() {

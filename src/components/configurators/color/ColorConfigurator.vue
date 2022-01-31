@@ -57,6 +57,22 @@
           />
         </template>
       </ColorByValueConfigurator>
+      <hr />
+      <ColorAdvSettingsConfigurator
+        :value="advancedSettings"
+        :geometry="geometry"
+        :fillType="fillType"
+        :clauseType="clauseType"
+        @input="updateAdvancedSettings($event)"
+      >
+        <template v-slot:legend-labels v-if="showLegend">
+          <ColorLegendLabelsConfigurator
+            v-model="advLegend"
+            :nItems="2"
+            :placeholders="['Special', 'Undefined']"
+          />
+        </template>
+      </ColorAdvSettingsConfigurator>
     </div>
   </div>
 </template>
@@ -64,7 +80,9 @@
 <script lang="ts">
 import {
   ByValueColorClause,
+  ColorAdvancedSettings,
   ColorClause,
+  FlowVisualizerType,
   LegendOptions,
   PropertyType,
   StaticColorClause
@@ -73,25 +91,30 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import ColorStaticConfigurator from './ColorStaticConfigurator.vue';
 import ColorByValueConfigurator from './ColorByValueConfigurator.vue';
 import ColorLegendLabelsConfigurator from './ColorLegendLabelsConfigurator.vue';
+import ColorAdvSettingsConfigurator from './ColorAdvSettingsConfigurator.vue';
 import { getLegendPlaceholders, PlaceholderType } from '../helpers';
 
 @Component({
   components: {
     ColorLegendLabelsConfigurator,
     ColorStaticConfigurator,
-    ColorByValueConfigurator
+    ColorByValueConfigurator,
+    ColorAdvSettingsConfigurator
   }
 })
 export default class ColorConfigurator extends Vue {
-  @Prop({ default: () => ({}) })
-  value!: ColorClause;
-  @Prop({ default: () => [] })
-  entityProps!: PropertyType[];
+  @Prop() value!: ColorClause;
+  @Prop() entityProps!: PropertyType[];
+  @Prop() geometry!: FlowVisualizerType;
   currentClause: ColorClause = {};
   clauseType: 'static' | 'byValue' | null = null;
+  advancedSettings: ColorAdvancedSettings | null = null;
   showLegend = false;
   legend: LegendOptions = {
     title: ''
+  };
+  advLegend: LegendOptions = {
+    labels: ['Special', 'Undefined']
   };
 
   get staticSettings(): Partial<StaticColorClause> {
@@ -102,10 +125,15 @@ export default class ColorConfigurator extends Vue {
     return this.currentClause.byValue ?? { type: 'buckets', colors: [] };
   }
 
+  get fillType(): 'buckets' | 'gradient' | null {
+    return this.currentClause?.byValue?.type || null;
+  }
+
   get nSteps(): number {
     if (this.clauseType === 'static') return 1;
     return this.currentClause.byValue?.colors?.length ?? 0;
   }
+
   get legendPlaceholders(): string[] {
     if (this.currentClause.byValue) {
       const byValue = this.currentClause.byValue;
@@ -124,10 +152,16 @@ export default class ColorConfigurator extends Vue {
     this.emitClause();
   }
 
+  updateAdvancedSettings(settings: ColorAdvancedSettings) {
+    this.advancedSettings = settings;
+    this.emitClause();
+  }
+
   updateLegend(legend: Partial<LegendOptions>) {
     this.legend = Object.assign({}, this.legend, legend);
     this.emitClause();
   }
+
   updateShowLegend(showLegend: boolean) {
     this.showLegend = showLegend;
     this.emitClause();
@@ -135,14 +169,21 @@ export default class ColorConfigurator extends Vue {
 
   emitClause() {
     const toEmit: ColorClause = {};
+
+    if (this.advancedSettings) {
+      toEmit.advanced = this.advancedSettings;
+    }
+
     if (this.showLegend) {
       toEmit.legend = this.legend;
     }
+
     if (this.clauseType === 'static') {
       toEmit.static = this.currentClause.static;
     } else {
       toEmit.byValue = this.currentClause.byValue;
     }
+
     this.$emit('input', toEmit);
   }
 
