@@ -16,6 +16,7 @@ import { Component, Vue, Prop, Watch, Ref } from 'vue-property-decorator';
 import { colorTripleToHex, hexToColorTriple } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { Sketch } from 'vue-color';
 import { RGBAColor } from '@movici-flow-common/types';
+import { DEFAULT_UNDEFINED_COLOR_TRIPLE } from '@movici-flow-common/utils/colorUtils';
 
 @Component({
   name: 'FlowColorPicker',
@@ -26,7 +27,7 @@ import { RGBAColor } from '@movici-flow-common/types';
 export default class FlowColorPicker extends Vue {
   @Prop({
     type: Array,
-    default: () => [0, 0, 0]
+    default: () => DEFAULT_UNDEFINED_COLOR_TRIPLE
   })
   readonly value!: RGBAColor;
   @Prop({ type: Array, default: () => [] }) readonly presets!: (RGBAColor | string)[];

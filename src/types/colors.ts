@@ -21,7 +21,6 @@ export interface ColorRuleSelector {
   data_type?: string;
   always?: boolean;
 }
-
 export interface ColorMapColorSettings {
   // when updating these keys, also update them in `generateColorSettings`
   baseColor: string;

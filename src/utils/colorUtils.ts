@@ -1,4 +1,8 @@
 import { RGBAColor } from '../types';
+import { MoviciColors, hexToColorTriple } from '@movici-flow-common/visualizers/maps/colorMaps';
+
+export const DEFAULT_SPECIAL_COLOR_TRIPLE = hexToColorTriple(MoviciColors.VERY_DARK_GREY);
+export const DEFAULT_UNDEFINED_COLOR_TRIPLE = hexToColorTriple(MoviciColors.VERY_DARK_GREY);
 
 /**
  * Given two subsequent entries in a color mapping, calculate intermediate colors. It linearly

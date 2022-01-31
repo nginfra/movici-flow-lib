@@ -24,7 +24,8 @@
     "select": "Select",
     "selectAll": "Select all",
     "submit": "Submit",
-    "upload": "Upload"
+    "upload": "Upload",
+    "clear": "Clear"
   },
   "dataset": {
     "addNew": "@:(actions.addNew) @:(resources.dataset)",
@@ -112,10 +113,19 @@
         "type": "Colour type",
         "value": "Value",
         "valueRange": "Value (range)",
-        "invertColors": "Invert color order"
+        "invertColors": "Invert color order",
+        "advanced": {
+          "title": "Advanced settings",
+          "fillOpacity": "Fill Opacity",
+          "renderOrder": "Render Order",
+          "none": "None",
+          "fixed": "Fixed",
+          "invert": "Invert",
+          "advColours": "Advanced Colours"
+        }
       },
       "legendsConfig": {
-        "reset": "Reset to default"
+        "reset": "Set as default"
       },
       "dialogs": {
         "closeConfigurator": "Close current configurator?",

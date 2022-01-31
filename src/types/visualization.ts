@@ -7,6 +7,10 @@ import { Coordinate, TopologyLayerData } from './geometry';
 import { LayerProps } from '@deck.gl/core/lib/layer';
 import { PopupContent } from './flowVisualizers';
 import { LayerConstructor } from './general';
+import {
+  DEFAULT_SPECIAL_COLOR_TRIPLE,
+  DEFAULT_UNDEFINED_COLOR_TRIPLE
+} from '@movici-flow-common/utils/colorUtils';
 
 export interface ViewConfig {
   project_name: string;
@@ -55,7 +59,7 @@ export class StaticColorLayerSettings {
   color: RGBAColor;
   constructor(config: Partial<StaticColorLayerSettings>) {
     this.kind = LayerKind.STATIC_COLOR;
-    this.color = config?.color || [0, 0, 0];
+    this.color = config?.color || DEFAULT_UNDEFINED_COLOR_TRIPLE;
   }
 }
 
@@ -67,6 +71,7 @@ export class HeatmapLayerSettings {
 }
 
 export type ColorMapping = [number, RGBAColor][];
+export type AdvColorMapping = [string | number, RGBAColor][];
 
 export class ColorMapLayerSettings {
   kind: LayerKind.COLOR_MAP;
@@ -79,8 +84,8 @@ export class ColorMapLayerSettings {
     this.kind = LayerKind.COLOR_MAP;
     this.property = config?.property;
     this.colors = config?.colors || [];
-    this.undefinedColor = config?.undefinedColor || [0, 0, 0];
-    this.specialColor = config?.specialColor || [0, 0, 0];
+    this.undefinedColor = config?.undefinedColor || DEFAULT_UNDEFINED_COLOR_TRIPLE;
+    this.specialColor = config?.specialColor || DEFAULT_SPECIAL_COLOR_TRIPLE;
     this.baseColorOverride = config?.baseColorOverride || null;
   }
 }
@@ -93,7 +98,7 @@ export class ActiveEntityLayerSettings {
   onHover?: ComponentProperty;
   constructor(config: Partial<ActiveEntityLayerSettings>) {
     this.kind = LayerKind.ACTIVE_ENTITY;
-    this.color = config?.color || [0, 0, 0];
+    this.color = config?.color || DEFAULT_UNDEFINED_COLOR_TRIPLE;
     this.inverted = config?.inverted || false;
     this.property = config?.property;
     this.onHover = config?.onHover;
@@ -144,4 +149,10 @@ export interface ITapefile<T> {
   data: T[];
   moveTo: (time: number) => void;
   copyState: () => T[];
+}
+
+export enum RenderOrderType {
+  NONE = 'none',
+  FIXED = 'fixed',
+  INVERT = 'invert'
 }

@@ -7,10 +7,10 @@
         :presets="colorPickerPresets"
         :open="showColorPicker"
         @close="showColorPicker = false"
+        :translateY="5"
       />
       <label class="label">{{ $t('flow.visualization.colorConfig.color') }}</label>
       <b-field v-if="color" class="color-item">
-        <span></span>
         <span
           class="color-wrap"
           :class="{ active: showColorPicker }"

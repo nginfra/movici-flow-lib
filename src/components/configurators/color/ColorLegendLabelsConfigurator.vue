@@ -3,15 +3,10 @@
     <div v-if="value">
       <span class="is-flex">
         <label class="label is-flex-grow-1">{{ $t('flow.visualization.legendLabel') }}</label>
-        <MovActionMenu :value="actions" @eraseAll="eraseAll" />
+        <MovActionMenu :value="actions" @resetLegends="resetLegends" @clearLegends="clearLegends" />
       </span>
       <b-field v-for="(item, index) in orderedItems" :key="index">
-        <b-input
-          :value="item"
-          @input="updateItem(index, $event)"
-          :placeholder="getPlaceholder(index)"
-          size="is-small"
-        ></b-input>
+        <b-input :value="item" @input="updateItem(index, $event)" size="is-small"></b-input>
       </b-field>
     </div>
   </div>
@@ -29,12 +24,20 @@ export default class ColorLegendLabelsConfigurator extends Vue {
   @Prop({ type: Number, required: true }) readonly nItems!: number;
   @Prop({ type: Array, default: null }) readonly placeholders!: string[] | null;
   @Prop({ type: Boolean, default: false }) readonly reversed!: boolean;
+
   actions: ActionMenuItem[] = [
     {
       label: '' + this.$t('flow.visualization.legendsConfig.reset'),
       icon: 'undo',
       iconPack: 'far',
-      event: 'eraseAll'
+      event: 'resetLegends'
+    },
+    {
+      label: '' + this.$t('actions.clear'),
+      icon: 'trash',
+      iconPack: 'far',
+      event: 'clearLegends',
+      colorScheme: 'danger'
     }
   ];
 
@@ -42,16 +45,24 @@ export default class ColorLegendLabelsConfigurator extends Vue {
     return this.value?.labels ?? null;
   }
 
-  eraseAll() {
-    const labels = new Array(this.labels?.length).fill('');
+  resetLegends() {
+    let labels = new Array(this.labels?.length).fill('');
+    if (this.placeholders) {
+      labels = this.placeholders;
+    }
 
     this.emitLabels(labels);
+  }
+
+  clearLegends() {
+    this.emitLabels(new Array(this.labels?.length).fill(''));
   }
 
   get orderedItems(): string[] | null {
     if (this.labels) {
       return this.reversed ? this.labels.slice().reverse() : this.labels;
     }
+
     if (this.placeholders) {
       return Array(this.placeholders.length).fill('');
     }
@@ -61,10 +72,6 @@ export default class ColorLegendLabelsConfigurator extends Vue {
   orderedIndex(idx: number): number | null {
     if (!this.labels) return null;
     return this.reversed ? this.labels.length - 1 - idx : idx;
-  }
-
-  getPlaceholder(idx: number): string {
-    return this.placeholders?.[this.orderedIndex(idx) ?? -1] ?? '';
   }
 
   updateItem(idx: number, val: string) {
@@ -78,10 +85,12 @@ export default class ColorLegendLabelsConfigurator extends Vue {
   }
 
   emitLabels(labels: string[]) {
-    this.$emit('input', {
-      title: this.value?.title || '',
-      labels: labels
-    } as LegendOptions);
+    const legend = { labels } as LegendOptions;
+    if (this.value?.title) {
+      legend.title = this.value?.title || '';
+    }
+
+    this.$emit('input', legend);
   }
 
   @Watch('nItems', { immediate: true })
@@ -97,14 +106,6 @@ export default class ColorLegendLabelsConfigurator extends Vue {
       this.emitLabels([...this.labels, ...Array(this.nItems - currentLength).fill('')]);
     } else {
       this.emitLabels(this.labels?.slice(0, this.nItems));
-    }
-  }
-
-  @Watch('value')
-  @Watch('placeholders')
-  initializeValue() {
-    if (!this.labels && this.placeholders) {
-      this.emitLabels(Array(this.placeholders.length).fill(''));
     }
   }
 }

@@ -211,8 +211,6 @@ export default class ColorByValueConfigurator extends Mixins(ValidationProvider)
         type: this.fillType,
         attribute: this.selectedEntityProp,
         colors: this.colorMapping,
-        undefinedColor: hexToColorTriple('#000000'),
-        specialColor: hexToColorTriple('#FFFFFF'),
         maxValue: this.currentMaxValue
       };
     }
