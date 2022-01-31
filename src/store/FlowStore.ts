@@ -9,7 +9,8 @@ import {
   ShortScenario,
   SimulationMode,
   TimeOrientedSimulationInfo,
-  UUID
+  UUID,
+  View
 } from '../types';
 import { User } from '../types/users';
 import { exportFromConfig } from '../utils/DataExporter';
@@ -261,6 +262,29 @@ export default class FlowStore extends VuexModule {
     this.SET_CURRENT_PROJECT(null);
     this.SET_SCENARIOS([]);
     this.SET_CURRENT_SCENARIO(null);
+  }
+
+  @Action({ rawError: true })
+  async setupFlowStoreByView(view: View) {
+    if (view.scenario_uuid) {
+      const scenario = await this.getScenario(view.scenario_uuid);
+      if (scenario) {
+        this.setCurrentFlowScenario(scenario);
+        await this.getProjects();
+
+        const project = this.projects.find(p => p.name === scenario.project_name);
+        if (project) {
+          this.setCurrentFlowProject(project);
+          this.setupFlowStore({
+            config: {
+              getProject: false,
+              getScenario: false
+            },
+            reset: false
+          });
+        }
+      }
+    }
   }
 
   /**

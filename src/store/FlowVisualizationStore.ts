@@ -73,6 +73,17 @@ class FlowVisualizationStore extends VuexModule {
   }
 
   @Action({ rawError: true })
+  async getViewById(uuid: string): Promise<View> {
+    const view = await this.backend?.view.get(uuid);
+    if (!view) {
+      throw new Error('View id does not exist');
+    }
+
+    this.updateCurrentView(view);
+    return view;
+  }
+
+  @Action({ rawError: true })
   setTimestamp(value: number) {
     this.SET_TIMESTAMP(value);
   }

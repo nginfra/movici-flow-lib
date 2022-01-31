@@ -186,17 +186,17 @@ export default class FlowScenario extends Vue {
    * If there's also a prop for scenario, set that scenario in the component
    */
   async mounted() {
-    const config = {
-      currentProjectName: this.currentProjectName,
-      getProject: true,
-      currentScenarioName: this.currentScenarioName,
-      getScenario: true
-    };
-
     flowUIStore.setLoading({ value: true, msg: 'Loading scenarios...' });
 
     try {
-      await flowStore.setupFlowStore({ config });
+      await flowStore.setupFlowStore({
+        config: {
+          currentProjectName: this.currentProjectName,
+          getProject: true,
+          currentScenarioName: this.currentScenarioName,
+          getScenario: true
+        }
+      });
       flowUIStore.setLoading({ value: false });
     } catch (error) {
       console.error(error);
