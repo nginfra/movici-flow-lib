@@ -100,6 +100,7 @@ export default class ColorModule<
       const accessor = new TapefileAccessor(colorMap);
       visualizer.requestTapefile(clause.byValue.attribute, t => {
         accessor.setTapefile(t as SinglePropertyTapefile<number>);
+        colorMap.setSpecialValue((t as SinglePropertyTapefile<number>).specialValue);
       });
       return (d: LData) => accessor.getValue(d.idx);
     }

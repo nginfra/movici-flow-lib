@@ -2,12 +2,12 @@ import {
   ComponentData,
   ComponentProperty,
   EntityGroupData,
+  EntityGroupSpecialValues,
   EntityUpdate,
   ITapefile
 } from '../types';
 import { TimelineDownloader } from '../utils/timeline';
 import { DatasetDownloader } from '../utils/DatasetDownloader';
-
 interface TapefileUpdate<T> {
   timestamp: number;
   length: number;
@@ -34,21 +34,23 @@ export async function getTapefiles<T>(config: {
     entityGroup: config.entityGroup,
     properties: config.properties
   });
-
+  const specialValues = await config.store.getSpecialValues<T>(config.entityGroup);
   const updates = await new TimelineDownloader(
     config.entityGroup,
     config.properties,
     config.store
   ).download<T>();
-  return config.properties.map(p => createTapefileFromStateAndUpdates(p, initialData, updates));
+  return config.properties.map(p => createTapefileFromStateAndUpdates(p, initialData, updates, specialValues));
 }
 
 export function createTapefileFromStateAndUpdates<T>(
   componentProperty: ComponentProperty,
   initialState: EntityGroupData<T>,
-  updates: EntityUpdate<T>[]
+  updates: EntityUpdate<T>[],
+  specialValues?: EntityGroupSpecialValues<T>
 ) {
-  const builder = new TapefileBuilder(componentProperty, initialState);
+  const specialValue = specialValues?.[componentProperty.name]
+  const builder = new TapefileBuilder(componentProperty, initialState, specialValue);
   for (let i = 0; i < updates.length; i++) {
     const update = updates[i];
     builder.addUpdate(update);
@@ -97,7 +99,12 @@ export class TapefileBuilder<T> {
   currentTime: number;
   currentIteration: number;
   isFinal: boolean;
-  constructor(componentProperty: ComponentProperty, inititalState: EntityGroupData<T>) {
+  specialValue?: T;
+  constructor(
+    componentProperty: ComponentProperty,
+    inititalState: EntityGroupData<T>,
+    specialValue?: T
+  ) {
     this.updates = [];
     this.componentProperty = componentProperty;
     this.index = new Index(inititalState.id);
@@ -105,6 +112,7 @@ export class TapefileBuilder<T> {
     this.currentTime = 0;
     this.currentIteration = -2; // No state yet so the initial data at iteration -1 is accepted
     this.isFinal = false;
+    this.specialValue = specialValue;
     this.addUpdate({ timestamp: 0, iteration: -1, data: inititalState });
   }
 
@@ -213,7 +221,7 @@ export class TapefileBuilder<T> {
 
   createTapefile() {
     this.isFinal = true;
-    return new SinglePropertyTapefile(this.componentProperty, this.index.length, this.updates);
+    return new SinglePropertyTapefile(this.componentProperty, this.index.length, this.updates, this.specialValue);
   }
 }
 
@@ -231,8 +239,14 @@ export class SinglePropertyTapefile<T> implements ITapefile<T> {
   currentUpdateIdx: number;
   minTime: number;
   maxTime: number;
+  specialValue?: T;
 
-  constructor(componentProperty: ComponentProperty, length: number, updates: TapefileUpdate<T>[]) {
+  constructor(
+    componentProperty: ComponentProperty,
+    length: number,
+    updates: TapefileUpdate<T>[],
+    specialValue?: T
+  ) {
     this.componentProperty = componentProperty;
     this.state = new PropertyState(length);
     this.state.applyUpdate(updates[0]);
@@ -240,6 +254,7 @@ export class SinglePropertyTapefile<T> implements ITapefile<T> {
     this.currentUpdateIdx = 0;
     this.minTime = this.currentTime;
     this.maxTime = updates[updates.length - 1].timestamp;
+    this.specialValue = specialValue;
   }
 
   get numberOfEntities() {

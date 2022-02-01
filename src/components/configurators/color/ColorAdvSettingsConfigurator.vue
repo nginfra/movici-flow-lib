@@ -1,7 +1,7 @@
 <template>
   <b-collapse v-model="isOpen">
     <template #trigger="{ open }">
-      <b-icon size="is-small" :icon="open ? 'angle-right' : 'angle-down'"></b-icon>
+      <b-icon size="is-small" :icon="open ? 'angle-up' : 'angle-down'"></b-icon>
       <label class="is-size-6-half mb-2">
         {{ $t('flow.visualization.colorConfig.advanced.title') }}
       </label>
@@ -63,7 +63,7 @@ import { MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
   }
 })
 export default class ColorAdvSettingsConfigurator extends Vue {
-  @Prop() value!: ColorAdvancedSettings;
+  @Prop() value!: ColorAdvancedSettings | null;
   @Prop() geometry!: FlowVisualizerType;
   @Prop() fillType!: 'buckets' | 'gradient';
   @Prop() clauseType!: 'static' | 'byValue' | null;
@@ -71,10 +71,6 @@ export default class ColorAdvSettingsConfigurator extends Vue {
   renderOrder: RenderOrderType = RenderOrderType.NONE;
   isOpen = false;
   colorPickerPresets = Object.values(MoviciColors);
-  advColors: AdvColorMapping = [
-    [-9999, DEFAULT_SPECIAL_COLOR_TRIPLE],
-    ['null', DEFAULT_UNDEFINED_COLOR_TRIPLE]
-  ];
 
   get hasRenderOrder() {
     return this.fillType === 'buckets' && this.clauseType === 'byValue';
@@ -84,17 +80,22 @@ export default class ColorAdvSettingsConfigurator extends Vue {
     return this.geometry === 'polygons';
   }
 
-  updateColor(update: { id: number; newValue: RGBAColor }) {
-    this.advColors[update.id][1] = update.newValue;
-    this.emitAdvancedSettings();
+  get advColors(): AdvColorMapping {
+    return [
+      [-9999, this.value?.specialColor ?? DEFAULT_SPECIAL_COLOR_TRIPLE],
+      ['null', this.value?.undefinedColor ?? DEFAULT_UNDEFINED_COLOR_TRIPLE]
+    ];
+  }
+  updateColor({ id, newValue }: { id: number; newValue: RGBAColor }) {
+    this.emitAdvancedSettings(id == 0 ? { specialColor: newValue } : { undefinedColor: newValue });
   }
 
   @Watch('fillOpacity')
   @Watch('renderOrder')
-  emitAdvancedSettings() {
+  emitAdvancedSettings(params?: { specialColor?: RGBAColor; undefinedColor?: RGBAColor }) {
     const value: ColorAdvancedSettings = {
-      specialColor: this.advColors[0][1],
-      undefinedColor: this.advColors[1][1]
+      specialColor: params?.specialColor ?? this.advColors[0][1],
+      undefinedColor: params?.undefinedColor ?? this.advColors[1][1]
     };
 
     if (this.hasRenderOrder) {

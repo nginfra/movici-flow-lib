@@ -11,9 +11,10 @@ export class Dataset {
   uuid: UUID;
   type: string;
   has_data: boolean;
+  status: string;
   created_on?: number;
   last_modified?: number;
-  status: string;
+  general?: GeneralSection;
   constructor(config?: Partial<Dataset>) {
     this.name = config?.name ?? 'unknown_dataset';
     this.display_name = config?.display_name || this.name;
@@ -21,11 +22,24 @@ export class Dataset {
     this.type = config?.type ?? 'unknown';
     this.has_data = config?.has_data ?? false;
     this.status = this.has_data ? 'Done' : 'Empty';
-    this.created_on = config?.created_on ?? undefined;
-    this.last_modified = config?.last_modified ?? undefined;
+    this.created_on = config?.created_on;
+    this.last_modified = config?.last_modified;
+    this.general = config?.general;
   }
 }
-
+export interface GeneralSection {
+  special?: RawSpecialValues;
+  no_data?: RawSpecialValues;
+}
+export interface RawSpecialValues {
+  [key: string]: number;
+}
+export interface EntityGroupSpecialValues<T=unknown> {
+  [key: string]: T | undefined;
+}
+export interface DatasetSpecialValues {
+  [key: string]: EntityGroupSpecialValues
+}
 export interface Update {
   created_on: number;
   dataset_uuid: UUID;

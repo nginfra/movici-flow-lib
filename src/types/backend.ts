@@ -71,6 +71,8 @@ export interface DatasetService {
     properties?: ComponentProperty[];
     timestamp?: number;
   }): Promise<DatasetWithData<T> | null>;
+
+  getMetaData?: (datasetUUID: UUID) => Promise<Dataset | null>;
 }
 
 export interface UserService {

@@ -16,7 +16,7 @@
         <span
           class="color-wrap"
           :class="{ active: selectedIndex === index }"
-          :style="{ 'background-color': colorTripleToHex(color) }"
+          :style="{ 'background-color': color }"
           @click="openColorPicker(index)"
         ></span>
         <span class="ml-1 is-size-7">

@@ -159,9 +159,7 @@ function selectorMatchesAlways(
 
 interface ColormapConfig {
   colors: [number, RGBAColor][];
-  special?: number;
   specialColor: RGBAColor;
-  undefined?: Nullable<number>;
   undefinedColor: RGBAColor;
 }
 
@@ -193,9 +191,9 @@ export class NumberColorMap implements Mapper<number | null, RGBAColor> {
   cache: Map<number | null, RGBAColor>;
 
   constructor(config: ColormapConfig) {
-    this.special = config?.special ?? NaN;
+    this.special = NaN;
     this.specialColor = config.specialColor;
-    this.undefined = config?.undefined ?? null;
+    this.undefined = null;
     this.undefinedColor = config.undefinedColor;
     this.values = config.colors.map(c => c[0]);
     this.colors = config.colors.map(c => c[1]);
@@ -217,6 +215,10 @@ export class NumberColorMap implements Mapper<number | null, RGBAColor> {
     return color;
   }
 
+  setSpecialValue(val?: number | null) {
+    if (val === null || val === undefined) return;
+    this.special = val;
+  }
   calculateColor(value: number | null): RGBAColor {
     if (this.isSpecial(value)) return this.specialColor;
     if (this.isUndefined(value)) return this.undefinedColor;

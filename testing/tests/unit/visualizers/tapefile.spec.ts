@@ -199,8 +199,12 @@ describe('tapefile.js/SinglePropertyTapefile', () => {
             prop: [3, 3]
           }
         }
-      ]
+      ],
+      {
+        prop: 12
+      }
     );
+    tapeFile;
   });
   it('moves forward to defined time', () => {
     tapeFile.moveTo(2);
@@ -215,5 +219,8 @@ describe('tapefile.js/SinglePropertyTapefile', () => {
     tapeFile.moveTo(2);
     tapeFile.moveTo(1);
     expect(tapeFile.copyState()).toStrictEqual([1, 0, 0]);
+  });
+  it('stores special value', () => {
+    expect(tapeFile.specialValue).toEqual(12);
   });
 });

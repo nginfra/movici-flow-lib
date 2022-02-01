@@ -1,5 +1,7 @@
-import { ComponentProperty, Update, UpdateWithData } from '../types';
+import { result } from 'lodash';
+import { ComponentProperty, EntityGroupSpecialValues, Update, UpdateWithData } from '../types';
 import { Backend } from '../types/backend';
+import { specialValues } from './datasetUtils';
 
 export interface DatasetStoreConfig {
   backend: Backend;
@@ -85,5 +87,9 @@ export class DatasetDownloader {
     }
 
     return data;
+  }
+  async getSpecialValues<T>(entityGroup: string): Promise<EntityGroupSpecialValues<T>> {
+    const general = (await this.backend.dataset.getMetaData?.(this.datasetUUID))?.general;
+    return (specialValues(general ?? {})?.[entityGroup] ?? {}) as EntityGroupSpecialValues<T>;
   }
 }

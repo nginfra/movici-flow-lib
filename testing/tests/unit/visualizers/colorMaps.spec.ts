@@ -12,9 +12,7 @@ const mapping = new NumberColorMap({
     [0, [0, 0, 0]],
     [1, [255, 255, 255]]
   ],
-  special: NaN,
   specialColor: [255, 0, 0],
-  undefined: null,
   undefinedColor: [0, 255, 0]
 });
 
@@ -32,26 +30,13 @@ describe('colorMaps.ts/NumberColorMap', () => {
     expect(mapping.getValue(null)).toStrictEqual([0, 255, 0]);
   });
   it('returns a color for custom special value', () => {
-    expect(
-      new NumberColorMap({
-        colors: [],
-        special: -1,
-        specialColor: [255, 0, 0],
-        undefined: null,
-        undefinedColor: [0, 255, 0]
-      }).getValue(-1)
-    ).toStrictEqual([255, 0, 0]);
-  });
-  it('returns a color for custom undefined value', () => {
-    expect(
-      new NumberColorMap({
-        colors: [],
-        special: NaN,
-        specialColor: [255, 0, 0],
-        undefined: -1,
-        undefinedColor: [255, 0, 0]
-      }).getValue(-1)
-    ).toStrictEqual([255, 0, 0]);
+    const colorMap = new NumberColorMap({
+      colors: [],
+      specialColor: [255, 0, 0],
+      undefinedColor: [0, 255, 0]
+    });
+    colorMap.setSpecialValue(-1);
+    expect(colorMap.getValue(-1)).toStrictEqual([255, 0, 0]);
   });
 });
 
