@@ -159,6 +159,7 @@ import { VisGroup } from '@movici-flow-common/visualizers';
 import ColorConfigurator from './color/ColorConfigurator.vue';
 import SizeConfigurator from './size/SizeConfigurator.vue';
 import PopupConfigurator from './PopupConfigurator.vue';
+import VisibilityConfigurator from './VisibilityConfigurator.vue';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { propertyString } from '@movici-flow-common/utils';
@@ -265,6 +266,20 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
         }
       },
       {
+        name: 'Visibility',
+        component: VisibilityConfigurator,
+        vBind: {
+          entityProps: this.entitySummaryProps,
+          value: this.settings?.visibility?.byValue,
+          validator: this.validator
+        },
+        vOn: {
+          input: (event: FlowVisualizerOptions['visibility'] | null) => {
+            this.updateSettings(event, 'visibility');
+          }
+        }
+      },
+      {
         name: 'Popup',
         component: PopupConfigurator,
         vBind: {
@@ -351,6 +366,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
         this.updateIsDirty(!isEqual(this.settings[clauseType], updatedClause));
         this.$set(this.settings, clauseType, updatedClause);
       } else {
+        this.updateIsDirty(true);
         this.$delete(this.settings, clauseType);
       }
     }

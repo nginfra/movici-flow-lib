@@ -124,6 +124,10 @@
           "advColours": "Advanced Colours"
         }
       },
+      "visibilityConfig" : {
+        "value": "Value",
+        "visible": "Visible"
+      },
       "legendsConfig": {
         "reset": "Set as default"
       },

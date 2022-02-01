@@ -1,4 +1,4 @@
-import { ColorMapping, RGBAColor } from '@movici-flow-common/types';
+import { ColorMapping, VisibilityMapping, RGBAColor } from '@movici-flow-common/types';
 import { hexToColorTriple, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
 
 export type PlaceholderType = 'single' | 'range';
@@ -47,6 +47,19 @@ export function recalculateColorMapping(
 function recalculateColors(params: { colors: RGBAColor[]; nSteps: number }): RGBAColor[] {
   const rv = Array(params.nSteps).fill(hexToColorTriple(MoviciColors.WHITE));
   params.colors.forEach((c, idx) => (rv[idx] = c));
+  return rv;
+}
+
+export function recalculateVisibilityMapping(
+  params: RecalculateMappingValueParams & { visibilities: boolean[] }
+): VisibilityMapping {
+  const visibilities = recalculateVisibilities(params);
+  return recalculateMappingValues(params).map((val, idx) => [val, visibilities[idx]]);
+}
+
+function recalculateVisibilities(params: { visibilities: boolean[]; nSteps: number }): boolean[] {
+  const rv = Array(params.nSteps).fill(true);
+  params.visibilities.forEach((c, idx) => (rv[idx] = c));
   return rv;
 }
 

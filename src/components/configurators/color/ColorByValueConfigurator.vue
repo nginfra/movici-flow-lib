@@ -6,7 +6,7 @@
           <b-select
             :value="selectedEntityProp.name"
             @input="selectEntityPropName"
-            placeholder="Select..."
+            :placeholder="$t('actions.select')"
             size="is-small"
             expanded
           >
@@ -232,6 +232,7 @@ export default class ColorByValueConfigurator extends Mixins(ValidationProvider)
   filterProp(prop: PropertyType) {
     return ['BOOLEAN', 'INT', 'DOUBLE'].indexOf(prop.data_type) !== -1;
   }
+
   selectColorPalette(index: number) {
     this.selectedColorPaletteIndex = index;
     this.recalculateColorMapping({

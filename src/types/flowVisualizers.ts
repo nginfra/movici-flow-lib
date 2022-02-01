@@ -108,10 +108,11 @@ export interface PopupItem {
   attribute: PropertyType;
 }
 
+export type VisibilityMapping = [boolean | number, boolean][];
+
 export interface ByValueVisibilityClause {
   attribute: PropertyType;
-  mapping: [boolean | number, boolean][];
-  toggleOn: boolean; // Show entities when the attribute has this value
+  mapping: VisibilityMapping;
 }
 export interface VisibilityClause {
   byValue: ByValueVisibilityClause;

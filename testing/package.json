@@ -20,6 +20,7 @@
     "@deck.gl/core": "8.6.4",
     "@deck.gl/layers": "8.6.4",
     "@deck.gl/mapbox": "8.6.4",
+    "@deck.gl/extensions": "8.6.4",
     "axios": "0.24.0",
     "buefy": "0.9.13",
     "bulma-divider": "0.2.0",

@@ -23,6 +23,7 @@ import { BaseVisualizer, VisualizerContext } from './visualizers';
 import { LineTopologyGetter, PointTopologyGetter, PolygonTopologyGetter } from './geometry';
 import { ColorModule, PopupModule, VisualizerModule } from './visualizerModules';
 import SizeModule from './visualizerModules/SizeModule';
+import VisibilityModule from './visualizerModules/VisibilityModule';
 
 abstract class ComposableVisualizer<
     EntityData extends EntityGroupData<Coordinate | number>,
@@ -273,6 +274,7 @@ function getCommonModules<Coord extends Coordinate, LData extends TopologyLayerD
   return [
     new ColorModule<Coord, LData>({ info }),
     new PopupModule<Coord, LData>({ info }),
-    new SizeModule<Coord, LData>({ info })
+    new SizeModule<Coord, LData>({ info }),
+    new VisibilityModule<Coord, LData>({ info })
   ];
 }
