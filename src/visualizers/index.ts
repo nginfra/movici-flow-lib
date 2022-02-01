@@ -1,16 +1,6 @@
-import {
-  StaticLineVisualizer,
-  StaticPointVisualizer,
-  StaticPolygonVisualizer
-} from './staticVisualizers';
 import { VisualizerContext } from './visualizers';
-import {
-  TapefileLineVisualizer,
-  TapefilePointVisualizer,
-  TapefilePolygonVisualizer
-} from './tapefileVisualizers';
-import { FlowVisualizerType, LayerKind, Nullable, EntityGeometry } from '../types';
-import { AnyVisualizerInfo, ComposableVisualizerInfo, VisualizerInfo } from './VisualizerInfo';
+import { FlowVisualizerType, Nullable } from '../types';
+import { ComposableVisualizerInfo } from './VisualizerInfo';
 import {
   ComposableArcVisualizer,
   ComposableLineVisualizer,
@@ -19,50 +9,14 @@ import {
 } from './composableVisualizers';
 
 export type Visualizer =
-  | StaticPointVisualizer
-  | StaticLineVisualizer
-  | StaticPolygonVisualizer
-  | TapefilePointVisualizer
-  | TapefileLineVisualizer
-  | TapefilePolygonVisualizer
   | ComposablePointVisualizer
   | ComposableLineVisualizer
-  | ComposablePolygonVisualizer;
+  | ComposablePolygonVisualizer
+  | ComposableArcVisualizer;
 
 export interface VisualizerConstructor {
   new (config: VisualizerContext): Visualizer;
 }
-
-const SUPPORTED_VISUALIZERS: Record<
-  LayerKind,
-  Record<EntityGeometry, VisualizerConstructor | null>
-> = {
-  [LayerKind.STATIC_COLOR]: {
-    [EntityGeometry.POINT]: StaticPointVisualizer,
-    [EntityGeometry.LINE]: StaticLineVisualizer,
-    [EntityGeometry.POLYGON]: StaticPolygonVisualizer
-  },
-  [LayerKind.HEAT_MAP]: {
-    [EntityGeometry.POINT]: StaticPointVisualizer,
-    [EntityGeometry.LINE]: null,
-    [EntityGeometry.POLYGON]: null
-  },
-  [LayerKind.ACTIVE_ENTITY]: {
-    [EntityGeometry.POINT]: null,
-    [EntityGeometry.LINE]: null,
-    [EntityGeometry.POLYGON]: null
-  },
-  [LayerKind.COLOR_MAP]: {
-    [EntityGeometry.POINT]: TapefilePointVisualizer,
-    [EntityGeometry.LINE]: TapefileLineVisualizer,
-    [EntityGeometry.POLYGON]: TapefilePolygonVisualizer
-  },
-  [LayerKind.UNKNOWN]: {
-    [EntityGeometry.POINT]: null,
-    [EntityGeometry.LINE]: null,
-    [EntityGeometry.POLYGON]: null
-  }
-};
 
 export function getVisualizer(config: VisualizerContext): Visualizer {
   const visClass = getVisualizerType(config.info);
@@ -73,18 +27,7 @@ export function getVisualizer(config: VisualizerContext): Visualizer {
   return new visClass(config);
 }
 
-export function getVisualizerType(info: AnyVisualizerInfo): Nullable<VisualizerConstructor> {
-  return info instanceof ComposableVisualizerInfo
-    ? getComposableVisualizerType(info)
-    : getLegacyVisualizerType(info);
-}
-
-export function getLegacyVisualizerType(info: VisualizerInfo): Nullable<VisualizerConstructor> {
-  return info.geometry ? SUPPORTED_VISUALIZERS[info.settings.kind][info.geometry] : null;
-}
-export function getComposableVisualizerType(
-  info: ComposableVisualizerInfo
-): Nullable<VisualizerConstructor> {
+export function getVisualizerType(info: ComposableVisualizerInfo): Nullable<VisualizerConstructor> {
   switch (info.settings?.type) {
     case FlowVisualizerType.POINTS:
       return ComposablePointVisualizer;
@@ -98,9 +41,8 @@ export function getComposableVisualizerType(
       return null;
   }
 }
-export { VisualizerInfo } from './VisualizerInfo';
 
 export interface VisGroup {
   name: string;
-  layerInfos: AnyVisualizerInfo[];
+  layerInfos: ComposableVisualizerInfo[];
 }

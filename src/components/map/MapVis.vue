@@ -42,7 +42,7 @@ import Buildings from './mapLayers/Buildings.vue';
 import defaults from './defaults';
 import { Layer } from '@deck.gl/core';
 import VisualizerManager from '@movici-flow-common/visualizers/VisualizerManager';
-import { AnyVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
+import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { flowStore, flowUIStore } from '@movici-flow-common/store/store-accessor';
 
 @Component({
@@ -51,7 +51,7 @@ import { flowStore, flowUIStore } from '@movici-flow-common/store/store-accessor
 })
 export default class MovMapVis extends Vue {
   @Prop({ type: Array, default: () => [] })
-  readonly layerInfos!: AnyVisualizerInfo[];
+  readonly layerInfos!: ComposableVisualizerInfo[];
 
   @Prop({ type: Object, default: null })
   readonly timelineInfo!: TimeOrientedSimulationInfo | null;
@@ -137,24 +137,18 @@ export default class MovMapVis extends Vue {
 
     const visualizers = this.ensureVisualizers();
 
-    this.layers = (visualizers?.getVisualizers() ?? [])
-      .sort((a, b) => (a.priority === b.priority ? a.order - b.order : a.priority - b.priority))
-      .map((v, idx) => {
-        // // typescript for some reason can't figure out the type of `v` so we make sure to cast it to the
-        // // type that it should be (Visualizer)
-        // const visualizer: Visualizer = v;
-
-        v.setCallbacks({
-          onClick: (content: PopupContent | null) => {
-            this.setPopup({ id: v.info.id, content });
-          },
-          onHover: (content: PopupContent | null) => {
-            this.setPopup({ id: v.info.id, content });
-          }
-        });
-        v.setLayerOrder(idx);
-        return v.getLayer(this.timestamp);
+    this.layers = (visualizers?.getVisualizers() ?? []).map((v, idx) => {
+      v.setCallbacks({
+        onClick: (content: PopupContent | null) => {
+          this.setPopup({ id: v.info.id, content });
+        },
+        onHover: (content: PopupContent | null) => {
+          this.setPopup({ id: v.info.id, content });
+        }
       });
+      v.setLayerOrder(idx);
+      return v.getLayer(this.timestamp);
+    });
   }
 
   setPopup({ id, content }: { id: string; content: PopupContent | null }) {

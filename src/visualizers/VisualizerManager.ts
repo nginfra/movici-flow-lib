@@ -1,17 +1,17 @@
-import { getVisualizer, Visualizer, VisualizerInfo } from './index';
+import { getVisualizer, Visualizer } from './index';
 import isEqual from 'lodash/isEqual';
 import isError from 'lodash/isError';
 
 import { determineChanges } from '../components/map/mapVisHelpers';
 import { DatasetDownloader } from '../utils/DatasetDownloader';
-import { AnyVisualizerInfo } from './VisualizerInfo';
+import { ComposableVisualizerInfo } from './VisualizerInfo';
 import { Backend } from '../types/backend';
 
 type VMCallback = (params: CallbackPayload) => void;
 
 interface CallbackPayload {
   manager: VisualizerManager;
-  info?: AnyVisualizerInfo;
+  info?: ComposableVisualizerInfo;
   error?: Error | unknown;
 }
 type CallbackEvent = 'success' | 'create' | 'delete' | 'error';
@@ -25,14 +25,14 @@ type CallbackEvent = 'success' | 'create' | 'delete' | 'error';
  *     `VisualizerManager.updateVisualizers()`
  *   * onFailure: A callback (or array of callbacks) that is invoked when an uncaught error is
  *     thrown during updating the visualizers. Note: many errors are caught by the process of
- *     updating the visualizers, and these errors are instead stored in the `AnyVisualizerInfo.errors`
+ *     updating the visualizers, and these errors are instead stored in the `ComposableVisualizerInfo.errors`
  *     dictionary. In these cases, the `onFailure` callbacks are not invoked
  */
 export default class VisualizerManager {
   protected backend: Backend;
   protected visualizers: Record<string, Visualizer>;
-  private desiredInfos: AnyVisualizerInfo[];
-  private currentInfos: AnyVisualizerInfo[];
+  private desiredInfos: ComposableVisualizerInfo[];
+  private currentInfos: ComposableVisualizerInfo[];
   protected callbacks: Record<CallbackEvent, VMCallback[]>;
   private loading: boolean;
 
@@ -69,7 +69,7 @@ export default class VisualizerManager {
     this.callbacks[event].push(...callbacks);
   }
 
-  async updateVisualizers(layerInfos: AnyVisualizerInfo[]): Promise<void> {
+  async updateVisualizers(layerInfos: ComposableVisualizerInfo[]): Promise<void> {
     this.desiredInfos = layerInfos;
     if (this.loading) {
       return;
@@ -98,7 +98,7 @@ export default class VisualizerManager {
     this.finalize();
   }
 
-  private async doUpdateVisualizers(layerInfos: AnyVisualizerInfo[]): Promise<void> {
+  private async doUpdateVisualizers(layerInfos: ComposableVisualizerInfo[]): Promise<void> {
     const [layersToAdd, layersToRemove] = determineChanges(layerInfos, this.currentInfos);
     this.removeVisualizers(layersToRemove);
     this.createVisualizers(layersToAdd);
@@ -111,14 +111,14 @@ export default class VisualizerManager {
     this.currentInfos = layerInfos;
   }
 
-  private removeVisualizers(layers: AnyVisualizerInfo[]): void {
+  private removeVisualizers(layers: ComposableVisualizerInfo[]): void {
     layers.forEach(info => {
       delete this.visualizers[info.id];
       this.invokeCallbacks('delete', { manager: this, info });
     });
   }
 
-  private createVisualizers(layers: AnyVisualizerInfo[]) {
+  private createVisualizers(layers: ComposableVisualizerInfo[]) {
     layers.forEach(info => {
       info.unsetError('create');
       let visualizer: Visualizer;
@@ -138,10 +138,7 @@ export default class VisualizerManager {
     });
   }
 
-  private createVisualizer(layerInfo: AnyVisualizerInfo): Visualizer {
-    if (layerInfo instanceof VisualizerInfo && !layerInfo.geometry) {
-      throw new Error('Layer has no geometry defined');
-    }
+  private createVisualizer(layerInfo: ComposableVisualizerInfo): Visualizer {
     if (!layerInfo.datasetUUID) {
       throw new Error(
         `Invalid dataset ${layerInfo.datasetName} for layer ${layerInfo.id}: no UUID`

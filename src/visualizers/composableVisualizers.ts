@@ -1,5 +1,5 @@
 import { getTapefiles, SinglePropertyTapefile } from './tapefile';
-import { AnyVisualizerInfo, ComposableVisualizerInfo } from './VisualizerInfo';
+import { ComposableVisualizerInfo } from './VisualizerInfo';
 import { Layer } from '@deck.gl/core';
 import {
   ComponentProperty,
@@ -31,7 +31,8 @@ abstract class ComposableVisualizer<
     Layer_ extends Layer<LData>
   >
   extends BaseVisualizer<EntityData, Coordinate, LData, Layer_>
-  implements VisualizerCallbacks {
+  implements VisualizerCallbacks
+{
   attributes: Record<string, ((t: SinglePropertyTapefile<VisualizableDataTypes>) => void)[]>;
   tapefiles: Record<string, SinglePropertyTapefile<VisualizableDataTypes>>;
   declare topology?: LData[];
@@ -78,7 +79,7 @@ abstract class ComposableVisualizer<
     return this.modules;
   }
 
-  setInfo(info: AnyVisualizerInfo) {
+  setInfo(info: ComposableVisualizerInfo) {
     if (!(info instanceof ComposableVisualizerInfo)) {
       throw new Error('unsupported VisualizerInfo');
     }

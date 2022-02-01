@@ -1,22 +1,14 @@
 import { Layer } from '@deck.gl/core';
-import {
-  Coordinate,
-  EntityGroupData,
-  LayerKind,
-  PopupCallback,
-  TopologyLayerData,
-  VisualizerConfigurationSettings
-} from '../types';
+import { Coordinate, EntityGroupData, PopupCallback, TopologyLayerData } from '../types';
 import { TopologyGetter } from './geometry';
 import { DatasetDownloader } from '../utils/DatasetDownloader';
-import { AnyVisualizerInfo, ComposableVisualizerInfo, VisualizerInfo } from './VisualizerInfo';
-import { hasOwnProperty } from '../utils';
+import { ComposableVisualizerInfo } from './VisualizerInfo';
 
 export interface VisualizerContext {
   datasetStore: DatasetDownloader;
   onLoad?: () => void;
   onError?: (err: Error) => void;
-  info: VisualizerInfo | ComposableVisualizerInfo;
+  info: ComposableVisualizerInfo;
 }
 
 export const DIMENSIONS = {
@@ -36,7 +28,7 @@ export abstract class BaseVisualizer<
   Layer_ extends Layer<LData>
 > {
   datasetStore: DatasetDownloader;
-  info: VisualizerInfo | ComposableVisualizerInfo;
+  info: ComposableVisualizerInfo;
   order: number;
   onClick: PopupCallback;
   onHover: PopupCallback;
@@ -59,20 +51,8 @@ export abstract class BaseVisualizer<
     return `${this.info.id}`;
   }
 
-  get kind(): LayerKind {
-    if (hasOwnProperty(this.info.settings, 'kind')) {
-      return this.info.settings.kind;
-    }
-    return LayerKind.UNKNOWN;
-  }
-
   get orderedId(): string {
     return `${this.info.id}-${this.order}`;
-  }
-
-  get priority(): number {
-    const layerOrder = [LayerKind.HEAT_MAP, LayerKind.UNKNOWN];
-    return layerOrder.indexOf(this.kind);
   }
 
   async load(callbacks?: {
@@ -100,11 +80,7 @@ export abstract class BaseVisualizer<
     return !this.loaded;
   }
 
-  settings<T extends VisualizerConfigurationSettings>() {
-    return this.info.settings as Required<T>;
-  }
-
-  setInfo(info: AnyVisualizerInfo) {
+  setInfo(info: ComposableVisualizerInfo) {
     this.info = info;
   }
 

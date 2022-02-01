@@ -1,11 +1,11 @@
 import { Nullable } from '@movici-flow-common/types';
 import { getVisualizerType, VisualizerConstructor } from '@movici-flow-common/visualizers';
-import { AnyVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
+import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 
 export function determineChanges(
-  newLayers: AnyVisualizerInfo[],
-  oldLayers: AnyVisualizerInfo[]
-): [AnyVisualizerInfo[], AnyVisualizerInfo[]] {
+  newLayers: ComposableVisualizerInfo[],
+  oldLayers: ComposableVisualizerInfo[]
+): [ComposableVisualizerInfo[], ComposableVisualizerInfo[]] {
   const [toCreate, toDiscard, toKeep] = determineChangedIDs(newLayers, oldLayers);
   const [moreToCreate, moreToDiscard] = determineChangedVisualizers(toKeep, oldLayers);
 
@@ -16,9 +16,9 @@ export function determineChanges(
 }
 
 function determineChangedIDs(
-  newLayers: AnyVisualizerInfo[],
-  oldLayers: AnyVisualizerInfo[]
-): [AnyVisualizerInfo[], AnyVisualizerInfo[], AnyVisualizerInfo[]] {
+  newLayers: ComposableVisualizerInfo[],
+  oldLayers: ComposableVisualizerInfo[]
+): [ComposableVisualizerInfo[], ComposableVisualizerInfo[], ComposableVisualizerInfo[]] {
   const oldIds = new Set(oldLayers.map(l => l.id));
   const newIds = new Set(newLayers.map(l => l.id));
   const toCreate = newLayers.filter(l => !oldIds.has(l.id));
@@ -28,9 +28,9 @@ function determineChangedIDs(
 }
 
 function determineChangedVisualizers(
-  newLayers: AnyVisualizerInfo[],
-  oldLayers: AnyVisualizerInfo[]
-): [AnyVisualizerInfo[], AnyVisualizerInfo[], AnyVisualizerInfo[]] {
+  newLayers: ComposableVisualizerInfo[],
+  oldLayers: ComposableVisualizerInfo[]
+): [ComposableVisualizerInfo[], ComposableVisualizerInfo[], ComposableVisualizerInfo[]] {
   const oldLayerVisualizerTypes = oldLayers.reduce(
     (obj: Record<string, Nullable<VisualizerConstructor>>, l) => {
       obj[l.id] = getVisualizerType(l);
@@ -38,11 +38,11 @@ function determineChangedVisualizers(
     },
     {}
   );
-  const oldLayersByID = oldLayers.reduce((obj: Record<string, AnyVisualizerInfo>, l) => {
+  const oldLayersByID = oldLayers.reduce((obj: Record<string, ComposableVisualizerInfo>, l) => {
     obj[l.id] = l;
     return obj;
   }, {});
-  const [toCreate, toDiscard, toKeep]: AnyVisualizerInfo[][] = [[], [], []];
+  const [toCreate, toDiscard, toKeep]: ComposableVisualizerInfo[][] = [[], [], []];
   for (const layer of newLayers) {
     if (getVisualizerType(layer) === oldLayerVisualizerTypes[layer.id]) {
       toKeep.push(layer);

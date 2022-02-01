@@ -7,7 +7,6 @@ import {
 } from '../types';
 import { TimelineDownloader } from '../utils/timeline';
 import { DatasetDownloader } from '../utils/DatasetDownloader';
-import { VisualizerInfo } from './VisualizerInfo';
 
 interface TapefileUpdate<T> {
   timestamp: number;
@@ -24,23 +23,6 @@ function getEmptyUpdate(timestamp: number): TapefileUpdate<never> {
     indices: [],
     data: []
   };
-}
-
-export async function layerInfoToTapefile<T>(
-  layerInfo: VisualizerInfo,
-  property: ComponentProperty,
-  store: DatasetDownloader
-): Promise<SinglePropertyTapefile<T>> {
-  if (!layerInfo.scenarioUUID) {
-    throw new Error('Missing scenarioUUID');
-  }
-  return (
-    await getTapefiles<T>({
-      store,
-      entityGroup: layerInfo.entityGroup,
-      properties: [property]
-    })
-  )[0];
 }
 
 export async function getTapefiles<T>(config: {

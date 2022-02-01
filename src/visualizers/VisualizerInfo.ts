@@ -1,16 +1,4 @@
-import {
-  EntityGeometry,
-  FlowVisualizerConfig,
-  FlowVisualizerOptions,
-  LayerKind,
-  PropertyType,
-  UUID,
-  VisualizationMode,
-  VisualizerConfigurationSettings,
-  VisualizerViewConfig
-} from '../types';
-import { hasOwnProperty, propertyString } from '..//utils';
-import { cleanVisualizerSettings } from './visualizerHelpers';
+import { FlowVisualizerConfig, FlowVisualizerOptions, VisualizationMode } from '../types';
 
 abstract class BaseVisualizerInfo {
   name: string;
@@ -58,52 +46,6 @@ abstract class BaseVisualizerInfo {
     this.errors = Object.assign({}, this.errors);
   }
 }
-export class VisualizerInfo extends BaseVisualizerInfo {
-  /**
-   * This class contains information about a visualizer. It contains information about what to
-   * visualize, such as the datasetName and entityGroup, information specific to the Visualizer
-   * (settings) and more contextual information (errors, and an onProgress callback)
-   * */
-  geometry: EntityGeometry | null;
-  settings: VisualizerConfigurationSettings;
-
-  constructor(config?: Partial<VisualizerInfo>) {
-    super(config);
-    this.geometry = config?.geometry ?? null;
-    this.settings = config?.settings ?? { kind: LayerKind.UNKNOWN };
-  }
-
-  get id(): string {
-    let rv = `${this.settings.kind}-${this.datasetName}/${this.entityGroup}`;
-    if (hasOwnProperty(this.settings, 'property') && this.settings.property) {
-      rv += '/' + propertyString(this.settings.property as PropertyType);
-    }
-    if (this.geometry) {
-      rv += '-' + this.geometry;
-    }
-
-    return rv;
-  }
-
-  /**
-   * Create a `VisualizerInfo` object from a `VisualizerViewConfig`. This also requires giving the
-   * scenario UUID. The `VisualizerInfo` must still be validated for any content errors.
-   * @param config: VisualizerViewConfig
-   * @param scenarioUUID: A Scenario UUID
-   */
-  static fromLayerConfig(config: VisualizerViewConfig, scenarioUUID: UUID) {
-    return new VisualizerInfo({
-      scenarioUUID,
-      name: config.name,
-      geometry: config.geometry as EntityGeometry,
-      datasetName: config.dataset_name,
-      entityGroup: config.entity_group,
-      mode: config.mode,
-      visible: config.visible,
-      settings: cleanVisualizerSettings(config.settings)
-    });
-  }
-}
 
 export class ComposableVisualizerInfo extends BaseVisualizerInfo {
   settings?: FlowVisualizerOptions;
@@ -125,8 +67,6 @@ export class ComposableVisualizerInfo extends BaseVisualizerInfo {
     };
   }
 }
-
-export type AnyVisualizerInfo = VisualizerInfo | ComposableVisualizerInfo;
 
 function randomID(): string {
   return Math.random().toString(36);
