@@ -2,9 +2,11 @@
   <div>
     <div class="columns mb-0 layer-kind">
       <div class="column is-two-thirds-desktop is-full-tablet show-when is-flex">
-        <b-checkbox v-model="showPopup" size="is-small">
-          {{ $t('flow.visualization.popup.showPopup') }}
-        </b-checkbox>
+        <b-field class="show-popup">
+          <b-checkbox v-model="showPopup" size="is-small">
+            {{ $t('flow.visualization.popup.showPopup') }}
+          </b-checkbox>
+        </b-field>
         <b-field
           class="when ml-6"
           v-if="showPopup"

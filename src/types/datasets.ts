@@ -34,11 +34,11 @@ export interface GeneralSection {
 export interface RawSpecialValues {
   [key: string]: number;
 }
-export interface EntityGroupSpecialValues<T=unknown> {
+export interface EntityGroupSpecialValues<T = unknown> {
   [key: string]: T | undefined;
 }
 export interface DatasetSpecialValues {
-  [key: string]: EntityGroupSpecialValues
+  [key: string]: EntityGroupSpecialValues;
 }
 export interface Update {
   created_on: number;

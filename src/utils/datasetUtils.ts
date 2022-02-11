@@ -1,4 +1,4 @@
-import { GeneralSection, RawSpecialValues, DatasetSpecialValues } from "@movici-flow-common/types";
+import { GeneralSection, RawSpecialValues, DatasetSpecialValues } from '@movici-flow-common/types';
 
 export function specialValues(generalSection: GeneralSection): DatasetSpecialValues {
   if (generalSection.special !== undefined) {

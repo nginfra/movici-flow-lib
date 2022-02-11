@@ -1,10 +1,12 @@
 <template>
   <b-collapse v-model="isOpen">
     <template #trigger="{ open }">
-      <b-icon size="is-small" :icon="open ? 'angle-up' : 'angle-down'"></b-icon>
-      <label class="is-size-6-half mb-2">
-        {{ $t('flow.visualization.colorConfig.advanced.title') }}
-      </label>
+      <span class="is-flex is-align-items-center mb-2">
+        <b-icon size="is-small" :icon="open ? 'angle-up' : 'angle-down'"></b-icon>
+        <label class="is-size-6-half ml-1">
+          {{ $t('flow.visualization.colorConfig.advanced.title') }}
+        </label>
+      </span>
     </template>
     <div class="columns mt-4 is-multiline">
       <div class="column py-0 is-two-thirds-desktop">

@@ -1,4 +1,3 @@
-import { result } from 'lodash';
 import { ComponentProperty, EntityGroupSpecialValues, Update, UpdateWithData } from '../types';
 import { Backend } from '../types/backend';
 import { specialValues } from './datasetUtils';

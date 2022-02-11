@@ -16,9 +16,11 @@
     "exportCSV": "Export to CSV",
     "generate": "Generate",
     "leave": "Leave",
+    "load": "Load",
     "refresh": "Refresh",
     "reset": "Reset",
     "save": "Save",
+    "saveAsNew": "Save as new",
     "saveAndGenerate": "Save and generate",
     "search": "Search",
     "select": "Select",
@@ -104,6 +106,8 @@
     "visualization": {
       "basedOn": "Based on",
       "byValue": "By value",
+      "viewUpToDate": "View is up to date!",
+      "unsavedChanges": "You have unsaved changes!",
       "colorConfig": {
         "buckets": "Buckets",
         "color": "Colour",

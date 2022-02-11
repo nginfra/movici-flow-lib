@@ -11,7 +11,22 @@
         @save-view="confirmSaveView"
         @save-view-as-new="saveViewAsNew"
         @reset-view="confirmResetViewWithName"
-      />
+      >
+        <template #quickSave>
+          <span class="is-relative quick-save-container">
+            <b-button
+              icon-pack="fak"
+              icon-left="fa-mov-save"
+              size="is-small"
+              @click="saveView(view.uuid)"
+              class="py-0 is-transparent is-borderless quick-save"
+              :title="isDirtyLabel"
+            >
+            </b-button>
+            <div v-if="isCurrentViewDirty" class="notification-marker"></div>
+          </span>
+        </template>
+      </ViewInfoBox>
       <b-tabs
         ref="tabs"
         class="flow-tabs uppercase field is-flex-grow-0 is-flex-shrink-2"
@@ -74,7 +89,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Ref, Vue } from 'vue-property-decorator';
+import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator';
 import { CameraOptions, TimeOrientedSimulationInfo, UUID, View, VisualizationMode } from '../types';
 import MapVis from './map/MapVis.vue';
 import FlowContainer from './FlowContainer.vue';
@@ -94,10 +109,10 @@ import TimeSlider from './map_widgets/TimeSlider.vue';
 import { simplifiedCamera, visualizerSettingsValidator } from '../visualizers/viewHelpers';
 import { buildFlowUrl, getEntitySummary } from '../utils';
 import isEqual from 'lodash/isEqual';
-import isError from 'lodash/isError';
 import FlowLegend from './map_widgets/FlowLegend.vue';
 import { successMessage } from '../utils/snackbar';
 import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
+import { isError } from 'lodash';
 
 @Component({
   components: {
@@ -118,7 +133,7 @@ import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-a
   },
   beforeRouteLeave(to: unknown, from: unknown, next: () => void) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((this as any).hasPendingChanges) {
+    if ((this as any).isCurrentViewDirty) {
       this.$buefy.dialog.confirm({
         message: '' + this.$t('flow.visualization.dialogs.unsavedView'),
         cancelText: '' + this.$t('actions.cancel'),
@@ -139,6 +154,7 @@ export default class FlowVisualization extends Vue {
   @Prop([String]) currentViewUUID?: UUID;
   @Ref('tabs') readonly tabs?: Vue;
   tabHeight: Partial<CSSStyleDeclaration> = {};
+  isCurrentViewDirty = false;
 
   // mapVis vars
   viewName = 'Untitled';
@@ -192,9 +208,19 @@ export default class FlowVisualization extends Vue {
   }
 
   get hasPendingChanges() {
-    return !this.view
-      ? this.visualizers.length || this.viewName !== 'Untitled'
-      : isEqual(this.serializeCurrentView(), this.view);
+    const currentView = { ...this.view },
+      serializedView = this.serializeCurrentView();
+
+    return !isEqual(
+      {
+        visualizers: currentView.config?.visualizers,
+        name: currentView.name
+      },
+      {
+        visualizers: serializedView.config?.visualizers,
+        name: serializedView.name
+      }
+    );
   }
 
   get hasGeocodeCapabilities() {
@@ -205,7 +231,13 @@ export default class FlowVisualization extends Vue {
     return flowStore.hasProjectsCapabilities;
   }
 
-  async reloadWithViewUrl(viewUUID: string) {
+  get isDirtyLabel() {
+    return this.isCurrentViewDirty
+      ? this.$t('flow.visualization.unsavedChanges')
+      : this.$t('flow.visualization.viewUpToDate');
+  }
+
+  async reloadWithViewUrl(viewUUID?: string, reload?: boolean) {
     await this.$router.push(
       buildFlowUrl('FlowVisualization', {
         project: this.currentProject?.name,
@@ -213,6 +245,9 @@ export default class FlowVisualization extends Vue {
         view: viewUUID
       })
     );
+    if (reload) {
+      this.$router.go(0);
+    }
   }
 
   /**
@@ -223,9 +258,10 @@ export default class FlowVisualization extends Vue {
    *   ui like we do in webviz
    */
   async loadView(view: View) {
-    // just update in case it's different
+    // just reload in case it's different
     if (view.uuid && view.uuid !== this.currentViewUUID) {
-      this.reloadWithViewUrl(view.uuid);
+      this.reloadWithViewUrl(view.uuid, true);
+      return;
     }
 
     this.view = view;
@@ -264,11 +300,29 @@ export default class FlowVisualization extends Vue {
     if (typeof view.config.timestamp === 'number') {
       this.timestamp = view.config.timestamp;
     }
+
+    this.updateIsViewDirty(this.hasPendingChanges);
   }
 
   saveViewAsNew() {
     delete this.view?.uuid;
     this.confirmSaveView();
+  }
+
+  async saveView(viewUUID?: string) {
+    const view = this.serializeCurrentView();
+    if (viewUUID) {
+      await this.updateView({ view, viewUUID });
+    } else {
+      const resp = await this.createView({ view });
+      if (resp?.uuid) {
+        viewUUID = resp.uuid;
+        await this.reloadWithViewUrl(resp.uuid);
+      }
+    }
+
+    this.view = { ...view, uuid: viewUUID, scenario_uuid: this.currentScenario?.uuid };
+    this.updateIsViewDirty(this.hasPendingChanges);
   }
 
   async confirmSaveView() {
@@ -286,12 +340,15 @@ export default class FlowVisualization extends Vue {
         cancelText: '' + this.$t('actions.cancel'),
         confirmText: '' + this.$t('misc.yes'),
         type: 'is-primary',
-        onConfirm: () => this.updateView({ view, viewUUID }).then(() => {})
+        onConfirm: () => {
+          this.saveView(viewUUID).then(() => {});
+        }
       });
     } else {
       const resp = await this.createView({ view });
 
       if (resp && resp.uuid) {
+        this.updateIsViewDirty(this.hasPendingChanges);
         await this.reloadWithViewUrl(resp.uuid);
       }
     }
@@ -311,7 +368,11 @@ export default class FlowVisualization extends Vue {
         cancelText: '' + this.$t('actions.cancel'),
         confirmText: '' + this.$t('misc.yes'),
         type: 'is-danger',
-        onConfirm: () => this.deleteView({ viewUUID }).then(() => {})
+        onConfirm: () =>
+          this.deleteView({ viewUUID }).then(() => {
+            this.resetView();
+            this.reloadWithViewUrl();
+          })
       });
     } else {
       this.$buefy.dialog.alert('' + this.$t('flow.visualization.dialogs.noViewToDelete'));
@@ -349,6 +410,16 @@ export default class FlowVisualization extends Vue {
     } else {
       throw new Error('Cannot save View without a scenario');
     }
+  }
+
+  @Watch('viewName')
+  @Watch('visualizers')
+  onUpdateView() {
+    this.updateIsViewDirty(this.hasPendingChanges);
+  }
+
+  updateIsViewDirty(newValue: boolean) {
+    this.isCurrentViewDirty = newValue;
   }
 
   async validateForContentErrors(info: ComposableVisualizerInfo) {
@@ -433,9 +504,9 @@ export default class FlowVisualization extends Vue {
   }
 
   async resetView() {
-    this.view = null;
     this.viewName = 'Untitled';
     this.visualizers = [];
+    this.view = this.serializeCurrentView();
   }
 
   /**
@@ -448,15 +519,13 @@ export default class FlowVisualization extends Vue {
    */
   async mounted() {
     try {
-      let view: View | null = null;
-
       flowUIStore.setLoading({ value: true, msg: 'Loading visualization...' });
+      this.resetView();
 
-      if (!this.currentProjectName || !this.currentScenarioName) {
-        if (this.currentViewUUID) {
-          view = await flowVisualizationStore.getViewById(this.currentViewUUID);
-          await flowStore.setupFlowStoreByView(view);
-        }
+      if (this.currentViewUUID) {
+        const view = await flowVisualizationStore.getViewById(this.currentViewUUID);
+        await flowStore.setupFlowStoreByView(view);
+        await this.loadView(view);
       } else {
         await flowStore.setupFlowStore({
           config: {
@@ -467,17 +536,6 @@ export default class FlowVisualization extends Vue {
           },
           reset: false
         });
-
-        if (!view && this.currentScenario?.uuid) {
-          await flowVisualizationStore.getViewsByScenario(this.currentScenario.uuid);
-          if (this.currentViewUUID) {
-            view = this.views.find(v => v.uuid === this.currentViewUUID) ?? null;
-          }
-        }
-      }
-
-      if (view) {
-        await this.loadView(view);
       }
 
       flowUIStore.setLoading({ value: false });
@@ -491,4 +549,19 @@ export default class FlowVisualization extends Vue {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.quick-save-container {
+  .notification-marker {
+    width: 0.3em;
+    height: 0.3em;
+    border-radius: 100%;
+    background: $red;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+  .quick-save {
+    color: $primary;
+  }
+}
+</style>

@@ -65,7 +65,7 @@
         v-if="showOnHeader('visibility')"
         @click="toggleVisibility()"
         class="visibility mr-1"
-        :class="`has-text-${value.visible ? 'primary' : 'grey'}`"
+        :class="{ enabled: value.visible }"
       >
         <b-icon
           size="is-small"
@@ -212,6 +212,10 @@ $container-bg: $white-ter;
       margin: 4px 0;
       &.visibility {
         font-size: 20px;
+        color: $grey;
+        &.enabled {
+          color: $primary;
+        }
       }
       &.edit,
       &.open,

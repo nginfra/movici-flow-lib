@@ -77,6 +77,8 @@ export default class MovActionMenu extends Mixins(FixedPosition) {
       color: $black;
       font-size: 0.8em;
       &:hover {
+        padding-left: 1.5em;
+        transition: padding 0.2s linear;
         color: $primary;
         background-color: $primary-invert;
         .icon {

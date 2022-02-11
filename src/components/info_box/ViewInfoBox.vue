@@ -1,30 +1,33 @@
 <template>
   <div class="current-visualization is-flex is-align-items-flex-end">
     <ViewLoaderModal
-      v-if="loadViewDialog"
+      v-if="loadModal"
       @input="$emit('load-view', $event)"
       :views="views"
-      @close="loadViewDialog = false"
+      @close="loadModal = false"
     ></ViewLoaderModal>
     <div class="info is-flex-grow-1">
       <label class="is-size-7 is-block">
         {{ $t('flow.visualization.infoLabel') }}
       </label>
-      <b-input
-        class="view-name-input is-size-6-half"
-        :value="name"
-        @input="updateVisualizationName"
-      ></b-input>
+      <span class="is-flex is-align-items-center is-flex-grow-1">
+        <b-input
+          class="is-flex-grow-1 view-name-input is-size-6-half"
+          :value="name"
+          @input="updateVisualizationName"
+        ></b-input>
+        <slot name="quickSave"></slot>
+        <MovActionMenu
+          :value="actions"
+          @loadViewDialog="loadViewDialog"
+          @saveView="$emit('save-view')"
+          @saveViewAsNew="$emit('save-view-as-new')"
+          @deleteView="$emit('delete-view')"
+          @resetView="$emit('reset-view')"
+          @close="openMenu = false"
+        />
+      </span>
     </div>
-    <MovActionMenu
-      :value="actions"
-      @loadViewDialog="startLoadingView"
-      @saveView="$emit('save-view')"
-      @saveViewAsNew="$emit('save-view-as-new')"
-      @deleteView="$emit('delete-view')"
-      @resetView="$emit('reset-view')"
-      @close="openMenu = false"
-    />
   </div>
 </template>
 
@@ -42,34 +45,34 @@ export default class ViewInfoBox extends Vue {
   @Prop({ type: String })
   name!: string;
   openMenu = false;
-
+  loadModal = false;
   actions: ActionMenuItem[] = [
     {
-      label: 'New view',
+      label: this.$t('actions.addNew') + ' ' + this.$t('resources.view'),
       icon: 'file',
       iconPack: 'far',
       event: 'resetView'
     },
     {
-      label: 'Load view',
+      label: this.$t('actions.load') + ' ' + this.$t('resources.views') + '...',
       icon: 'map',
       iconPack: 'far',
       event: 'loadViewDialog'
     },
     {
-      label: 'Save',
+      label: this.$t('actions.save') + ' ' + this.$t('resources.view'),
       icon: 'fa-mov-save',
       iconPack: 'fak',
       event: 'saveView'
     },
     {
-      label: 'Save as new...',
+      label: this.$t('actions.saveAsNew') + '...',
       icon: 'fa-mov-save',
       iconPack: 'fak',
       event: 'saveViewAsNew'
     },
     {
-      label: 'Delete',
+      label: '' + this.$t('actions.delete') + ' ' + this.$t('resources.view'),
       icon: 'trash',
       iconPack: 'far',
       event: 'deleteView',
@@ -77,15 +80,13 @@ export default class ViewInfoBox extends Vue {
     }
   ];
 
-  loadViewDialog = false;
-
   get views() {
     return flowVisualizationStore.views;
   }
 
-  async startLoadingView() {
+  async loadViewDialog() {
     await flowVisualizationStore.getViewsByScenario(flowStore.scenario?.uuid);
-    this.loadViewDialog = true;
+    this.loadModal = true;
   }
 
   handleEvent(name: string) {

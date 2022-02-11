@@ -1,7 +1,7 @@
 <template>
   <section class="visualizer-editor overflow">
     <header class="mb-2 is-flex">
-      <h1 class="is-size-4 has-text-weight-bold">
+      <h1 class="is-size-4 has-text-weight-bold mr-2">
         {{
           value.settings
             ? $t('flow.visualization.editVisualizer')
@@ -114,7 +114,7 @@
       <div class="left is-flex is-flex-grow-1"></div>
       <div class="right is-flex">
         <b-button
-          class="is-transparent has-text-primary is-borderless"
+          class="mr-2 is-transparent has-text-primary is-borderless"
           @click="close"
           size="is-small"
         >
@@ -126,6 +126,8 @@
           @click="submit(false)"
           class="mr-2"
           size="is-small"
+          icon-pack="fak"
+          icon-left="fa-mov-save"
         >
           {{ $t('flow.visualization.save') }}
         </b-button>
@@ -134,6 +136,8 @@
           type="is-primary"
           :disabled="!isDirty"
           @click="submit(true)"
+          icon-pack="fak"
+          icon-left="fa-mov-save"
           size="is-small"
         >
           {{ $t('flow.visualization.saveAndClose') }}
@@ -309,6 +313,11 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
     );
   }
 
+  get hasPendingChanges() {
+    const value = { ...this.value };
+    return !isEqual(this.finalizedVisualizer, value);
+  }
+
   @Watch('currentEntityName')
   afterSetCurrentEntityName(currentEntityName: string, oldName: string) {
     if (!this.displayName || this.displayName === oldName) {
@@ -363,19 +372,17 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
         // then we don't need to check it anymore, it will remain dirty until is saved.
         // Also, when other configurators are mounted, once they stabilize they emit and call this function.
         // But since it is comparing to itself, this !isEqual will remain false
-        this.updateIsDirty(!isEqual(this.settings[clauseType], updatedClause));
         this.$set(this.settings, clauseType, updatedClause);
+        this.updateIsDirty(this.hasPendingChanges);
       } else {
-        this.updateIsDirty(true);
         this.$delete(this.settings, clauseType);
+        this.updateIsDirty(this.hasPendingChanges);
       }
     }
   }
 
   updateIsDirty(value: boolean) {
-    if (!this.isDirty) {
-      this.isDirty = value;
-    }
+    this.isDirty = value;
   }
 
   close() {
@@ -404,6 +411,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
           )
         )
       );
+      this.updateIsDirty(false);
       if (close) this.$emit('close');
     }
   }

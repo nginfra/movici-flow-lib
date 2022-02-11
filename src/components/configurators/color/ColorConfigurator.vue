@@ -2,17 +2,21 @@
   <div>
     <div class="columns mb-0 layer-kind">
       <div class="column is-two-thirds-desktop">
-        <b-radio class="mr-4" v-model="clauseType" native-value="static" size="is-small">
-          {{ $t('flow.visualization.static') }}</b-radio
-        >
-        <b-radio v-model="clauseType" native-value="byValue" size="is-small">
-          {{ $t('flow.visualization.byValue') }}
-        </b-radio>
+        <b-field>
+          <b-radio class="mr-4" v-model="clauseType" native-value="static" size="is-small">
+            {{ $t('flow.visualization.static') }}</b-radio
+          >
+          <b-radio v-model="clauseType" native-value="byValue" size="is-small">
+            {{ $t('flow.visualization.byValue') }}
+          </b-radio>
+        </b-field>
       </div>
       <div class="column is-one-third-desktop">
-        <b-checkbox :value="showLegend" @input="updateShowLegend" size="is-small">
-          {{ $t('flow.visualization.showLegend') }}
-        </b-checkbox>
+        <b-field>
+          <b-checkbox :value="showLegend" @input="updateShowLegend" size="is-small">
+            {{ $t('flow.visualization.showLegend') }}
+          </b-checkbox>
+        </b-field>
       </div>
     </div>
     <div v-if="clauseType">

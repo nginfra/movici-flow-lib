@@ -40,7 +40,9 @@ export async function getTapefiles<T>(config: {
     config.properties,
     config.store
   ).download<T>();
-  return config.properties.map(p => createTapefileFromStateAndUpdates(p, initialData, updates, specialValues));
+  return config.properties.map(p =>
+    createTapefileFromStateAndUpdates(p, initialData, updates, specialValues)
+  );
 }
 
 export function createTapefileFromStateAndUpdates<T>(
@@ -49,7 +51,7 @@ export function createTapefileFromStateAndUpdates<T>(
   updates: EntityUpdate<T>[],
   specialValues?: EntityGroupSpecialValues<T>
 ) {
-  const specialValue = specialValues?.[componentProperty.name]
+  const specialValue = specialValues?.[componentProperty.name];
   const builder = new TapefileBuilder(componentProperty, initialState, specialValue);
   for (let i = 0; i < updates.length; i++) {
     const update = updates[i];
@@ -221,7 +223,12 @@ export class TapefileBuilder<T> {
 
   createTapefile() {
     this.isFinal = true;
-    return new SinglePropertyTapefile(this.componentProperty, this.index.length, this.updates, this.specialValue);
+    return new SinglePropertyTapefile(
+      this.componentProperty,
+      this.index.length,
+      this.updates,
+      this.specialValue
+    );
   }
 }
 
