@@ -4,16 +4,16 @@
       <div id="map" />
       <canvas id="deckgl-overlay" />
       <div class="map-control-zero" v-if="loaded">
-        <slot name="control-zero" :map="map" :on-viewstate-change="updateViewState" />
+        <slot name="control-zero" v-bind="{ ...slotProps }" />
       </div>
       <div class="map-control-left" v-if="loaded">
-        <slot name="control-left" :map="map" :on-viewstate-change="updateViewState" />
+        <slot name="control-left" v-bind="{ ...slotProps }" />
       </div>
       <div class="map-control-right" v-if="loaded">
-        <slot name="control-right" :map="map" :on-viewstate-change="updateViewState" />
+        <slot name="control-right" v-bind="{ ...slotProps }" />
       </div>
       <div class="map-control-bottom" v-if="loaded">
-        <slot name="control-bottom" :map="map" :on-viewstate-change="updateViewState" />
+        <slot name="control-bottom" v-bind="{ ...slotProps }" />
       </div>
       <template v-if="loaded">
         <slot name="map" :map="map" :deck="deck" :view-state="value" />
@@ -28,8 +28,8 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Deck as DeckGL, Layer } from '@deck.gl/core';
 import { DeckProps, PickInfo } from '@deck.gl/core/lib/deck';
-import { hasOwnProperty } from '@movici-flow-common/utils';
-import { CameraOptions, Nullable } from '@movici-flow-common/types';
+import { CameraOptions, CursorCallback, Nullable } from '@movici-flow-common/types';
+import { ControllerOptions } from '@deck.gl/core/controllers/controller';
 
 const DEFAULT_VIEWSTATE = {
   latitude: 51.992381,
@@ -43,34 +43,61 @@ const DEFAULT_VIEWSTATE = {
   name: 'Deck'
 })
 export default class Deck extends Vue {
-  @Prop([Object]) readonly value!: Nullable<CameraOptions>;
-
-  @Prop({
-    type: String,
-    default: 'mapbox://styles/mapbox/light-v10'
-  })
-  readonly basemap!: string;
-
-  @Prop({
-    type: String,
-    default: process.env.VUE_APP_MAPBOX_TOKEN
-  })
-  readonly accessToken!: string;
-
-  @Prop({
-    type: Array,
-    default() {
-      return [];
-    }
-  })
-  readonly layers!: Layer<unknown>[];
+  @Prop({ type: Object }) readonly value!: Nullable<CameraOptions>;
+  @Prop({ type: String, default: 'mapbox://styles/mapbox/light-v10' }) readonly basemap!: string;
+  @Prop({ type: String, default: process.env.VUE_APP_MAPBOX_TOKEN }) readonly accessToken!: string;
+  @Prop({ type: Object }) readonly controller!: ControllerOptions;
+  @Prop({ type: Array, default: () => [] }) readonly layers!: Layer<unknown>[];
   map: mapboxgl.Map | null = null;
   deck: DeckGL | null = null;
   loaded = false;
+  getCursor: CursorCallback | null = null;
+  onClickListener = new Map<string, (event: PickInfo<unknown>) => void>();
+
+  get slotProps() {
+    return {
+      map: this.map,
+      registerMapOnClick: this.registerMapOnClick,
+      onViewstateChange: this.updateViewState,
+      setCursorCallback: this.setCursorCallback
+    };
+  }
+
+  registerMapOnClick(callbacks: Record<string, (event: PickInfo<unknown>) => void>) {
+    Object.entries(callbacks).forEach(([key, callback]) => this.onClickListener.set(key, callback));
+  }
+
+  setCursorCallback(cb: CursorCallback) {
+    this.getCursor = cb || (() => null);
+  }
 
   @Watch('basemap')
   setStyle() {
     this.map?.setStyle(this.basemap);
+  }
+
+  @Watch('layers')
+  renderDeck() {
+    if (!this.deck) {
+      throw new Error('No Deck to render');
+    }
+    if (!this.map) {
+      throw new Error('Cannot render deck when Map is not initialized');
+    }
+
+    this.deck.setProps({ layers: this.layers });
+  }
+
+  @Watch('value')
+  updateViewState(viewState: CameraOptions) {
+    this.deck && this.deck.setProps({ viewState });
+    this.map?.jumpTo({
+      center: [viewState.longitude, viewState.latitude],
+      zoom: viewState.zoom,
+      bearing: viewState.bearing,
+      pitch: viewState.pitch
+    });
+    this.$emit('input', viewState);
   }
 
   mounted() {
@@ -97,46 +124,23 @@ export default class Deck extends Vue {
       width: '100%',
       height: '100%',
       initialViewState: viewState,
-      // @ts-expect-error
-      getCursor: ({ isHovering }) => {
-        return isHovering ? 'pointer' : 'initial';
+      onClick: ($event: PickInfo<unknown>) => {
+        this.onClickListener.forEach(cb => cb($event));
       },
-      controller: true,
+      // @ts-expect-error
+      getCursor: ({ isHovering, isDragging }) => {
+        const cursorOverride = this.getCursor?.({ isHovering, isDragging });
+        if (cursorOverride) return cursorOverride;
+        if (isHovering) return 'pointer';
+        if (isDragging) return 'grabbing';
+        return 'grab';
+      },
+      controller: this.controller ?? true,
       layers: [],
       onViewStateChange: ({ viewState }: { viewState: CameraOptions }) => {
         this.updateViewState(viewState);
-      },
-      getTooltip(info: PickInfo<unknown>) {
-        const object = info.object;
-        if (object && typeof object === 'object' && hasOwnProperty(object, 'onHoverText')) {
-          return `${object.onHoverText}`;
-        }
       }
     } as unknown as DeckProps);
-  }
-
-  @Watch('layers')
-  renderDeck() {
-    if (!this.deck) {
-      throw new Error('No Deck to render');
-    }
-    if (!this.map) {
-      throw new Error('Cannot render deck when Map is not initialized');
-    }
-
-    this.deck.setProps({ layers: this.layers });
-  }
-
-  @Watch('value')
-  updateViewState(viewState: CameraOptions) {
-    this.deck && this.deck.setProps({ viewState });
-    this.map?.jumpTo({
-      center: [viewState.longitude, viewState.latitude],
-      zoom: viewState.zoom,
-      bearing: viewState.bearing,
-      pitch: viewState.pitch
-    });
-    this.$emit('input', viewState);
   }
 
   beforeDestroy() {

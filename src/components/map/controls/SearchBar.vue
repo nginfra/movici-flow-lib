@@ -29,7 +29,7 @@
       </template>
     </b-autocomplete>
     <b-button
-      class="expander"
+      class="expander is-border-transparent"
       size="is-small"
       v-show="!expand"
       @click="expandAndFocus"
@@ -192,6 +192,9 @@ export default class SearchBar extends Vue {
   .autocomplete {
     width: 30px;
     ::v-deep {
+      .input {
+        border-color: transparent;
+      }
       .dropdown-menu {
         display: block;
         margin-left: 20%;

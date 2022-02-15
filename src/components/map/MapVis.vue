@@ -4,17 +4,17 @@
       <template v-if="buildings" #map="{ map }">
         <Buildings :map="map" />
       </template>
-      <template #control-zero="{ map, onViewstateChange }">
-        <slot name="control-zero" v-bind="{ ...slotProps, map, onViewstateChange }" />
+      <template #control-zero="deckProps">
+        <slot name="control-zero" v-bind="{ ...slotProps, ...deckProps }" />
       </template>
-      <template #control-left="{ map, onViewstateChange }">
-        <slot name="control-left" v-bind="{ ...slotProps, map, onViewstateChange }" />
+      <template #control-left="deckProps">
+        <slot name="control-left" v-bind="{ ...slotProps, ...deckProps }" />
       </template>
-      <template #control-right="{ map, onViewstateChange }">
-        <slot name="control-right" v-bind="{ ...slotProps, map, onViewstateChange }" />
+      <template #control-right="deckProps">
+        <slot name="control-right" v-bind="{ ...slotProps, ...deckProps }" />
       </template>
-      <template #control-bottom="{ map, onViewstateChange }">
-        <slot name="control-bottom" v-bind="{ ...slotProps, map, onViewstateChange }" />
+      <template #control-bottom="deckProps">
+        <slot name="control-bottom" v-bind="{ ...slotProps, ...deckProps }" />
       </template>
     </Deck>
   </div>
@@ -30,7 +30,7 @@ type SlotProps = {
   closePopup: () => void;
 };
 
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Watch } from 'vue-property-decorator';
 import {
   Backend,
   CameraOptions,
@@ -40,43 +40,26 @@ import {
 import Deck from './Deck.vue';
 import Buildings from './mapLayers/Buildings.vue';
 import defaults from './defaults';
-import { Layer } from '@deck.gl/core';
 import VisualizerManager from '@movici-flow-common/visualizers/VisualizerManager';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { flowStore, flowUIStore } from '@movici-flow-common/store/store-accessor';
+import DeckContainerMixin from './DeckContainerMixin';
 
 @Component({
   name: 'MovMapVis',
   components: { Deck, Buildings }
 })
-export default class MovMapVis extends Vue {
-  @Prop({ type: Array, default: () => [] })
-  readonly layerInfos!: ComposableVisualizerInfo[];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default class MovMapVis extends DeckContainerMixin<any> {
+  @Prop({ type: Array, default: () => [] }) readonly layerInfos!: ComposableVisualizerInfo[];
+  @Prop({ type: Object, default: null }) readonly timelineInfo!: TimeOrientedSimulationInfo | null;
+  @Prop({ type: Object, default: () => defaults.viewState() }) readonly viewState!: CameraOptions;
+  @Prop({ type: Number, default: 0 }) readonly timestamp!: number;
+  @Prop({ type: Boolean, default: false }) readonly buildings!: boolean;
 
-  @Prop({ type: Object, default: null })
-  readonly timelineInfo!: TimeOrientedSimulationInfo | null;
-
-  @Prop({ type: Object, default: () => defaults.viewState() })
-  readonly viewState!: CameraOptions;
-
-  @Prop({ type: Number, default: 0 })
-  readonly timestamp!: number;
-
-  @Prop({ type: Boolean, default: false })
-  readonly buildings!: boolean;
-
-  basemap = 'mapbox://styles/mapbox/light-v10';
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  layers: Layer<any>[] = [];
   visualizers: VisualizerManager | null = null;
-
   popupContent: PopupContent | null = null;
   activePopupId: string | null = null;
-
-  setBasemap(basemap: string) {
-    this.basemap = basemap;
-  }
 
   // Move this inside a store?
   get backend(): Backend | null {
@@ -137,7 +120,7 @@ export default class MovMapVis extends Vue {
 
     const visualizers = this.ensureVisualizers();
 
-    this.layers = (visualizers?.getVisualizers() ?? []).map((v, idx) => {
+    const layers = (visualizers?.getVisualizers() ?? []).map((v, idx) => {
       v.setCallbacks({
         onClick: (content: PopupContent | null) => {
           this.setPopup({ id: v.info.id, content });
@@ -149,6 +132,8 @@ export default class MovMapVis extends Vue {
       v.setLayerOrder(idx);
       return v.getLayer(this.timestamp);
     });
+
+    this.setLayers(layers);
   }
 
   setPopup({ id, content }: { id: string; content: PopupContent | null }) {

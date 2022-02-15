@@ -28,6 +28,15 @@ export function transformArray(arr: CoordinateArray | Coordinate3DArray): Coordi
   return rv;
 }
 
+export function reverseTransformArray(arr: CoordinateArray | Coordinate3DArray): CoordinateArray {
+  const len = arr.length;
+  const rv: CoordinateArray = new Array(arr.length);
+  for (let i = 0; i < len; i++) {
+    rv[i] = reverseTransform(arr[i]);
+  }
+  return rv;
+}
+
 function extractCRSName(geojson: GeoJSON) {
   const crsInfo = geojson.crs;
   let crsName;

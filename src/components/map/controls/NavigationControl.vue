@@ -1,25 +1,24 @@
 <template>
   <div class="nav" :class="{ 'is-right': isRight }">
     <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
-      <button
-        class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-in"
-        type="button"
+      <b-button
+        class="is-border-transparent"
         title="Zoom In"
         @click="zoom++"
+        icon-left="plus"
+        icon-pack="fal"
       >
-        <span class="mapboxgl-ctrl-icon" aria-hidden="true"></span>
-      </button>
-      <button
-        class="mapboxgl-ctrl-icon mapboxgl-ctrl-zoom-out"
-        type="button"
+      </b-button>
+      <b-button
+        class="is-border-transparent"
         title="Zoom Out"
         @click="zoom--"
+        icon-left="minus"
+        icon-pack="fal"
       >
-        <span class="mapboxgl-ctrl-icon" aria-hidden="true"></span>
-      </button>
-      <button
-        class="mapboxgl-ctrl-icon mapboxgl-ctrl-compass"
-        type="button"
+      </b-button>
+      <b-button
+        class="is-border-transparent mapboxgl-ctrl-compass"
         title="Reset View"
         @click="updateViewState({ bearing: 0, pitch: 0, transitionDuration: 200 })"
       >
@@ -28,7 +27,7 @@
           aria-hidden="true"
           :style="{ transform: `rotate(${-bearing}deg)` }"
         ></span>
-      </button>
+      </b-button>
     </div>
   </div>
 </template>
@@ -80,23 +79,34 @@ export default class NavigationControl extends Vue {
 
 .mapboxgl-ctrl-group {
   box-shadow: unset !important;
-  background-color: white;
-  color: #363636;
-  button {
+  background-color: transparent;
+  .button {
     width: 30px;
     height: 30px;
-    border-right: 2px #dbdbdb solid;
-    border-left: 2px #dbdbdb solid;
+    border: 2px $grey-lighter solid;
+    background-color: $white;
+    border-radius: 0 !important;
     &:hover {
-      border-color: #b5b5b5 !important;
+      border-color: $grey-light;
+      color: $grey-darker;
+      background-color: $white;
+    }
+    &:focus {
+      border-color: $primary;
+      color: $grey-darker;
+    }
+    &:active {
+      border-color: $primary;
+      background-color: $primary;
+      color: $white;
     }
     &:first-child {
-      border-radius: 4px 4px 0 0;
-      border-top: 2px #dbdbdb solid;
+      border-top-right-radius: 4px !important;
+      border-top-left-radius: 4px !important;
     }
     &:last-child {
-      border-radius: 0 0 4px 4px;
-      border-bottom: 2px #dbdbdb solid;
+      border-bottom-right-radius: 4px !important;
+      border-bottom-left-radius: 4px !important;
     }
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="basemap-control" :class="{ 'is-right': isRight }" title="Base Maps">
     <b-button
-      class="toggler"
+      class="toggler is-border-transparent"
       size="is-small"
       :type="toggle ? 'is-primary' : ''"
       @click="toggle = !toggle"
@@ -94,7 +94,7 @@ export default class BaseMapControl extends Vue {
       .image {
         border: solid 2px transparent;
         width: 60px;
-        height: 50px;
+        height: 51px;
         @include border-radius;
         &.active {
           border: solid 2px $primary;

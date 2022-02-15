@@ -11,6 +11,19 @@ import {
   DEFAULT_SPECIAL_COLOR_TRIPLE,
   DEFAULT_UNDEFINED_COLOR_TRIPLE
 } from '@movici-flow-common/utils/colorUtils';
+import {
+  ViewMode,
+  DrawPolygonMode,
+  DrawLineStringMode,
+  DrawPointMode,
+  TranslateMode,
+  TransformMode,
+  ModifyMode,
+  MeasureDistanceMode,
+  MeasureAreaMode,
+  MeasureAngleMode
+} from '@nebula.gl/edit-modes';
+import { PickInfo } from 'deck.gl';
 
 export interface ViewConfig {
   project_name: string;
@@ -40,6 +53,36 @@ export interface CameraOptions {
   minZoom?: number;
   maxZoom?: number;
 }
+
+export interface FeatureDrawOption {
+  id: string;
+  title: string;
+  order?: number;
+  icon: string;
+  pack?: string;
+  activeColor: string;
+  enabled: () => boolean;
+  container?: string;
+  nebulaMode?: () => NebulaMode;
+  modeConfig?: { [key: string]: unknown };
+  options?: FeatureDrawOption[];
+}
+
+export type CursorCallback = (input: { isHovering: boolean; isDragging: boolean }) => null | string;
+export type MapOnClickCallback = (input: PickInfo<unknown>) => void;
+
+export type NebulaMode =
+  | DrawLineStringMode
+  | DrawPointMode
+  | DrawPolygonMode
+  | TranslateMode
+  | ViewMode
+  | TranslateMode
+  | TransformMode
+  | ModifyMode
+  | MeasureDistanceMode
+  | MeasureAreaMode
+  | MeasureAngleMode;
 
 export enum VisualizationMode {
   GEOMETRY = 'geometry',
