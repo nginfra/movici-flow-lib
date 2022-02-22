@@ -7,7 +7,7 @@ export interface DatasetCollection {
 
 export class Dataset {
   name: string;
-  display_name: string;
+  display_name?: string | null;
   uuid: UUID;
   type: string;
   has_data: boolean;
@@ -17,7 +17,7 @@ export class Dataset {
   general?: GeneralSection;
   constructor(config?: Partial<Dataset>) {
     this.name = config?.name ?? 'unknown_dataset';
-    this.display_name = config?.display_name || this.name;
+    this.display_name = config?.display_name || null;
     this.uuid = config?.uuid ?? '<unknown_uuid>';
     this.type = config?.type ?? 'unknown';
     this.has_data = config?.has_data ?? false;

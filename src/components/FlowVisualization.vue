@@ -72,9 +72,9 @@
         </template>
         <template #control-right="{ popupContent, dynamicPopup, closePopup }">
           <FlowLegend v-if="visualizers.length" :value="visualizers" />
-          <StaticDataView v-if="popupContent && !dynamicPopup">
+          <WidgetContainer v-if="popupContent && !dynamicPopup">
             <DataViewContent @close="closePopup" :value="popupContent" :timestamp="timestamp" />
-          </StaticDataView>
+          </WidgetContainer>
         </template>
         <template #control-bottom="{ updateTimestamp }">
           <TimeSlider
@@ -98,7 +98,7 @@ import { ComposableVisualizerInfo } from '../visualizers/VisualizerInfo';
 import FlowLayerPicker from './widgets/FlowLayerPicker.vue';
 import DynamicDataView from './map_widgets/DynamicDataView.vue';
 import DataViewContent from './map_widgets/DataViewContent.vue';
-import StaticDataView from './map_widgets/StaticDataView.vue';
+import WidgetContainer from './map_widgets/WidgetContainer.vue';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
 import ViewInfoBox from './info_box/ViewInfoBox.vue';
@@ -127,7 +127,7 @@ import { isError } from 'lodash';
     BaseMapControl,
     TimeSlider,
     DynamicDataView,
-    StaticDataView,
+    WidgetContainer,
     DataViewContent,
     FlowLegend
   },

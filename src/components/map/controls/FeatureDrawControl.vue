@@ -71,6 +71,7 @@ import {
   FeatureDrawOption,
   NebulaMode
 } from '@movici-flow-common/types';
+import { sortByKeys } from '@movici-flow-common/utils';
 
 const SELECTED_FEATURE_COLOR_FILL: RGBAColor = [26, 182, 126, 90],
   SELECTED_FEATURE_COLOR: RGBAColor = [26, 182, 126],
@@ -273,7 +274,7 @@ export default class FeatureDrawControl extends Vue {
     });
 
     // sort the intermediate array by opt.order
-    rv.sort((a, b) => (a.order as number) - (b.order as number));
+    rv.sort(sortByKeys(['+order']));
 
     const options: FeatureDrawOption[] = [];
 

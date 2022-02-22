@@ -11,8 +11,8 @@
         </span>
         <b-field class="scenario-model-type-list overflow-hover is-flex-grow-0 is-flex-shrink-2">
           <ul class="flow-list is-size-7">
-            <li v-for="(model, key) in currentScenario.models" :key="key" :title="model.name">
-              {{ model.name | snakeToSpaces | upperFirst }}
+            <li v-for="(model, key) in scenarioModels" :key="key" :title="model.name">
+              {{ model.name }}
             </li>
           </ul>
         </b-field>
@@ -22,8 +22,8 @@
         </span>
         <b-field class="scenario-dataset-list overflow-hover is-flex-grow-0 is-flex-shrink-2">
           <ul class="flow-list is-size-7">
-            <li v-for="(dataset, key) in currentScenario.datasets" :key="key" :title="dataset.name">
-              {{ dataset.name | snakeToSpaces | upperFirst }}
+            <li v-for="(dataset, key) in scenarioDatasets" :key="key" :title="dataset.name">
+              {{ dataset.name }}
             </li>
           </ul>
         </b-field>
@@ -64,7 +64,7 @@
           </div>
           <div class="status">
             <span class="is-size-7 mr-2">Status:</span>
-            <span class="tag" :class="statusClass(currentScenario.status)">
+            <span class="tag" :class="getClassFromScenarioStatus(currentScenario.status)">
               {{ currentScenario.status }}
             </span>
           </div>
@@ -103,7 +103,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Scenario, UUID } from '../types';
 import FlowContainer from './FlowContainer.vue';
 import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
-import { buildFlowUrl, getClassFromStatus } from '../utils';
+import { buildFlowUrl, sortByKeys, getClassFromScenarioStatus } from '../utils';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
 
@@ -143,6 +143,14 @@ export default class FlowScenario extends Vue {
     return JSON.stringify(this.currentScenario, null, 2);
   }
 
+  get scenarioModels() {
+    return this.currentScenario?.models?.sort(sortByKeys(['+name'])) ?? [];
+  }
+
+  get scenarioDatasets() {
+    return this.currentScenario?.datasets?.sort(sortByKeys(['+name'])) ?? [];
+  }
+
   get isDisabled() {
     return true;
   }
@@ -174,9 +182,7 @@ export default class FlowScenario extends Vue {
     flowUIStore.setLoading({ value: false });
   }
 
-  statusClass(type: string) {
-    return getClassFromStatus(type);
-  }
+  getClassFromScenarioStatus = getClassFromScenarioStatus;
 
   /**
    * Checks whether there are props for project and scenario.

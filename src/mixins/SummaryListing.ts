@@ -37,14 +37,10 @@ export default class SummaryListing extends Vue {
     return rv.length ? rv[0] : null;
   }
 
-  @Watch('currentDatasetName')
-  async getSummary(currentDatasetName?: string | null) {
-    if (!currentDatasetName) return;
-
-    this.currentDatasetUUID = this.datasets.find(d => d.name === currentDatasetName)?.uuid ?? null;
-
-    if (this.currentDatasetUUID) {
-      this.summary = await flowStore.getDatasetSummary({ datasetUUID: this.currentDatasetUUID });
+  @Watch('currentDatasetUUID')
+  async getSummaryByUUID(currentDatasetUUID?: string | null) {
+    if (currentDatasetUUID) {
+      this.summary = await flowStore.getDatasetSummary({ datasetUUID: currentDatasetUUID });
     }
 
     if (!this.summary || !this.summary.entity_groups.find(e => e.name === this.currentEntityName)) {
@@ -53,7 +49,10 @@ export default class SummaryListing extends Vue {
     }
   }
 
-  async getAvailableDatasets() {
-    this.datasets = (await flowStore.getDatasets()) ?? [];
+  @Watch('currentDatasetName')
+  async getSummary(currentDatasetName?: string | null) {
+    if (!currentDatasetName) return;
+
+    this.currentDatasetUUID = this.datasets.find(d => d.name === currentDatasetName)?.uuid ?? null;
   }
 }

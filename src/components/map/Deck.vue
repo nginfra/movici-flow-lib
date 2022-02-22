@@ -156,8 +156,6 @@ export default class Deck extends Vue {
 <style scoped lang="scss">
 #mapbox-container {
   width: 100%;
-  height: 100vh;
-
   & > #map,
   & > #deckgl-overlay {
     position: absolute;
@@ -178,6 +176,9 @@ export default class Deck extends Vue {
       position: absolute;
       top: 10px;
       left: 10px;
+      display: flex;
+      flex-direction: column;
+      align-content: flex-start;
       transition: transform 0.5s;
       & > * {
         margin-bottom: 8px;
@@ -189,6 +190,9 @@ export default class Deck extends Vue {
     }
 
     .map-control-right {
+      display: flex;
+      flex-direction: column;
+      align-content: flex-end;
       position: absolute;
       top: 10px;
       right: 10px;

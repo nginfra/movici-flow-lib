@@ -1,4 +1,4 @@
-import { hexToColorTriple } from '@movici-flow-common/visualizers/maps/colorMaps';
+import { hexToColorTriple, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
 
 export interface ColorPaletteParams {
   name: string;
@@ -118,11 +118,11 @@ export const DEFAULT_COLOR_PALETTES = addReversedColorPalettes({
     }),
     new ColorPalette({
       name: 'Traffic Congestion',
-      colors: ['#1AB67E', '#E54B4B', '#F19744', '#892D2D'],
+      colors: [MoviciColors.GREEN, MoviciColors.RED, MoviciColors.ORANGE, MoviciColors.YELLOW],
       colorsForSize: {
         2: [0, 1],
         3: [0, 2, 1],
-        4: [0, 2, 1, 3]
+        4: [0, 3, 2, 1]
       }
     })
   ],
@@ -266,14 +266,14 @@ export const DEFAULT_COLOR_PALETTES = addReversedColorPalettes({
     new ColorPalette({
       name: 'Stochastic',
       colors: [
-        '#1AB67E',
-        '#5571F2',
-        '#E54B4B',
-        '#A258DC',
-        '#F18759',
-        '#E8B53E',
-        '#915135',
-        '#9E9E9E'
+        MoviciColors.GREEN,
+        MoviciColors.BLUE,
+        MoviciColors.RED,
+        MoviciColors.PURPLE,
+        MoviciColors.ORANGE,
+        MoviciColors.YELLOW,
+        MoviciColors.BROWN,
+        MoviciColors.LIGHT_GREY
       ],
       colorsForSize: {
         2: [0, 1],

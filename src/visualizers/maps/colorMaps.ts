@@ -1,24 +1,13 @@
-import {
-  RGBAColor,
-  ColorMapColorSettings,
-  ColorRuleSelector,
-  ColorRuleSet,
-  Nullable,
-  PropertyType,
-  Mapper
-} from '@movici-flow-common/types';
-import { propertyString } from '@movici-flow-common/utils';
-import isEmpty from 'lodash/isEmpty';
-import cloneDeep from 'lodash/cloneDeep';
+import { RGBAColor, Nullable, Mapper } from '@movici-flow-common/types';
 
 export const MoviciColors = {
-  PURPLE: '#A258DC',
   GREEN: '#1AB67E',
   ORANGE: '#F18759',
   RED: '#E54B4B',
   BLUE: '#5571F2',
   LIGHT_BLUE: '#99AAF7',
   YELLOW: '#E8B53E',
+  PURPLE: '#A258DC',
   PINK: '#F98BA6',
   LIGHT_PINK: '#F5B7B7',
   LIGHTEST_PINK: '#FADBDB',
@@ -29,133 +18,6 @@ export const MoviciColors = {
   VERY_DARK_GREY: '#202020',
   BLACK: '#000000'
 };
-
-export function mergeColorRuleSets(...ruleSets: ColorRuleSet[]): ColorRuleSet {
-  if (ruleSets.length === 0) {
-    return {
-      colors: {},
-      rules: []
-    };
-  }
-  const rv = cloneDeep(ruleSets[0]);
-  for (const ruleset of ruleSets.splice(1)) {
-    Object.assign(rv.colors, ruleset.colors);
-    rv.rules.push(...(ruleset.rules || []));
-  }
-  return rv;
-}
-
-/**
- * Generates Color settings for a `ColorMap` based on a `ColorRuleSet`. `ColorRule`s
- * are applied until all required fields are set
- * @param entityGroup: The entity type to visualize
- * @param property: The property/attribute
- * @param ruleSet: a color rule set
- *
- * @returns `ColorMapColorSettings`
- */
-export function generateColorSettings(
-  entityGroup: string,
-  property: PropertyType | null,
-  ruleSet: ColorRuleSet
-): ColorMapColorSettings {
-  const rules = ruleSet.rules.slice().sort((a, b) => a.priority - b.priority);
-  const requiredKeys: Set<keyof ColorMapColorSettings> = new Set([
-    'colors',
-    'specialColor',
-    'undefinedColor',
-    'baseColor'
-  ]);
-  const result: Partial<ColorMapColorSettings> = {};
-  for (const rule of rules) {
-    if (Array.from(requiredKeys).every(k => Object.prototype.hasOwnProperty.call(result, k))) break;
-    if (!selectorMatches(entityGroup, property, rule.selector)) continue;
-
-    if (!result.baseColor && rule.settings.baseColor) {
-      result.baseColor = ruleSet.colors[rule.settings.baseColor] ?? rule.settings.baseColor;
-    }
-
-    if (!result.specialColor && rule.settings.specialColor) {
-      result.specialColor =
-        ruleSet.colors[rule.settings.specialColor] ?? rule.settings.specialColor;
-    }
-
-    if (!result.undefinedColor && rule.settings.undefinedColor) {
-      result.undefinedColor =
-        ruleSet.colors[rule.settings.undefinedColor] ?? rule.settings.undefinedColor;
-    }
-
-    if (!result.colors && rule.settings.colors) {
-      result.colors = rule.settings.colors;
-
-      for (const color of result.colors) {
-        if (color[1] === null) {
-          continue;
-        }
-        color[1] = ruleSet.colors[color[1]] ?? color[1];
-      }
-    }
-  }
-  if (!hasAllKeys(result, Array.from(requiredKeys))) {
-    throw new Error('Incomplete Color Map Settings');
-  }
-
-  return result;
-}
-
-function hasAllKeys<T>(obj: Partial<T>, keys: Array<keyof T>): obj is T {
-  return keys.every(k => Object.prototype.hasOwnProperty.call(obj, k));
-}
-
-function selectorMatches(
-  entityGroup: string,
-  property: PropertyType | null,
-  selector: ColorRuleSelector
-) {
-  if (isEmpty(selector)) return false;
-  if (selectorMatchesAlways(entityGroup, property, selector)) return true;
-
-  return (
-    selectorMatchesProperty(entityGroup, property, selector) &&
-    selectorMatchesEntityGroup(entityGroup, property, selector) &&
-    selectorMatchesDataType(entityGroup, property, selector)
-  );
-}
-function selectorMatchesEntityGroup(
-  entityGroup: string,
-  property: PropertyType | null,
-  selector: ColorRuleSelector
-): boolean {
-  return selector.entity_group ? selector.entity_group === entityGroup : true;
-}
-
-function selectorMatchesProperty(
-  entityGroup: string,
-  property: PropertyType | null,
-  selector: ColorRuleSelector
-): boolean {
-  if (!selector.property) {
-    return true;
-  }
-  return property ? selector.property === propertyString(property) : false;
-}
-function selectorMatchesDataType(
-  entityGroup: string,
-  property: PropertyType | null,
-  selector: ColorRuleSelector
-): boolean {
-  if (!selector.data_type) {
-    return true;
-  }
-  return property ? selector.data_type === property.data_type : false;
-}
-function selectorMatchesAlways(
-  entityGroup: string,
-  property: PropertyType | null,
-  selector: ColorRuleSelector
-) {
-  return !!selector.always;
-}
 
 interface ColormapConfig {
   colors: [number, RGBAColor][];

@@ -1,53 +1,71 @@
 <template>
-  <b-collapse class="box entity-summary" animation="slide" aria-id="entitySummary">
-    <template #trigger="{ open }">
-      <div class="is-flex" aria-controls="entitySummary">
-        <label class="label is-flex-grow-1 is-size-6-half">
+  <WidgetContainer collapsable>
+    <template #collapse-title="{ collapsed }">
+      <div
+        class="is-flex-direction-row-reverse is-align-content-space-between is-flex is-align-items-center is-clickable"
+        aria-controls="entity-summary"
+      >
+        <b-tooltip
+          position="is-left"
+          size="is-small"
+          type="is-black"
+          :label="$t('flow.datasets.entitySummary')"
+          :active="collapsed"
+          :delay="1000"
+        >
+          <b-icon pack="far" :icon="collapsed ? 'stream' : 'minus-square'"></b-icon>
+        </b-tooltip>
+        <label class="label is-flex-grow-1 mb-0" v-show="!collapsed">
           {{ $t('flow.datasets.entitySummary') }}
-          <span class="count">({{ entityGroupsFiltered.length }})</span>
         </label>
-        <b-icon size="is-small" pack="far" :icon="!open ? 'expand' : 'compress'"></b-icon>
       </div>
     </template>
-    <div class="box-content mt-2">
-      <b-field class="entity-selector">
-        <ul class="flow-list entities-list is-size-7">
-          <li v-for="(group, idx) in entityGroupsFiltered" :key="group.name" :title="group.name">
-            <b-checkbox v-model="activeEntityGroups[idx]" size="is-small">
-              {{ group.name | snakeToSpaces | upperFirst }} ({{ group.count }})
-            </b-checkbox>
-            <GeometrySelector
-              class="entity-geometry-selector ml-5"
-              v-show="activeEntityGroups[idx]"
-              :properties="group.properties"
-              :value="group.type"
-              @input="$set(group, 'type', $event)"
-              showAs="radio"
-            />
-          </li>
-          <li class="zero-results has-text-danger" v-if="!entityGroupsFiltered.length">
-            {{ $t('flow.datasets.zeroEntities') }}
-          </li>
-        </ul>
-      </b-field>
-    </div>
-  </b-collapse>
+    <template #collapse-content>
+      <div class="box-content mt-2">
+        <b-field class="entity-selector">
+          <ul class="flow-list entities-list is-size-7">
+            <li
+              class="pl-0 mb-0"
+              v-for="(group, idx) in entityGroupsFiltered"
+              :key="group.name"
+              :title="group.name"
+            >
+              <b-checkbox v-model="activeEntityGroups[idx]" size="is-small" style="">
+                {{ group.name | snakeToSpaces | upperFirst }} ({{ group.count }})
+              </b-checkbox>
+              <GeometrySelector
+                class="entity-geometry-selector ml-5"
+                v-show="activeEntityGroups[idx]"
+                :properties="group.properties"
+                :value="group.type"
+                @input="$set(group, 'type', $event)"
+                showAs="radio"
+              />
+            </li>
+            <li class="zero-results has-text-danger" v-if="!entityGroupsFiltered.length">
+              {{ $t('flow.datasets.zeroEntities') }}
+            </li>
+          </ul>
+        </b-field>
+      </div>
+    </template>
+  </WidgetContainer>
 </template>
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import { hexToColorTriple, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { EntityGroupSummary, ScenarioDataset, VisualizationMode } from '@movici-flow-common/types';
-
 import { isLines, isPoints, isPolygons } from '@movici-flow-common/visualizers/geometry';
-
 import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
 import GeometrySelector from './GeometrySelector.vue';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
+import WidgetContainer from '@movici-flow-common/components/map_widgets/WidgetContainer.vue';
 
 @Component({
   components: {
-    GeometrySelector
+    GeometrySelector,
+    WidgetContainer
   }
 })
 export default class EntitySelector extends Mixins(SummaryListing) {
@@ -55,15 +73,25 @@ export default class EntitySelector extends Mixins(SummaryListing) {
   @Prop() datasetsArray!: ScenarioDataset[];
   @Prop() currentDataset!: ScenarioDataset | null;
   activeEntityGroups: boolean[] = [];
+  isOpen = true;
+  colors = [
+    MoviciColors.GREEN,
+    MoviciColors.BLUE,
+    MoviciColors.RED,
+    MoviciColors.PURPLE,
+    MoviciColors.ORANGE,
+    MoviciColors.YELLOW,
+    MoviciColors.BROWN,
+    MoviciColors.LIGHT_GREY
+  ];
 
   /**
    * Filters out any entity group that can't be showed on the map
    */
-
   @Watch('currentDataset')
   getEntitySummary() {
     if (this.currentDataset) {
-      this.currentDatasetName = this.currentDataset?.name;
+      this.currentDatasetUUID = this.currentDataset?.uuid;
     }
   }
 
@@ -75,6 +103,10 @@ export default class EntitySelector extends Mixins(SummaryListing) {
   @Watch('entityGroupsFiltered')
   resetActive(entityGroupsFiltered: EntityGroupSummary[]) {
     this.activeEntityGroups = Array(entityGroupsFiltered.length).fill(false);
+  }
+
+  getMoviciColor(idx: number) {
+    return hexToColorTriple(this.colors[idx % this.colors.length]);
   }
 
   get entityGroupsFiltered() {
@@ -94,6 +126,25 @@ export default class EntitySelector extends Mixins(SummaryListing) {
         const active: boolean | undefined = this.activeEntityGroups?.[idx];
 
         if (this.currentDataset && active && group.type) {
+          const items = group.properties
+            .filter(prop => {
+              return (
+                prop.data_type === 'INT' ||
+                prop.data_type === 'DOUBLE' ||
+                prop.data_type === 'BOOLEAN' ||
+                prop.data_type === 'STRING'
+              );
+            })
+            .map(prop => {
+              return { name: prop.name, attribute: prop };
+            })
+            .sort((a, b) => {
+              // make sure id is on top
+              if (a.name === 'id') return -1;
+              if (b.name === 'id') return 1;
+              return 0;
+            });
+
           return new ComposableVisualizerInfo({
             datasetName: this.currentDataset.name,
             datasetUUID: this.currentDataset.uuid,
@@ -103,26 +154,16 @@ export default class EntitySelector extends Mixins(SummaryListing) {
             settings: {
               type: group.type,
               popup: {
-                title: 'Preview',
+                title: '',
                 when: 'onClick',
                 position: 'static',
-                items: group.properties
-                  .filter(prop => {
-                    return (
-                      prop.data_type === 'INT' ||
-                      prop.data_type === 'DOUBLE' ||
-                      prop.data_type === 'BOOLEAN' ||
-                      prop.data_type === 'STRING'
-                    );
-                  })
-                  .map(prop => {
-                    return { name: prop.name, attribute: prop };
-                  }),
-                show: true
+                dynamicTitle: true,
+                show: true,
+                items
               },
               color: {
                 static: {
-                  color: hexToColorTriple(MoviciColors.DARK_GREY)
+                  color: this.getMoviciColor(idx)
                 }
               }
             }
@@ -141,22 +182,15 @@ export default class EntitySelector extends Mixins(SummaryListing) {
 </script>
 
 <style scoped lang="scss">
+.box {
+  min-width: 200px;
+  max-width: 300px;
+  padding: 0.75rem;
+}
 .entity-summary {
-  min-width: 225px;
-  padding: 8px;
-  .icon {
-    height: 24px;
-    width: 24px;
-  }
-  .label {
-    padding: 0 8px;
-    margin: 0;
-  }
   .entity-selector {
     .entities-list {
-      padding-right: 0;
       li {
-        margin-bottom: 0;
         background-color: $white !important;
         ::v-deep .checkbox {
           .control-label {

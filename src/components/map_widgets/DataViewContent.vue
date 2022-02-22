@@ -1,24 +1,23 @@
 <template>
   <div>
     <div class="header align-items-center is-flex mb-1">
-      <label class="label is-size-6-half is-flex-grow-1 has-text-weight-bold">
-        {{ title }}
+      <label class="label is-size-6 is-flex-grow-1 mb-0" :title="titleTooltip">
+        <template v-if="dynamicTitle">
+          {{ dynamicTitle }}
+        </template>
+        <template v-else>
+          {{ title }}
+        </template>
       </label>
-      <b-button
-        class="close is-borderless is-transparent"
-        icon-pack="far"
-        icon-left="times"
-        @click="$emit('close')"
-        size="is-small"
-        v-if="value.when !== 'onHover'"
-      >
-      </b-button>
+      <span class="close is-clickable" @click="$emit('close')" v-if="value.when !== 'onHover'">
+        <b-icon pack="far" icon="times"></b-icon>
+      </span>
     </div>
     <ul class="attributes">
       <li class="is-flex is-size-7" v-for="(item, idx) in filteredItems" :key="idx">
         <span class="name is-flex-grow-1 mr-2">
           {{ item.name }}
-          <span class="unit" v-if="item.attribute.unit"> ({{ item.attribute.unit }})</span>:
+          <span class="unit" v-if="item.attribute.unit">({{ item.attribute.unit }})</span>:
         </span>
         <span class="value has-text-weight-bold">{{ formatValue(item) }}</span>
       </li>
@@ -38,12 +37,19 @@ export default class DataViewContent extends Vue {
   @Prop({ type: Number, default: null }) readonly timestamp!: number | null;
 
   get title() {
+    return this.value?.title;
+  }
+
+  get dynamicTitle() {
     if (this.value?.dynamicTitle) {
       const { value, attribute } = this.items[0];
       return this.formatValue({ value, attribute });
-    } else {
-      return this.value?.title;
     }
+    return null;
+  }
+
+  get titleTooltip() {
+    return this.value?.dynamicTitle ? this.items[0].name : this.title;
   }
 
   get items(): {
@@ -70,7 +76,7 @@ export default class DataViewContent extends Vue {
   }
 
   get filteredItems() {
-    return this.value?.dynamicTitle ? this.items.filter((val, idx) => idx !== 0) : this.items;
+    return this.dynamicTitle ? this.items.filter((val, idx) => idx !== 0) : this.items;
   }
 
   formatValue({ value, attribute }: { value: unknown; attribute: PropertyType }) {
@@ -109,15 +115,6 @@ export default class DataViewContent extends Vue {
 </script>
 
 <style scoped lang="scss">
-.header {
-  min-height: 1.5rem;
-  .label {
-    margin: 0;
-  }
-  .close {
-    margin: -0.25rem -0.5rem 0 0;
-  }
-}
 .attributes {
   color: $black;
   .value {

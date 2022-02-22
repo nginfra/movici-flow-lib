@@ -1,41 +1,46 @@
 <template>
-  <div v-if="legendList.length" class="legends popup-fixed" :class="{ minimized: !isOpen }">
-    <div class="box">
-      <b-collapse animation="none " aria-id="legend-container" v-model="isOpen">
-        <template #trigger="{ open }">
-          <div
-            class="is-flex-direction-row-reverse is-align-content-space-between is-flex is-align-items-center is-clickable"
-            aria-controls="legend-container"
-          >
-            <b-icon title="Legend" pack="far" :icon="!open ? 'list' : 'expand'"></b-icon>
-            <label class="label is-flex-grow-1 is-size-6 mb-0" v-show="open">
-              {{ $t('flow.legend.label') }}
+  <WidgetContainer collapsable>
+    <template #collapse-title="{ collapsed }">
+      <div
+        class="is-flex-direction-row-reverse is-align-content-space-between is-flex is-align-items-center is-clickable"
+        aria-controls="legend-container"
+      >
+        <b-tooltip
+          position="is-left"
+          size="is-small"
+          type="is-black"
+          :label="$t('flow.legend.label')"
+          :active="collapsed"
+          :delay="1000"
+        >
+          <b-icon pack="far" :icon="collapsed ? 'list' : 'minus-square'"></b-icon>
+        </b-tooltip>
+        <label class="label is-flex-grow-1 is-size-6" v-show="!collapsed">
+          {{ $t('flow.legend.label') }}
+        </label>
+      </div>
+    </template>
+    <template #collapse-content>
+      <div class="legend-container pr-2 overflow">
+        <div class="legend" v-for="(legendItem, idx) in legendList" :key="idx">
+          <div class="legend-header mb-1">
+            <label class="is-italic is-size-6-half" v-if="legendItem.title">
+              {{ legendItem.title }}
+            </label>
+            <label
+              class="label has-text-weight-light is-size-7 has-text-grey"
+              v-if="legendItem.label"
+            >
+              {{ legendItem.label }}
+              <strong v-if="legendItem.unit">({{ legendItem.unit }})</strong>
             </label>
           </div>
-        </template>
-        <div class="legend-container mt-2 pr-2 overflow">
-          <div class="legend mt-2" v-for="(legendItem, idx) in legendList" :key="idx">
-            <div class="legend-header mb-1">
-              <label class="label is-size-6-half mb-0" v-if="legendItem.title">
-                {{ legendItem.title }}
-              </label>
-              <label
-                class="label has-text-weight-light is-size-7 has-text-grey"
-                v-if="legendItem.label"
-              >
-                {{ legendItem.label }}
-                <strong v-if="legendItem.unit">({{ legendItem.unit }})</strong>
-              </label>
-            </div>
-            <!-- Color Buckets -->
-            <ColorBucketLegend :value="legendItem" v-if="isBuckets(legendItem)" />
-            <!-- Color Gradient -->
-            <ColorGradientLegend :value="legendItem" v-if="isGradient(legendItem)" />
-          </div>
+          <ColorBucketLegend :value="legendItem" v-if="isBuckets(legendItem)" />
+          <ColorGradientLegend :value="legendItem" v-if="isGradient(legendItem)" />
         </div>
-      </b-collapse>
-    </div>
-  </div>
+      </div>
+    </template>
+  </WidgetContainer>
 </template>
 
 <script lang="ts">
@@ -51,15 +56,15 @@ import {
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import ColorBucketLegend from './ColorBucketLegend.vue';
 import ColorGradientLegend from './ColorGradientLegend.vue';
+import WidgetContainer from './WidgetContainer.vue';
 
 @Component({
   name: 'FlowLegend',
-  components: { ColorBucketLegend, ColorGradientLegend }
+  components: { ColorBucketLegend, ColorGradientLegend, WidgetContainer }
 })
 export default class FlowLegend extends Vue {
   @Prop({ type: Array, default: () => [] }) value!: ComposableVisualizerInfo[];
   legendList: LegendItem[] = [];
-  isOpen = true;
 
   isBuckets(legendItem: LegendItem) {
     return legendItem.colorType === 'buckets';
@@ -129,20 +134,4 @@ export default class FlowLegend extends Vue {
 }
 </script>
 
-<style scoped lang="scss">
-.legends {
-  &.minimized {
-    max-width: 3rem;
-    max-height: 3rem;
-    .box {
-      min-width: auto;
-      max-width: auto;
-    }
-  }
-  .box {
-    min-width: 200px;
-    max-width: 300px;
-    padding: 0.75rem;
-  }
-}
-</style>
+<style scoped lang="scss"></style>

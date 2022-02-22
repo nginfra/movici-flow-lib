@@ -75,26 +75,46 @@ function extractDefinedValues(obj: Record<string, string | undefined>) {
     return prev;
   }, {} as Record<string, string>);
 }
+
+export function getClassFromDatasetStatus(status: string) {
+  let statusClass = '';
+  switch (status) {
+    case 'Empty':
+      statusClass = 'is-warning';
+      break;
+    case 'Done':
+      statusClass = 'is-primary';
+      break;
+    default:
+      statusClass = 'is-white';
+      break;
+  }
+  return statusClass;
+}
+
 /**
  * Receives a scenario status and returns a Bulma class for the color
  * @param status
  */
-export function getClassFromStatus(status: string): string {
-  let statusClass = 'is-';
+export function getClassFromScenarioStatus(status: string): string {
+  let statusClass = '';
   switch (status) {
     case 'Failed':
     case 'Unknown':
     case 'Invalid':
     case 'Cancelled':
-      statusClass += 'danger';
+      statusClass = 'is-danger';
       break;
     case 'Ready':
     case 'Running':
     case 'Pending':
-      statusClass += 'info';
+      statusClass = 'is-info';
       break;
     case 'Succeeded':
-      statusClass += 'primary';
+      statusClass = 'is-primary';
+      break;
+    default:
+      statusClass = 'is-white';
       break;
   }
   return statusClass;
@@ -118,4 +138,64 @@ export function getStatusFromScenarioAndSimulation(
 
 function getStatusOrUnknown(obj: ShortScenario | Simulation) {
   return obj.status ? obj.status : 'Unknown';
+}
+
+/**
+ * Sorts an array by a series of keys, ascending or descending
+ * @param keys string[] - a string array of attributes of K, but appended with a minus (-) and (maybe) a plus (+) sign
+ * @param allowNull boolean - if false will trigger error if the value of a key is null or undefined
+ * @returns sorting order function
+ */
+export function sortByKeys<K>(keys: string[], allowNull = true) {
+  const order: number[] = [];
+  // remapping the keys, slicing the - or + sign if needed
+  // also determines the order they will sorted by pushing into order
+  keys = keys.map(key => {
+    const substr = key.substring(0, 1);
+    if (['-', '+'].includes(substr)) {
+      key = key.substring(1);
+    }
+    order.push(substr === '-' ? -1 : 1);
+    return key;
+  });
+
+  return (a: K, b: K) => {
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      // checks if key exists
+      if (hasOwnProperty(a, key) && hasOwnProperty(b, key)) {
+        const rawValueA = a[key],
+          rawValueB = b[key],
+          isNullA = rawValueA == null,
+          isNullB = rawValueB == null;
+
+        // checks for null on each value
+        if (!isNullA && !isNullB) {
+          const getParsedValue = (val: unknown): string | number =>
+              typeof val === 'string' ? val.toUpperCase() : Number(val),
+            valueA = getParsedValue(rawValueA),
+            valueB = getParsedValue(rawValueB);
+
+          // compares values
+          if (valueA > valueB) {
+            return order[i];
+          }
+          if (valueA < valueB) {
+            return -order[i];
+          }
+        } else {
+          // if there is a null, either trigger an error
+          if (!allowNull) throw new Error(`Value is null on key ${key}`);
+          //  or see which is null, and pull it to the bottom
+          if (isNullA && !isNullB) return order[i];
+          if (!isNullA && isNullB) return -order[i];
+        }
+      } else {
+        // if there is an item without key, either trigger an error
+        if (!allowNull) throw new Error(`Key ${key} does not exist on a item in the array`);
+      }
+    }
+
+    return 0;
+  };
 }

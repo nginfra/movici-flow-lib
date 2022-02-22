@@ -285,7 +285,6 @@ export default class DynamicDataView extends Vue {
 
 .attributes {
   color: $black;
-
   .value {
     min-width: 50px;
     text-align: right;

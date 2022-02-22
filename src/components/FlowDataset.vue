@@ -26,13 +26,12 @@
         <ul class="flow-list is-size-7">
           <li
             v-for="dataset in filteredDatasets"
-            :key="dataset.uuid"
             @click="setDataset(dataset)"
-            :title="dataset.display_name"
+            :key="dataset.uuid"
+            :title="datasetDisplayTitleText(dataset)"
             :class="{ active: dataset.uuid === currentDatasetUUID }"
-          >
-            {{ dataset.display_name | snakeToSpaces | upperFirst }}
-          </li>
+            v-html="datasetDisplayName(dataset)"
+          ></li>
         </ul>
       </b-field>
       <b-button
@@ -61,12 +60,14 @@
       <template v-else>
         <header>
           <div class="title-section is-flex is-align-items-baseline">
-            <h1 class="is-size-4 mr-4 has-text-weight-bold" :title="currentDataset.display_name">
-              {{ currentDataset.display_name | snakeToSpaces | upperFirst }}
-            </h1>
+            <h1
+              class="is-size-4 mr-4 has-text-weight-bold"
+              :title="datasetDisplayTitleText(currentDataset)"
+              v-html="datasetDisplayName(currentDataset)"
+            ></h1>
             <h2 class="is-flex-grow-1 is-size-6 has-text-weight-bold" :title="currentDataset.type">
-              {{ $t('resources.dataset_type') }}:
-              {{ currentDataset.type | snakeToSpaces | upperFirst }}
+              {{ $t('properties.type') }}:
+              {{ currentDataset.type }}
             </h2>
           </div>
         </header>
@@ -88,20 +89,20 @@
                 <NavigationControl :value="viewState" @input="onViewstateChange($event)" />
                 <BaseMapControl :value="basemap" @input="setBasemap" />
               </template>
-              <template #control-right="{ popupContent, closePopup, viewState }">
+              <template #control-right="{ map, popupContent, closePopup, viewState }">
                 <EntitySelector
                   :datasetsArray="datasets"
                   :currentDataset="currentDataset"
                   @setLayerInfos="setLayerInfos"
                 ></EntitySelector>
-                <StaticDataView
+                <WidgetContainer
                   v-if="popupContent"
                   :value="popupContent"
                   :map="map"
                   :view-state="viewState"
                 >
                   <DataViewContent @close="closePopup" :value="popupContent" :timestamp="0" />
-                </StaticDataView>
+                </WidgetContainer>
               </template>
             </MapVis>
           </b-tab-item>
@@ -152,9 +153,10 @@ import SearchBar from './map/controls/SearchBar.vue';
 import NavigationControl from './map/controls/NavigationControl.vue';
 import BaseMapControl from './map/controls/BaseMapControl.vue';
 import DataViewContent from './map_widgets/DataViewContent.vue';
-import StaticDataView from './map_widgets/StaticDataView.vue';
+import WidgetContainer from './map_widgets/WidgetContainer.vue';
 import { ComposableVisualizerInfo } from '../visualizers/VisualizerInfo';
 import { flowStore, flowUIStore } from '../store/store-accessor';
+import { sortByKeys } from '@movici-flow-common/utils';
 
 @Component({
   components: {
@@ -166,7 +168,7 @@ import { flowStore, flowUIStore } from '../store/store-accessor';
     NavigationControl,
     BaseMapControl,
     DataViewContent,
-    StaticDataView
+    WidgetContainer
   }
 })
 export default class FlowDataset extends Vue {
@@ -201,17 +203,33 @@ export default class FlowDataset extends Vue {
    * Filters out datasets by search
    */
   get filteredDatasets() {
-    return this.datasets.filter(dataset => {
-      if (dataset.display_name) {
-        return dataset.display_name.toLowerCase().includes(this.search.toLowerCase());
-      }
-      return dataset.name.toLowerCase().includes(this.search.toLowerCase());
-    });
-    // TODO: create reorder
+    return this.datasets
+      .filter(dataset => {
+        const name = (dataset?.display_name || dataset.name).toLowerCase(),
+          searchTerm = this.search.toLowerCase();
+        return name.includes(searchTerm);
+      })
+      .sort(sortByKeys(['+display_name', '+name']));
   }
 
   get hasGeocodeCapabilities() {
     return flowStore.hasGeocodeCapabilities;
+  }
+
+  datasetDisplayName(dataset: Dataset) {
+    if (dataset.display_name) {
+      return `${dataset.display_name} <small>(${dataset.name})</small>`;
+    } else {
+      return dataset.name;
+    }
+  }
+
+  datasetDisplayTitleText(dataset: Dataset) {
+    if (dataset.display_name) {
+      return `${dataset.display_name} (${dataset.name})`;
+    } else {
+      return dataset.name;
+    }
   }
 
   setLayerInfos(layerInfos: ComposableVisualizerInfo[]) {
@@ -224,15 +242,6 @@ export default class FlowDataset extends Vue {
     this.currentDataset = currentDataset;
   }
 
-  actionsHandler(payload: Record<string, string>) {
-    return payload;
-  }
-
-  /**
-   * Checks whether there are props for a project.
-   * If there is a project, we get all datasets for that project
-   * Else, redirect to beggining of Flow.
-   */
   async mounted() {
     flowUIStore.setLoading({ value: true, msg: 'Loading datasets...' });
 
