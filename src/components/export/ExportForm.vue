@@ -81,7 +81,6 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import Modal from '../global/Modal.vue';
 import { Dataset, ScenarioDataset, TimeOrientedSimulationInfo } from '@movici-flow-common/types';
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
@@ -91,7 +90,7 @@ import { flowStore } from '@movici-flow-common/store/store-accessor';
 
 @Component({
   name: 'ExportForm',
-  components: { Modal, TimeSlider }
+  components: { TimeSlider }
 })
 export default class ExportForm extends Mixins(SummaryListing, ValidationProvider) {
   @Prop({ type: Object, default: null }) readonly value!: ComposableVisualizerInfo | null;

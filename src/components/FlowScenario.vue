@@ -90,7 +90,12 @@
             icon="code"
             :label="$t('flow.scenarios.rawConfig')"
           >
-            <b-input v-model="formattedRawData" type="textarea" readonly></b-input>
+            <b-input
+              v-model="formattedRawData"
+              type="textarea"
+              custom-class="monospace"
+              readonly
+            ></b-input>
           </b-tab-item>
         </b-tabs>
       </template>
@@ -240,26 +245,6 @@ header {
 .tab-item {
   .control {
     height: inherit !important;
-    ::v-deep .textarea {
-      max-height: unset !important;
-      min-height: unset !important;
-      height: inherit !important;
-      width: 100% !important;
-      resize: none;
-      font-family: monospace;
-      color: #000;
-      font-size: 0.875em;
-      padding: 1.5rem;
-      white-space: pre;
-      word-wrap: normal;
-      background-color: #f5f5f5 !important;
-      border-radius: unset;
-      border: none !important;
-      overflow: hidden;
-      &:hover {
-        overflow: auto;
-      }
-    }
   }
 }
 </style>

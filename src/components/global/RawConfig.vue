@@ -1,23 +1,9 @@
 <template>
   <div class="has-background-white is-fluid">
-    <div class="is-pulled-right mb-4">
-      <b-button class="mr-2" @click="onCancel">{{ $t('actions.cancel') }}</b-button>
-      <b-button type="is-primary" @click="validateBeforeSave">
-        {{ $t('actions.save') }}
-      </b-button>
-      <div class="is-clearfix"></div>
-    </div>
-    <div class="is-clearfix"></div>
     <b-field :label="label" :type="{ 'is-danger': !isJsonString(formattedRawData) }">
-      <b-input type="textarea" v-model="formattedRawData"></b-input>
+      <b-input custom-class="monospace" type="textarea" v-model="formattedRawData"></b-input>
     </b-field>
-    <div class="is-pulled-right">
-      <b-button class="mr-2" @click="onCancel">{{ $t('actions.cancel') }}</b-button>
-      <b-button type="is-primary" @click="validateBeforeSave">
-        {{ $t('actions.save') }}
-      </b-button>
-    </div>
-    <div class="is-clearfix"></div>
+    <MovSaveCancel is-sticky @save="validateBeforeSave" @cancel="onCancel"></MovSaveCancel>
   </div>
 </template>
 <script lang="ts">
@@ -86,25 +72,4 @@ export default class MovRawConfig extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
-::v-deep .textarea {
-  max-height: unset !important;
-  min-height: unset !important;
-  height: 75vh;
-  width: 100% !important;
-  resize: none;
-  font-family: monospace;
-  color: #000;
-  font-size: 0.875em;
-  padding: 1.5rem;
-  white-space: pre;
-  word-wrap: normal;
-  background-color: $white !important;
-  border-radius: unset;
-  // border: none !important;
-  overflow: hidden;
-  &:hover {
-    overflow: auto;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

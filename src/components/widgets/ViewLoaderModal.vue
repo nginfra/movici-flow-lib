@@ -1,5 +1,5 @@
 <template>
-  <Modal @close="$emit('close')" :can-cancel="['escape', 'outside']" active>
+  <MovModal @close="$emit('close')" :can-cancel="['escape', 'outside']" active>
     <template #header>
       <span class="is-size-6">
         {{
@@ -28,17 +28,15 @@
         </b-button>
       </div>
     </template>
-  </Modal>
+  </MovModal>
 </template>
 
 <script lang="ts">
 import View from '@deck.gl/core/views/view';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import Modal from '.././global/Modal.vue';
 
 @Component({
-  name: 'ViewLoaderModal',
-  components: { Modal }
+  name: 'ViewLoaderModal'
 })
 export default class ViewLoaderModal extends Vue {
   @Prop({ type: Array, default: () => [] }) views!: View[];

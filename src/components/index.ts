@@ -13,6 +13,10 @@ import MovLanguagePicker from './global/LanguagePicker.vue';
 import MovMapVis from './map/MapVis.vue';
 import MovRawConfig from './global/RawConfig.vue';
 import MovTooltipInfo from './global/TooltipInfo.vue';
+import MovSaveCancel from './global/SaveCancel.vue';
+import MovModal from './global/Modal.vue';
+import MovPicker from './global/Picker.vue';
+import MovButtons from './global/Buttons.vue';
 
 export {
   FlowContainer,
@@ -29,5 +33,9 @@ export {
   MovLanguagePicker,
   MovMapVis,
   MovRawConfig,
-  MovTooltipInfo
+  MovTooltipInfo,
+  MovSaveCancel,
+  MovModal,
+  MovPicker,
+  MovButtons
 };

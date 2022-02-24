@@ -21,7 +21,7 @@
           v-for="(item, index) in value"
           :key="index"
           :focusable="false"
-          :disabled="item.isDisabled ? item.isDisabled() : null"
+          :disabled="item.isDisabled"
           :class="item.colorScheme"
           @click="emitAndClose(item.event, $event)"
           class="dropdown-item"
