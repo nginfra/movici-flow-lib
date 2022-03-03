@@ -2,11 +2,17 @@
   <b-tooltip :label="label" type="is-black">
     <b-button
       class="is-borderless"
+      :size="size"
       :class="actionClass"
       :disabled="disabled"
       @click="$emit('click')"
     >
-      <b-icon :icon="icon" :size="minIconSize" :type="type"></b-icon>
+      <!--
+        Even when the button is-small we want the icon to be is-medium. We can safely set the icon
+        size to medium size as bulma automatically scales the icon up when the button becomes larger.
+        The indicated 'is-medium' is therefor only a minimum size.
+      -->
+      <b-icon :icon="icon" size="is-medium" :type="type"></b-icon>
     </b-button>
   </b-tooltip>
 </template>
@@ -14,19 +20,17 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import upperFirst from 'lodash/upperFirst';
+import { MovActionType } from '@movici-flow-common/types';
 
 @Component({ name: 'MovAction' })
 export default class MovAction extends Vue {
-  @Prop({ type: String, default: '' }) readonly action!: string;
+  @Prop({ type: String, default: '' }) readonly action!: MovActionType;
   @Prop({ type: String, default: '' }) readonly size!: string;
   @Prop({ type: Boolean, default: false }) readonly disabled!: boolean;
   disabledType = 'is-inactive';
-  // Even when the button is-small we want the icon to be is-medium. We can safely use this as
-  // the de-facto icon size as bulma automatically scales the icon up when the button becomes larger
-  minIconSize = 'is-medium';
 
   get currentAction() {
-    const action = this.actions[this.action];
+    const action = this.options[this.action];
     if (!action) {
       console.error('Invalid action: ', this.action);
     }
@@ -46,56 +50,56 @@ export default class MovAction extends Vue {
   }
 
   get actionClass() {
-    return `action-${this.action} ${this.size}`;
+    return `action-${this.action}`;
   }
 
-  get actions(): Record<string, { icon: string; type: string }> {
+  get options(): Record<MovActionType, { icon: string; type: string }> {
     return {
-      add: {
+      [MovActionType.ADD]: {
         icon: 'plus',
         type: 'is-primary'
       },
-      view: {
+      [MovActionType.VIEW]: {
         icon: 'eye',
         type: 'is-primary'
       },
-      edit: {
+      [MovActionType.EDIT]: {
         icon: 'pen',
         type: 'is-info'
       },
-      delete: {
+      [MovActionType.DELETE]: {
         icon: 'trash',
         type: 'is-danger'
       },
-      duplicate: {
+      [MovActionType.DUPLICATE]: {
         icon: 'clone',
         type: 'is-primary'
       },
-      download: {
+      [MovActionType.DOWNLOAD]: {
         icon: 'download',
         type: 'is-success'
       },
-      generate: {
+      [MovActionType.GENERATE]: {
         icon: 'play',
         type: 'is-primary'
       },
-      play: {
+      [MovActionType.PLAY]: {
         icon: 'play',
         type: 'is-primary'
       },
-      reset: {
+      [MovActionType.RESET]: {
         icon: 'undo-alt',
         type: 'is-danger'
       },
-      cancel: {
+      [MovActionType.CANCEL]: {
         icon: 'stop',
         type: 'is-danger'
       },
-      invite: {
+      [MovActionType.INVITE]: {
         icon: 'envelope',
         type: 'is-dark'
       },
-      logs: {
+      [MovActionType.LOGS]: {
         icon: 'file-alt',
         type: 'is-dark'
       }

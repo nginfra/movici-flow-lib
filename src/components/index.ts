@@ -17,6 +17,8 @@ import MovSaveCancel from './global/SaveCancel.vue';
 import MovModal from './global/Modal.vue';
 import MovPicker from './global/Picker.vue';
 import MovButtons from './global/Buttons.vue';
+import MovResourceList from './global/list/ResourceList.vue';
+import MovResourceSearch from './global/list/ResourceSearch.vue';
 
 export {
   FlowContainer,
@@ -37,5 +39,7 @@ export {
   MovSaveCancel,
   MovModal,
   MovPicker,
-  MovButtons
+  MovButtons,
+  MovResourceList,
+  MovResourceSearch
 };

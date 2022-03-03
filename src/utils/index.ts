@@ -76,48 +76,29 @@ function extractDefinedValues(obj: Record<string, string | undefined>) {
   }, {} as Record<string, string>);
 }
 
-export function getClassFromDatasetStatus(status: string) {
-  let statusClass = '';
-  switch (status) {
-    case 'Empty':
-      statusClass = 'is-warning';
-      break;
-    case 'Done':
-      statusClass = 'is-primary';
-      break;
-    default:
-      statusClass = 'is-white';
-      break;
-  }
-  return statusClass;
-}
-
 /**
- * Receives a scenario status and returns a Bulma class for the color
+ * Receives a dataset, scenario or dataset generator status and returns a Bulma class for the color
  * @param status
  */
-export function getClassFromScenarioStatus(status: string): string {
-  let statusClass = '';
-  switch (status) {
-    case 'Failed':
-    case 'Unknown':
-    case 'Invalid':
-    case 'Cancelled':
-      statusClass = 'is-danger';
-      break;
-    case 'Ready':
-    case 'Running':
-    case 'Pending':
-      statusClass = 'is-info';
-      break;
-    case 'Succeeded':
-      statusClass = 'is-primary';
-      break;
+export function getClassFromStatus(status: string): string {
+  switch (status.toLowerCase()) {
+    case 'empty':
+      return 'is-warning';
+    case 'failed':
+    case 'unknown':
+    case 'invalid':
+    case 'cancelled':
+      return 'is-danger';
+    case 'ready':
+    case 'running':
+    case 'pending':
+      return 'is-info';
+    case 'succeeded':
+    case 'done':
+      return 'is-primary';
     default:
-      statusClass = 'is-white';
-      break;
+      return 'is-white';
   }
-  return statusClass;
 }
 
 export function getStatusFromScenarioAndSimulation(

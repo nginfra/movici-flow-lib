@@ -64,7 +64,7 @@
           </div>
           <div class="status">
             <span class="is-size-7 mr-2">Status:</span>
-            <span class="tag" :class="getClassFromScenarioStatus(currentScenario.status)">
+            <span class="tag" :class="getClassFromStatus(currentScenario.status)">
               {{ currentScenario.status }}
             </span>
           </div>
@@ -108,7 +108,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Scenario, UUID } from '../types';
 import FlowContainer from './FlowContainer.vue';
 import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
-import { buildFlowUrl, sortByKeys, getClassFromScenarioStatus } from '../utils';
+import { buildFlowUrl, sortByKeys, getClassFromStatus } from '../utils';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
 
@@ -187,7 +187,7 @@ export default class FlowScenario extends Vue {
     flowUIStore.setLoading({ value: false });
   }
 
-  getClassFromScenarioStatus = getClassFromScenarioStatus;
+  getClassFromStatus = getClassFromStatus;
 
   /**
    * Checks whether there are props for project and scenario.

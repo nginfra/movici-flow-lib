@@ -25,7 +25,7 @@
               {{ currentScenario.display_name }}
             </a>
           </router-link>
-          <span class="tag" :class="getClassFromScenarioStatus(currentScenario.status)">
+          <span class="tag" :class="getClassFromStatus(currentScenario.status)">
             {{ currentScenario.status }}
           </span>
         </span>
@@ -39,7 +39,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { flowStore } from '@movici-flow-common/store/store-accessor';
 import { ActionMenuItem } from '@movici-flow-common/types';
-import { getClassFromScenarioStatus } from '@movici-flow-common/utils';
+import { getClassFromStatus } from '@movici-flow-common/utils';
 
 @Component({
   name: 'ScenarioInfoBox'
@@ -67,7 +67,7 @@ export default class ScenarioInfoBox extends Vue {
     };
   }
 
-  getClassFromScenarioStatus = getClassFromScenarioStatus;
+  getClassFromStatus = getClassFromStatus;
 }
 </script>
 
