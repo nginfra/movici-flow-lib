@@ -53,11 +53,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { hexToColorTriple, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
-import { EntityGroupSummary, ScenarioDataset, VisualizationMode } from '@movici-flow-common/types';
+import {
+  DatasetSummary,
+  EntityGroupSummary,
+  ScenarioDataset,
+  VisualizationMode
+} from '@movici-flow-common/types';
 import { isLines, isPoints, isPolygons } from '@movici-flow-common/visualizers/geometry';
-import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
 import GeometrySelector from './GeometrySelector.vue';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import WidgetContainer from '@movici-flow-common/components/map_widgets/WidgetContainer.vue';
@@ -68,9 +72,8 @@ import WidgetContainer from '@movici-flow-common/components/map_widgets/WidgetCo
     WidgetContainer
   }
 })
-export default class EntitySelector extends Mixins(SummaryListing) {
-  // ask pelle how we could use datasets that is on the mixin
-  @Prop() datasetsArray!: ScenarioDataset[];
+export default class EntitySelector extends Vue {
+  @Prop() summary!: DatasetSummary;
   @Prop() currentDataset!: ScenarioDataset | null;
   activeEntityGroups: boolean[] = [];
   isOpen = true;
@@ -85,14 +88,8 @@ export default class EntitySelector extends Mixins(SummaryListing) {
     MoviciColors.LIGHT_GREY
   ];
 
-  /**
-   * Filters out any entity group that can't be showed on the map
-   */
-  @Watch('currentDataset')
-  getEntitySummary() {
-    if (this.currentDataset) {
-      this.currentDatasetUUID = this.currentDataset?.uuid;
-    }
+  get entityGroups(): EntityGroupSummary[] {
+    return this.summary?.entity_groups ?? [];
   }
 
   @Watch('validLayers')
@@ -172,11 +169,6 @@ export default class EntitySelector extends Mixins(SummaryListing) {
         return null;
       })
       .filter((layer: ComposableVisualizerInfo | null) => layer);
-  }
-
-  mounted() {
-    this.datasets = this.datasetsArray;
-    this.getEntitySummary();
   }
 }
 </script>

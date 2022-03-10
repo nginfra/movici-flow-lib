@@ -78,33 +78,7 @@
             icon-pack="far"
             :label="$t('flow.datasets.dataPreview')"
           >
-            <MapVis :layer-infos="layers" :view-state.sync="viewState">
-              <template #control-left="{ map, onViewstateChange, basemap, setBasemap }">
-                <SearchBar
-                  v-if="hasGeocodeCapabilities"
-                  :map="map"
-                  :view-state="viewState"
-                  @update:view-state="onViewstateChange($event)"
-                />
-                <NavigationControl :value="viewState" @input="onViewstateChange($event)" />
-                <BaseMapControl :value="basemap" @input="setBasemap" />
-              </template>
-              <template #control-right="{ map, popupContent, closePopup, viewState }">
-                <EntitySelector
-                  :datasetsArray="datasets"
-                  :currentDataset="currentDataset"
-                  @setLayerInfos="setLayerInfos"
-                ></EntitySelector>
-                <WidgetContainer
-                  v-if="popupContent"
-                  :value="popupContent"
-                  :map="map"
-                  :view-state="viewState"
-                >
-                  <DataViewContent @close="closePopup" :value="popupContent" :timestamp="0" />
-                </WidgetContainer>
-              </template>
-            </MapVis>
+            <DatasetViewer v-model="currentDataset" />
           </b-tab-item>
           <b-tab-item
             disabled
@@ -140,21 +114,12 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import pick from 'lodash/pick';
-import isEqual from 'lodash/isEqual';
-import { CameraOptions, Dataset, Nullable } from '../types';
+import { Dataset } from '../types';
 import FlowContainer from './FlowContainer.vue';
-import MapVis from './map/MapVis.vue';
-import defaults from './map/defaults';
-import EntitySelector from './widgets/EntitySelector.vue';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
-import SearchBar from './map/controls/SearchBar.vue';
-import NavigationControl from './map/controls/NavigationControl.vue';
-import BaseMapControl from './map/controls/BaseMapControl.vue';
-import DataViewContent from './map_widgets/DataViewContent.vue';
-import WidgetContainer from './map_widgets/WidgetContainer.vue';
-import { ComposableVisualizerInfo } from '../visualizers/VisualizerInfo';
+import DatasetViewer from './widgets/DatasetViewer.vue';
 import { flowStore, flowUIStore } from '../store/store-accessor';
 import { sortByKeys } from '@movici-flow-common/utils';
 
@@ -162,13 +127,7 @@ import { sortByKeys } from '@movici-flow-common/utils';
   components: {
     FlowContainer,
     ProjectInfoBox,
-    MapVis,
-    EntitySelector,
-    SearchBar,
-    NavigationControl,
-    BaseMapControl,
-    DataViewContent,
-    WidgetContainer
+    DatasetViewer
   }
 })
 export default class FlowDataset extends Vue {
@@ -176,10 +135,11 @@ export default class FlowDataset extends Vue {
   @Prop([String]) currentScenarioName?: string;
   currentDataset: Dataset | null = null;
   search = '';
-  loading = false;
-  viewState: Nullable<CameraOptions> = defaults.viewState();
   datasets: Dataset[] = [];
-  layers: ComposableVisualizerInfo[] = [];
+
+  get currentDatasetUUID() {
+    return this.currentDataset?.uuid;
+  }
 
   get hasProjectsCapabilities() {
     return flowStore.hasProjectsCapabilities;
@@ -193,10 +153,6 @@ export default class FlowDataset extends Vue {
     details.created_on = this.$options.filters?.dateString(details.created_on, true);
     details.last_modified = this.$options.filters?.dateString(details.last_modified, true);
     return details;
-  }
-
-  get currentDatasetUUID() {
-    return this.currentDataset?.uuid || '';
   }
 
   /**
@@ -229,12 +185,6 @@ export default class FlowDataset extends Vue {
       return `${dataset.display_name} (${dataset.name})`;
     } else {
       return dataset.name;
-    }
-  }
-
-  setLayerInfos(layerInfos: ComposableVisualizerInfo[]) {
-    if (!isEqual(this.layers, layerInfos)) {
-      this.layers = layerInfos;
     }
   }
 

@@ -1,23 +1,33 @@
 <template>
-  <div>
-    <Deck :value="viewState" @input="updateViewState($event)" :layers="layers" :basemap="basemap">
-      <template v-if="buildings" #map="{ map }">
-        <Buildings :map="map" />
-      </template>
-      <template #control-zero="deckProps">
-        <slot name="control-zero" v-bind="{ ...slotProps, ...deckProps }" />
-      </template>
-      <template #control-left="deckProps">
-        <slot name="control-left" v-bind="{ ...slotProps, ...deckProps }" />
-      </template>
-      <template #control-right="deckProps">
-        <slot name="control-right" v-bind="{ ...slotProps, ...deckProps }" />
-      </template>
-      <template #control-bottom="deckProps">
-        <slot name="control-bottom" v-bind="{ ...slotProps, ...deckProps }" />
-      </template>
-    </Deck>
-  </div>
+  <Deck
+    ref="deck"
+    :value="viewState"
+    @input="updateViewState($event)"
+    :layers="layers"
+    :basemap="basemap"
+  >
+    <template #map="{ map }">
+      <b-loading is-full-page :active="isLoading">
+        <div class="loading-icon-container">
+          <b-icon class="loading-icon" />
+          <span class="mt-6 is-block">Loading layers...</span>
+        </div>
+      </b-loading>
+      <Buildings v-if="buildings" :map="map" />
+    </template>
+    <template #control-zero="deckProps">
+      <slot name="control-zero" v-bind="{ ...slotProps, ...deckProps }" />
+    </template>
+    <template #control-left="deckProps">
+      <slot name="control-left" v-bind="{ ...slotProps, ...deckProps }" />
+    </template>
+    <template #control-right="deckProps">
+      <slot name="control-right" v-bind="{ ...slotProps, ...deckProps }" />
+    </template>
+    <template #control-bottom="deckProps">
+      <slot name="control-bottom" v-bind="{ ...slotProps, ...deckProps }" />
+    </template>
+  </Deck>
 </template>
 
 <script lang="ts">
@@ -44,6 +54,7 @@ import VisualizerManager from '@movici-flow-common/visualizers/VisualizerManager
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { flowStore, flowUIStore } from '@movici-flow-common/store/store-accessor';
 import DeckContainerMixin from './DeckContainerMixin';
+import { BoundingBox } from '@mapbox/geo-viewport';
 
 @Component({
   name: 'MovMapVis',
@@ -56,10 +67,10 @@ export default class MovMapVis extends DeckContainerMixin<any> {
   @Prop({ type: Object, default: () => defaults.viewState() }) readonly viewState!: CameraOptions;
   @Prop({ type: Number, default: 0 }) readonly timestamp!: number;
   @Prop({ type: Boolean, default: false }) readonly buildings!: boolean;
-
   visualizers: VisualizerManager | null = null;
   popupContent: PopupContent | null = null;
   activePopupId: string | null = null;
+  isLoading = false;
 
   // Move this inside a store?
   get backend(): Backend | null {
@@ -71,11 +82,11 @@ export default class MovMapVis extends DeckContainerMixin<any> {
       this.visualizers = new VisualizerManager({
         backend: this.backend,
         onSuccess: () => {
-          flowUIStore.setLoading({ value: false });
+          this.isLoading = false;
           this.updateLayers();
         },
         onError: () => {
-          flowUIStore.setLoading({ value: false });
+          this.isLoading = false;
         },
         onDelete: ({ info }) => {
           if (info) {
@@ -104,7 +115,7 @@ export default class MovMapVis extends DeckContainerMixin<any> {
 
   @Watch('layerInfos', { immediate: true })
   handleNewLayerInfos() {
-    flowUIStore.setLoading({ value: true, msg: 'Loading layers...' });
+    this.isLoading = true;
     const visualizers = this.ensureVisualizers();
 
     if (visualizers) {
@@ -144,6 +155,10 @@ export default class MovMapVis extends DeckContainerMixin<any> {
   updateViewState(viewState: CameraOptions) {
     this.$emit('update:view-state', viewState);
   }
+
+  zoomToBBox(bounding_box: BoundingBox, ratio?: number) {
+    this.deckEl.zoomToBBox(bounding_box, ratio);
+  }
 }
 </script>
 
@@ -151,5 +166,12 @@ export default class MovMapVis extends DeckContainerMixin<any> {
 .timeslider {
   flex-grow: 1;
   margin: 0 80px;
+}
+.loading-overlay {
+  z-index: 1;
+  .loading-icon {
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
 </style>

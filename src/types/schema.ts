@@ -3,10 +3,12 @@ import { Dataset } from './datasets';
 import { FlowVisualizerType } from './flowVisualizers';
 import { EntityGeometry } from './geometry';
 import { Scenario, ScenarioDataset, ShortScenario } from './scenarios';
+import { BoundingBox } from '@mapbox/geo-viewport';
 
 export interface DatasetSummary {
   count: number;
   entity_groups: EntityGroupSummary[];
+  bounding_box: BoundingBox;
 }
 
 export enum DatasetFormat {

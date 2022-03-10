@@ -1,3 +1,4 @@
+import { BoundingBox } from '@mapbox/geo-viewport';
 import proj4 from 'proj4';
 import { reproject } from 'reproject';
 import { ValidationError } from './errors';
@@ -26,6 +27,13 @@ export function transformArray(arr: CoordinateArray | Coordinate3DArray): Coordi
     rv[i] = transform(arr[i]);
   }
   return rv;
+}
+
+export function transformBBox(bounding_box: BoundingBox): BoundingBox {
+  return [
+    ...transform([bounding_box[0], bounding_box[1]]),
+    ...transform([bounding_box[2], bounding_box[3]])
+  ];
 }
 
 export function reverseTransformArray(arr: CoordinateArray | Coordinate3DArray): CoordinateArray {

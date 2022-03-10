@@ -185,12 +185,12 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   @Prop({ type: Number, default: -1 }) readonly vGroupIndex!: number;
   @Prop({ type: Array, default: [] }) readonly vGroups!: VisGroup[];
   @Prop({ type: Boolean, default: false }) readonly noGroups!: boolean;
-  isDirty = false;
   datasets: ScenarioDataset[] = [];
   currentDataset: ScenarioDataset | null = null;
-  displayName = '';
   geometry: FlowVisualizerType | null = null;
   settings: FlowVisualizerOptions | null = null;
+  isDirty = false;
+  displayName = '';
 
   get entitySummaryProps() {
     return this.entitySummary?.properties;
@@ -336,7 +336,11 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
 
   @Watch('currentDataset')
   async updateCurrentDatasetName() {
-    this.currentDatasetName = this.currentDataset?.name || null;
+    if (this.currentDataset?.uuid) {
+      this.currentDatasetUUID = this.currentDataset?.uuid;
+    } else if (this.currentDataset?.name) {
+      this.currentDatasetName = this.currentDataset?.name;
+    }
   }
 
   @Watch('value')

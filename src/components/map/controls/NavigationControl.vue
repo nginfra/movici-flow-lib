@@ -1,5 +1,5 @@
 <template>
-  <div class="nav" :class="{ 'is-right': isRight }">
+  <div class="nav" :class="{ 'is-right-nav': isRight }">
     <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
       <b-button
         class="is-border-transparent"
@@ -18,9 +18,18 @@
       >
       </b-button>
       <b-button
+        v-if="centerCamera"
+        class="is-border-transparent"
+        title="Return to center of the view"
+        @click="updateViewState({ ...centerCamera, transitionDuration: 300 })"
+        icon-left="crosshairs"
+        icon-pack="fal"
+      >
+      </b-button>
+      <b-button
         class="is-border-transparent mapboxgl-ctrl-compass"
         title="Reset View"
-        @click="updateViewState({ bearing: 0, pitch: 0, transitionDuration: 200 })"
+        @click="updateViewState({ bearing: 0, pitch: 0, transitionDuration: 300 })"
       >
         <span
           class="mapboxgl-ctrl-icon"
@@ -43,9 +52,8 @@ const DEFAULT_MAX_ZOOM = 20;
 })
 export default class NavigationControl extends Vue {
   @Prop({ type: Boolean, default: false }) readonly isRight!: boolean;
-
-  @Prop([Object])
-  readonly value!: CameraOptions;
+  @Prop([Object]) readonly value!: CameraOptions;
+  @Prop([Object]) readonly centerCamera!: CameraOptions;
 
   get bearing() {
     return this.value ? this.value.bearing : 0;
@@ -62,6 +70,7 @@ export default class NavigationControl extends Vue {
 
     this.updateViewState({ zoom: val });
   }
+
   updateViewState(viewState: Partial<CameraOptions>) {
     this.$emit('input', Object.assign({}, this.value, viewState));
   }
@@ -73,7 +82,7 @@ export default class NavigationControl extends Vue {
   width: 30px;
 }
 
-.is-right {
+.is-right-nav {
   margin-top: 38px;
 }
 

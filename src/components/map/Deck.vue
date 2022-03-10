@@ -1,24 +1,22 @@
 <template>
-  <div>
-    <div id="mapbox-container">
-      <div id="map" />
-      <canvas id="deckgl-overlay" />
-      <div class="map-control-zero" v-if="loaded">
-        <slot name="control-zero" v-bind="{ ...slotProps }" />
-      </div>
-      <div class="map-control-left" v-if="loaded">
-        <slot name="control-left" v-bind="{ ...slotProps }" />
-      </div>
-      <div class="map-control-right" v-if="loaded">
-        <slot name="control-right" v-bind="{ ...slotProps }" />
-      </div>
-      <div class="map-control-bottom" v-if="loaded">
-        <slot name="control-bottom" v-bind="{ ...slotProps }" />
-      </div>
-      <template v-if="loaded">
-        <slot name="map" :map="map" :deck="deck" :view-state="value" />
-      </template>
+  <div id="mapbox-container">
+    <div id="map" />
+    <canvas id="deckgl-overlay" />
+    <div class="map-control-zero" v-if="loaded">
+      <slot name="control-zero" v-bind="{ ...slotProps }" />
     </div>
+    <div class="map-control-left" v-if="loaded">
+      <slot name="control-left" v-bind="{ ...slotProps }" />
+    </div>
+    <div class="map-control-right" v-if="loaded">
+      <slot name="control-right" v-bind="{ ...slotProps }" />
+    </div>
+    <div class="map-control-bottom" v-if="loaded">
+      <slot name="control-bottom" v-bind="{ ...slotProps }" />
+    </div>
+    <template v-if="loaded">
+      <slot name="map" :map="map" :deck="deck" :view-state="value" />
+    </template>
   </div>
 </template>
 
@@ -30,14 +28,35 @@ import { Deck as DeckGL, Layer } from '@deck.gl/core';
 import { DeckProps, PickInfo } from '@deck.gl/core/lib/deck';
 import { CameraOptions, CursorCallback, Nullable } from '@movici-flow-common/types';
 import { ControllerOptions } from '@deck.gl/core/controllers/controller';
+import defaults from './defaults';
+import { viewport, BoundingBox } from '@mapbox/geo-viewport';
+import { failMessage } from '@movici-flow-common/utils/snackbar';
 
-const DEFAULT_VIEWSTATE = {
-  latitude: 51.992381,
-  longitude: 4.3649092,
-  zoom: 10,
-  bearing: 0,
-  pitch: 0
-};
+const DEFAULT_VIEWSTATE = defaults.viewState();
+
+function getViewportFromBBOX(
+  bounding_box: BoundingBox,
+  dimensions: [number, number],
+  ratio: number
+) {
+  const { center, zoom } = viewport(
+      bounding_box,
+      // we set the ratio 1/3 as we want the viewport to occupy 1/3 of the map screen
+      dimensions.map(side => side * ratio) as [number, number],
+      undefined, // min zoom, default 0
+      undefined, // max zoom, default 20
+      undefined, // tileSize, default 256
+      true // use float on zoom
+    ),
+    [longitude, latitude] = center;
+
+  return { longitude, latitude, zoom };
+}
+
+function getCanvasDimensions(map: mapboxgl.Map): [number, number] {
+  const dimensions = map.getCanvas();
+  return [dimensions.width, dimensions.height];
+}
 
 @Component({
   name: 'Deck'
@@ -50,16 +69,17 @@ export default class Deck extends Vue {
   @Prop({ type: Array, default: () => [] }) readonly layers!: Layer<unknown>[];
   map: mapboxgl.Map | null = null;
   deck: DeckGL | null = null;
+  onClickListener = new Map<string, (event: PickInfo<unknown>) => void>();
   loaded = false;
   getCursor: CursorCallback | null = null;
-  onClickListener = new Map<string, (event: PickInfo<unknown>) => void>();
 
   get slotProps() {
     return {
       map: this.map,
       registerMapOnClick: this.registerMapOnClick,
       onViewstateChange: this.updateViewState,
-      setCursorCallback: this.setCursorCallback
+      setCursorCallback: this.setCursorCallback,
+      zoomToBBox: this.zoomToBBox
     };
   }
 
@@ -71,6 +91,21 @@ export default class Deck extends Vue {
     this.getCursor = cb || (() => null);
   }
 
+  zoomToBBox(bounding_box: BoundingBox, ratio = 1 / 3) {
+    try {
+      if (this.map) {
+        this.updateViewState({
+          ...this.value,
+          ...getViewportFromBBOX(bounding_box, getCanvasDimensions(this.map), ratio),
+          transitionDuration: 300
+        } as CameraOptions);
+      }
+    } catch (error) {
+      failMessage('Error when centering to BBOX');
+      console.error(error);
+    }
+  }
+
   @Watch('basemap')
   setStyle() {
     this.map?.setStyle(this.basemap);
@@ -78,52 +113,32 @@ export default class Deck extends Vue {
 
   @Watch('layers')
   renderDeck() {
-    if (!this.deck) {
-      throw new Error('No Deck to render');
-    }
-    if (!this.map) {
-      throw new Error('Cannot render deck when Map is not initialized');
-    }
-
-    this.deck.setProps({ layers: this.layers });
+    this.deck?.setProps({ layers: this.layers });
   }
 
   @Watch('value')
+  onValue(val: CameraOptions) {
+    this.updateViewState(val);
+  }
+
   updateViewState(viewState: CameraOptions) {
-    this.deck && this.deck.setProps({ viewState });
+    this.deck?.setProps({ viewState });
     this.map?.jumpTo({
       center: [viewState.longitude, viewState.latitude],
       zoom: viewState.zoom,
       bearing: viewState.bearing,
       pitch: viewState.pitch
     });
+
     this.$emit('input', viewState);
   }
 
-  mounted() {
-    const viewState = this.value || DEFAULT_VIEWSTATE;
-    this.map = new mapboxgl.Map({
-      center: [viewState.longitude, viewState.latitude],
-      zoom: viewState.zoom,
-      bearing: viewState.bearing,
-      pitch: viewState.pitch,
-      container: 'map',
-      accessToken: this.accessToken,
-      maxPitch: 65,
-      style: this.basemap,
-      attributionControl: false,
-      interactive: false
-    });
-
-    this.map.on('load', () => {
-      this.loaded = true;
-    });
-
-    this.deck = new DeckGL({
+  initDeck(val: CameraOptions) {
+    return new DeckGL({
       canvas: 'deckgl-overlay',
       width: '100%',
       height: '100%',
-      initialViewState: viewState,
+      initialViewState: val,
       onClick: ($event: PickInfo<unknown>) => {
         this.onClickListener.forEach(cb => cb($event));
       },
@@ -143,12 +158,36 @@ export default class Deck extends Vue {
     } as unknown as DeckProps);
   }
 
+  initMapBox(viewState: CameraOptions) {
+    return new mapboxgl.Map({
+      center: [viewState.longitude, viewState.latitude],
+      zoom: viewState.zoom,
+      bearing: viewState.bearing,
+      pitch: viewState.pitch,
+      container: 'map',
+      accessToken: this.accessToken,
+      maxPitch: 65,
+      style: this.basemap,
+      attributionControl: false,
+      interactive: false
+    });
+  }
+
+  mounted() {
+    this.map = this.initMapBox(this.value || DEFAULT_VIEWSTATE);
+    this.map.on('load', () => {
+      this.map?.resize();
+      this.deck = this.initDeck(this.value || DEFAULT_VIEWSTATE);
+      this.loaded = true;
+    });
+  }
+
   beforeDestroy() {
     // this was triggering errors
     // need to destroy children, so that layer removal is done before the map itself is removed
     this.$children.forEach(child => child.$destroy());
     this.map?.remove();
-    // this.deck?.canvas.remove();
+    this.deck?.canvas.remove();
   }
 }
 </script>

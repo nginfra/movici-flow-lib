@@ -14,6 +14,6 @@ describe('Deck.vue', () => {
     expect(wrapper.element).toMatchSnapshot();
   });
   it('creates a Deck.gl instance', () => {
-    expect(wrapper.vm.deck).toBeInstanceOf(DeckGL);
+    expect(wrapper.vm.initDeck()).toBeInstanceOf(DeckGL);
   });
 });

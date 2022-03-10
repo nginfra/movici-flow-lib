@@ -44,6 +44,8 @@
     </template>
     <template #mainView>
       <MapVis
+        ref="mapVis"
+        v-if="viewState"
         :layer-infos="visualizers"
         :view-state.sync="viewState"
         :timestamp.sync="timestamp"
@@ -67,7 +69,11 @@
             :view-state="viewState"
             @update:view-state="onViewstateChange($event)"
           />
-          <NavigationControl :value="viewState" @input="onViewstateChange($event)" />
+          <NavigationControl
+            :value="viewState"
+            :center-camera="centerCamera"
+            @input="onViewstateChange($event)"
+          />
           <BaseMapControl :value="basemap" @input="setBasemap" />
         </template>
         <template #control-right="{ popupContent, dynamicPopup, closePopup }">
@@ -90,7 +96,14 @@
 
 <script lang="ts">
 import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator';
-import { CameraOptions, TimeOrientedSimulationInfo, UUID, View, VisualizationMode } from '../types';
+import {
+  CameraOptions,
+  Nullable,
+  TimeOrientedSimulationInfo,
+  UUID,
+  View,
+  VisualizationMode
+} from '../types';
 import MapVis from './map/MapVis.vue';
 import FlowContainer from './FlowContainer.vue';
 import defaults from './map/defaults';
@@ -113,6 +126,7 @@ import FlowLegend from './map_widgets/FlowLegend.vue';
 import { successMessage } from '../utils/snackbar';
 import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
 import { isError } from 'lodash';
+import { transformBBox } from '@movici-flow-common/crs';
 
 @Component({
   components: {
@@ -153,12 +167,11 @@ export default class FlowVisualization extends Vue {
   @Prop([String]) currentScenarioName?: string;
   @Prop([String]) currentViewUUID?: UUID;
   @Ref('tabs') readonly tabs?: Vue;
+  @Ref('mapVis') readonly mapVisEl!: MapVis;
   tabHeight: Partial<CSSStyleDeclaration> = {};
   isCurrentViewDirty = false;
-
-  // mapVis vars
   viewName = 'Untitled';
-  viewState: CameraOptions = defaults.viewState();
+  viewState: Nullable<CameraOptions> = defaults.viewState();
 
   get views(): View[] {
     return flowVisualizationStore.views;
@@ -182,6 +195,10 @@ export default class FlowVisualization extends Vue {
 
   get currentProject() {
     return flowStore.project;
+  }
+
+  get centerCamera() {
+    return this.view?.config.camera ?? defaults.viewState();
   }
 
   get currentScenario() {
@@ -294,7 +311,7 @@ export default class FlowVisualization extends Vue {
     this.visualizers = visualizers;
 
     if (view.config.camera) {
-      this.viewState = view.config.camera;
+      this.viewState = { ...view.config.camera, transitionDuration: 300 };
     }
 
     if (typeof view.config.timestamp === 'number') {
@@ -467,7 +484,7 @@ export default class FlowVisualization extends Vue {
       }
     };
 
-    if (exportCamera) {
+    if (exportCamera && this.viewState) {
       rv.config.camera = simplifiedCamera(this.viewState);
     }
 
@@ -520,9 +537,9 @@ export default class FlowVisualization extends Vue {
   async mounted() {
     try {
       flowUIStore.setLoading({ value: true, msg: 'Loading visualization...' });
-      this.resetView();
 
       if (this.currentViewUUID) {
+        await this.resetView();
         const view = await flowVisualizationStore.getViewById(this.currentViewUUID);
         await flowStore.setupFlowStoreByView(view);
         await this.loadView(view);
@@ -536,6 +553,12 @@ export default class FlowVisualization extends Vue {
           },
           reset: false
         });
+
+        if (this.currentScenario?.bounding_box) {
+          this.mapVisEl.zoomToBBox(transformBBox(this.currentScenario.bounding_box));
+        }
+
+        await this.resetView();
       }
 
       flowUIStore.setLoading({ value: false });
