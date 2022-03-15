@@ -26,7 +26,8 @@
     "select": "Selecteren",
     "selectAll": "Selecteer alles",
     "submit": "Verzenden",
-    "upload": "Uploaden"
+    "upload": "Uploaden",
+    "clear": "Leegmaken"
   },
   "dataset": {
     "addNew": "@:(resources.dataset) @:(actions.add)",
@@ -39,6 +40,19 @@
     "selectRequiredTypes": "Selecteer benodige :@(resources.dataset) types"
   },
   "flow": {
+    "errors": {
+      "userNotFound": "Gebruiker niet gevonden",
+      "projectNameNotProvided": "Geen Werkruimte-naam",
+      "projectInvalid": "Ongeldige Werkruimte",
+      "scenarioNameNotProvided": "Geen Scenario-naam",
+      "scenarioInvalid": "Ongeldig Scenario",
+      "viewHasNoScenario": "View heeft geen Scenario UUID",
+      "viewInvalid": "Ongeldige View",
+      "viewNotInScenario": "View bestaat niet in dit Scenario",
+      "viewNotInProject": "View bestaat niet in deze Werkruimte",
+      "summaryNotFound": "Fout bij het ophalen van de samenvatting",
+      "summaryEntityGroupNotFound": "Entiteitgroep {entityGroup} bestaat niet in dataset {datasetName}"
+    },
     "datasets": {
       "addDataset": "@:(dataset.addNew)",
       "dataPreview": "Data preview",

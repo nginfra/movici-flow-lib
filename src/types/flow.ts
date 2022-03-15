@@ -32,7 +32,7 @@ export interface FlowSectionCollection {
 export interface FlowStoreConfig {
   currentProjectName?: string | null;
   currentScenarioName?: string | null;
-  getScenario?: boolean;
-  getProject?: boolean;
+  needScenario?: boolean;
+  needProject?: boolean;
   disableCollapser?: boolean;
 }

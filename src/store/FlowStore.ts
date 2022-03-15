@@ -15,6 +15,19 @@ import {
 import { User } from '../types/users';
 import { exportFromConfig } from '../utils/DataExporter';
 import FlowUIStore from '../store/FlowUserInterfaceStore';
+import {
+  UserNotFound,
+  ProjectInvalid,
+  ProjectNameNotProvided,
+  ScenarioNameNotProvided,
+  ScenarioInvalid,
+  ViewHasNoScenario,
+  ViewNotInScenario,
+  ViewNotInProject,
+  SummaryNotFound,
+  SummaryEntityGroupNotFound
+} from '@movici-flow-common/errors';
+import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 
 @Module({
   name: 'flow',
@@ -192,11 +205,13 @@ export default class FlowStore extends VuexModule {
   async getDatasetSummary(params: {
     datasetUUID: string;
     scenarioUUID?: string | null;
-  }): Promise<DatasetSummary | null> {
+  }): Promise<DatasetSummary> {
     const { datasetUUID } = params;
     let { scenarioUUID } = params;
 
-    scenarioUUID ??= this.scenario?.uuid;
+    if (typeof scenarioUUID === 'undefined') {
+      scenarioUUID = this.scenario?.uuid;
+    }
 
     let summary: DatasetSummary | null;
     summary = scenarioUUID
@@ -208,17 +223,34 @@ export default class FlowStore extends VuexModule {
         (scenarioUUID
           ? await this.backend?.summary.getScenario(scenarioUUID, datasetUUID)
           : await this.backend?.summary.getDataset(datasetUUID)) ?? null;
-
-      if (summary) {
-        this.ADD_DATASET_SUMMARY({
-          datasetUUID,
-          scenarioUUID,
-          summary
-        });
-      }
     }
 
+    if (!summary) {
+      throw new SummaryNotFound();
+    }
+
+    this.ADD_DATASET_SUMMARY({
+      datasetUUID,
+      scenarioUUID,
+      summary
+    });
+
     return summary;
+  }
+
+  @Action({ rawError: true })
+  async getEntitySummary(props: { info: ComposableVisualizerInfo; summary: DatasetSummary }) {
+    const { info, summary } = props,
+      index = summary.entity_groups.map(e => e.name).indexOf(info.entityGroup);
+
+    if (index === -1) {
+      throw new SummaryEntityGroupNotFound(undefined, {
+        entityGroup: info.entityGroup,
+        datasetName: info.datasetName
+      });
+    }
+
+    return summary.entity_groups[index];
   }
 
   @Action({ rawError: true })
@@ -265,26 +297,40 @@ export default class FlowStore extends VuexModule {
   }
 
   @Action({ rawError: true })
-  async setupFlowStoreByView(view: View) {
-    if (view.scenario_uuid) {
-      const scenario = await this.getScenario(view.scenario_uuid);
-      if (scenario) {
-        this.setCurrentFlowScenario(scenario);
-        await this.getProjects();
+  async setupFlowStoreByView(opts: { view: View; config: FlowStoreConfig }) {
+    const { view, config } = opts,
+      { currentScenarioName, currentProjectName } = config,
+      viewScenarioUUID = view.scenario_uuid;
 
-        const project = this.projects.find(p => p.name === scenario.project_name);
-        if (project) {
-          this.setCurrentFlowProject(project);
-          this.setupFlowStore({
-            config: {
-              getProject: false,
-              getScenario: false
-            },
-            reset: false
-          });
-        }
-      }
+    if (!viewScenarioUUID) {
+      throw new ViewHasNoScenario();
     }
+
+    const scenario = await this.getScenario(viewScenarioUUID);
+    if (!scenario) {
+      throw new ViewHasNoScenario();
+    }
+
+    if (currentScenarioName && scenario.name !== currentScenarioName) {
+      throw new ViewNotInScenario();
+    }
+
+    this.setCurrentFlowScenario(scenario);
+    if (this.hasProjectsCapabilities) {
+      await this.getProjects();
+
+      const project = this.projects.find(p => p.name === scenario.project_name);
+      if (!project || (currentProjectName && project.name !== currentProjectName)) {
+        throw new ViewNotInProject();
+      }
+
+      this.setCurrentFlowProject(project);
+    }
+
+    this.setupFlowStore({
+      config,
+      reset: false
+    });
   }
 
   /**
@@ -302,6 +348,7 @@ export default class FlowStore extends VuexModule {
     }
 
     await this.setupUser();
+
     await this.setupProjects(config);
     await this.setupScenarios(config);
     this.flowUIStore_?.enableSection({
@@ -317,50 +364,45 @@ export default class FlowStore extends VuexModule {
   @Action({ rawError: true })
   async setupUser() {
     // still needs a condition for when there's no user (local flow)
-    if (this.hasUserCapabilities) {
-      if (!this.currentUser) {
-        const user = await this.backend?.user.get();
+    if (!this.currentUser && this.hasUserCapabilities) {
+      const user = await this.backend?.user.get();
 
-        if (user) {
-          this.SET_USER(user);
-        } else {
-          throw new Error('No user found');
-        }
+      if (user) {
+        this.SET_USER(user);
+      } else {
+        throw new UserNotFound();
       }
     }
   }
 
   @Action({ rawError: true })
   async setupProjects(config: FlowStoreConfig) {
-    if (this.hasProjectsCapabilities) {
-      const { currentProjectName, getProject = false } = config;
+    if (!this.hasProjectsCapabilities) {
+      return;
+    }
 
-      if (!this.projects || !this.projects.length) {
-        await this.getProjects();
+    const { currentProjectName, needProject } = config;
+
+    // needs a project but doesn't provide project name
+    if (needProject && !currentProjectName) {
+      throw new ProjectNameNotProvided();
+    }
+
+    if (!this.projects || !this.projects.length) {
+      await this.getProjects();
+    }
+
+    // project is not set and provides a project name
+    if (!this.project && currentProjectName) {
+      const currentProject = this.projects.find((p: Project) => p.name === currentProjectName);
+
+      if (currentProject?.uuid) {
+        await this.setCurrentFlowProject(currentProject);
+      } else {
+        // project name is invalid
+        this.resetFlowStore();
+        throw new ProjectInvalid();
       }
-
-      // needs a project but doesn't provide project name
-      if (getProject && !currentProjectName) {
-        throw new Error('Project name not provided');
-      }
-
-      // project is not set and provides a project name
-      if (!this.project && currentProjectName) {
-        const currentProject = this.projects.find((p: Project) => p.name === currentProjectName);
-
-        if (currentProject?.uuid) {
-          await this.setCurrentFlowProject(currentProject);
-        } else {
-          // project name is invalid
-          this.resetFlowStore();
-          throw new Error('Invalid Project');
-        }
-      }
-    } else {
-      this.flowUIStore_?.enableSection({
-        datasets: true,
-        scenario: true
-      });
     }
   }
 
@@ -368,12 +410,13 @@ export default class FlowStore extends VuexModule {
   async setupScenarios(config: FlowStoreConfig) {
     // has a project (either previously set on the store, or by last if and needs the scenario)
     // needs a scenario and provided a scenario name
-    const { currentScenarioName, getScenario = false } = config;
-    if (!getScenario || (this.hasProjectsCapabilities && !this.project)) {
-      return;
-    }
-    const scenarios = (await this.getScenarios()) || [];
+    const { currentScenarioName, needScenario } = config;
 
+    if (needScenario && !currentScenarioName) {
+      throw new ScenarioNameNotProvided();
+    }
+
+    const scenarios = (await this.getScenarios()) || [];
     if (currentScenarioName) {
       const shortScenario = scenarios.find(p => p.name === currentScenarioName);
 
@@ -384,13 +427,11 @@ export default class FlowStore extends VuexModule {
         if (scenario) {
           await this.setCurrentFlowScenario(scenario);
         } else {
-          this.resetFlowStore();
-          throw new Error('Invalid Scenario');
+          throw new ScenarioInvalid();
         }
       } else {
         // scenario name is invalid
-        this.resetFlowStore();
-        throw new Error('Invalid short Scenario');
+        throw new ScenarioInvalid();
       }
     }
   }

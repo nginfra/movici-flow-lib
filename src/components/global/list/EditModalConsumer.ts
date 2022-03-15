@@ -1,6 +1,7 @@
 import { Field } from '@/types';
 import { upperFirst } from 'lodash';
 import { Component, Vue } from 'vue-property-decorator';
+import { successMessage } from '@movici-flow-common/utils/snackbar';
 
 @Component
 export default class EditModalConsumer<T> extends Vue {
@@ -32,16 +33,12 @@ export default class EditModalConsumer<T> extends Vue {
     if (this.mode === 'edit') {
       if (item.uuid) {
         if (await this.updateItem(item)) {
-          this.$flow.snackbar.successMessage(
-            ` ${upperFirst(this.resourceTerm)} was successfully updated`
-          );
+          successMessage(`${upperFirst(this.resourceTerm)} was successfully updated`);
         }
       }
     } else if (this.mode === 'add') {
       if (await this.addItem(item)) {
-        this.$flow.snackbar.successMessage(
-          ` ${upperFirst(this.resourceTerm)} was successfully created`
-        );
+        successMessage(`${upperFirst(this.resourceTerm)} was successfully created`);
       }
     }
   }

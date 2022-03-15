@@ -120,12 +120,12 @@ import NavigationControl from './map/controls/NavigationControl.vue';
 import BaseMapControl from './map/controls/BaseMapControl.vue';
 import TimeSlider from './map_widgets/TimeSlider.vue';
 import { simplifiedCamera, visualizerSettingsValidator } from '../visualizers/viewHelpers';
-import { buildFlowUrl, getEntitySummary } from '../utils';
+import { buildFlowUrl } from '../utils';
 import isEqual from 'lodash/isEqual';
 import FlowLegend from './map_widgets/FlowLegend.vue';
 import { successMessage } from '../utils/snackbar';
 import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
-import { isError } from 'lodash';
+import { MoviciError } from '@movici-flow-common/errors';
 import { transformBBox } from '@movici-flow-common/crs';
 
 @Component({
@@ -281,8 +281,6 @@ export default class FlowVisualization extends Vue {
       return;
     }
 
-    this.view = view;
-
     const datasets =
       this.currentScenario?.datasets.reduce((obj, d) => {
         obj[d.name] = d.uuid;
@@ -318,6 +316,8 @@ export default class FlowVisualization extends Vue {
       this.timestamp = view.config.timestamp;
     }
 
+    this.view = view;
+
     this.updateIsViewDirty(this.hasPendingChanges);
   }
 
@@ -330,8 +330,8 @@ export default class FlowVisualization extends Vue {
     const view = this.serializeCurrentView();
     if (viewUUID) {
       await this.updateView({ view, viewUUID });
-    } else {
-      const resp = await this.createView({ view });
+    } else if (this.currentScenario?.uuid) {
+      const resp = await this.createView({ view, scenarioUUID: this.currentScenario.uuid });
       if (resp?.uuid) {
         viewUUID = resp.uuid;
         await this.reloadWithViewUrl(resp.uuid);
@@ -361,8 +361,8 @@ export default class FlowVisualization extends Vue {
           this.saveView(viewUUID).then(() => {});
         }
       });
-    } else {
-      const resp = await this.createView({ view });
+    } else if (this.currentScenario?.uuid) {
+      const resp = await this.createView({ view, scenarioUUID: this.currentScenario.uuid });
 
       if (resp && resp.uuid) {
         this.updateIsViewDirty(this.hasPendingChanges);
@@ -411,21 +411,16 @@ export default class FlowVisualization extends Vue {
     this.resetView();
   }
 
-  async createView({ view }: { view: View }) {
-    if (this.currentScenario?.uuid) {
-      const resp = await flowVisualizationStore.createView({
-        scenarioUUID: this.currentScenario.uuid,
-        view
-      });
+  async createView({ view, scenarioUUID }: { view: View; scenarioUUID: string }) {
+    const resp = await flowVisualizationStore.createView({
+      scenarioUUID,
+      view
+    });
 
-      if (resp) {
-        successMessage('' + this.$t('flow.visualization.dialogs.viewCreateSuccess'));
-        this.view = { ...view, uuid: resp.view_uuid };
-
-        return this.view;
-      }
-    } else {
-      throw new Error('Cannot save View without a scenario');
+    if (resp) {
+      successMessage('' + this.$t('flow.visualization.dialogs.viewCreateSuccess'));
+      this.view = { ...view, uuid: resp.view_uuid };
+      return this.view;
     }
   }
 
@@ -441,36 +436,21 @@ export default class FlowVisualization extends Vue {
 
   async validateForContentErrors(info: ComposableVisualizerInfo) {
     info.unsetError('content');
-    try {
-      if (!info.datasetUUID) {
-        throw new Error(
-          `Dataset ${info.datasetName} is not available in scenario or user not authorized`
-        );
-      }
 
-      const datasetSummary = await flowStore.getDatasetSummary({
-        datasetUUID: info.datasetUUID,
-        scenarioUUID: info.scenarioUUID
-      });
-
-      if (!datasetSummary) {
-        throw new Error('Could not contact server for dataset information');
-      }
-
-      const entitySummary = getEntitySummary(info.entityGroup, datasetSummary);
-      if (!entitySummary) {
-        throw new Error(
-          `Entity group ${info.entityGroup} not found in dataset ${info.datasetName}`
-        );
-      }
-      visualizerSettingsValidator(entitySummary)(info);
-    } catch (e) {
-      if (isError(e)) {
-        info.setError('content', e.message);
-      }
-      console.error(e);
+    if (!info.datasetUUID) {
+      // might add errors here
+      // or should the datasetUUID be mandatory on ComposableVisualizerInfo
       return false;
     }
+
+    const summary = await flowStore.getDatasetSummary({
+        datasetUUID: info.datasetUUID,
+        scenarioUUID: info.scenarioUUID
+      }),
+      entitySummary = await flowStore.getEntitySummary({ info, summary });
+
+    visualizerSettingsValidator(entitySummary)(info);
+
     return true;
   }
 
@@ -541,15 +521,23 @@ export default class FlowVisualization extends Vue {
       if (this.currentViewUUID) {
         await this.resetView();
         const view = await flowVisualizationStore.getViewById(this.currentViewUUID);
-        await flowStore.setupFlowStoreByView(view);
+        await flowStore.setupFlowStoreByView({
+          view,
+          config: {
+            currentProjectName: this.currentProjectName,
+            needProject: false,
+            currentScenarioName: this.currentScenarioName,
+            needScenario: false
+          }
+        });
         await this.loadView(view);
       } else {
         await flowStore.setupFlowStore({
           config: {
             currentProjectName: this.currentProjectName,
-            getProject: true,
+            needProject: true,
             currentScenarioName: this.currentScenarioName,
-            getScenario: true
+            needScenario: true
           },
           reset: false
         });
@@ -563,10 +551,21 @@ export default class FlowVisualization extends Vue {
 
       flowUIStore.setLoading({ value: false });
       this.updateTabHeight();
-    } catch (error) {
-      console.error(error);
-      await this.$router.push({ name: 'FlowProject' });
+    } catch (error: unknown) {
+      this.$t;
       flowUIStore.setLoading({ value: false });
+      this.updateIsViewDirty(false);
+      if (error instanceof MoviciError) {
+        await error.handleError({
+          $t: this.$t.bind(this),
+          $router: this.$router,
+          query: {
+            project: this.currentProjectName,
+            scenario: this.currentScenarioName,
+            view: this.view?.uuid
+          }
+        });
+      }
     }
   }
 }

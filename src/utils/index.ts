@@ -1,10 +1,4 @@
-import {
-  ComponentProperty,
-  DatasetSummary,
-  EntityGroupSummary,
-  ShortScenario,
-  Simulation
-} from '../types';
+import { ComponentProperty, ShortScenario, Simulation } from '../types';
 import upperFirst from 'lodash/upperFirst';
 
 /**
@@ -37,17 +31,6 @@ export function parsePropertyString(val: string): ComponentProperty {
     return { component: parts[0], name: parts[1] };
   }
   throw new Error(`Couldn't parse '${val}' as a valid property identifier`);
-}
-
-export function getEntitySummary(
-  entityType: string,
-  summary: DatasetSummary
-): EntityGroupSummary | null {
-  const index = summary.entity_groups.map(e => e.name).indexOf(entityType);
-  if (index === -1) {
-    return null;
-  }
-  return summary.entity_groups[index];
 }
 
 export function getBaseURL(): string {

@@ -1,3 +1,4 @@
+import { ViewInvalid } from '@movici-flow-common/errors';
 import { Backend, UUID, View } from '@movici-flow-common/types';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
@@ -74,7 +75,7 @@ class FlowVisualizationStore extends VuexModule {
   async getViewById(uuid: string): Promise<View> {
     const view = await this.backend?.view.get(uuid);
     if (!view) {
-      throw new Error('View id does not exist');
+      throw new ViewInvalid();
     }
 
     this.updateCurrentView(view);

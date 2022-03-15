@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosInstance } from 'axios';
 import { BaseRequest } from './requests';
 import { ConcurrencyManager } from './concurrency';
 import { failMessage } from '@movici-flow-common/utils/snackbar';
+import upperFirst from 'lodash/upperFirst';
 
 const API_CONCURRENCY = 10;
 
@@ -107,15 +108,27 @@ const HTTPS_STATUS_CODES: Record<number, string> = {
 };
 
 function parseHTTPError(err: AxiosError): HTTPErrorPayload {
-  let status: number | undefined = undefined;
-  let message = '';
+  let status: number | undefined = undefined,
+    message = '';
 
   if (err.response) {
     status = err.response.status;
-    message = JSON.stringify(err.response.data.message);
+    const errMessages: string | Record<string, string> = err.response.data.message ?? '';
+
+    if (typeof errMessages !== 'string') {
+      message = Object.entries(errMessages)
+        .map(([key, msg]) => {
+          return `${upperFirst(key)}: ${msg}`;
+        })
+        .join('<br>');
+    } else {
+      message = errMessages;
+    }
   }
+
   if (!message) {
     message = status ? HTTPS_STATUS_CODES[status] : 'Unknown Error';
   }
+
   return { status, message };
 }

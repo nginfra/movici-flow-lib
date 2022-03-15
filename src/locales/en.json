@@ -40,6 +40,19 @@
     "selectRequiredTypes": "Select required :@(resources.dataset) types"
   },
   "flow": {
+    "errors": {
+      "userNotFound": "User not found",
+      "projectNameNotProvided": "Project name not provided",
+      "projectInvalid": "Invalid Project",
+      "scenarioNameNotProvided": "Scenario name not provided",
+      "scenarioInvalid": "Scenario is invalid",
+      "viewHasNoScenario": "View has no Scenario UUID",
+      "viewInvalid": "View is invalid",
+      "viewNotInScenario": "View does not exist on this Scenario",
+      "viewNotInProject": "View does not exist on this Project",
+      "summaryNotFound": "Could not get dataset summary information",
+      "summaryEntityGroupNotFound": "Entity group {entityGroup} not found in dataset {datasetName}"
+    },
     "datasets": {
       "addDataset": "Add dataset",
       "dataPreview": "Data preview",

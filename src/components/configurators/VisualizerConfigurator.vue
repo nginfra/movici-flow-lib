@@ -337,9 +337,9 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   @Watch('currentDataset')
   async updateCurrentDatasetName() {
     if (this.currentDataset?.uuid) {
-      this.currentDatasetUUID = this.currentDataset?.uuid;
+      this.currentDatasetUUID = this.currentDataset.uuid;
     } else if (this.currentDataset?.name) {
-      this.currentDatasetName = this.currentDataset?.name;
+      this.currentDatasetName = this.currentDataset.name;
     }
   }
 

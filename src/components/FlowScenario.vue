@@ -111,6 +111,7 @@ import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-a
 import { buildFlowUrl, sortByKeys, getClassFromStatus } from '../utils';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
+import { MoviciError } from '@movici-flow-common/errors';
 
 @Component({
   components: {
@@ -120,8 +121,8 @@ import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
   }
 })
 export default class FlowScenario extends Vue {
-  @Prop([String]) currentProjectName!: string | null;
-  @Prop([String]) currentScenarioName!: string | null;
+  @Prop([String]) currentProjectName?: string;
+  @Prop([String]) currentScenarioName?: string;
   initialRawData!: string;
 
   get hasProjectsCapabilities() {
@@ -203,15 +204,24 @@ export default class FlowScenario extends Vue {
       await flowStore.setupFlowStore({
         config: {
           currentProjectName: this.currentProjectName,
-          getProject: true,
+          needProject: true,
           currentScenarioName: this.currentScenarioName,
-          getScenario: true
+          needScenario: false
         }
       });
       flowUIStore.setLoading({ value: false });
     } catch (error) {
-      console.error(error);
-      await this.$router.push({ name: 'FlowProject' });
+      flowUIStore.setLoading({ value: false });
+      if (error instanceof MoviciError) {
+        await error.handleError({
+          $t: this.$t.bind(this),
+          $router: this.$router,
+          query: {
+            project: this.currentProjectName,
+            scenario: this.currentScenarioName
+          }
+        });
+      }
     }
   }
 }

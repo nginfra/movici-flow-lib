@@ -73,6 +73,7 @@ import BaseMapControl from './map/controls/BaseMapControl.vue';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
 import { buildFlowUrl } from '@movici-flow-common/utils';
+import { MoviciError } from '@movici-flow-common/errors';
 
 @Component({
   components: {
@@ -162,13 +163,19 @@ export default class FlowProject extends Vue {
         await flowStore.setupFlowStore({ config: { currentProjectName: this.currentProjectName } });
         flowUIStore.setLoading({ value: false });
       } catch (error) {
-        console.error(error);
+        if (error instanceof MoviciError) {
+          await error.handleError({
+            $t: this.$t.bind(this),
+            $router: this.$router,
+            query: {
+              project: this.currentProject?.name
+            }
+          });
+        }
         flowUIStore.setLoading({ value: false });
       }
     }
   }
-
-  async created() {}
 }
 </script>
 

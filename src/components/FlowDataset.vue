@@ -121,6 +121,7 @@ import FlowContainer from './FlowContainer.vue';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import DatasetViewer from './widgets/DatasetViewer.vue';
 import { flowStore, flowUIStore } from '../store/store-accessor';
+import { MoviciError } from '@movici-flow-common/errors';
 import { sortByKeys } from '@movici-flow-common/utils';
 
 @Component({
@@ -199,9 +200,9 @@ export default class FlowDataset extends Vue {
       await flowStore.setupFlowStore({
         config: {
           currentProjectName: this.currentProjectName,
-          getProject: true,
+          needProject: true,
           currentScenarioName: this.currentScenarioName,
-          getScenario: true,
+          needScenario: false,
           disableCollapser: true
         }
       });
@@ -214,8 +215,16 @@ export default class FlowDataset extends Vue {
 
       flowUIStore.setLoading({ value: false });
     } catch (error) {
-      console.error(error);
-      await this.$router.push({ name: 'FlowProject' });
+      flowUIStore.setLoading({ value: false });
+      if (error instanceof MoviciError) {
+        await error.handleError({
+          $t: this.$t.bind(this),
+          $router: this.$router,
+          query: {
+            project: this.currentProjectName
+          }
+        });
+      }
     }
   }
 }
