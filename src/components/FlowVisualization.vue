@@ -84,6 +84,7 @@
         </template>
         <template #control-bottom="{ updateTimestamp }">
           <TimeSlider
+            :customTimeFormat="customTimeFormat"
             :value="timestamp"
             @input="updateTimestamp($event)"
             :timeline-info="timelineInfo"
@@ -568,6 +569,51 @@ export default class FlowVisualization extends Vue {
       }
     }
   }
+  get customTimeFormat(): (val: number) => string {
+    // Time format is customized in such a way that we have at least 20 distinct displayed moments
+    // so starting from a total duration 20 years, we display only the year, from a duration of 2
+    // year we display only the month and year, etc. These are rough estimates though, it's not
+    // rocket science
+
+    const duration = this.timelineInfo
+      ? this.timelineInfo.duration * this.timelineInfo.time_scale
+      : 0;
+    let levelOfDetail: number;
+    if (duration > 3600 * 24 * 365 * 20) {
+      // longer than 20 years shows only year
+      levelOfDetail = 1;
+    } else if (duration > 3600 * 24 * 365 * 2) {
+      // longer than 2 years shows month and year
+      levelOfDetail = 2;
+    } else if (duration > 3600 * 24 * 30) {
+      // longer than 1 month shows day month and year
+      levelOfDetail = 3;
+    } else {
+      // anything shorter than a month shows everything
+      levelOfDetail = 10;
+    }
+    return (val: number) => formatDate(new Date(val * 1000), levelOfDetail);
+  }
+}
+
+function formatDate(d: Date, levelOfDetail: number): string {
+  if (levelOfDetail >= 10) {
+    return d.toLocaleString('NL-nl');
+  }
+  let rv = '';
+  if (levelOfDetail >= 1) {
+    // YYYY
+    rv = String(d.getFullYear());
+  }
+  if (levelOfDetail >= 2) {
+    // MM-YYYY
+    rv = ('0' + (d.getMonth() + 1)).slice(-2) + '-' + rv;
+  }
+  if (levelOfDetail >= 3) {
+    // DD-MM-YYYY
+    rv = ('0' + d.getDate()).slice(-2) + '-' + rv;
+  }
+  return rv;
 }
 </script>
 
