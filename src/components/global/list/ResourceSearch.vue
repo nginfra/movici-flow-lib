@@ -1,5 +1,5 @@
 <template>
-  <b-field class="ml-2 mb-0">
+  <b-field class="mr-2 mb-0">
     <b-input
       :placeholder="$t('actions.search') + '...'"
       type="search"

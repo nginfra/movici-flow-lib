@@ -1,7 +1,7 @@
 <template>
-  <span class="count-container has-text-weight-bold ml-3 mr-1 is-flex">
+  <span class="has-text-weight-bold is-flex">
     <slot></slot>
-    <span class="count">{{ checkedCount }}</span>
+    <span class="count" :class="{ 'ml-5': $slots.default }">{{ checkedCount }}</span>
   </span>
 </template>
 <script lang="ts">
@@ -23,13 +23,4 @@ export default class ResourceCounter extends Vue {
   }
 }
 </script>
-<style scoped lang="scss">
-.count-container {
-  height: 20px;
-  line-height: 16px;
-  .count {
-    line-height: inherit;
-    min-width: 65px;
-  }
-}
-</style>
+<style scoped lang="scss"></style>

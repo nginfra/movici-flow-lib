@@ -5,7 +5,7 @@ import { upperFirst } from 'lodash';
 
 function getDefaultDeleteMessage(length: number, term: string) {
   const deleteOneMessage = `Are you sure you want to <b>delete</b> this ${term}? This action cannot be undone.`,
-    deleteMultipleMessage = `Are you sure you want to <b>delete</b> these ${term}s? This action cannot be undone.`,
+    deleteMultipleMessage = `Are you sure you want to <b>delete</b> ${length} ${term}s? This action cannot be undone.`,
     deleteTitle = `Delete ${term}(s)`;
 
   return {

@@ -1,34 +1,52 @@
 <template>
   <div class="has-background-white">
     <div class="level is-flex" v-if="!isPaginated">
-      <ResourceCounter :filtered-length="filteredLength" :checked-length="checkedLength" />
+      <ResourceCounter
+        class="ml-1 mr-3 checkbox-container"
+        :filtered-length="filteredLength"
+        :checked-length="checkedLength"
+      />
       <slot name="level-left"></slot>
       <span class="is-flex-grow-1"></span>
-      <slot name="level-right"></slot>
       <ResourceSearch v-model="filteredItems" :items="value" :filterKeys="filterKeys" />
+      <slot name="level-right"></slot>
     </div>
     <b-table
+      v-if="value.length"
       :data="filteredItems"
       :checked-rows.sync="checked"
       :is-row-checkable="row => row[uuidKey]"
       :default-sort="defaultSort"
       :paginated="isPaginated"
       :per-page="perPage"
-      :pagination-position="paginationPosition"
+      pagination-position="both"
       pagination-simple
       checkable
       hoverable
     >
       <template #top-left>
-        <ResourceCounter :filtered-length="filteredLength" :checked-length="checkedLength">
-          <b-tooltip class="mr-2" type="is-black" :label="checkedTooltipLabel">
-            <b-checkbox v-model="allChecked" :indeterminate="checkedLength > 0 && !allChecked" />
+        <ResourceCounter
+          class="mx-3 checkbox-container"
+          :filtered-length="filteredLength"
+          :checked-length="checkedLength"
+        >
+          <b-tooltip v-if="isPaginated" type="is-black" :label="checkedTooltipLabel">
+            <b-checkbox
+              class="all-checked"
+              v-model="allChecked"
+              :indeterminate="checkedLength > 0 && !allChecked"
+            />
           </b-tooltip>
         </ResourceCounter>
         <slot name="level-left"></slot>
-        <span class="is-flex-grow-1"></span>
-        <slot name="level-right"></slot>
+        <span class="is-flex-grow-1" />
         <ResourceSearch v-model="filteredItems" :items="value" :filterKeys="filterKeys" />
+        <slot name="level-right"></slot>
+        <span class="checkbox-container ml-5">
+          <b-tooltip type="is-black" label="View all items">
+            <b-checkbox v-model="viewAll">All</b-checkbox>
+          </b-tooltip>
+        </span>
       </template>
       <slot name="columns"></slot>
       <template #empty>
@@ -51,8 +69,13 @@ export default class ResourceList<T> extends Vue {
   @Prop({ type: Array, default: () => [] }) readonly filterKeys!: string[];
   @Prop({ type: String, default: '' }) readonly defaultSort!: string;
   @Prop({ type: String, default: 'uuid' }) readonly uuidKey!: string;
-  @Prop({ type: Number, default: 50 }) readonly perPage!: number;
+  isPaginated = false;
+  viewAll = false;
   filteredItems: T[] = [];
+
+  get perPage() {
+    return this.viewAll ? this.filteredLength : 50;
+  }
 
   get checked() {
     return this.checkedRows;
@@ -68,14 +91,6 @@ export default class ResourceList<T> extends Vue {
 
   get filteredLength() {
     return this.filteredItems.length;
-  }
-
-  get paginationPosition() {
-    return this.isPaginated ? 'both' : null;
-  }
-
-  get isPaginated() {
-    return this.filteredLength > this.perPage;
   }
 
   get allChecked() {
@@ -97,22 +112,35 @@ export default class ResourceList<T> extends Vue {
   @Watch('filteredItems')
   afterFilteredItems() {
     this.checked = [];
+
+    if (this.filteredLength > 0 && !this.isPaginated) {
+      this.isPaginated = this.filteredLength > this.perPage;
+    }
   }
 }
 </script>
 
 <style scoped lang="scss">
 .level {
-  margin-bottom: 1em !important;
   align-items: center;
+  margin-bottom: 1em !important;
+}
+.checkbox-container {
+  height: 20px;
+  padding-left: 1px;
+  line-height: 16px;
 }
 ::v-deep {
-  .checkbox {
+  .checkbox.all-checked {
+    margin-right: 0;
     .control-label {
       display: none;
     }
   }
   .b-table {
+    .level {
+      margin-bottom: 1em !important;
+    }
     .level-left {
       flex: 1 1 0;
       margin-right: 1em;
