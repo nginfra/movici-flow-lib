@@ -55,13 +55,13 @@ import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/Visual
 import { flowStore, flowUIStore } from '@movici-flow-common/store/store-accessor';
 import DeckContainerMixin from './DeckContainerMixin';
 import { BoundingBox } from '@mapbox/geo-viewport';
+import { Layer } from '@deck.gl/core';
 
 @Component({
   name: 'MovMapVis',
   components: { Deck, Buildings }
 })
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default class MovMapVis extends DeckContainerMixin<any> {
+export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
   @Prop({ type: Array, default: () => [] }) readonly layerInfos!: ComposableVisualizerInfo[];
   @Prop({ type: Object, default: null }) readonly timelineInfo!: TimeOrientedSimulationInfo | null;
   @Prop({ type: Object, default: () => defaults.viewState() }) readonly viewState!: CameraOptions;
@@ -145,7 +145,8 @@ export default class MovMapVis extends DeckContainerMixin<any> {
           }
         });
         return v.getLayer(this.timestamp);
-      });
+      })
+      .filter(l => l !== null) as unknown as Layer<D>[];
 
     this.setLayers(layers);
   }

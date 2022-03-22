@@ -29,9 +29,7 @@ export class TimelineDownloader {
 
   updateProgress() {
     this.progress++;
-    if (this.reportProgress) {
-      this.reportProgress((this.progress / this.maxProgress) * 100);
-    }
+    this.reportProgress?.((this.progress / this.maxProgress) * 100);
   }
 
   getUpdateData<T>(updatesList: Update[]): Promise<EntityUpdate<T>[]> {

@@ -1,5 +1,5 @@
 <template>
-  <div class="group-picker visualizer-element is-flex">
+  <div class="group-picker visualizer-element is-flex is-flex-direction-column is-relative">
     <div class="header">
       <slot name="header"></slot>
       <span class="grip mr-1" v-if="showOnHeader('grip')">
@@ -38,7 +38,7 @@
               {{ colorByValue.attribute.name }}
             </span>
             <span class="byValue buckets" v-if="colorByValue && colorByValue.type === 'buckets'">
-              <b-icon class="is-tiny mr-2" type="is-small" icon="fill" pack="far"></b-icon>
+              <b-icon class="is-tiny mr-2" type="is-small" icon="fill" pack="far" />
               <span
                 v-for="(color, index) in colorByValue.colors"
                 :style="{ 'background-color': convertColor(color[1]) }"
@@ -46,7 +46,7 @@
               />
             </span>
             <span class="byValue gradient" v-if="colorByValue && colorByValue.type === 'gradient'">
-              <b-icon class="is-tiny mr-2" type="is-small" icon="fill" pack="far"></b-icon>
+              <b-icon class="is-tiny mr-2" type="is-small" icon="fill" pack="far" />
               <span
                 :style="{
                   background: linearGradient,
@@ -55,12 +55,15 @@
               />
             </span>
             <span class="static" v-if="colorStatic">
-              <b-icon class="is-tiny mr-2" type="is-small" icon="fill" pack="far"></b-icon>
+              <b-icon class="is-tiny mr-2" type="is-small" icon="fill" pack="far" />
               <span :style="{ 'background-color': convertColor(colorStatic.color) }" />
             </span>
           </div>
         </template>
       </MovTooltipInfo>
+      <span v-if="hasError" @click="tryResolve()" class="errors mr-2">
+        <b-icon :type="errorColor" size="is-small" pack="far" icon="exclamation-triangle" />
+      </span>
       <span
         v-if="showOnHeader('visibility')"
         @click="toggleVisibility()"
@@ -81,11 +84,12 @@
         @delete="handleEvent('delete')"
       />
     </div>
+    <b-progress v-if="showLoader" :class="{ fade: progress >= 100 }" :value="progress" />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { colorTripleToHex } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { FlowVisualizerType, RGBAColor } from '@movici-flow-common/types';
@@ -100,7 +104,7 @@ export default class VisualizerElement extends Vue {
   @Prop({ type: Array, default: () => [] }) readonly actionButtons!: string[];
   @Prop({ type: String, default: 'is-bottom' }) readonly tooltipPosition!: string;
   @Prop({ type: Boolean, default: false }) tooltipActive!: boolean;
-  showDetails = false;
+  progress: number | null = null;
   actions: ActionMenuItem[] = [
     {
       icon: 'edit',
@@ -127,6 +131,19 @@ export default class VisualizerElement extends Vue {
     return this.actions.filter(action => {
       return this.actionButtons.includes(action.event);
     });
+  }
+
+  get showLoader() {
+    return typeof this.progress === 'number';
+  }
+
+  get hasError() {
+    return Object.entries(this.value.errors).length;
+  }
+
+  get errorColor() {
+    // should we classify error by colors?
+    return 'is-warning';
   }
 
   get popup() {
@@ -168,6 +185,10 @@ export default class VisualizerElement extends Vue {
     return 'linear-gradient(90deg,' + gradientString + ')';
   }
 
+  tryResolve() {
+    // try and resolve error
+  }
+
   handleEvent(name: string) {
     this.$emit(name);
     this.$emit('close-editor');
@@ -187,6 +208,13 @@ export default class VisualizerElement extends Vue {
 
   convertColor(color: RGBAColor) {
     return colorTripleToHex(color);
+  }
+
+  @Watch('value', { immediate: true })
+  setOnProgress() {
+    this.value.onProgress ??= (val: number) => {
+      this.progress = val;
+    };
   }
 }
 </script>
@@ -220,6 +248,7 @@ $container-bg: $white-ter;
       &.edit,
       &.open,
       &.export,
+      &.errors,
       &.visibility {
         cursor: pointer;
       }
@@ -258,6 +287,20 @@ $container-bg: $white-ter;
           min-width: 48px;
           display: inline-block;
         }
+      }
+    }
+    .progress-wrapper {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      &.fade {
+        transition: all 0.5s;
+        transition-delay: 0.5s;
+        opacity: 0;
+      }
+      .progress {
+        height: 0.25em;
       }
     }
   }

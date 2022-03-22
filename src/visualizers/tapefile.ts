@@ -25,22 +25,38 @@ function getEmptyUpdate(timestamp: number): TapefileUpdate<never> {
   };
 }
 
+function reportProgressWrapper(reportProgress?: (val: number) => void) {
+  if (reportProgress) {
+    const INIT_DATA_PROGRESS_QUOTA = 20;
+    return (val: number) =>
+      reportProgress(INIT_DATA_PROGRESS_QUOTA + (val / 100) * (100 - INIT_DATA_PROGRESS_QUOTA));
+  }
+}
+
 export async function getTapefiles<T>(config: {
   store: DatasetDownloader;
   entityGroup: string;
   properties: ComponentProperty[];
+  reportProgress?: (val: number) => void;
 }): Promise<SinglePropertyTapefile<T>[]> {
-  const initialData = await config.store.getInitialData<EntityGroupData<T>>({
-    entityGroup: config.entityGroup,
-    properties: config.properties
-  });
-  const specialValues = await config.store.getSpecialValues<T>(config.entityGroup);
-  const updates = await new TimelineDownloader(
-    config.entityGroup,
-    config.properties,
-    config.store
-  ).download<T>();
-  return config.properties.map(p =>
+  const { store, entityGroup, properties, reportProgress } = config,
+    // wrap our progress report in an arrow function. We assign 20% of total progress to initial data
+    // whenever the wrapped function is called by the TimelineDownlaoder, we compensate for that
+    // 0 progress from TD maps to 20%, 50% from TD -> 60%, 100% TD -> 100%
+    wrappedReportProgress = reportProgressWrapper(reportProgress),
+    initialData = await store.getInitialData<EntityGroupData<T>>({ entityGroup, properties });
+
+  wrappedReportProgress?.(0);
+
+  const specialValues = await config.store.getSpecialValues<T>(config.entityGroup),
+    updates = await new TimelineDownloader(
+      entityGroup,
+      properties,
+      store,
+      wrappedReportProgress
+    ).download<T>();
+
+  return properties.map(p =>
     createTapefileFromStateAndUpdates(p, initialData, updates, specialValues)
   );
 }
