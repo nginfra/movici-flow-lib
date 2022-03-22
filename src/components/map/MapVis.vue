@@ -131,18 +131,21 @@ export default class MovMapVis extends DeckContainerMixin<any> {
 
     const visualizers = this.ensureVisualizers();
 
-    const layers = (visualizers?.getVisualizers() ?? []).map((v, idx) => {
-      v.setCallbacks({
-        onClick: (content: PopupContent | null) => {
-          this.setPopup({ id: v.info.id, content });
-        },
-        onHover: (content: PopupContent | null) => {
-          this.setPopup({ id: v.info.id, content });
-        }
+    // We sort the visualizers from high to low b-a sorts from high to low so that
+    // the visualizers with the lower order are rendered last, and on top of other visualizers
+    const layers = (visualizers?.getVisualizers() ?? [])
+      .sort((a, b) => b.order - a.order)
+      .map(v => {
+        v.setCallbacks({
+          onClick: (content: PopupContent | null) => {
+            this.setPopup({ id: v.info.id, content });
+          },
+          onHover: (content: PopupContent | null) => {
+            this.setPopup({ id: v.info.id, content });
+          }
+        });
+        return v.getLayer(this.timestamp);
       });
-      v.setLayerOrder(idx);
-      return v.getLayer(this.timestamp);
-    });
 
     this.setLayers(layers);
   }
