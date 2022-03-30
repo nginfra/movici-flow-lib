@@ -2,14 +2,11 @@
   <div>
     <div class="columns mb-0 is-multiline">
       <div class="column is-two-thirds-desktop is-full-tablet">
-        <b-checkbox
-          :value="showVisiblity"
-          @input="toggleVisiblity"
-          size="is-small"
-          style="height: 30px"
-        >
-          {{ $t('flow.visualization.byValue') }}
-        </b-checkbox>
+        <b-field>
+          <b-checkbox :value="showVisiblity" @input="toggleVisiblity" size="is-small">
+            {{ $t('flow.visualization.byValue') }}
+          </b-checkbox>
+        </b-field>
       </div>
     </div>
     <div class="columns mb-0 is-multiline" v-if="showVisiblity">

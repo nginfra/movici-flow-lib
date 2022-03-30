@@ -12,6 +12,10 @@
     color: $black;
   }
 
+  .b-radio.is-small, .b-checkbox.is-small {
+    height: 30px;
+  }
+
   // list
   ul.flow-list {
     padding-right: 0.25rem;
