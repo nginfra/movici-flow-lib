@@ -24,7 +24,6 @@ import { LineTopologyGetter, PointTopologyGetter, PolygonTopologyGetter } from '
 import { ColorModule, PopupModule, VisualizerModule } from './visualizerModules';
 import SizeModule from './visualizerModules/SizeModule';
 import VisibilityModule from './visualizerModules/VisibilityModule';
-import { cloneDeep } from 'lodash';
 
 abstract class ComposableVisualizer<
     EntityData extends EntityGroupData<Coordinate | number>,
@@ -39,7 +38,7 @@ abstract class ComposableVisualizer<
   tapefiles: Record<string, SinglePropertyTapefile<VisualizableDataTypes>>;
   declare topology?: LData[];
   modules: VisualizerModule<Coord, LData>[] | null;
-  layerParams: LayerParams<LData, Coord> | null = null;
+
   constructor(config: VisualizerContext) {
     super(config);
     this.attributes = {};
@@ -56,21 +55,12 @@ abstract class ComposableVisualizer<
   }
 
   async doLoad() {
-    // this.layerParams may be null, but only if we start the ComposableVisualizer with an
-    // invisible layer. Once the layer becomes visible, we download the required data and set
-    // this.layerParams. When it is then toggled invisible again, we set the new layer to be
-    // invisible, and don't download any newly required data, until the layer is toggled visible
-    // again
-    if (this.info.visible) {
-      this.info.onProgress?.(0);
-      this.topology ??= (await this.topologyGetter.getTopology()) as LData[];
-      this.layerParams = this.compose();
-      await this.ensureTapefiles();
-      this.distributeTapefiles();
-      this.info.onProgress?.(100);
-    } else if (this.layerParams !== null) {
-      this.layerParams = this.compose();
+    if (!this.topology) {
+      this.topology = (await this.topologyGetter.getTopology()) as LData[];
     }
+    this.compose();
+    await this.ensureTapefiles();
+    this.distributeTapefiles();
   }
 
   private compose(): LayerParams<LData, Coord> {
@@ -115,11 +105,11 @@ abstract class ComposableVisualizer<
   async ensureTapefiles() {
     const toDownload = Object.keys(this.attributes).filter(attr => !this.tapefiles[attr]);
     if (toDownload.length) {
+      const properties = toDownload.map(s => parsePropertyString(s));
       const tapefiles = await getTapefiles<VisualizableDataTypes>({
         store: this.datasetStore,
         entityGroup: this.info.entityGroup,
-        properties: toDownload.map(s => parsePropertyString(s)),
-        reportProgress: this.info.onProgress
+        properties
       });
 
       for (const [idx, key] of toDownload.entries()) {
@@ -144,18 +134,13 @@ abstract class ComposableVisualizer<
 
   getLayer(timestamp: number) {
     this.updateTimestamp(timestamp);
-    if (!this.layerParams) {
-      return null;
-    }
-    const layerParams = this.appendTimestampTrigger(this.layerParams, timestamp);
-    return new layerParams.type(layerParams.props) as unknown as Layer_;
-  }
-  appendTimestampTrigger(params: LayerParams<LData, Coord>, timestamp: number) {
-    const rv = cloneDeep(params);
-    for (const triggers of Object.values(rv.props.updateTriggers)) {
+    const layerParams = this.compose();
+    this.distributeTapefiles();
+    for (const triggers of Object.values(layerParams.props.updateTriggers)) {
       (triggers as unknown[]).push(timestamp);
     }
-    return rv;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return new layerParams.type(layerParams.props) as any;
   }
 }
 

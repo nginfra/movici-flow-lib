@@ -110,5 +110,5 @@ export abstract class BaseVisualizer<
 
   abstract doLoad(onProgress?: (p: number) => void): Promise<void>;
   abstract get topologyGetter(): TopologyGetter<EntityData, Coord>;
-  abstract getLayer(timestamp?: number): Layer_ | null;
+  abstract getLayer(timestamp?: number): Layer_;
 }
