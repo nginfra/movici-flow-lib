@@ -24,7 +24,6 @@ import { LineTopologyGetter, PointTopologyGetter, PolygonTopologyGetter } from '
 import { ColorModule, PopupModule, VisualizerModule } from './visualizerModules';
 import SizeModule from './visualizerModules/SizeModule';
 import VisibilityModule from './visualizerModules/VisibilityModule';
-import { cloneDeep } from 'lodash';
 
 abstract class ComposableVisualizer<
     EntityData extends EntityGroupData<Coordinate | number>,
@@ -151,11 +150,26 @@ abstract class ComposableVisualizer<
     return new layerParams.type(layerParams.props) as unknown as Layer_;
   }
   appendTimestampTrigger(params: LayerParams<LData, Coord>, timestamp: number) {
-    const rv = cloneDeep(params);
-    for (const triggers of Object.values(rv.props.updateTriggers)) {
-      (triggers as unknown[]).push(timestamp);
-    }
-    return rv;
+    // We need to add the timestamp as an update trigger so that deckgl knows to update the
+    // accessors. However, since layerParams kept as a object attribute we cannot just modify
+    // the params.props.updateTriggers array by pushing the current timestamp. the update triggers
+    // array would constantly grow with the next timestamp. We need to create a new array, within
+    // a new updateTriggers object and add the current timestamp to that array so that 
+    // `this.updateTriggers` is not affected
+
+    const shallowCopy = { ...params.props };
+    shallowCopy.updateTriggers = Object.entries(params.props.updateTriggers).reduce(
+      (prev, [key, val]) => {
+        prev[key] = [...(val as []), timestamp];
+        return prev;
+      },
+      {} as Record<string, unknown>
+    );
+
+    return {
+      type: params.type,
+      props: shallowCopy
+    };
   }
 }
 
