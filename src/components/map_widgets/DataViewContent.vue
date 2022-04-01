@@ -13,15 +13,17 @@
         <b-icon pack="far" icon="times"></b-icon>
       </span>
     </div>
-    <ul class="attributes">
-      <li class="is-flex is-size-7" v-for="(item, idx) in filteredItems" :key="idx">
-        <span class="name is-flex-grow-1 mr-2">
-          {{ item.name }}
-          <span class="unit" v-if="item.attribute.unit">({{ item.attribute.unit }})</span>:
-        </span>
-        <span class="value has-text-weight-bold">{{ formatValue(item) }}</span>
-      </li>
-    </ul>
+    <table class="attributes">
+      <tr class="is-size-7" v-for="(item, idx) in filteredItems" :key="idx">
+        <td class="name">
+          {{ item.name
+          }}<span class="unit" v-if="item.attribute.unit"> ({{ item.attribute.unit }})</span>:
+        </td>
+        <td class="value has-text-weight-bold">
+          <span>{{ formatValue(item) }}</span>
+        </td>
+      </tr>
+    </table>
   </div>
 </template>
 
@@ -117,6 +119,10 @@ export default class DataViewContent extends Vue {
 <style scoped lang="scss">
 .attributes {
   color: $black;
+  width: 100%;
+  .name {
+    padding-right: 0.75em;
+  }
   .value {
     min-width: 50px;
     text-align: right;

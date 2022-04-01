@@ -166,7 +166,7 @@ import PopupConfigurator from './PopupConfigurator.vue';
 import VisibilityConfigurator from './VisibilityConfigurator.vue';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
-import { propertyString } from '@movici-flow-common/utils';
+import { propertyString, removeKey } from '@movici-flow-common/utils';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 
@@ -314,8 +314,10 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   }
 
   get hasPendingChanges() {
-    const value = { ...this.value };
-    return !isEqual(this.finalizedVisualizer, value);
+    const value = removeKey('onProgress', this.value),
+      finalized = removeKey('onProgress', this.finalizedVisualizer);
+
+    return !isEqual(finalized, value);
   }
 
   @Watch('currentEntityName')

@@ -17,6 +17,11 @@ export function hasOwnProperty<O, K extends PropertyKey>(
   return Object.prototype.hasOwnProperty.call(obj, property);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function removeKey<T>(k: keyof T, { [k]: _, ...o }: T) {
+  return o;
+}
+
 export function propertyString(property: ComponentProperty): string {
   const base = property.component ? property.component + '/' : '';
   return base + property.name;

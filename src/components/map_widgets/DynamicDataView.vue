@@ -270,8 +270,6 @@ export default class DynamicDataView extends Vue {
 
 <style scoped lang="scss">
 .data-viewer {
-  min-width: 250px;
-  max-width: 500px;
   padding: 0.75rem;
 }
 

@@ -32,7 +32,6 @@
               v-if="legendItem.label"
             >
               {{ legendItem.label }}
-              <strong v-if="legendItem.unit">({{ legendItem.unit }})</strong>
             </label>
           </div>
           <ColorBucketLegend :value="legendItem" v-if="isBuckets(legendItem)" />
