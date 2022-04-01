@@ -17,7 +17,7 @@
       <tr class="is-size-7" v-for="(item, idx) in filteredItems" :key="idx">
         <td class="name">
           {{ item.name
-          }}<span class="unit" v-if="item.attribute.unit"> ({{ item.attribute.unit }})</span>:
+          }}<span class="unit"> ({{ item.attribute.unit || '-' }})</span>:
         </td>
         <td class="value has-text-weight-bold">
           <span>{{ formatValue(item) }}</span>
@@ -120,6 +120,7 @@ export default class DataViewContent extends Vue {
 .attributes {
   color: $black;
   width: 100%;
+  white-space: nowrap;
   .name {
     padding-right: 0.75em;
   }
