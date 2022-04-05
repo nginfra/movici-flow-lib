@@ -4,14 +4,16 @@ export type AnalysisTemplate = Record<string, unknown>;
 export interface ShortScenario {
   uuid: UUID;
   name: string;
-  project_name: string;
   display_name: string;
   status?: string;
   has_simulation?: boolean;
-  [key: string]: unknown;
+  version: number;
+  created_on: number;
+  has_timeline?: boolean;
 }
 
 export interface Scenario extends ShortScenario {
+  project_name: string;
   datasets: ScenarioDataset[];
   simulation_info: SimulationInfo;
   has_timeline?: boolean;

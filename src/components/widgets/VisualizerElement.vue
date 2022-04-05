@@ -61,8 +61,14 @@
           </div>
         </template>
       </MovTooltipInfo>
-      <span v-if="hasError" @click="tryResolve()" class="errors mr-2">
-        <b-icon :type="errorColor" size="is-small" pack="far" icon="exclamation-triangle" />
+      <span v-if="errors.length" class="errors mr-2">
+        <b-icon
+          :title="errors.join('\n')"
+          :type="errorColor"
+          size="is-small"
+          pack="far"
+          icon="exclamation-triangle"
+        />
       </span>
       <span
         v-if="showOnHeader('visibility')"
@@ -137,8 +143,8 @@ export default class VisualizerElement extends Vue {
     return typeof this.progress === 'number';
   }
 
-  get hasError() {
-    return Object.entries(this.value.errors).length;
+  get errors() {
+    return Object.values(this.value.errors);
   }
 
   get errorColor() {
@@ -248,7 +254,6 @@ $container-bg: $white-ter;
       &.edit,
       &.open,
       &.export,
-      &.errors,
       &.visibility {
         cursor: pointer;
       }

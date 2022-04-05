@@ -117,9 +117,10 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
   handleNewLayerInfos() {
     this.isLoading = true;
     const visualizers = this.ensureVisualizers();
-
     if (visualizers) {
-      visualizers.updateVisualizers(this.layerInfos).then(() => {});
+      visualizers
+        .updateVisualizers(this.layerInfos.filter(info => !Object.keys(info.errors).length))
+        .then(() => {});
     }
   }
 

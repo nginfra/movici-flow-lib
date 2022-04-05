@@ -128,6 +128,7 @@ import { successMessage } from '../utils/snackbar';
 import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
 import { MoviciError } from '@movici-flow-common/errors';
 import { transformBBox } from '@movici-flow-common/crs';
+import { isError } from 'lodash';
 
 @Component({
   components: {
@@ -288,24 +289,29 @@ export default class FlowVisualization extends Vue {
         return obj;
       }, {} as Record<string, UUID>) ?? {};
 
-    const visualizers: ComposableVisualizerInfo[] = [];
-    for (let vizConfig of view.config.visualizers) {
-      const info = new ComposableVisualizerInfo({
-        name: vizConfig.name,
-        datasetName: vizConfig.dataset_name,
-        datasetUUID: datasets[vizConfig.dataset_name],
+    const visualizers: ComposableVisualizerInfo[] = view.config.visualizers.map(conf => {
+      return new ComposableVisualizerInfo({
+        name: conf.name,
+        datasetName: conf.dataset_name,
+        datasetUUID: datasets[conf.dataset_name],
         scenarioUUID: this.currentScenario?.uuid,
-        entityGroup: vizConfig.entity_group,
-        visible: vizConfig.visible,
-        settings: vizConfig.settings,
+        entityGroup: conf.entity_group,
+        visible: conf.visible,
+        settings: conf.settings,
         mode: VisualizationMode.SCENARIO
       });
+    });
+    await Promise.all(
+      visualizers.map(async info => {
+        info.unsetError('content');
 
-      if (await this.validateForContentErrors(info)) {
-        visualizers.push(info);
-      }
-    }
-
+        try {
+          await this.validateForContentErrors(info);
+        } catch (e) {
+          info.setError('content', isError(e) ? e.message : String(e));
+        }
+      })
+    );
     this.viewName = view.name;
     this.visualizers = visualizers;
 
@@ -441,7 +447,7 @@ export default class FlowVisualization extends Vue {
     if (!info.datasetUUID) {
       // might add errors here
       // or should the datasetUUID be mandatory on ComposableVisualizerInfo
-      return false;
+      throw new Error('No dataset UUID specified');
     }
 
     const summary = await flowStore.getDatasetSummary({
@@ -451,8 +457,6 @@ export default class FlowVisualization extends Vue {
       entitySummary = await flowStore.getEntitySummary({ info, summary });
 
     visualizerSettingsValidator(entitySummary)(info);
-
-    return true;
   }
 
   serializeCurrentView(exportCamera = true): View {
