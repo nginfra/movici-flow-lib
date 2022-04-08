@@ -1,10 +1,10 @@
-import { getTapefiles, SinglePropertyTapefile } from './tapefile';
 import { ComposableVisualizerInfo } from './VisualizerInfo';
 import { Layer } from '@deck.gl/core';
 import {
   ComponentProperty,
   Coordinate,
   EntityGroupData,
+  ITapefile,
   LayerConstructor,
   LayerParams,
   LineCoordinate,
@@ -34,16 +34,18 @@ abstract class ComposableVisualizer<
   extends BaseVisualizer<EntityData, Coordinate, LData, Layer_>
   implements VisualizerCallbacks
 {
-  attributes: Record<string, ((t: SinglePropertyTapefile<VisualizableDataTypes>) => void)[]>;
-  tapefiles: Record<string, SinglePropertyTapefile<VisualizableDataTypes>>;
+  attributes: Record<string, ((t: ITapefile<VisualizableDataTypes>) => void)[]>;
+  tapefiles: Record<string, ITapefile<VisualizableDataTypes>>;
   declare topology?: LData[];
   modules: VisualizerModule<Coord, LData>[] | null;
   layerParams: LayerParams<LData, Coord> | null = null;
+  forceRenderCounter: number;
   constructor(config: VisualizerContext) {
     super(config);
     this.attributes = {};
     this.tapefiles = {};
     this.modules = null;
+    this.forceRenderCounter = 0;
   }
 
   abstract getModules(): VisualizerModule<Coord, LData>[];
@@ -61,12 +63,10 @@ abstract class ComposableVisualizer<
     // invisible, and don't download any newly required data, until the layer is toggled visible
     // again
     if (this.info.visible) {
-      this.info.onProgress?.(0);
       this.topology ??= (await this.topologyGetter.getTopology()) as LData[];
       this.layerParams = this.compose();
       await this.ensureTapefiles();
       this.distributeTapefiles();
-      this.info.onProgress?.(100);
     } else if (this.layerParams !== null) {
       this.layerParams = this.compose();
     }
@@ -102,7 +102,7 @@ abstract class ComposableVisualizer<
 
   requestTapefile(
     attribute: ComponentProperty,
-    onLoad: (t: SinglePropertyTapefile<VisualizableDataTypes>) => void
+    onLoad: (t: ITapefile<VisualizableDataTypes>) => void
   ) {
     const key = propertyString(attribute);
     if (!this.attributes[key]) {
@@ -114,13 +114,12 @@ abstract class ComposableVisualizer<
   async ensureTapefiles() {
     const toDownload = Object.keys(this.attributes).filter(attr => !this.tapefiles[attr]);
     if (toDownload.length) {
-      const tapefiles = await getTapefiles<VisualizableDataTypes>({
+      const tapefiles = await this.tapefileStore.getTapefiles<VisualizableDataTypes>({
         store: this.datasetStore,
         entityGroup: this.info.entityGroup,
-        properties: toDownload.map(s => parsePropertyString(s)),
-        reportProgress: this.info.onProgress
+        attributes: toDownload.map(s => parsePropertyString(s)),
+        status: this.info.status
       });
-
       for (const [idx, key] of toDownload.entries()) {
         this.tapefiles[key] = tapefiles[idx];
       }
@@ -141,35 +140,34 @@ abstract class ComposableVisualizer<
     }
   }
 
-  getLayer(timestamp: number) {
+  getLayer(timestamp: number, forceRender = false) {
     this.updateTimestamp(timestamp);
     if (!this.layerParams) {
       return null;
     }
-    const layerParams = this.appendTimestampTrigger(this.layerParams, timestamp);
+    const layerParams = this.appendUpdateTriggers(this.layerParams, timestamp, true);
+    if (forceRender) {
+      this.forceRenderCounter++;
+    }
+    this.appendUpdateTriggers(layerParams, this.forceRenderCounter);
     return new layerParams.type(layerParams.props) as unknown as Layer_;
   }
-  appendTimestampTrigger(params: LayerParams<LData, Coord>, timestamp: number) {
-    // We need to add the timestamp as an update trigger so that deckgl knows to update the
-    // accessors. However, since layerParams kept as a object attribute we cannot just modify
-    // the params.props.updateTriggers array by pushing the current timestamp. the update triggers
-    // array would constantly grow with the next timestamp. We need to create a new array, within
-    // a new updateTriggers object and add the current timestamp to that array so that 
-    // `this.updateTriggers` is not affected
 
-    const shallowCopy = { ...params.props };
-    shallowCopy.updateTriggers = Object.entries(params.props.updateTriggers).reduce(
+  appendUpdateTriggers(params: LayerParams<LData, Coord>, value: unknown, copy = false) {
+    if (copy) {
+      params = {
+        type: params.type,
+        props: { ...params.props }
+      };
+    }
+    params.props.updateTriggers = Object.entries(params.props.updateTriggers).reduce(
       (prev, [key, val]) => {
-        prev[key] = [...(val as []), timestamp];
+        prev[key] = [...(val as []), value];
         return prev;
       },
       {} as Record<string, unknown>
     );
-
-    return {
-      type: params.type,
-      props: shallowCopy
-    };
+    return params;
   }
 }
 

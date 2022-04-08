@@ -1,3 +1,4 @@
+import StatusTracker from '@movici-flow-common/utils/StatusTracker';
 import { FlowVisualizerConfig, FlowVisualizerOptions, VisualizationMode } from '../types';
 
 abstract class BaseVisualizerInfo {
@@ -9,7 +10,7 @@ abstract class BaseVisualizerInfo {
   mode: VisualizationMode;
   visible: boolean;
   errors: Record<string, string>;
-  onProgress?: (p: number) => void;
+  status?: StatusTracker;
 
   protected constructor(config?: Partial<BaseVisualizerInfo>) {
     this.datasetName = config?.datasetName ?? '';
@@ -21,7 +22,7 @@ abstract class BaseVisualizerInfo {
     this.visible = config?.visible ?? true;
 
     this.errors = config?.errors || {};
-    this.onProgress = config?.onProgress;
+    this.status = config?.status;
   }
 
   /**

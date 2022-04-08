@@ -16,8 +16,7 @@
     <table class="attributes">
       <tr class="is-size-7" v-for="(item, idx) in filteredItems" :key="idx">
         <td class="name">
-          {{ item.name
-          }}<span class="unit"> ({{ item.attribute.unit || '-' }})</span>:
+          {{ item.name }}<span class="unit"> ({{ item.attribute.unit || '-' }})</span>:
         </td>
         <td class="value has-text-weight-bold">
           <span>{{ formatValue(item) }}</span>

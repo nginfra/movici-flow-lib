@@ -314,8 +314,8 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   }
 
   get hasPendingChanges() {
-    const value = removeKey('onProgress', this.value),
-      finalized = removeKey('onProgress', this.finalizedVisualizer);
+    const value = removeKey('status', this.value),
+      finalized = removeKey('status', this.finalizedVisualizer);
 
     return !isEqual(finalized, value);
   }

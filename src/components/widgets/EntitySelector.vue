@@ -58,6 +58,7 @@ import { hexToColorTriple, MoviciColors } from '@movici-flow-common/visualizers/
 import {
   DatasetSummary,
   EntityGroupSummary,
+  FlowVisualizerType,
   ScenarioDataset,
   VisualizationMode
 } from '@movici-flow-common/types';
@@ -65,6 +66,10 @@ import { isLines, isPoints, isPolygons } from '@movici-flow-common/visualizers/g
 import GeometrySelector from './GeometrySelector.vue';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import WidgetContainer from '@movici-flow-common/components/map_widgets/WidgetContainer.vue';
+
+interface TypedEntityGroupSummary extends EntityGroupSummary {
+  type?: FlowVisualizerType | null;
+}
 
 @Component({
   components: {
@@ -88,7 +93,7 @@ export default class EntitySelector extends Vue {
     MoviciColors.LIGHT_GREY
   ];
 
-  get entityGroups(): EntityGroupSummary[] {
+  get entityGroups(): TypedEntityGroupSummary[] {
     return this.summary?.entity_groups ?? [];
   }
 
@@ -98,8 +103,8 @@ export default class EntitySelector extends Vue {
   }
 
   @Watch('entityGroupsFiltered')
-  resetActive(entityGroupsFiltered: EntityGroupSummary[]) {
-    this.activeEntityGroups = Array(entityGroupsFiltered.length).fill(false);
+  resetActive() {
+    this.activeEntityGroups = Array(this.entityGroupsFiltered.length).fill(false);
   }
 
   getMoviciColor(idx: number) {
@@ -119,7 +124,7 @@ export default class EntitySelector extends Vue {
    */
   get validLayers() {
     return this.entityGroupsFiltered
-      .map((group: EntityGroupSummary, idx: number) => {
+      .map((group, idx) => {
         const active: boolean | undefined = this.activeEntityGroups?.[idx];
 
         if (this.currentDataset && active && group.type) {

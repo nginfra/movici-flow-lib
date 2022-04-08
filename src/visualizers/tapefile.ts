@@ -1,195 +1,52 @@
 import {
-  ComponentData,
   ComponentProperty,
   EntityGroupData,
   EntityGroupSpecialValues,
   EntityUpdate,
   ITapefile
 } from '../types';
-import { TimelineDownloader } from '../utils/timeline';
-import { DatasetDownloader } from '../utils/DatasetDownloader';
-interface TapefileUpdate<T> {
+export interface TapefileUpdate<T> {
   timestamp: number;
   length: number;
   indices: number[];
   data: T[];
   rollback?: T[];
+  fullRollback?: boolean;
 }
 
-function getEmptyUpdate(timestamp: number): TapefileUpdate<never> {
-  return {
-    timestamp,
-    length: 0,
-    indices: [],
-    data: []
-  };
-}
-
-function reportProgressWrapper(reportProgress?: (val: number) => void) {
-  if (reportProgress) {
-    const INIT_DATA_PROGRESS_QUOTA = 20;
-    return (val: number) =>
-      reportProgress(INIT_DATA_PROGRESS_QUOTA + (val / 100) * (100 - INIT_DATA_PROGRESS_QUOTA));
-  }
-}
-
-export async function getTapefiles<T>(config: {
-  store: DatasetDownloader;
-  entityGroup: string;
-  properties: ComponentProperty[];
-  reportProgress?: (val: number) => void;
-}): Promise<SinglePropertyTapefile<T>[]> {
-  const { store, entityGroup, properties, reportProgress } = config,
-    // wrap our progress report in an arrow function. We assign 20% of total progress to initial data
-    // whenever the wrapped function is called by the TimelineDownlaoder, we compensate for that
-    // 0 progress from TD maps to 20%, 50% from TD -> 60%, 100% TD -> 100%
-    wrappedReportProgress = reportProgressWrapper(reportProgress),
-    initialData = await store.getInitialData<EntityGroupData<T>>({ entityGroup, properties });
-
-  wrappedReportProgress?.(0);
-
-  const specialValues = await config.store.getSpecialValues<T>(config.entityGroup),
-    updates = await new TimelineDownloader(
-      entityGroup,
-      properties,
-      store,
-      wrappedReportProgress
-    ).download<T>();
-
-  return properties.map(p =>
-    createTapefileFromStateAndUpdates(p, initialData, updates, specialValues)
-  );
-}
-
-export function createTapefileFromStateAndUpdates<T>(
-  componentProperty: ComponentProperty,
-  initialState: EntityGroupData<T>,
-  updates: EntityUpdate<T>[],
-  specialValues?: EntityGroupSpecialValues<T>
-) {
-  const specialValue = specialValues?.[componentProperty.name];
-  const builder = new TapefileBuilder(componentProperty, initialState, specialValue);
-  for (let i = 0; i < updates.length; i++) {
-    const update = updates[i];
-    builder.addUpdate(update);
-  }
-  return builder.createTapefile();
-}
-
-export function mergeUpdates<T>(first: TapefileUpdate<T>, second: TapefileUpdate<T>) {
-  const updateMap = new Map();
-  function applyUpdate<T>(upd: TapefileUpdate<T>) {
-    for (let i = 0; i < upd.length; i++) {
-      updateMap.set(upd.indices[i], upd.data[i]);
-    }
-  }
-  applyUpdate(first);
-  applyUpdate(second);
-  const rv = {
-    timestamp: first.timestamp,
-    length: updateMap.size,
-    data: new Array(updateMap.size),
-    indices: new Array(updateMap.size)
-  };
-  let idx = 0;
-  for (const [key, value] of updateMap) {
-    rv.indices[idx] = key;
-    rv.data[idx] = value;
-    idx++;
-  }
-  return rv;
-}
-/**
- * Creates a SinglePropertyTapefile for a specific ComponentProperty based on `initialState` data
- * and subsequent updates given through `TapefileBuilder.addUpdate`.
- * `initialState` must be EntityGroupData that at least has the `id` field with all entities
- * present. For the `initialState` and subsequent given updates, the `TapefileBuilder` looks up the
- * data array of the `ComponentProperty` and adds that data as an update to a
- * `SinglePropertyTapefile` at the correct timestamp. It also calculates a rollback update to be
- * able to move the tapefile back in time. If there are multiple updates of a property at the
- * same timestamp, these are merged into a single update.
- */
-export class TapefileBuilder<T> {
-  updates: TapefileUpdate<T>[];
-  componentProperty: ComponentProperty;
+export class TapefileWriter<T> {
   index: Index;
-  state: PropertyState<T>;
-  currentTime: number;
-  currentIteration: number;
-  isFinal: boolean;
-  specialValue?: T;
-  constructor(
-    componentProperty: ComponentProperty,
-    inititalState: EntityGroupData<T>,
-    specialValue?: T
-  ) {
-    this.updates = [];
-    this.componentProperty = componentProperty;
-    this.index = new Index(inititalState.id);
-    this.state = new PropertyState(inititalState.id.length);
-    this.currentTime = 0;
-    this.currentIteration = -2; // No state yet so the initial data at iteration -1 is accepted
-    this.isFinal = false;
-    this.specialValue = specialValue;
-    this.addUpdate({ timestamp: 0, iteration: -1, data: inititalState });
+  tapefile: SinglePropertyTapefile<T>;
+  attribute: string;
+  constructor(index: Index, tapefile: SinglePropertyTapefile<T>, attribute: string) {
+    this.index = index;
+    this.tapefile = tapefile;
+    this.attribute = attribute;
   }
-
   /**
-   * adds an update to the Tapefile. Updates must be added in increasing
-   * iteration number. Updates may only be added while the TapefileBuilder
-   * is not finalized.
+   * Add an update to the tapefile, assuming it comes after the last update in the tapefile
+   * If the timestamp is larger than the last update, just prepare and add it, if the timestamp
+   * is the same, merge it with the last update before overwriting
    */
-  addUpdate(update: EntityUpdate<T>) {
-    if (this.isFinal) {
-      throw Error('Can only add updates while not finalized');
-    }
-
-    if (this.updates.length === 0) {
-      return this.addInitialUpdate(update);
-    }
-
-    // Now we're sure there's at least one update (with our property array) in the
-    // list so things like rollback and pop work
-
-    if (update.iteration <= this.currentIteration) {
-      throw Error('Can only accept updates in increasing iteration number');
-    }
-
+  appendUpdate(update: { timestamp: number; data: EntityGroupData<T> }) {
     let parsed = this.prepareUpdate(update);
-    if (!parsed) {
-      return;
-    }
-    // We have new update data
-
-    if (update.timestamp === this.currentTime) {
-      // merge update with last applied update
-      const lastUpdate = this.updates.pop() as TapefileUpdate<T>;
-      this.state.rollbackUpdate(lastUpdate);
-      parsed = mergeUpdates(lastUpdate, parsed);
+    const updates = this.tapefile.updates;
+    if (parsed === null) return;
+    const lastUpdate = updates[updates.length - 1];
+    if (lastUpdate && update.timestamp < lastUpdate.timestamp) {
+      throw new Error('Cannot append updates that have a lower timestamp than current latest');
     }
 
-    // We now have one update per timestamp
-    parsed.rollback = this.calculateRollback(parsed);
-    this.state.applyUpdate(parsed);
-    this.updates.push(parsed);
-    this.currentTime = update.timestamp;
-    this.currentIteration = update.iteration;
+    if (update.timestamp === lastUpdate?.timestamp) {
+      parsed = this.mergeUpdates(lastUpdate, parsed);
+      updates[updates.length - 1] = parsed;
+    } else {
+      updates.push(parsed);
+    }
   }
 
-  addInitialUpdate(update: { timestamp: number; iteration: number; data: EntityGroupData<T> }) {
-    const parsed = this.prepareUpdate(update) || getEmptyUpdate(update.timestamp);
-
-    parsed.rollback = this.calculateRollback(parsed);
-    this.state.applyUpdate(parsed);
-    this.updates.push(parsed);
-
-    this.currentTime = update.timestamp;
-    this.currentIteration = update.iteration;
-  }
-
-  prepareUpdate(update: {
+  private prepareUpdate(update: {
     timestamp: number;
-    iteration: number;
     data: EntityGroupData<T>;
   }): TapefileUpdate<T> | null {
     let dataArray = this.getDataArray(update.data);
@@ -199,16 +56,16 @@ export class TapefileBuilder<T> {
     }
 
     // filter out nulls
-    const nullIndices = new Set();
+    const dataIndices: number[] = [];
     for (let i = 0; i < dataArray.length; i++) {
-      if (dataArray[i] === null) {
-        nullIndices.add(i);
+      if (dataArray[i] !== null) {
+        dataIndices.push(i);
       }
     }
 
-    if (nullIndices.size) {
-      dataArray = dataArray.filter((_, idx) => !nullIndices.has(idx));
-      idArray = idArray.filter((_, idx) => !nullIndices.has(idx));
+    if (dataIndices.length !== dataArray.length) {
+      dataArray = getDataForIndices(dataArray, dataIndices);
+      idArray = getDataForIndices(idArray, dataIndices);
     }
 
     if (!dataArray.length) {
@@ -223,61 +80,86 @@ export class TapefileBuilder<T> {
       data: dataArray
     };
   }
-
-  calculateRollback(update: TapefileUpdate<T>) {
-    return this.state.getDataForIndices(update.indices);
+  private getDataArray(data: EntityGroupData<T>): T[] {
+    const result = data[this.attribute] ?? [];
+    if (!Array.isArray(result)) {
+      // todo: remove when components are fully removed
+      throw new Error('Cannot deal with components');
+    }
+    return result;
   }
-
-  getDataArray(data: EntityGroupData<T>): T[] {
-    if (this.componentProperty.component) {
-      const component = data[this.componentProperty.component] as ComponentData<T>;
-      return component ? component[this.componentProperty.name] || [] : [];
+  private mergeUpdates<T>(first: TapefileUpdate<T>, second: TapefileUpdate<T>) {
+    const updateMap: Map<number, T> = new Map();
+    function applyUpdate(upd: TapefileUpdate<T>) {
+      for (let i = 0; i < upd.length; i++) {
+        updateMap.set(upd.indices[i], upd.data[i]);
+      }
+    }
+    applyUpdate(first);
+    applyUpdate(second);
+    const rv: TapefileUpdate<T> = {
+      timestamp: first.timestamp,
+      length: updateMap.size,
+      data: new Array(updateMap.size),
+      indices: new Array(updateMap.size)
+    };
+    if (first.fullRollback) {
+      rv.rollback = first.rollback;
+      rv.fullRollback = true;
     }
 
-    return (data[this.componentProperty.name] || []) as T[];
-  }
-
-  createTapefile() {
-    this.isFinal = true;
-    return new SinglePropertyTapefile(
-      this.componentProperty,
-      this.index.length,
-      this.updates,
-      this.specialValue
-    );
+    let idx = 0;
+    for (const [key, value] of updateMap) {
+      rv.indices[idx] = key;
+      rv.data[idx] = value;
+      idx++;
+    }
+    return rv;
   }
 }
 
 /**
  * A SinglePropertyTapefile can be used to calculate the state of a specific attribute in an entity
- * group at a specific timestamp in a scenario. It is configured with all updates (including the
- * initial data) and their rollbacks. The general usage of this class is to first move the tape to
- * a specific timestamp using `SinglePropertyTapefile.moveTo()` and then requesting the state with
- * `SinglePropertyTapefile.getState()`
+ * group at a specific timestamp in a scenario. It needs a single update (or init data) to start
+ * with but more updates can be added incrementally. It can lazily evaluate rollbacks for these
+ * updates, although for the best performance it is important to periodically `trimRollbacks`
+ *
+ * The general usage of this class is to first move the
+ * tape to a specific timestamp using `SinglePropertyTapefile.moveTo()` and then requesting the
+ * state with `SinglePropertyTapefile.getState()`
  */
 export class SinglePropertyTapefile<T> implements ITapefile<T> {
   componentProperty: ComponentProperty;
   state: PropertyState<T>;
   updates: TapefileUpdate<T>[];
-  currentUpdateIdx: number;
-  minTime: number;
-  maxTime: number;
+  currentUpdateIdx: number | null;
   specialValue?: T;
-
-  constructor(
-    componentProperty: ComponentProperty,
-    length: number,
-    updates: TapefileUpdate<T>[],
-    specialValue?: T
-  ) {
+  private trimmedUntil: number;
+  private lastRollback: number;
+  constructor({
+    componentProperty,
+    length,
+    updates,
+    specialValue
+  }: {
+    componentProperty: ComponentProperty;
+    length: number;
+    updates?: TapefileUpdate<T>[];
+    specialValue?: T;
+  }) {
     this.componentProperty = componentProperty;
     this.state = new PropertyState(length);
-    this.state.applyUpdate(updates[0]);
-    this.updates = updates;
-    this.currentUpdateIdx = 0;
-    this.minTime = this.currentTime;
-    this.maxTime = updates[updates.length - 1].timestamp;
+    this.updates = updates ?? [];
+    this.currentUpdateIdx = null;
+
+    if (this.updates?.length) {
+      this.state.applyUpdate(this.updates[0]);
+      this.currentUpdateIdx = 0;
+    }
+
     this.specialValue = specialValue;
+    this.trimmedUntil = 0;
+    this.lastRollback = 0; // the first update does not need a rollback
   }
 
   get numberOfEntities() {
@@ -288,60 +170,134 @@ export class SinglePropertyTapefile<T> implements ITapefile<T> {
     return this.state.data;
   }
 
+  get currentTime() {
+    return this.currentUpdateIdx === null ? null : this.updates[this.currentUpdateIdx].timestamp;
+  }
+  get minTime() {
+    return this.updates[0]?.timestamp ?? -1;
+  }
+  get maxTime() {
+    return this.updates[this.updates.length - 1].timestamp ?? -1;
+  }
+  get nextTime() {
+    if (this.currentUpdateIdx === null || this.currentUpdateIdx === this.updates.length - 1) {
+      return Infinity;
+    }
+    return this.updates[this.currentUpdateIdx + 1].timestamp;
+  }
   copyState() {
     return this.state.copyState();
   }
-  get currentTime() {
-    return this.updates[this.currentUpdateIdx].timestamp;
-  }
-
-  get nextTime() {
-    if (this.currentUpdateIdx === this.updates.length - 1) return Infinity;
-    return this.updates[this.currentUpdateIdx + 1].timestamp;
-  }
-
   moveTo(time: number) {
-    if (time === this.currentTime) return;
-    if (time > this.currentTime) {
-      return this.moveForward(Math.min(time, this.maxTime));
+    let currentTime = this.currentTime;
+    if (currentTime === null) {
+      if (!this.updates.length) return;
+      this.currentUpdateIdx = 0;
+      const newUpdate = this.updates[this.currentUpdateIdx];
+      this.state.applyUpdate(newUpdate);
+      currentTime = newUpdate.timestamp;
     }
-    if (time < this.currentTime) {
-      return this.moveBackward(Math.max(time, this.minTime));
+    if (time === currentTime) return;
+    if (time > currentTime) {
+      return this.moveForward(time);
+    }
+    if (time < currentTime) {
+      return this.moveBackward(time);
     }
   }
 
-  moveForward(time: number) {
+  private moveForward(time: number) {
+    time = Math.min(time, this.maxTime);
     while (time >= this.nextTime) {
       this.stepForward();
     }
   }
-
-  moveBackward(time: number) {
+  private moveBackward(time: number) {
+    Math.max(time, this.minTime);
+    if (this.currentTime === null) return;
     while (time < this.currentTime) {
       this.stepBackward();
     }
   }
 
   stepForward() {
-    if (this.currentUpdateIdx >= this.updates.length - 1) {
+    if (this.currentUpdateIdx === null || this.currentUpdateIdx >= this.updates.length - 1) {
       throw RangeError('Requested step out of bounds');
     }
     this.currentUpdateIdx++;
     const newUpdate = this.updates[this.currentUpdateIdx];
+    // In case we there is no rollback calculated for the newUpdate yet, we need to calculate it
+    // just before we apply it, otherwise we cannot later undo (ie rollback) the newUpdate.
+    this.calculateRollback(newUpdate, this.currentUpdateIdx === this.updates.length - 1);
     this.state.applyUpdate(newUpdate);
   }
 
   stepBackward() {
-    if (this.currentUpdateIdx === 0) {
+    if (this.currentUpdateIdx === null || this.currentUpdateIdx === 0) {
       throw new RangeError('Requested step out of bounds');
     }
     const currentUpdate = this.updates[this.currentUpdateIdx];
     this.state.rollbackUpdate(currentUpdate);
+
     this.currentUpdateIdx--;
   }
-}
+  calculateNextRollback() {
+    if (!this.updates.length) return false;
+    const lastRollback = this.lastRollback,
+      nextRollback = lastRollback + 1,
+      updates = this.updates,
+      lastUpdate = updates.length - 1,
+      isLast = nextRollback === lastUpdate;
+    if (nextRollback > lastUpdate) return false;
+    this.moveTo(updates[lastRollback].timestamp);
+    this.calculateRollback(updates[nextRollback], isLast);
+    this.lastRollback = nextRollback;
+    this.trimRollbacks();
 
-class Index {
+    return !isLast;
+  }
+
+  private calculateRollback(update: TapefileUpdate<T>, isLast: boolean) {
+    if (update.rollback) return;
+    if (isLast) {
+      // the update currently last in the list of updates gets a special treatment. In certain
+      // cases this update may be merged with new updates coming along, which can change (increase)
+      // the number of indices in the update, which would invalidate its rollback. By taking the
+      // full state of the attribute, we use a little more memory, but we are sure to always have a
+      // valid rollback. In a different part of the code (eg. `TapefileWriter`) we can trim the
+      // rollback whenever the affected update is no longer last in the list
+      update.rollback = this.state.copyState();
+
+      update.fullRollback = true;
+    } else {
+      update.rollback = getDataForIndices(this.state.data, update.indices);
+      update.fullRollback = false;
+    }
+  }
+
+  trimRollbacks() {
+    if (this.updates.length < 2) return;
+
+    // start at the second to last update, always leave the last rollback in tact
+    let i = this.updates.length - 2;
+
+    while (i >= this.trimmedUntil) {
+      const upd = this.updates[i];
+      if (hasFullRollback(upd)) {
+        upd.rollback = getDataForIndices(upd.rollback, upd.indices);
+        upd.fullRollback = false;
+      }
+      i--;
+    }
+    this.trimmedUntil = this.updates.length - 1;
+  }
+}
+function hasFullRollback<T>(
+  upd: TapefileUpdate<T>
+): upd is TapefileUpdate<T> & { hasFullRollback: true; rollback: T[] } {
+  return (upd.rollback && upd.fullRollback) ?? false;
+}
+export class Index {
   map: Map<number, number>;
   length: number;
   constructor(idArray: number[]) {
@@ -372,25 +328,25 @@ class PropertyState<T> {
     this.data = getEmptyArray(length);
   }
 
-  getDataForIndices(indices: number[]) {
-    const rv = new Array(indices.length);
-    for (let i = 0; i < indices.length; i++) {
-      rv[i] = this.data[indices[i]];
-    }
-    return rv;
-  }
-
   applyUpdate(update: TapefileUpdate<T>) {
     return this.setUpdateData(update.indices, update.data);
   }
 
   rollbackUpdate(update: TapefileUpdate<T>) {
-    if (update.rollback) {
+    if (hasFullRollback(update)) {
+      this.setFullState(update.rollback);
+    } else if (update.rollback) {
       return this.setUpdateData(update.indices, update.rollback);
+    } else {
+      throw new Error('Update has no rollback');
     }
   }
-
-  setUpdateData(indices: number[], data: T[]) {
+  private setFullState(data: T[]) {
+    for (let i = 0; i < this.data.length; i++) {
+      this.data[i] = data[i];
+    }
+  }
+  private setUpdateData(indices: number[], data: T[]) {
     for (let i = 0; i < indices.length; i++) {
       this.data[indices[i]] = data[i];
     }
@@ -402,4 +358,43 @@ class PropertyState<T> {
 }
 function getEmptyArray(size: number) {
   return new Array(size).fill(null);
+}
+
+function getDataForIndices<T>(data: Array<T>, indices: number[]) {
+  const rv: T[] = new Array(indices.length);
+  for (let i = 0; i < indices.length; i++) {
+    rv[i] = data[indices[i]];
+  }
+  return rv;
+}
+
+/**
+ * This function is now a only used in testing as a helper function to create tapefiles
+ */
+export function createTapefileFromStateAndUpdates<T>(
+  componentProperty: ComponentProperty,
+  initialState: EntityGroupData<T>,
+  updates: EntityUpdate<T>[],
+  specialValues?: EntityGroupSpecialValues<T>
+) {
+  const specialValue = specialValues?.[componentProperty.name],
+    index = new Index(initialState.id),
+    tapefile = new SinglePropertyTapefile({
+      componentProperty,
+      length: index.length,
+      specialValue
+    }),
+    writer = new TapefileWriter(index, tapefile, componentProperty.name);
+  writer.appendUpdate({
+    timestamp: -1,
+    data: initialState
+  });
+  tapefile.calculateNextRollback();
+  for (const update of updates) {
+    writer.appendUpdate(update);
+    tapefile.calculateNextRollback();
+  }
+  tapefile.trimRollbacks();
+  tapefile.moveTo(0);
+  return tapefile;
 }

@@ -3,9 +3,11 @@ import { Coordinate, EntityGroupData, PopupCallback, TopologyLayerData } from '.
 import { TopologyGetter } from './geometry';
 import { DatasetDownloader } from '../utils/DatasetDownloader';
 import { ComposableVisualizerInfo } from './VisualizerInfo';
+import { TapefileStore } from './TapefileStore';
 
 export interface VisualizerContext {
   datasetStore: DatasetDownloader;
+  tapefileStore: TapefileStore;
   onLoad?: () => void;
   onError?: (err: Error) => void;
   info: ComposableVisualizerInfo;
@@ -28,6 +30,7 @@ export abstract class BaseVisualizer<
   Layer_ extends Layer<LData>
 > {
   datasetStore: DatasetDownloader;
+  tapefileStore: TapefileStore;
   info: ComposableVisualizerInfo;
   order: number;
   onClick: PopupCallback;
@@ -41,6 +44,7 @@ export abstract class BaseVisualizer<
     this.info = config.info;
     this.onLoad = config.onLoad;
     this.onError = config.onError;
+    this.tapefileStore = config.tapefileStore;
     this.order = 0;
     this.loaded = false;
     this.onClick = () => {};

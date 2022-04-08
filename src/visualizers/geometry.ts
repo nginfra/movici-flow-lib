@@ -10,7 +10,6 @@ import {
   PointGeometryData,
   PolygonCoordinate,
   PolygonGeometryData,
-  PropertyType,
   TopologyLayerData,
   EntityGeometry
 } from '../types';
@@ -132,8 +131,8 @@ export function determineEntityGeometry(summary: EntityGroupSummary): EntityGeom
 function containsAttributes(
   attributeNames: string[],
   minFound: number
-): (attributes: PropertyType[]) => boolean {
-  return (attributes: PropertyType[]): boolean => {
+): (attributes: ComponentProperty[]) => boolean {
+  return (attributes: ComponentProperty[]): boolean => {
     return (
       attributes.filter(p => {
         return attributeNames.includes(p.name);

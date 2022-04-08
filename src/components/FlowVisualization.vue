@@ -82,11 +82,12 @@
             <DataViewContent @close="closePopup" :value="popupContent" :timestamp="timestamp" />
           </WidgetContainer>
         </template>
-        <template #control-bottom="{ updateTimestamp }">
+        <template #control-bottom="{ updateTimestamp, maxTimeAvailable }">
           <TimeSlider
-            :customTimeFormat="customTimeFormat"
             :value="timestamp"
             @input="updateTimestamp($event)"
+            :customTimeFormat="customTimeFormat"
+            :type="timestamp < maxTimeAvailable ? 'is-primary' : 'is-dark'"
             :timeline-info="timelineInfo"
           />
         </template>

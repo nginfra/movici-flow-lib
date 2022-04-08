@@ -46,7 +46,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { FlowVisualizerType, PropertyType } from '@movici-flow-common/types';
+import { ComponentProperty, FlowVisualizerType } from '@movici-flow-common/types';
 import { isLines, isPoints, isPolygons } from '@movici-flow-common/visualizers/geometry';
 
 function validFlowVisualizerType(val: unknown): val is FlowVisualizerType {
@@ -72,7 +72,7 @@ export default class GeometrySelector extends Vue {
     }
   })
   readonly value!: FlowVisualizerType | null;
-  @Prop({ type: Array, default: () => [] }) readonly properties!: PropertyType[];
+  @Prop({ type: Array, default: () => [] }) readonly properties!: ComponentProperty[];
 
   get errorMessage() {
     return this.properties.length && this.noChoice ? this.$t('flow.visualization.noGeometry') : '';

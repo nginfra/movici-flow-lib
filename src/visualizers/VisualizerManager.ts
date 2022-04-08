@@ -6,6 +6,8 @@ import { determineChanges } from '../components/map/mapVisHelpers';
 import { DatasetDownloader } from '../utils/DatasetDownloader';
 import { ComposableVisualizerInfo } from './VisualizerInfo';
 import { Backend } from '../types/backend';
+import { TapefileStore } from './TapefileStore';
+import { UUID } from '@movici-flow-common/types';
 
 type VMCallback = (params: CallbackPayload) => void;
 
@@ -13,8 +15,9 @@ interface CallbackPayload {
   manager: VisualizerManager;
   info?: ComposableVisualizerInfo;
   error?: Error | unknown;
+  timestamp?: number | null;
 }
-type CallbackEvent = 'success' | 'create' | 'delete' | 'error';
+type CallbackEvent = 'success' | 'create' | 'delete' | 'error' | 'data';
 
 /**
  * The VisualizerManager creates and maintains `Visualizers` for the `MapVis.vue` component
@@ -35,6 +38,7 @@ export default class VisualizerManager {
   private currentInfos: ComposableVisualizerInfo[];
   protected callbacks: Record<CallbackEvent, VMCallback[]>;
   private loading: boolean;
+  private tapefileStores: Record<UUID, TapefileStore>;
 
   constructor(config: {
     backend: Backend;
@@ -42,22 +46,26 @@ export default class VisualizerManager {
     onError?: VMCallback | VMCallback[];
     onCreate?: VMCallback | VMCallback[];
     onDelete?: VMCallback | VMCallback[];
+    onData?: VMCallback | VMCallback[];
   }) {
     this.backend = config.backend;
     this.visualizers = {};
     this.desiredInfos = [];
     this.currentInfos = [];
     this.loading = false;
+    this.tapefileStores = {};
     this.callbacks = {
       create: [],
       delete: [],
       success: [],
-      error: []
+      error: [],
+      data: []
     };
     if (config.onSuccess) this.on('success', config.onSuccess);
     if (config.onError) this.on('error', config.onError);
     if (config.onCreate) this.on('create', config.onCreate);
     if (config.onDelete) this.on('delete', config.onDelete);
+    if (config.onData) this.on('data', config.onData);
   }
 
   getVisualizers(): Visualizer[] {
@@ -144,12 +152,28 @@ export default class VisualizerManager {
         `Invalid dataset ${layerInfo.datasetName} for layer ${layerInfo.id}: no UUID`
       );
     }
-    const store = new DatasetDownloader({
+    const datasetStore = new DatasetDownloader({
       backend: this.backend,
       datasetUUID: layerInfo.datasetUUID,
       scenarioUUID: layerInfo.scenarioUUID || undefined
     });
-    return getVisualizer({ datasetStore: store, info: layerInfo });
+    const scenarioUUID = layerInfo.scenarioUUID ?? '';
+    this.tapefileStores[scenarioUUID] ??= new TapefileStore({
+      onData: (ts: number) => {
+        this.invokeCallbacks('data', {
+          manager: this,
+          timestamp: ts
+        });
+      },
+      onReady: () => {
+        this.invokeCallbacks('data', { manager: this, timestamp: Number.MAX_SAFE_INTEGER });
+      }
+    });
+    return getVisualizer({
+      datasetStore,
+      tapefileStore: this.tapefileStores[scenarioUUID],
+      info: layerInfo
+    });
   }
 
   private async reloadVisualizers(): Promise<void[]> {

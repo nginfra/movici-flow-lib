@@ -1,5 +1,6 @@
 import {
   Coordinate,
+  ITapefile,
   LayerParams,
   PopupClause,
   PopupContent,
@@ -8,7 +9,6 @@ import {
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
 import { PickInfo } from '@deck.gl/core/lib/deck';
-import { SinglePropertyTapefile } from '../tapefile';
 import { VisualizerModule, VisualizerModuleParams } from '../visualizerModules/common';
 
 type PickingHandler<D> = (info: PickInfo<D>) => boolean;
@@ -100,13 +100,13 @@ export default class PopupModule<
 }
 
 export class PopupContentAccessor {
-  private readonly tapefiles: SinglePropertyTapefile<unknown>[];
+  private readonly tapefiles: ITapefile<unknown>[];
   private popup: PopupClause;
   constructor(popup: PopupClause) {
     this.tapefiles = new Array(popup.items.length);
     this.popup = popup;
   }
-  setTapefile(tapefile: SinglePropertyTapefile<unknown>, index: number) {
+  setTapefile(tapefile: ITapefile<unknown>, index: number) {
     if (index >= this.tapefiles.length) {
       throw new Error('Tapefile assignment out of bounds');
     }

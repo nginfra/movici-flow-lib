@@ -38,6 +38,7 @@ type SlotProps = {
   updateTimestamp: (t: number) => void;
   dynamicPopup: boolean;
   closePopup: () => void;
+  maxTimeAvailable: number | null;
 };
 
 import { Component, Prop, Watch } from 'vue-property-decorator';
@@ -71,6 +72,7 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
   popupContent: PopupContent | null = null;
   activePopupId: string | null = null;
   isLoading = false;
+  maxTimeAvailable: number | null = null;
 
   // Move this inside a store?
   get backend(): Backend | null {
@@ -95,6 +97,12 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
               this.popupContent = null;
             }
           }
+        },
+        onData: ({ timestamp }) => {
+          if (timestamp !== undefined) {
+            this.maxTimeAvailable = timestamp;
+            this.updateLayers(true);
+          }
         }
       });
     }
@@ -109,7 +117,8 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
       popupContent: this.popupContent,
       updateTimestamp: (t: number) => this.$emit('update:timestamp', t),
       dynamicPopup: this.popupContent?.position === 'dynamic',
-      closePopup: () => (this.popupContent = null)
+      closePopup: () => (this.popupContent = null),
+      maxTimeAvailable: this.maxTimeAvailable
     };
   }
 
@@ -125,16 +134,17 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
   }
 
   @Watch('timestamp')
-  updateLayers() {
+  onTimestampChange() {
+    this.updateLayers();
+  }
+  updateLayers(force = false) {
     if (flowUIStore.loading) {
       return;
     }
 
-    const visualizers = this.ensureVisualizers();
-
     // We sort the visualizers from high to low b-a sorts from high to low so that
     // the visualizers with the lower order are rendered last, and on top of other visualizers
-    const layers = (visualizers?.getVisualizers() ?? [])
+    const layers = (this.visualizers?.getVisualizers() ?? [])
       .sort((a, b) => b.order - a.order)
       .map(v => {
         v.setCallbacks({
@@ -145,7 +155,7 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
             this.setPopup({ id: v.info.id, content });
           }
         });
-        return v.getLayer(this.timestamp);
+        return v.getLayer(this.timestamp, force);
       })
       .filter(l => l !== null) as unknown as Layer<D>[];
 

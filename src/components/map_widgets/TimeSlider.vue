@@ -9,6 +9,7 @@
         :max="timelineInfo.start_time + timelineInfo.duration"
         :custom-formatter="toFormattedDateTime"
         :tooltip="tooltip"
+        :type="type"
         rounded
       ></b-slider>
     </b-field>
@@ -38,6 +39,7 @@ function defaultTimelineInfo(): TimeOrientedSimulationInfo {
 })
 export default class TimeSlider extends Vue {
   @Prop({ type: Number, default: 0 }) readonly value!: number;
+  @Prop({ type: String, default: 'is-primary' }) readonly type!: string;
   @Prop({ type: Boolean, default: true }) readonly tooltip!: boolean;
   @Prop({ type: Object, default: () => defaultTimelineInfo() })
   readonly timelineInfo!: TimeOrientedSimulationInfo;

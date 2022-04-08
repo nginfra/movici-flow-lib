@@ -2,7 +2,6 @@ import { RGBAColor } from './colors';
 import { ComponentProperty, PropertyType } from './schema';
 import { Project } from './project';
 import { ShortScenario } from './scenarios';
-import { SinglePropertyTapefile } from '../visualizers/tapefile';
 import { Coordinate, TopologyLayerData } from './geometry';
 import { LayerProps } from '@deck.gl/core/lib/layer';
 import { PopupContent } from './flowVisualizers';
@@ -172,7 +171,7 @@ export type VisualizableDataTypes = number | boolean;
 export interface VisualizerCallbacks {
   requestTapefile: (
     attribute: ComponentProperty,
-    onLoad: (t: SinglePropertyTapefile<VisualizableDataTypes>) => void
+    onLoad: (t: ITapefile<VisualizableDataTypes>) => void
   ) => void;
   onClick: (content: PopupContent | null) => void;
   onHover: (content: PopupContent | null) => void;

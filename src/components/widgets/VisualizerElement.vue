@@ -17,7 +17,11 @@
         :delay="500"
       >
         <label>
-          <span class="is-block is-size-6-half text-ellipsis">{{ value.name }}</span>
+          <span
+            class="is-block is-size-6-half text-ellipsis"
+            :class="{ 'not-ready': progress < 100 }"
+            >{{ value.name }}</span
+          >
         </label>
         <template #tooltip-content>
           <div class="is-flex is-flex-direction-column details" v-if="value">
@@ -100,6 +104,7 @@ import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/Visual
 import { colorTripleToHex } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { FlowVisualizerType, RGBAColor } from '@movici-flow-common/types';
 import { ActionMenuItem } from '@movici-flow-common/types';
+import StatusTracker from '@movici-flow-common/utils/StatusTracker';
 
 @Component({
   name: 'VisualizerElement'
@@ -217,10 +222,15 @@ export default class VisualizerElement extends Vue {
   }
 
   @Watch('value', { immediate: true })
-  setOnProgress() {
-    this.value.onProgress ??= (val: number) => {
-      this.progress = val;
-    };
+  setupTracking() {
+    const tracker = new StatusTracker({
+      tasks: {
+        initData: 20,
+        updates: 80
+      },
+      onProgress: val => (this.progress = val)
+    });
+    this.value.status ??= tracker;
   }
 }
 </script>
@@ -257,6 +267,10 @@ $container-bg: $white-ter;
       &.visibility {
         cursor: pointer;
       }
+    }
+    .not-ready {
+      font-style: italic;
+      color: $grey-dark;
     }
   }
   ::v-deep {

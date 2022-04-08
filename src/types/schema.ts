@@ -1,7 +1,5 @@
 import { UUID } from './general';
 import { Dataset } from './datasets';
-import { FlowVisualizerType } from './flowVisualizers';
-import { EntityGeometry } from './geometry';
 import { Scenario, ScenarioDataset, ShortScenario } from './scenarios';
 import { BoundingBox } from '@mapbox/geo-viewport';
 
@@ -38,8 +36,6 @@ export interface EntityGroupSummary {
   name: string;
   count: number;
   properties: PropertySummary[];
-  geometry?: EntityGeometry | null;
-  type?: FlowVisualizerType | null;
 }
 export interface ComponentProperty {
   component: string | null;
