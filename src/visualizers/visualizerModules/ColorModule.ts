@@ -6,7 +6,7 @@ import {
   RGBAColor,
   StaticColorClause,
   TopologyLayerData,
-  VisualizerCallbacks
+  IVisualizer
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
 import { NumberColorMap } from '../maps/colorMaps';
@@ -27,40 +27,17 @@ export default class ColorModule<
   LData extends TopologyLayerData<Coord>
 > extends VisualizerModule<Coord, LData> {
   accessor?: ColorAccessor<LData>;
-  currentSettings?: { static?: StaticColorClause; byValue?: ByValueColorClause };
+  currentSettings?: ColorClause;
   constructor(params: VisualizerModuleParams) {
     super(params);
   }
-  compose(params: LayerParams<LData, Coord>, visualizer: VisualizerCallbacks) {
+  compose(params: LayerParams<LData, Coord>, visualizer: IVisualizer) {
     const changed = this.updateSettings(this.info.settings?.color ?? {});
     if (!params.props.updateTriggers) {
       params.props.updateTriggers = {};
     }
     const accessor = this.updateAccessor(changed, visualizer);
-    let updateTriggers: string[];
-    switch (params.type.layerName) {
-      case 'ScatterplotLayer':
-        params.props.getFillColor = accessor;
-        updateTriggers = ['getFillColor'];
-        break;
-      case 'PolygonLayer':
-        params.props.getLineColor = accessor;
-        params.props.getFillColor = this.setOpacity(accessor, 80);
-        updateTriggers = ['getLineColor', 'getFillColor'];
-        break;
-      case 'ArcLayer':
-        params.props.getSourceColor = accessor;
-        params.props.getTargetColor = accessor;
-        updateTriggers = ['getSourceColor', 'getTargetColor'];
-        break;
-      default:
-        params.props.getColor = accessor;
-        updateTriggers = ['getColor'];
-    }
-    for (const trigger of updateTriggers) {
-      params.props.updateTriggers[trigger] = [this.currentSettings];
-    }
-    return params;
+    return this.assignAccessor(params, accessor);
   }
 
   /**
@@ -78,7 +55,7 @@ export default class ColorModule<
     return changed;
   }
 
-  private updateAccessor(changed: boolean, visualizer: VisualizerCallbacks): ColorAccessor<LData> {
+  private updateAccessor(changed: boolean, visualizer: IVisualizer): ColorAccessor<LData> {
     if (!changed && this.accessor) {
       return this.accessor;
     }
@@ -88,7 +65,7 @@ export default class ColorModule<
 
   private getAccessor(
     clause: ColorClause | undefined,
-    visualizer: VisualizerCallbacks
+    visualizer: IVisualizer
   ): ColorAccessor<LData> {
     if (clause?.byValue?.attribute) {
       const colorMap = new NumberColorMap({
@@ -140,5 +117,31 @@ export default class ColorModule<
     }
     rv.push(colors[colors.length - 1]);
     return rv;
+  }
+  assignAccessor(params: LayerParams<LData, Coord>, accessor: ColorAccessor<LData>) {
+    let updateTriggers: string[];
+    switch (params.type.layerName) {
+      case 'ScatterplotLayer':
+        params.props.getFillColor = accessor;
+        updateTriggers = ['getFillColor'];
+        break;
+      case 'PolygonLayer':
+        params.props.getLineColor = accessor;
+        params.props.getFillColor = this.setOpacity(accessor, 80);
+        updateTriggers = ['getLineColor', 'getFillColor'];
+        break;
+      case 'ArcLayer':
+        params.props.getSourceColor = accessor;
+        params.props.getTargetColor = accessor;
+        updateTriggers = ['getSourceColor', 'getTargetColor'];
+        break;
+      default:
+        params.props.getColor = accessor;
+        updateTriggers = ['getColor'];
+    }
+    for (const trigger of updateTriggers) {
+      params.props.updateTriggers[trigger] = [this.currentSettings];
+    }
+    return params;
   }
 }

@@ -5,7 +5,7 @@ import {
   StaticSizeClause,
   SizeClause,
   TopologyLayerData,
-  VisualizerCallbacks
+  IVisualizer
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
 import { NumberSizeMap } from '../maps/sizeMaps';
@@ -24,7 +24,7 @@ export default class SizeModule<
   constructor(params: VisualizerModuleParams) {
     super(params);
   }
-  compose(params: LayerParams<LData, Coord>, visualizer: VisualizerCallbacks) {
+  compose(params: LayerParams<LData, Coord>, visualizer: IVisualizer) {
     const changed = this.updateSettings(this.info.settings?.size ?? {});
     const sizeClause = this.getClause();
 
@@ -103,7 +103,7 @@ export default class SizeModule<
     return changed;
   }
 
-  private updateAccessor(changed: boolean, visualizer: VisualizerCallbacks): SizeAccessor<LData> {
+  private updateAccessor(changed: boolean, visualizer: IVisualizer): SizeAccessor<LData> {
     if (!changed && this.accessor) {
       return this.accessor;
     }
@@ -113,7 +113,7 @@ export default class SizeModule<
 
   private getAccessor(
     clause: SizeClause | undefined,
-    visualizer: VisualizerCallbacks
+    visualizer: IVisualizer
   ): SizeAccessor<LData> {
     if (clause?.byValue?.attribute) {
       const sizeMap = new NumberSizeMap({

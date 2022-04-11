@@ -15,7 +15,7 @@ import {
   PolygonGeometryData,
   TopologyLayerData,
   VisualizableDataTypes,
-  VisualizerCallbacks
+  IVisualizer
 } from '../types';
 import { parsePropertyString, propertyString } from '..//utils';
 import { ArcLayer, PathLayer, PolygonLayer, ScatterplotLayer } from '@deck.gl/layers';
@@ -24,6 +24,8 @@ import { LineTopologyGetter, PointTopologyGetter, PolygonTopologyGetter } from '
 import { ColorModule, PopupModule, VisualizerModule } from './visualizerModules';
 import SizeModule from './visualizerModules/SizeModule';
 import VisibilityModule from './visualizerModules/VisibilityModule';
+import RenderOrderModule from './visualizerModules/RenderOrderModule';
+import { isError } from 'lodash';
 
 abstract class ComposableVisualizer<
     EntityData extends EntityGroupData<Coordinate | number>,
@@ -32,7 +34,7 @@ abstract class ComposableVisualizer<
     Layer_ extends Layer<LData>
   >
   extends BaseVisualizer<EntityData, Coordinate, LData, Layer_>
-  implements VisualizerCallbacks
+  implements IVisualizer
 {
   attributes: Record<string, ((t: ITapefile<VisualizableDataTypes>) => void)[]>;
   tapefiles: Record<string, ITapefile<VisualizableDataTypes>>;
@@ -72,14 +74,21 @@ abstract class ComposableVisualizer<
     }
   }
 
-  private compose(): LayerParams<LData, Coord> {
-    this.attributes = {};
-    const modules = this.ensureModules();
-    let props = this.getDefaultParams();
-    for (const mod of modules) {
-      props = mod.compose(props, this);
+  private compose(): LayerParams<LData, Coord> | null {
+    this.info.unsetError('compose');
+
+    try {
+      this.attributes = {};
+      const modules = this.ensureModules();
+      let props = this.getDefaultParams();
+      for (const mod of modules) {
+        props = mod.compose(props, this);
+      }
+      return props;
+    } catch (e) {
+      this.info.setError('compose', isError(e) ? e.message : String(e));
+      return null;
     }
-    return props;
   }
 
   ensureModules(): VisualizerModule<Coord, LData>[] {
@@ -302,6 +311,7 @@ function getCommonModules<Coord extends Coordinate, LData extends TopologyLayerD
     new ColorModule<Coord, LData>({ info }),
     new PopupModule<Coord, LData>({ info }),
     new SizeModule<Coord, LData>({ info }),
-    new VisibilityModule<Coord, LData>({ info })
+    new VisibilityModule<Coord, LData>({ info }),
+    new RenderOrderModule<Coord, LData>({ info })
   ];
 }

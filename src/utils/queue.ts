@@ -38,7 +38,6 @@ export class PriorityQueue<T> implements IQueue<T> {
   }
 }
 
-
 export function heapPush<T>(heap: T[], item: T, comparator?: Comparator<T>) {
   comparator = comparator ?? ((a: T, b: T) => (a < b ? -1 : a === b ? 0 : 1));
   heap.push(item);

@@ -84,7 +84,7 @@
 <script lang="ts">
 import {
   ByValueColorClause,
-  ColorAdvancedSettings,
+  AdvancedColorSettings,
   ColorClause,
   FlowVisualizerType,
   LegendOptions,
@@ -112,7 +112,7 @@ export default class ColorConfigurator extends Vue {
   @Prop() geometry!: FlowVisualizerType;
   currentClause: ColorClause = {};
   clauseType: 'static' | 'byValue' | null = null;
-  advancedSettings: ColorAdvancedSettings | null = null;
+  advancedSettings: AdvancedColorSettings | null = null;
   showLegend = false;
   legend: LegendOptions = {
     title: ''
@@ -156,7 +156,7 @@ export default class ColorConfigurator extends Vue {
     this.emitClause();
   }
 
-  updateAdvancedSettings(settings: ColorAdvancedSettings) {
+  updateAdvancedSettings(settings: AdvancedColorSettings) {
     this.advancedSettings = settings;
     this.emitClause();
   }
@@ -207,6 +207,7 @@ export default class ColorConfigurator extends Vue {
       }
       this.clauseType = this.value.byValue ? 'byValue' : 'static';
       this.currentClause = Object.assign({}, this.currentClause, this.value);
+      this.advancedSettings = this.value.advanced ?? null;
     } else {
       this.clauseType = 'static';
     }

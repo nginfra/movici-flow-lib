@@ -5,7 +5,7 @@ import {
   PopupClause,
   PopupContent,
   TopologyLayerData,
-  VisualizerCallbacks
+  IVisualizer
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
 import { PickInfo } from '@deck.gl/core/lib/deck';
@@ -26,10 +26,7 @@ export default class PopupModule<
     this.accessor = null;
   }
 
-  compose(
-    params: LayerParams<LData, Coord>,
-    visualizer: VisualizerCallbacks
-  ): LayerParams<LData, Coord> {
+  compose(params: LayerParams<LData, Coord>, visualizer: IVisualizer): LayerParams<LData, Coord> {
     const changed = this.updateSettings(this.info.settings?.popup || null),
       accessor = this.updateAccessor(changed, visualizer),
       when = this.currentSettings?.when,
@@ -60,10 +57,7 @@ export default class PopupModule<
     return changed;
   }
 
-  private updateAccessor(
-    changed: boolean,
-    visualizer: VisualizerCallbacks
-  ): PickingHandler<LData> | null {
+  private updateAccessor(changed: boolean, visualizer: IVisualizer): PickingHandler<LData> | null {
     if (!changed && this.accessor) {
       return this.accessor;
     }
@@ -73,7 +67,7 @@ export default class PopupModule<
 
   private getAccessor(
     clause: PopupClause | null,
-    visualizer: VisualizerCallbacks
+    visualizer: IVisualizer
   ): PickingHandler<LData> | null {
     if (!clause || !(clause.show ?? true)) {
       return null;

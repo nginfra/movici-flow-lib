@@ -134,10 +134,11 @@
         "advanced": {
           "title": "Geavanceerd",
           "fillOpacity": "Fill opacity",
-          "renderOrder": "Rendervolgorde",
-          "none": "Geen",
-          "fixed": "Op volgorde",
-          "invert": "Omgekeerde volgorde",
+          "renderOrder": "Kleurprioriteit",
+            "renderOrderInfo": "Prioritieer de weergave van kleuren dusdanig zodat als twee kleuren overlappen in de visualisatie, de hogere kleurvakken altijd zichtbaar zijn boven de lagere kleurvakken (of omgekeerd)",
+            "disabled": "Uitgeschakeld (betere prestaties)",
+          "normal": "Normaal",
+          "reversed": "Omgekeerd",
           "advColours": "Geavanceerde kleuren"
         }
       },

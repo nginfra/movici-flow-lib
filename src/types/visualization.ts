@@ -168,7 +168,7 @@ export interface VisualizationSettings {
 }
 export type VisualizableDataTypes = number | boolean;
 
-export interface VisualizerCallbacks {
+export interface IVisualizer {
   requestTapefile: (
     attribute: ComponentProperty,
     onLoad: (t: ITapefile<VisualizableDataTypes>) => void
@@ -194,7 +194,7 @@ export interface ITapefile<T> {
 }
 
 export enum RenderOrderType {
-  NONE = 'none',
-  FIXED = 'fixed',
-  INVERT = 'invert'
+  DISABLED = 'disabled',
+  NORMAL = 'normal',
+  REVERSED = 'reversed'
 }

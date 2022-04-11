@@ -134,14 +134,15 @@
         "advanced": {
           "title": "Advanced settings",
           "fillOpacity": "Fill Opacity",
-          "renderOrder": "Render Order",
-          "none": "None",
-          "fixed": "Fixed",
-          "invert": "Invert",
+          "renderOrder": "Colour Priority",
+          "renderOrderInfo": "Prioritize displaying colours so that in case two colours overlap in the visualization, the higher buckets' colours are always displayed on top of the lower buckets (or reversed)",
+          "disabled": "Disabled (better performance)",
+          "normal": "Normal",
+          "reversed": "Reversed",
           "advColours": "Advanced Colours"
         }
       },
-      "visibilityConfig" : {
+      "visibilityConfig": {
         "value": "Value",
         "visible": "Visible"
       },

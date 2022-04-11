@@ -44,7 +44,7 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import {
   AdvColorMapping,
-  ColorAdvancedSettings,
+  AdvancedColorSettings,
   FlowVisualizerType,
   RenderOrderType
 } from '@movici-flow-common/types';
@@ -65,12 +65,12 @@ import { MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
   }
 })
 export default class ColorAdvSettingsConfigurator extends Vue {
-  @Prop() value!: ColorAdvancedSettings | null;
+  @Prop() value!: AdvancedColorSettings | null;
   @Prop() geometry!: FlowVisualizerType;
   @Prop() fillType!: 'buckets' | 'gradient';
   @Prop() clauseType!: 'static' | 'byValue' | null;
   fillOpacity = 100;
-  renderOrder: RenderOrderType = RenderOrderType.NONE;
+  renderOrder: RenderOrderType = RenderOrderType.DISABLED;
   isOpen = false;
   colorPickerPresets = Object.values(MoviciColors);
 
@@ -95,7 +95,7 @@ export default class ColorAdvSettingsConfigurator extends Vue {
   @Watch('fillOpacity')
   @Watch('renderOrder')
   emitAdvancedSettings(params?: { specialColor?: RGBAColor; undefinedColor?: RGBAColor }) {
-    const value: ColorAdvancedSettings = {
+    const value: AdvancedColorSettings = {
       specialColor: params?.specialColor ?? this.advColors[0][1],
       undefinedColor: params?.undefinedColor ?? this.advColors[1][1]
     };
@@ -111,7 +111,15 @@ export default class ColorAdvSettingsConfigurator extends Vue {
     this.$emit('input', value);
   }
 
+  @Watch('value', { immediate: true })
+  onValueChange(value: AdvancedColorSettings | null) {
+    this.renderOrder = value?.renderOrder ?? RenderOrderType.DISABLED;
+  }
+
   mounted() {
+    if (this.value) {
+      this.isOpen = true;
+    }
     this.emitAdvancedSettings();
   }
 }

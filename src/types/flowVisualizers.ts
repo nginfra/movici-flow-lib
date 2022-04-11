@@ -59,7 +59,7 @@ export interface ByValueColorClause {
   maxValue?: number;
 }
 
-export interface ColorAdvancedSettings {
+export interface AdvancedColorSettings {
   fillOpacity?: number;
   renderOrder?: RenderOrderType;
   specialColor: RGBAColor;
@@ -71,7 +71,7 @@ export interface ColorClause {
   static?: StaticColorClause;
   byValue?: ByValueColorClause;
   legend?: LegendOptions;
-  advanced?: ColorAdvancedSettings;
+  advanced?: AdvancedColorSettings;
 }
 
 export interface SizeClause {

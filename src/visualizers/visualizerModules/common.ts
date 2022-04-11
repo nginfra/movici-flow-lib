@@ -4,7 +4,7 @@ import {
   LayerParams,
   Mapper,
   TopologyLayerData,
-  VisualizerCallbacks
+  IVisualizer
 } from '@movici-flow-common/types';
 import { ComposableVisualizerInfo } from '../VisualizerInfo';
 
@@ -33,7 +33,7 @@ export abstract class VisualizerModule<
    */
   abstract compose(
     params: LayerParams<LData, Coord>,
-    visualizer: VisualizerCallbacks
+    visualizer: IVisualizer
   ): LayerParams<LData, Coord>;
 
   setInfo(info: ComposableVisualizerInfo) {
@@ -55,9 +55,8 @@ export class TapefileAccessor<In, Out> {
   }
 
   getValue(index: number): Out {
-    if (this.tapefile) {
-      return this.mapping.getValue(this.tapefile.data[index]);
-    }
-    throw new Error('No tapefile defined for accessor');
+    if (!this.tapefile) throw new Error('No tapefile defined for accessor');
+
+    return this.mapping.getValue(this.tapefile.data[index]);
   }
 }

@@ -1,5 +1,14 @@
 <template>
-  <b-field :label="$t('flow.visualization.colorConfig.advanced.renderOrder')">
+  <b-field>
+    <template #label>
+      {{ $t('flow.visualization.colorConfig.advanced.renderOrder') }}
+      <b-icon
+        size="is-small"
+        icon-pack="far"
+        icon="info-circle"
+        :title="$t('flow.visualization.colorConfig.advanced.renderOrderInfo')"
+      />
+    </template>
     <div class="is-flex is-flex-direction-column">
       <b-radio
         v-for="(label, index) in labels"
@@ -25,7 +34,7 @@ import { RenderOrderType } from '@movici-flow-common/types';
   name: 'RenderOrder'
 })
 export default class RenderOrder extends Vue {
-  @Prop({ default: 'none' }) value!: RenderOrderType;
+  @Prop({ default: RenderOrderType.DISABLED }) value!: RenderOrderType;
 
   get labels(): RenderOrderType[] {
     return Object.values(RenderOrderType);
@@ -33,6 +42,11 @@ export default class RenderOrder extends Vue {
 
   input(newValue: RenderOrderType) {
     this.$emit('input', newValue);
+  }
+  mounted() {
+    if (this.labels.indexOf(this.value) === -1) {
+      this.input(RenderOrderType.DISABLED);
+    }
   }
 }
 </script>
