@@ -37,6 +37,7 @@ export default class StatusTracker {
     }, {} as Record<string, Record<number, number>>);
     this.streams = -1;
   }
+
   register(tasks: string[]): number {
     const id = ++this.streams;
     for (const task of tasks) {
@@ -46,6 +47,7 @@ export default class StatusTracker {
     }
     return id;
   }
+
   updateProgress(id: number, task: string, val: number): void {
     if (Object.keys(this.weights).indexOf(task) === -1) {
       // We ignore tasks that are not tracked by the StatusTracker
@@ -57,15 +59,18 @@ export default class StatusTracker {
     this.currentProgress[task][id] = val;
     this.onProgress(this.calculateProgress());
   }
+
   setError(id: number, task: string, error: unknown): void {
     if (!this.onError || Object.keys(this.weights).indexOf(task) === -1) {
       // We do not process tasks that are not tracked by the StatusTracker
+      // and instead just throw them to the console
       console.error(`unhandled exception for task ${task}`, error);
     }
     if (this.currentProgress?.[task][id] === undefined) {
       throw new Error(`id ${id} is not registered for task '${task}'`);
     }
   }
+
   private calculateProgress(): number {
     const totalWeight = Object.values(this.weights).reduce((prev, curr) => prev + curr, 0);
     if (totalWeight === 0) return 100;

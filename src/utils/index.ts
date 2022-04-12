@@ -18,7 +18,7 @@ export function hasOwnProperty<O, K extends PropertyKey>(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function removeKey<T>(k: keyof T, { [k]: _, ...o }: T) {
+export function excludeKey<T>(k: keyof T, { [k]: _, ...o }: T) {
   return o;
 }
 

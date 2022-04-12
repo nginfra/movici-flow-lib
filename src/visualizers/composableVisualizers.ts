@@ -132,6 +132,10 @@ abstract class ComposableVisualizer<
       for (const [idx, key] of toDownload.entries()) {
         this.tapefiles[key] = tapefiles[idx];
       }
+    } else if (this.info.status) {
+      const id = this.info.status.register(['initData', 'updates']);
+      this.info.status.updateProgress(id, 'initData', 100);
+      this.info.status.updateProgress(id, 'updates', 100);
     }
   }
 
