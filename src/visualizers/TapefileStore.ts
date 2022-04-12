@@ -225,26 +225,21 @@ function getInitDataTask({
         store.getSpecialValues(entityGroup)
       ]);
     },
-
     onDone([initialData, specialValues]: [EntityGroupData<unknown>, EntityGroupSpecialValues]) {
-      {
-        const index = new Index(initialData.id);
-        for (const tapefile of tapefiles) {
-          tapefile.initialize({
-            index,
-            initialData,
-            specialValue: specialValues[tapefile.attribute]
-          });
-        }
-        onDone?.();
+      const index = new Index(initialData.id);
+      for (const tapefile of tapefiles) {
+        tapefile.initialize({
+          index,
+          initialData,
+          specialValue: specialValues[tapefile.attribute]
+        });
       }
+      onDone?.();
     },
-
-    onError: (err: unknown) => {
+    onError(err: unknown) {
       onError ? onError(err) : console.error(err);
       onDone?.();
     },
-
     priority: -1
   };
 }
@@ -272,7 +267,7 @@ function getUpdateDataTask({
     getTask() {
       return store.getUpdateData(update, entityGroup, attributes);
     },
-    onDone: (upd: UpdateWithData) => {
+    onDone(upd: UpdateWithData) {
       const data = upd?.data[entityGroup] ?? {};
       for (const tapefile of tapefiles) {
         tapefile.addUpdate(
@@ -286,11 +281,10 @@ function getUpdateDataTask({
       }
       onDone?.();
     },
-    onError: (err: unknown) => {
+    onError(err: unknown) {
       onError ? onError(err) : console.error(err);
       onDone?.();
     },
-
     priority: update.timestamp
   };
 }

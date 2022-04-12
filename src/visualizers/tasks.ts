@@ -98,7 +98,6 @@ export class BatchedTaskDispatcher<T extends Task<unknown> = Task<unknown>>
       tasks.push(task);
     }
     if (tasks.length) {
-      console.log(`new batch of size ${tasks.length}`);
       this.running = true;
       Promise.all(tasks.map(t => t.getTask()))
         .then(results => {
