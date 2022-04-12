@@ -213,7 +213,7 @@ export class SinglePropertyTapefile<T> implements ITapefile<T> {
     }
   }
   private moveBackward(time: number) {
-    Math.max(time, this.minTime);
+    time = Math.max(time, this.minTime);
     if (this.currentTime === null) return;
     while (time < this.currentTime) {
       this.stepBackward();

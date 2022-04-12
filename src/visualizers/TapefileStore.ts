@@ -11,7 +11,7 @@ import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
 import { heapPop, heapPush, PriorityQueue } from '@movici-flow-common/utils/queue';
 import StatusTracker from '@movici-flow-common/utils/StatusTracker';
 import { Index, SinglePropertyTapefile, TapefileWriter } from './tapefile';
-import { PrioritizedTask, TaskDispatcher } from './tasks';
+import { PrioritizedTask, BatchedTaskDispatcher, ITaskDispatcher, Task } from './tasks';
 
 export class TapefileStore {
   // keys in TapefileStore.tapefiles are `datasetUUID:entityGroup:attribute`. See also
@@ -20,15 +20,16 @@ export class TapefileStore {
   private statusTrackers: Map<StreamingTapefile<unknown>, [number, StatusTracker][]>;
   private currentProgress: Map<StreamingTapefile<unknown>, Record<string, number>>;
   private onDataCallback?: (timestamp: number) => void;
-  private tasks: TaskDispatcher;
+  private tasks: ITaskDispatcher<Task<unknown>>;
   constructor(config?: { onData?: (ts: number) => void; onReady?(): void }) {
     this.tapefiles = {};
-    this.tasks = new TaskDispatcher({
-      MAX_CONCURRENT: 10,
-      queue: new PriorityQueue<PrioritizedTask>((a, b) => {
-        return a.priority - b.priority;
-      }),
-      onReady: config?.onReady
+    this.tasks = new BatchedTaskDispatcher({
+      BATCH_SIZE: 20,
+      queue: new PriorityQueue<PrioritizedTask<unknown>>((a, b) => a.priority - b.priority),
+      onReady: () => {
+        config?.onReady?.();
+        this.startIdleTasks();
+      }
     });
     this.statusTrackers = new Map();
     this.currentProgress = new Map();
@@ -134,6 +135,11 @@ export class TapefileStore {
       tracker.updateProgress(id, task, val);
     }
   }
+  private startIdleTasks() {
+    for (const tapefile of Object.values(this.tapefiles)) {
+      tapefile.calculateRollbacksOnIdle();
+    }
+  }
 }
 
 /**
@@ -153,8 +159,8 @@ async function getMultipleTapefilesTasks({
   store: DatasetDownloader;
   onError?: (err: unknown, task: string) => void;
   onProgress?: (val: number, task: string) => void;
-}): Promise<PrioritizedTask[]> {
-  const tasks: PrioritizedTask[] = [];
+}): Promise<PrioritizedTask<unknown>[]> {
+  const tasks: PrioritizedTask<unknown>[] = [];
   const attributes: ComponentProperty[] = tapefiles.map(t => {
     return { name: t.attribute, component: null };
   });
@@ -208,7 +214,7 @@ function getInitDataTask({
   tapefiles: StreamingTapefile<unknown>[];
   onError?: (err: unknown) => void;
   onDone?: () => void;
-}): PrioritizedTask {
+}): PrioritizedTask<[EntityGroupData<unknown>, EntityGroupSpecialValues]> {
   return {
     getTask() {
       return Promise.all([
@@ -217,23 +223,26 @@ function getInitDataTask({
           properties: attributes
         }),
         store.getSpecialValues(entityGroup)
-      ])
-        .then(
-          ([initialData, specialValues]: [EntityGroupData<unknown>, EntityGroupSpecialValues]) => {
-            const index = new Index(initialData.id);
-            for (const tapefile of tapefiles) {
-              tapefile.initialize({
-                index,
-                initialData,
-                specialValue: specialValues[tapefile.attribute]
-              });
-            }
-          }
-        )
-        .catch((err: unknown) => {
-          onError ? onError(err) : console.error(err);
-        })
-        .finally(onDone);
+      ]);
+    },
+
+    onDone([initialData, specialValues]: [EntityGroupData<unknown>, EntityGroupSpecialValues]) {
+      {
+        const index = new Index(initialData.id);
+        for (const tapefile of tapefiles) {
+          tapefile.initialize({
+            index,
+            initialData,
+            specialValue: specialValues[tapefile.attribute]
+          });
+        }
+        onDone?.();
+      }
+    },
+
+    onError: (err: unknown) => {
+      onError ? onError(err) : console.error(err);
+      onDone?.();
     },
 
     priority: -1
@@ -261,25 +270,25 @@ function getUpdateDataTask({
 }) {
   return {
     getTask() {
-      return store
-        .getUpdateData(update, entityGroup, attributes)
-        .then((upd: UpdateWithData) => {
-          const data = upd?.data[entityGroup] ?? {};
-          for (const tapefile of tapefiles) {
-            tapefile.addUpdate(
-              {
-                timestamp: upd.timestamp,
-                iteration: upd.iteration,
-                data
-              },
-              sequenceNumber
-            );
-          }
-        })
-        .catch((err: unknown) => {
-          onError ? onError(err) : console.error(err);
-        })
-        .finally(onDone);
+      return store.getUpdateData(update, entityGroup, attributes);
+    },
+    onDone: (upd: UpdateWithData) => {
+      const data = upd?.data[entityGroup] ?? {};
+      for (const tapefile of tapefiles) {
+        tapefile.addUpdate(
+          {
+            timestamp: upd.timestamp,
+            iteration: upd.iteration,
+            data
+          },
+          sequenceNumber
+        );
+      }
+      onDone?.();
+    },
+    onError: (err: unknown) => {
+      onError ? onError(err) : console.error(err);
+      onDone?.();
     },
 
     priority: update.timestamp
@@ -339,7 +348,6 @@ class StreamingTapefile<T> {
       },
       -1
     );
-    this.worker = new IdleWorker(this.calculateNextRollback.bind(this), this.IDLE_MS);
   }
   addUpdate(update: EntityUpdate<T>, sequenceNumber: number) {
     this.pendUpdate(update, sequenceNumber);
@@ -367,6 +375,9 @@ class StreamingTapefile<T> {
       [sequenceNumber, update] as [number, EntityUpdate<T>],
       (a, b) => a[0] - b[0]
     );
+  }
+  calculateRollbacksOnIdle() {
+    this.worker = new IdleWorker(this.calculateNextRollback.bind(this), this.IDLE_MS);
   }
   calculateNextRollback(): boolean {
     // this function can be given as a task for the IdleWorker. It returns a boolean that indicates
