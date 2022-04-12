@@ -61,10 +61,12 @@ export default function orderedRendering<D, P extends LayerProps<D>>(
             data,
             id: String(idx),
             extensions,
-            filterRange: [0.1, 1],
-
-            updateTriggers
           }),
+          // filterRange, updateTriggers and getFilterValue are overridden by `getSublayerProps`
+          // see also https://github.com/visgl/deck.gl/issues/6814 so we need to post-add them
+          // to the props
+          filterRange: [0.1, 1],
+          updateTriggers,
           getFilterValue: this.combineFilter({
             getFilterValue,
             originalFilterRange,
