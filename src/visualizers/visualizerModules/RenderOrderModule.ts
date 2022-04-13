@@ -47,12 +47,11 @@ export default class RenderOrderModule<
       params.props.updateTriggers['getOrderingValue'] = [this.currentSettings];
     }
     // If we change from filtered to non-filtered, we need to tell deck.gl to fully
-    // re-render the layer. We do this by updating the id
+    // re-render the layer.
     if (active !== this.currentActive) {
+      visualizer.forceRender();
       this.currentActive = active;
-      this.count++;
     }
-    params.props.id = params.props.id + '-renderOrder:' + this.count;
 
     return params;
   }
@@ -102,7 +101,7 @@ export default class RenderOrderModule<
   private getFilterRanges(): [number, number][] | null {
     if (!this.currentSettings?.byValue) return null;
 
-    const order = this.currentSettings.advanced?.renderOrder ?? RenderOrderType.DISABLED;
+    const order = backwardsCompatibleOrder(this.currentSettings.advanced?.renderOrder);
     if (order === RenderOrderType.DISABLED) return null;
 
     const values = this.currentSettings.byValue.colors.map(pair => pair[0]);
@@ -122,4 +121,10 @@ export default class RenderOrderModule<
     }
     return rv;
   }
+}
+
+function backwardsCompatibleOrder(order?: string): RenderOrderType {
+  return Object.values(RenderOrderType).includes(order as RenderOrderType)
+    ? (order as RenderOrderType)
+    : RenderOrderType.DISABLED;
 }

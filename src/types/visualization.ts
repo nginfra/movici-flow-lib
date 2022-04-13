@@ -169,6 +169,7 @@ export interface VisualizationSettings {
 export type VisualizableDataTypes = number | boolean;
 
 export interface IVisualizer {
+  forceRender(): void;
   requestTapefile: (
     attribute: ComponentProperty,
     onLoad: (t: ITapefile<VisualizableDataTypes>) => void

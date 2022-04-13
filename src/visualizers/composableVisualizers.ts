@@ -153,16 +153,21 @@ abstract class ComposableVisualizer<
     }
   }
 
+  forceRender() {
+    this.forceRenderCounter++;
+  }
+
   getLayer(timestamp: number, forceRender = false) {
     this.updateTimestamp(timestamp);
     if (!this.layerParams) {
       return null;
     }
+
+    forceRender && this.forceRender();
+
     const layerParams = this.appendUpdateTriggers(this.layerParams, timestamp, true);
-    if (forceRender) {
-      this.forceRenderCounter++;
-    }
-    this.appendUpdateTriggers(layerParams, this.forceRenderCounter);
+
+    layerParams.props.id += ':' + this.forceRenderCounter;
     return new layerParams.type(layerParams.props) as unknown as Layer_;
   }
 

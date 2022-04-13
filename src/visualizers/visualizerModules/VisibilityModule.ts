@@ -36,11 +36,10 @@ export default class VisibilityModule<
     const accessor = this.updateAccessor(changed, visualizer);
 
     // If we change from filtered to non-filtered, we need to tell deck.gl to fully
-    // re-render the layer. We do this by updating the id
+    // re-render the layer.
     if (changed) {
-      this.count++;
+      visualizer.forceRender();
     }
-    params.props.id = params.props.id + '-visiblity:' + this.count;
 
     if (accessor !== null) {
       params.props.getFilterValue = accessor;
