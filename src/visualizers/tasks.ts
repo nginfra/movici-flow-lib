@@ -1,3 +1,4 @@
+import { hasOwnProperty } from '@movici-flow-common/utils';
 import { IQueue, Queue } from '@movici-flow-common/utils/queue';
 
 export interface Task<T> {
@@ -99,15 +100,21 @@ export class BatchedTaskDispatcher<T extends Task<unknown> = Task<unknown>>
     }
     if (tasks.length) {
       this.running = true;
-      Promise.all(tasks.map(t => t.getTask()))
+      Promise.all(
+        tasks.map(t =>
+          t.getTask().catch(e => {
+            return { _catchError: e };
+          })
+        )
+      )
         .then(results => {
           for (let i = 0; i < tasks.length; i++) {
-            tasks[i].onDone?.(results[i]);
-          }
-        })
-        .catch(err => {
-          for (let i = 0; i < tasks.length; i++) {
-            tasks[i].onError?.(err);
+            const result = results[i];
+            if (hasOwnProperty(result, '_catchError')) {
+              tasks[i].onError?.(result._catchError);
+            } else {
+              tasks[i].onDone?.(result);
+            }
           }
         })
         .finally(() => {
