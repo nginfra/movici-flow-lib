@@ -7,16 +7,19 @@
     tabindex="0"
     @blur="close"
   >
-    <Sketch v-model="hexValue" :presetColors="hexColors"></Sketch>
+    <Sketch v-model="rgba" :presetColors="preparedColorPresets"></Sketch>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch, Ref } from 'vue-property-decorator';
-import { colorTripleToHex, hexToColorTriple } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { Sketch } from 'vue-color';
 import { RGBAColor } from '@movici-flow-common/types';
 import { DEFAULT_UNDEFINED_COLOR_TRIPLE } from '@movici-flow-common/utils/colorUtils';
+
+interface RGBAObject {
+  rgba: { r: number; b: number; g: number; a: number };
+}
 
 @Component({
   name: 'FlowColorPicker',
@@ -35,8 +38,8 @@ export default class FlowColorPicker extends Vue {
   @Prop({ type: Number, default: 0 }) readonly translateY!: number;
   @Ref('colorPickerContainer') readonly colorPickerContainer!: HTMLElement;
 
-  get hexColors(): string[] {
-    return this.presets.map(color => (Array.isArray(color) ? colorTripleToHex(color) : color));
+  get preparedColorPresets(): (string | RGBAObject)[] {
+    return this.presets.map(color => (Array.isArray(color) ? colorTripleToRGBA(color) : color));
   }
 
   // looking into positioning this in diferent ways
@@ -51,17 +54,13 @@ export default class FlowColorPicker extends Vue {
     }['right'];
   }
 
-  get hexValue(): { hex: string; a: number } {
-    return {
-      hex: colorTripleToHex(this.value.slice(0, 3) as [number, number, number]),
-      a: this.value[3] !== undefined ? this.value[3] / 255 : 1
-    };
+  get rgba(): RGBAObject {
+    return colorTripleToRGBA(this.value);
   }
-
-  set hexValue(val: { hex: string; a: number }) {
-    const color = hexToColorTriple(val.hex);
-    if (val.a < 1) {
-      color[3] = Math.floor(val.a * 255);
+  set rgba({ rgba }: RGBAObject) {
+    const color = [rgba.r, rgba.g, rgba.b];
+    if (rgba.a < 1) {
+      color[3] = Math.floor(rgba.a * 255);
     }
     this.$emit('input', color);
   }
@@ -77,6 +76,17 @@ export default class FlowColorPicker extends Vue {
     const target = event.relatedTarget as HTMLElement;
     if (!this.$el.contains(target)) this.$emit('close');
   }
+}
+
+function colorTripleToRGBA(color: RGBAColor): RGBAObject {
+  return {
+    rgba: {
+      r: color[0],
+      g: color[1],
+      b: color[2],
+      a: color[3] !== undefined ? color[3] / 255 : 1
+    }
+  };
 }
 </script>
 
