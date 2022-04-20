@@ -104,7 +104,7 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
         onData: ({ timestamp }) => {
           if (timestamp !== undefined) {
             this.maxTimeAvailable = timestamp;
-            this.updateLayers(true);
+            this.updateLayers();
           }
         }
       });
@@ -140,7 +140,7 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
   onTimestampChange() {
     this.updateLayers();
   }
-  updateLayers(force = false) {
+  updateLayers() {
     if (flowUIStore.loading) {
       return;
     }
@@ -158,7 +158,7 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
             this.setPopup({ id: v.info.id, content });
           }
         });
-        return v.getLayer(this.timestamp, force);
+        return v.getLayer(this.timestamp);
       })
       .filter(l => l !== null) as unknown as Layer<D>[];
 

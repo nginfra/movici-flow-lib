@@ -166,14 +166,11 @@ export interface VisualizationSettings {
   project: Project;
   scenario: ShortScenario | null;
 }
-export type VisualizableDataTypes = number | boolean;
+export type VisualizableDataTypes = unknown;
 
 export interface IVisualizer {
   forceRender(): void;
-  requestTapefile: (
-    attribute: ComponentProperty,
-    onLoad: (t: ITapefile<VisualizableDataTypes>) => void
-  ) => void;
+  requestTapefile: (attribute: ComponentProperty, onLoad: (t: ITapefile<unknown>) => void) => void;
   onClick: (content: PopupContent | null) => void;
   onHover: (content: PopupContent | null) => void;
 }
@@ -190,8 +187,11 @@ export type LayerParams<
 
 export interface ITapefile<T> {
   data: T[];
+  specialValue?: T
   moveTo: (time: number) => void;
   copyState: () => T[];
+  onSpecialValue: (cb: (val: unknown) => void) => void;
+  setSpecialValue: (val: T) => void;
 }
 
 export enum RenderOrderType {

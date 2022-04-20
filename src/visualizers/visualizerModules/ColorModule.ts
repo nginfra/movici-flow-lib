@@ -6,11 +6,11 @@ import {
   RGBAColor,
   StaticColorClause,
   TopologyLayerData,
-  IVisualizer
+  IVisualizer,
+  ITapefile
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
 import { NumberColorMap } from '../maps/colorMaps';
-import { SinglePropertyTapefile } from '../tapefile';
 import { interpolateColorMapping } from '@movici-flow-common/utils/colorUtils';
 import {
   TapefileAccessor,
@@ -76,8 +76,9 @@ export default class ColorModule<
 
       const accessor = new TapefileAccessor(colorMap);
       visualizer.requestTapefile(clause.byValue.attribute, t => {
-        accessor.setTapefile(t as SinglePropertyTapefile<number>);
-        colorMap.setSpecialValue((t as SinglePropertyTapefile<number>).specialValue);
+        accessor.setTapefile(t as ITapefile<number | null>);
+        colorMap.setSpecialValue((t as ITapefile<number>).specialValue);
+        t.onSpecialValue(val => colorMap.setSpecialValue(val as number));
       });
       return (d: LData) => accessor.getValue(d.idx);
     }

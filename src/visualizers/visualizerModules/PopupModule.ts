@@ -76,7 +76,7 @@ export default class PopupModule<
     const accessor = new PopupContentAccessor(clause);
     for (const [idx, item] of clause.items.entries()) {
       visualizer.requestTapefile(item.attribute, t => {
-        accessor.setTapefile(t, idx);
+        accessor.setTapefile(t as ITapefile<unknown>, idx);
       });
     }
 

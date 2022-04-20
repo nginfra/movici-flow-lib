@@ -118,6 +118,28 @@ export class TapefileWriter<T> {
   }
 }
 
+export abstract class BaseTapefile<T> implements ITapefile<T> {
+  specialValue?: T;
+  specialValuesCallbacks: ((val: unknown) => void)[];
+  abstract data: T[];
+
+  constructor({ specialValue }: { specialValue?: T }) {
+    this.specialValue = specialValue;
+    this.specialValuesCallbacks = [];
+  }
+  onSpecialValue(cb: (val: unknown) => void) {
+    this.specialValuesCallbacks.push(cb);
+  }
+
+  setSpecialValue(val: T) {
+    this.specialValue = val;
+    for (const cb of this.specialValuesCallbacks) {
+      cb(val);
+    }
+  }
+  abstract moveTo(time: number): void;
+  abstract copyState(): T[];
+}
 /**
  * A SinglePropertyTapefile can be used to calculate the state of a specific attribute in an entity
  * group at a specific timestamp in a scenario. It needs a single update (or init data) to start
@@ -128,12 +150,12 @@ export class TapefileWriter<T> {
  * tape to a specific timestamp using `SinglePropertyTapefile.moveTo()` and then requesting the
  * state with `SinglePropertyTapefile.getState()`
  */
-export class SinglePropertyTapefile<T> implements ITapefile<T> {
+export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
   componentProperty: ComponentProperty;
   state: PropertyState<T>;
   updates: TapefileUpdate<T>[];
   currentUpdateIdx: number | null;
-  specialValue?: T;
+
   private trimmedUntil: number;
   private lastRollback: number;
   constructor({
@@ -147,6 +169,7 @@ export class SinglePropertyTapefile<T> implements ITapefile<T> {
     updates?: TapefileUpdate<T>[];
     specialValue?: T;
   }) {
+    super({ specialValue });
     this.componentProperty = componentProperty;
     this.state = new PropertyState(length);
     this.updates = updates ?? [];
@@ -157,7 +180,6 @@ export class SinglePropertyTapefile<T> implements ITapefile<T> {
       this.currentUpdateIdx = 0;
     }
 
-    this.specialValue = specialValue;
     this.trimmedUntil = 0;
     this.lastRollback = 0; // the first update does not need a rollback
   }

@@ -122,7 +122,7 @@ export default class SizeModule<
 
       const accessor = new TapefileAccessor(sizeMap);
       visualizer.requestTapefile(clause.byValue.attribute, t => {
-        accessor.setTapefile(t as SinglePropertyTapefile<number>);
+        accessor.setTapefile(t as SinglePropertyTapefile<number | null>);
       });
 
       return (d: LData) => accessor.getValue(d.idx);

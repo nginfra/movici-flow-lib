@@ -14,7 +14,6 @@ import {
   PolygonCoordinate,
   PolygonGeometryData,
   TopologyLayerData,
-  VisualizableDataTypes,
   IVisualizer
 } from '../types';
 import { parsePropertyString, propertyString } from '..//utils';
@@ -36,18 +35,21 @@ abstract class ComposableVisualizer<
   extends BaseVisualizer<EntityData, Coordinate, LData, Layer_>
   implements IVisualizer
 {
-  attributes: Record<string, ((t: ITapefile<VisualizableDataTypes>) => void)[]>;
-  tapefiles: Record<string, ITapefile<VisualizableDataTypes>>;
+  attributes: Record<string, ((t: ITapefile<unknown>) => void)[]>;
+  tapefiles: Record<string, ITapefile<unknown>>;
   declare topology?: LData[];
   modules: VisualizerModule<Coord, LData>[] | null;
   layerParams: LayerParams<LData, Coord> | null = null;
   forceRenderCounter: number;
+  forceUpdateTriggerCounter: number;
+  timestamp?: number;
   constructor(config: VisualizerContext) {
     super(config);
     this.attributes = {};
     this.tapefiles = {};
     this.modules = null;
     this.forceRenderCounter = 0;
+    this.forceUpdateTriggerCounter = 0;
   }
 
   abstract getModules(): VisualizerModule<Coord, LData>[];
@@ -109,10 +111,7 @@ abstract class ComposableVisualizer<
     }
   }
 
-  requestTapefile(
-    attribute: ComponentProperty,
-    onLoad: (t: ITapefile<VisualizableDataTypes>) => void
-  ) {
+  requestTapefile(attribute: ComponentProperty, onLoad: (t: ITapefile<unknown>) => void) {
     const key = propertyString(attribute);
     if (!this.attributes[key]) {
       this.attributes[key] = [];
@@ -123,7 +122,7 @@ abstract class ComposableVisualizer<
   async ensureTapefiles() {
     const toDownload = Object.keys(this.attributes).filter(attr => !this.tapefiles[attr]);
     if (toDownload.length) {
-      const tapefiles = await this.tapefileStore.getTapefiles<VisualizableDataTypes>({
+      const tapefiles = await this.tapefileStore.getTapefiles<unknown>({
         store: this.datasetStore,
         entityGroup: this.info.entityGroup,
         attributes: toDownload.map(s => parsePropertyString(s)),
@@ -131,6 +130,11 @@ abstract class ComposableVisualizer<
       });
       for (const [idx, key] of toDownload.entries()) {
         this.tapefiles[key] = tapefiles[idx];
+        tapefiles[idx].onData(ts => {
+          if (ts <= (this.timestamp ?? 0)) {
+            this.forceUpdateTriggers();
+          }
+        });
       }
     } else if (this.info.status) {
       const id = this.info.status.register(['initData', 'updates']);
@@ -148,24 +152,43 @@ abstract class ComposableVisualizer<
   }
 
   updateTimestamp(timestamp: number) {
+    this.timestamp = timestamp;
     for (const tapefile of Object.values(this.tapefiles)) {
       tapefile.moveTo(timestamp);
     }
   }
 
+  /**
+   * Call this function to force a full rerender of the layer, next time it is rendered
+   */
   forceRender() {
     this.forceRenderCounter++;
   }
 
+  /**
+   * Call this function to force re-evaluating all accessors, next time the layer is rendered
+   */
+  forceUpdateTriggers() {
+    this.forceUpdateTriggerCounter++;
+  }
+
   getLayer(timestamp: number, forceRender = false) {
-    this.updateTimestamp(timestamp);
     if (!this.layerParams) {
       return null;
     }
 
+    if (this.info.visible) {
+      this.updateTimestamp(timestamp);
+    }
+
     forceRender && this.forceRender();
 
-    const layerParams = this.appendUpdateTriggers(this.layerParams, timestamp, true);
+    const layerParams = this.appendUpdateTriggers(
+      this.layerParams,
+      this.info.visible ? timestamp : null,
+      true
+    );
+    this.appendUpdateTriggers(layerParams, this.forceUpdateTriggerCounter);
 
     layerParams.props.id += ':' + this.forceRenderCounter;
     return new layerParams.type(layerParams.props) as unknown as Layer_;

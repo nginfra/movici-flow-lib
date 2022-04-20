@@ -4,10 +4,10 @@ import {
   Mapper,
   VisibilityClause,
   TopologyLayerData,
-  IVisualizer
+  IVisualizer,
+  ITapefile
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
-import { SinglePropertyTapefile } from '../tapefile';
 import {
   TapefileAccessor,
   VisualizerModule,
@@ -91,7 +91,7 @@ export default class VisibilityModule<
       );
 
       visualizer.requestTapefile(clause.byValue.attribute, t => {
-        accessor.setTapefile(t as SinglePropertyTapefile<number>);
+        accessor.setTapefile(t as ITapefile<number | boolean>);
       });
       return (d: LData) => accessor.getValue(d.idx);
     }

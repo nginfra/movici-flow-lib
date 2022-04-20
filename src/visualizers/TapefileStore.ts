@@ -10,7 +10,7 @@ import {
 import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
 import { heapPop, heapPush, PriorityQueue } from '@movici-flow-common/utils/queue';
 import StatusTracker from '@movici-flow-common/utils/StatusTracker';
-import { Index, SinglePropertyTapefile, TapefileWriter } from './tapefile';
+import { BaseTapefile, Index, SinglePropertyTapefile, TapefileWriter } from './tapefile';
 import { PrioritizedTask, BatchedTaskDispatcher, ITaskDispatcher, Task } from './tasks';
 
 export class TapefileStore {
@@ -230,9 +230,9 @@ function getInitDataTask({
       for (const tapefile of tapefiles) {
         tapefile.initialize({
           index,
-          initialData,
-          specialValue: specialValues[tapefile.attribute]
+          initialData
         });
+        tapefile.setSpecialValue(specialValues[tapefile.attribute]);
       }
       onDone?.();
     },
@@ -288,7 +288,7 @@ function getUpdateDataTask({
     priority: update.timestamp
   };
 }
-class StreamingTapefile<T> {
+class StreamingTapefile<T> extends BaseTapefile<T> {
   attribute: string;
   IDLE_MS = 3000;
   private pending: [number, EntityUpdate<T>][];
@@ -299,6 +299,7 @@ class StreamingTapefile<T> {
   private timestampCallbacks: ((timestamp: number) => void)[];
 
   constructor(attribute: string) {
+    super({});
     this.attribute = attribute;
     this.pending = [];
 
@@ -318,20 +319,11 @@ class StreamingTapefile<T> {
   copyState(): T[] {
     return this.inner?.copyState() ?? [];
   }
-  initialize({
-    index,
-    initialData,
-    specialValue
-  }: {
-    index: Index;
-    initialData: EntityGroupData<T>;
-    specialValue?: T;
-  }) {
+  initialize({ index, initialData }: { index: Index; initialData: EntityGroupData<T> }) {
     if (this.initialized) throw new Error(`Tapefile for ${this.attribute} Already initialized`);
     this.inner = new SinglePropertyTapefile({
       componentProperty: { name: this.attribute, component: null },
-      length: index.length,
-      specialValue
+      length: index.length
     });
     this.writer = new TapefileWriter(index, this.inner, this.attribute);
     this.addUpdate(
@@ -382,6 +374,11 @@ class StreamingTapefile<T> {
 
   onData(cb: (timestamp: number) => void) {
     this.timestampCallbacks.push(cb);
+  }
+
+  setSpecialValue(val: T): void {
+    this.inner?.setSpecialValue(val);
+    super.setSpecialValue(val);
   }
 }
 

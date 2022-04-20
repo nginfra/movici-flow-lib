@@ -4,7 +4,8 @@ import {
   LayerParams,
   Mapper,
   TopologyLayerData,
-  IVisualizer
+  IVisualizer,
+  ITapefile
 } from '@movici-flow-common/types';
 import { ComposableVisualizerInfo } from '../VisualizerInfo';
 
@@ -42,7 +43,7 @@ export abstract class VisualizerModule<
 }
 
 export class TapefileAccessor<In, Out> {
-  private tapefile?: SinglePropertyTapefile<In>;
+  private tapefile?: ITapefile<In>;
   private mapping: Mapper<In, Out>;
 
   constructor(mapping: Mapper<In, Out>, tapefile?: SinglePropertyTapefile<In>) {
@@ -50,7 +51,7 @@ export class TapefileAccessor<In, Out> {
     this.tapefile = tapefile;
   }
 
-  setTapefile(tapefile: SinglePropertyTapefile<In>) {
+  setTapefile(tapefile: ITapefile<In>) {
     this.tapefile = tapefile;
   }
 

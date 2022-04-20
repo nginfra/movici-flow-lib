@@ -13,6 +13,7 @@ type VMCallback = (params: CallbackPayload) => void;
 
 interface CallbackPayload {
   manager: VisualizerManager;
+  visualizer?: Visualizer;
   info?: ComposableVisualizerInfo;
   error?: Error | unknown;
   timestamp?: number | null;
@@ -165,8 +166,11 @@ export default class VisualizerManager {
           timestamp: ts
         });
       },
-      onReady: () => {git
-        this.invokeCallbacks('data', { manager: this, timestamp: Number.MAX_SAFE_INTEGER });
+      onReady: () => {
+        this.invokeCallbacks('data', {
+          manager: this,
+          timestamp: Number.MAX_SAFE_INTEGER
+        });
       }
     });
     return getVisualizer({
