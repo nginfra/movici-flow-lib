@@ -43,7 +43,7 @@
         </div>
       </template>
       <template v-else>
-        <MapVis :layer-infos="validLayers" :view-state.sync="viewState">
+        <MapVis :layer-infos="validLayers" :view-state.sync="viewState" scale>
           <template #control-left="{ map, onViewstateChange, basemap, setBasemap }">
             <SearchBar
               v-if="hasGeocodeCapabilities"

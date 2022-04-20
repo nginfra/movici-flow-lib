@@ -50,6 +50,7 @@
         :view-state.sync="viewState"
         :timestamp.sync="timestamp"
         buildings
+        scale
       >
         <template #control-zero="{ map, dynamicPopup, popupContent, closePopup }">
           <DynamicDataView

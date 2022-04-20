@@ -165,7 +165,7 @@ export default class VisualizerManager {
           timestamp: ts
         });
       },
-      onReady: () => {
+      onReady: () => {git
         this.invokeCallbacks('data', { manager: this, timestamp: Number.MAX_SAFE_INTEGER });
       }
     });

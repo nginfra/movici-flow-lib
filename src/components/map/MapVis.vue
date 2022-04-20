@@ -14,6 +14,7 @@
         </div>
       </b-loading>
       <Buildings v-if="buildings" :map="map" />
+      <Scale v-if="scale" :map="map" />
     </template>
     <template #control-zero="deckProps">
       <slot name="control-zero" v-bind="{ ...slotProps, ...deckProps }" />
@@ -50,6 +51,7 @@ import {
 } from '@movici-flow-common/types';
 import Deck from './Deck.vue';
 import Buildings from './mapLayers/Buildings.vue';
+import Scale from './controls/Scale.vue';
 import defaults from './defaults';
 import VisualizerManager from '@movici-flow-common/visualizers/VisualizerManager';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
@@ -60,7 +62,7 @@ import { Layer } from '@deck.gl/core';
 
 @Component({
   name: 'MovMapVis',
-  components: { Deck, Buildings }
+  components: { Deck, Buildings, Scale }
 })
 export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
   @Prop({ type: Array, default: () => [] }) readonly layerInfos!: ComposableVisualizerInfo[];
@@ -68,6 +70,7 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
   @Prop({ type: Object, default: () => defaults.viewState() }) readonly viewState!: CameraOptions;
   @Prop({ type: Number, default: 0 }) readonly timestamp!: number;
   @Prop({ type: Boolean, default: false }) readonly buildings!: boolean;
+  @Prop({ type: Boolean, default: false }) readonly scale!: boolean;
   visualizers: VisualizerManager | null = null;
   popupContent: PopupContent | null = null;
   activePopupId: string | null = null;

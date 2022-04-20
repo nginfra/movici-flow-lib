@@ -1,5 +1,5 @@
 <template>
-  <MapVis ref="mapVis" :layer-infos="layers" :view-state.sync="viewState">
+  <MapVis ref="mapVis" :layer-infos="layers" :view-state.sync="viewState" scale>
     <template #control-left="{ map, onViewstateChange, basemap, setBasemap }">
       <SearchBar
         v-if="hasGeocodeCapabilities"
