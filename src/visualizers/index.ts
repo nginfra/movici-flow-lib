@@ -3,6 +3,7 @@ import { FlowVisualizerType, Nullable } from '../types';
 import { ComposableVisualizerInfo } from './VisualizerInfo';
 import {
   ComposableArcVisualizer,
+  ComposableIconVisualizer,
   ComposableLineVisualizer,
   ComposablePointVisualizer,
   ComposablePolygonVisualizer
@@ -12,7 +13,8 @@ export type Visualizer =
   | ComposablePointVisualizer
   | ComposableLineVisualizer
   | ComposablePolygonVisualizer
-  | ComposableArcVisualizer;
+  | ComposableArcVisualizer
+  | ComposableIconVisualizer;
 
 export interface VisualizerConstructor {
   new (config: VisualizerContext): Visualizer;
@@ -37,6 +39,8 @@ export function getVisualizerType(info: ComposableVisualizerInfo): Nullable<Visu
       return ComposablePolygonVisualizer;
     case FlowVisualizerType.ARCS:
       return ComposableArcVisualizer;
+    case FlowVisualizerType.ICONS:
+      return ComposableIconVisualizer;
     default:
       return null;
   }

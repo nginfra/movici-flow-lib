@@ -2,9 +2,9 @@ level=patch
 export level
 
 install:
-	npm --prefix testing/ install
+	npm --prefix project/ install
 	# Hack to let typescript resolve packages
-	ln -s testing/node_modules
+	ln -s project/node_modules
 
 bump-version:
 	bumpversion  --config-file .bumpversion $(level)

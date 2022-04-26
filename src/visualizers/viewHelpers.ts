@@ -12,15 +12,17 @@ import { propertyString } from '../utils';
 import { ComposableVisualizerInfo } from './VisualizerInfo';
 
 export function visualizerSettingsValidator(summary: EntityGroupSummary) {
-  return (info: ComposableVisualizerInfo) => {
-    const settings = info.settings;
+  return ({ settings }: ComposableVisualizerInfo) => {
     if (!settings) throw new Error('Visualizer has no settings configured');
+
     const validator = {
       [FlowVisualizerType.POINTS]: isPoints,
       [FlowVisualizerType.LINES]: isLines,
       [FlowVisualizerType.ARCS]: isLines,
-      [FlowVisualizerType.POLYGONS]: isPolygons
+      [FlowVisualizerType.POLYGONS]: isPolygons,
+      [FlowVisualizerType.ICONS]: isPoints
     }[settings.type];
+
     if (!validator(summary.properties)) {
       throw new Error(`Cannot visualize ${summary.name} as '${settings.type}'`);
     }

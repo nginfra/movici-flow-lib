@@ -8,7 +8,7 @@ describe('formValidator', () => {
   it('returns empty dictionary on no errors', () => {
     const { validator, onValidate } = newValidator();
     validator.validate();
-    expect(onValidate).toBeCalledWith({});
+    expect(onValidate).toBeCalledWith({}, {});
   });
 
   it('can return multiple errors', () => {
@@ -17,13 +17,16 @@ describe('formValidator', () => {
       b: () => 'error b'
     });
     validator.validate();
-    expect(onValidate).toBeCalledWith({ a: 'error a', b: 'error b' });
+    expect(onValidate).toBeCalledWith(
+      { a: 'error a', b: 'error b' },
+      { _: { a: 'error a', b: 'error b' } }
+    );
   });
   it('can add new validators', () => {
     const { validator, onValidate } = newValidator();
     validator.setValidator('new', () => 'error');
     validator.validate();
-    expect(onValidate).toBeCalledWith({ new: 'error' });
+    expect(onValidate).toBeCalledWith({ new: 'error' }, { _: { new: 'error' } });
   });
 
   it('can add module', () => {
@@ -36,9 +39,7 @@ describe('formValidator', () => {
       onValidate
     });
     validator.validate();
-    expect(onValidate).toBeCalledWith({
-      key: 'error'
-    });
+    expect(onValidate).toBeCalledWith({ key: 'error' }, { module: { key: 'error' } });
   });
   it('can remove a module', () => {
     const validator = new FormValidator();
@@ -70,8 +71,8 @@ describe('formValidator', () => {
       ]
     });
     validator.validate();
-    expect(globalCallback).toHaveBeenLastCalledWith({ key: 'error' });
+    expect(globalCallback).toHaveBeenLastCalledWith({}, { module: { key: 'error' } });
     validator.removeModule('module');
-    expect(globalCallback).toHaveBeenLastCalledWith({});
+    expect(globalCallback).toHaveBeenLastCalledWith({}, {});
   });
 });

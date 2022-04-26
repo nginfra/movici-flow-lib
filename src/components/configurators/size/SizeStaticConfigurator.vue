@@ -62,36 +62,52 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { StaticSizeClause, SizeClause } from '@movici-flow-common/types';
-import FlowColorPicker from '../color/FlowColorPicker.vue';
+import { StaticSizeClause, SizeClause, FlowVisualizerType } from '@movici-flow-common/types';
+import { DIMENSIONS } from '@movici-flow-common/visualizers/visualizers';
+
+const STATIC_DEFAULT_CONFIG: StaticSizeClause = {
+    size: DIMENSIONS.SIZE_MIN_PIXELS,
+    units: 'pixels',
+    minPixels: DIMENSIONS.SIZE_MIN_PIXELS,
+    maxPixels: DIMENSIONS.SIZE_MAX_PIXELS
+  },
+  STATIC_ICON_DEFAULT_CONFIG: StaticSizeClause = {
+    size: DIMENSIONS.ICON_SIZE,
+    units: 'pixels',
+    minPixels: DIMENSIONS.ICON_SIZE_MIN_PIXELS,
+    maxPixels: DIMENSIONS.ICON_SIZE_MAX_PIXELS
+  },
+  DEFAULT_SIZES = Object.values(FlowVisualizerType).reduce((prev, curr) => {
+    prev[curr] = (() => {
+      switch (curr) {
+        case FlowVisualizerType.ICONS:
+          return STATIC_ICON_DEFAULT_CONFIG;
+        case FlowVisualizerType.POINTS:
+        case FlowVisualizerType.LINES:
+        case FlowVisualizerType.POLYGONS:
+        case FlowVisualizerType.ARCS:
+        default:
+          return STATIC_DEFAULT_CONFIG;
+      }
+    })();
+
+    return prev;
+  }, {} as Record<FlowVisualizerType, StaticSizeClause>);
 
 @Component({
-  components: {
-    FlowColorPicker
-  }
+  name: 'SizeStaticConfigurator'
 })
 export default class SizeStaticConfigurator extends Vue {
   @Prop() value!: SizeClause | null;
-
-  updateValue(props: Partial<StaticSizeClause>) {
-    // check for this.value (is it a valid object?)
-    const clause = Object.assign({}, this.currentClause, props);
-
-    if (clause.units === 'pixels') {
-      delete clause.minPixels;
-      delete clause.maxPixels;
-    }
-
-    this.$emit('input', { static: clause });
-  }
+  @Prop() geometry!: FlowVisualizerType;
 
   get defaults() {
-    return {
-      size: 2,
-      units: 'pixels',
-      minPixels: 2,
-      maxPixels: 5
-    };
+    return DEFAULT_SIZES[this.geometry];
+  }
+
+  updateValue(props: Partial<StaticSizeClause>) {
+    const clause = Object.assign({}, this.currentClause, props);
+    this.$emit('input', { static: clause });
   }
 
   get currentClause(): StaticSizeClause {

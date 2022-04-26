@@ -1,6 +1,3 @@
-<template>
-  <span></span>
-</template>
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator';
 import LayerMixin from './LayerMixin';
@@ -37,6 +34,10 @@ export default class Buildings extends Mixins(LayerMixin) {
       'fill-extrusion-opacity': 0.8
     }
   };
+
+  render() {
+    return;
+  }
 }
 </script>
 

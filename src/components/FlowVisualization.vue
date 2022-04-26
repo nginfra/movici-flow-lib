@@ -125,7 +125,7 @@ import TimeSlider from './map_widgets/TimeSlider.vue';
 import { simplifiedCamera, visualizerSettingsValidator } from '../visualizers/viewHelpers';
 import { buildFlowUrl } from '../utils';
 import isEqual from 'lodash/isEqual';
-import FlowLegend from './map_widgets/FlowLegend.vue';
+import FlowLegend from './map_widgets/legends/FlowLegend.vue';
 import { successMessage } from '../utils/snackbar';
 import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
 import { MoviciError } from '@movici-flow-common/errors';

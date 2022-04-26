@@ -128,6 +128,7 @@
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import {
   ByValueSizeClause,
+  FlowVisualizerType,
   PropertySummary,
   PropertyType,
   SizeClause
@@ -136,10 +137,33 @@ import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import { DIMENSIONS } from '@movici-flow-common/visualizers/visualizers';
 import cloneDeep from 'lodash/cloneDeep';
 
+const BY_VALUE_DEFAULT_CONFIG = {
+    sizes: [
+      [2, DIMENSIONS.SIZE_MIN_PIXELS],
+      [4, DIMENSIONS.SIZE_MIN_PIXELS * 2]
+    ],
+    units: 'pixels',
+    minPixels: DIMENSIONS.SIZE_MIN_PIXELS,
+    maxPixels: DIMENSIONS.SIZE_MAX_PIXELS,
+    attribute: null
+  },
+  BY_VALUE_ICON_DEFAULT_CONFIG = {
+    sizes: [
+      [2, DIMENSIONS.ICON_SIZE],
+      [4, DIMENSIONS.ICON_SIZE * 2]
+    ],
+    units: 'pixels',
+    minPixels: DIMENSIONS.ICON_SIZE_MIN_PIXELS,
+    maxPixels: DIMENSIONS.ICON_SIZE_MAX_PIXELS,
+    attribute: null
+  };
+
 @Component({})
 export default class SizeByValueConfigurator extends Mixins(ValidationProvider) {
   @Prop([Object]) value?: SizeClause | null;
   @Prop({ default: () => [] }) entityProps!: PropertySummary[];
+  @Prop() geometry!: FlowVisualizerType;
+
   selectedEntityProp: PropertySummary | null = null;
   attributeFromValue: PropertyType | null = null;
 
@@ -164,7 +188,7 @@ export default class SizeByValueConfigurator extends Mixins(ValidationProvider) 
   }
 
   get currentClause(): ByValueSizeClause {
-    return Object.assign({}, this.defaults(), this.value?.byValue);
+    return Object.assign({}, this.defaults, this.value?.byValue);
   }
 
   get currentMinVal() {
@@ -225,6 +249,19 @@ export default class SizeByValueConfigurator extends Mixins(ValidationProvider) 
     return this.selectedEntityProp?.data_type;
   }
 
+  get defaults() {
+    switch (this.geometry) {
+      case FlowVisualizerType.ICONS:
+        return BY_VALUE_ICON_DEFAULT_CONFIG;
+      case FlowVisualizerType.POINTS:
+      case FlowVisualizerType.LINES:
+      case FlowVisualizerType.POLYGONS:
+      case FlowVisualizerType.ARCS:
+      default:
+        return BY_VALUE_DEFAULT_CONFIG;
+    }
+  }
+
   @Watch('filteredEntityProps', { immediate: true })
   pickSelectedEntityProp() {
     let attribute = this.filteredEntityProps.find(attr => {
@@ -273,19 +310,6 @@ export default class SizeByValueConfigurator extends Mixins(ValidationProvider) 
     const sizes = cloneDeep(this.currentClause.sizes);
     sizes[i][j] = value;
     this.updateValue({ sizes });
-  }
-
-  defaults() {
-    return {
-      sizes: [
-        [2, 2],
-        [5, 5]
-      ],
-      units: 'pixels',
-      minPixels: DIMENSIONS.SIZE_MIN_PIXELS,
-      maxPixels: DIMENSIONS.SIZE_MAX_PIXELS,
-      attribute: null
-    };
   }
 
   // TODO: create validator according to color length

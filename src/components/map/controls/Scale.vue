@@ -1,6 +1,3 @@
-<template>
-  <span></span>
-</template>
 <script lang="ts">
 import mapboxgl, { Control } from 'mapbox-gl';
 import { Component, Prop, Vue } from 'vue-property-decorator';
@@ -21,6 +18,10 @@ export default class Scale extends Vue {
     if (this.control) {
       this.map.removeControl(this.control);
     }
+  }
+
+  render() {
+    return;
   }
 }
 </script>

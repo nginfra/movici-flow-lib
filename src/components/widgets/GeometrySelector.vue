@@ -8,12 +8,13 @@
       required
     >
       <div class="block mb-0">
-        <template v-for="c in choices">
+        <template v-for="(c, idx) in choices">
           <b-tooltip
             :label="c.geometry | upperFirst"
             :key="c.geometry"
             type="is-black"
             position="is-top"
+            :class="{ 'mr-2': idx !== choices.length - 1 }"
           >
             <b-button
               class="v-info-geometry"
@@ -113,14 +114,14 @@ export default class GeometrySelector extends Vue {
         name: 'Arcs',
         iconPack: 'fak',
         icon: 'fa-vis-info-' + FlowVisualizerType.ARCS
+      },
+      {
+        geometry: FlowVisualizerType.ICONS,
+        enabled: isPoints(this.properties),
+        name: 'Icons',
+        iconPack: 'far',
+        icon: 'map-marker-alt'
       }
-      // {
-      //   geometry: FlowVisualizerType.ICONS,
-      //   enabled: isPoints(this.properties),
-      //   name: 'Icons',
-      //   iconPack: 'far',
-      //   icon: 'map-marker-alt'
-      // }
     ];
   }
 
@@ -164,7 +165,6 @@ export default class GeometrySelector extends Vue {
   color: #1ab67e;
   height: 2.25rem;
   width: 2.75rem;
-  margin-right: 0.5rem;
   font-size: 1.25rem;
 
   &:active,

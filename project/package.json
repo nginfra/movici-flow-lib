@@ -13,7 +13,7 @@
     "dev": "vue-cli-service serve",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit",
-    "rollup": "rmdir -r  ../local-flow/flow_module/dist && rollup -c && Xcopy ./dist ../local-flow/flow_module/ /E /H /C /I"
+    "generateIcons": "cd ../icon_generation/ && node generateIconAtlasMapping.js icons shapes --img-output-dir ../public/static/icons --json-output-dir ../src/assets/icons"
   },
   "dependencies": {
     "@deck.gl/aggregation-layers": "8.6.4",
@@ -64,6 +64,7 @@
     "@vue/eslint-config-typescript": "9.1.0",
     "@vue/test-utils": "1.3.0",
     "babel-eslint": "10.1.0",
+    "canvas": "^2.9.1",
     "eslint": "8.4.1",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "4.0.0",
@@ -71,6 +72,7 @@
     "jest": "27.4.4",
     "jest-mock": "27.4.6",
     "jest-serializer-vue": "2.0.2",
+    "minimist": "^1.2.6",
     "node-sass": "5.0.0",
     "prettier": "2.5.1",
     "sass-loader": "10.1.1",

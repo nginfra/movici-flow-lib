@@ -1,0 +1,65 @@
+{
+  "shapes": {
+    "map-marker": {
+      "anchorY": 1,
+      "iconCenter": [
+        0,
+        -0.625
+      ]
+    },
+    "square": {},
+    "circle": {},
+    "triangle": {
+      "iconCenter": [
+        0,
+        0.125
+      ]
+    }
+  },
+  "icons": {
+    "archway": {},
+    "biohazard": {},
+    "bolt": {},
+    "bomb": {},
+    "broadcast-tower": {
+      "inShapeSize": 0.4
+    },
+    "building": {},
+    "church": {},
+    "city": {},
+    "clinic-medical": {},
+    "digging": {},
+    "exclamation": {},
+    "farm": {},
+    "fire-extinguisher": {},
+    "fire": {},
+    "futbol": {},
+    "glasses": {},
+    "hospital-symbol": {},
+    "hospital": {},
+    "hotel": {},
+    "house-damage": {},
+    "house-flood": {},
+    "house": {},
+    "industry": {},
+    "medkit": {},
+    "monument": {},
+    "mosque": {},
+    "music": {},
+    "police-box": {},
+    "question": {},
+    "radiation": {},
+    "school": {},
+    "seedling": {},
+    "store": {},
+    "subway": {},
+    "synagogue": {},
+    "tombstone": {},
+    "tooth": {},
+    "train": {},
+    "university": {},
+    "water": {},
+    "wheat": {},
+    "wind-turbine": {}    
+  }
+}

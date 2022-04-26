@@ -55,3 +55,14 @@ function interpolateColor(a: RGBAColor, b: RGBAColor, step: number, nSteps: numb
 
   return rv;
 }
+
+export function getContrastingColor(color: RGBAColor) {
+  // Calculate the perceptive luminance (aka luma) - human eye favors green color...
+
+  // Values taken from w3c (https://www.w3.org/TR/AERT/#color-contrast) adjusted a little
+  // bit to make sure that movici green gets a white contrasting color
+  // factors must sum to 1
+  const luminance = (0.314 * color[0] + 0.557 * color[1] + 0.129 * color[2]) / 255;
+  // Return black for bright colors, white for dark colors
+  return (luminance > 0.5 ? [0, 0, 0, 255] : [255, 255, 255, 255]) as RGBAColor;
+}

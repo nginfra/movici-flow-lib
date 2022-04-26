@@ -142,7 +142,15 @@
           "advColours": "Advanced Colours"
         }
       },
-      "visibilityConfig": {
+      "iconConfig": {
+        "shape": "Shape",
+        "icon": "Icon",
+        "selectShape": "Select a Shape",
+        "selectIcon": "Select an Icon",
+        "far": "Regular",
+        "fas": "Solid"
+      },
+      "visibilityConfig" : {
         "value": "Value",
         "visible": "Visible"
       },

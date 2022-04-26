@@ -54,5 +54,5 @@ check_version_upgrade:
 test:unit:
   extends: .testing
   script:
-    - npm --prefix testing/ run test:unit
+    - npm --prefix project/ run test:unit
 

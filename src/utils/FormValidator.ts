@@ -1,13 +1,14 @@
+export type GlobalErrorDict = Record<string, ErrorDict>;
 export type ErrorDict = Record<string, string>;
 export type ValidatorFunc = () => string | void;
 interface FormValidatorConfig {
   validators?: Record<string, ValidatorFunc>;
-  onValidate?: (e: ErrorDict) => void;
+  onValidate?: ValidatorCallback;
   modules?: ValidationModule[];
 }
 
 export class ValidationError extends Error {}
-type ValidatorCallback = (e: ErrorDict) => void;
+type ValidatorCallback = (e: ErrorDict, globals: GlobalErrorDict) => void;
 
 export interface ValidationModule {
   name: string;
@@ -37,7 +38,7 @@ export interface ValidationModule {
 export default class FormValidator {
   private readonly modules: { _: ValidationModule; [key: string]: ValidationModule };
 
-  errors: ErrorDict;
+  errors: GlobalErrorDict;
 
   constructor(config?: FormValidatorConfig) {
     this.errors = {};
@@ -74,9 +75,11 @@ export default class FormValidator {
     const module = this.modules[identifier];
     delete this.modules[identifier];
 
+    const errors = this.errors[identifier];
     for (const key of Object.keys(module.validators)) {
-      delete this.errors[key];
+      delete errors[key];
     }
+    delete this.errors[identifier];
     this.invokeCallbacks();
   }
 
@@ -84,20 +87,24 @@ export default class FormValidator {
     this.modules._.onValidate = callback;
   }
 
-  touch(key: string) {
-    delete this.errors[key];
+  touch(key: string, module?: string) {
+    const errors = module ? this.errors[module] : this.errors;
+    if (errors) delete errors[key];
     this.invokeCallbacks();
   }
 
   validate() {
     this.errors = {};
 
-    for (const validators of Object.values(this.modules).map(m => m.validators)) {
+    for (const [name, validators] of Object.values(this.modules).map(m => {
+      return [m.name, m.validators] as [string, Record<string, ValidatorFunc>];
+    })) {
       for (const key of Object.keys(validators)) {
         const result = this.getValidationResult(validators[key]);
 
         if (typeof result === 'string') {
-          this.errors[key] = result;
+          this.errors[name] ??= {};
+          this.errors[name][key] = result;
         }
       }
     }
@@ -106,8 +113,10 @@ export default class FormValidator {
   }
 
   private invokeCallbacks() {
-    for (const callback of Object.values(this.modules).map(m => m.onValidate)) {
-      callback && callback(this.errors);
+    for (const [name, callback] of Object.values(this.modules).map(
+      m => [m.name, m.onValidate] as [string, ValidatorCallback]
+    )) {
+      callback && callback(this.errors[name] ?? {}, this.errors);
     }
   }
 

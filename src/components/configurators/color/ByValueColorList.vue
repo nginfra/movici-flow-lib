@@ -105,14 +105,12 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { colorTripleToHex } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { ActionMenuItem, ColorMapping, RGBAColor } from '@movici-flow-common/types';
-import CustomSelect from '@movici-flow-common/components/global/CustomSelect.vue';
 import FlowColorPicker from './FlowColorPicker.vue';
 
 type modes = 'buckets' | 'gradient' | 'boolean';
 @Component({
   name: 'ByValueColorList',
   components: {
-    CustomSelect,
     FlowColorPicker
   }
 })

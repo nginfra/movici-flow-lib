@@ -132,7 +132,6 @@ import {
   PropertyType,
   RGBAColor
 } from '@movici-flow-common/types';
-import CustomSelect from '@movici-flow-common/components/global/CustomSelect.vue';
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import ByValueColorList from './ByValueColorList.vue';
 import { recalculateColorMapping } from '../../configurators/helpers';
@@ -147,7 +146,6 @@ interface RecalculateColorsParams {
 
 @Component({
   components: {
-    CustomSelect,
     ByValueColorList
   }
 })

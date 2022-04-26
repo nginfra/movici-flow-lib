@@ -8,9 +8,8 @@ export enum FlowVisualizerType {
   POINTS = 'points',
   LINES = 'lines',
   POLYGONS = 'polygons',
-  ARCS = 'arcs'
-  // ICONS = 'icons',
-  // HEAT_MAP = 'heat_map'
+  ARCS = 'arcs',
+  ICONS = 'icons'
 }
 
 export interface CommonVisualizerOptions {
@@ -19,6 +18,8 @@ export interface CommonVisualizerOptions {
   popup?: PopupClause;
   size?: SizeClause;
   visibility?: VisibilityClause;
+  icon?: IconClause;
+  shape?: IconClause;
 }
 
 export interface PointVisualizerOptions extends CommonVisualizerOptions {
@@ -37,11 +38,16 @@ export interface ArcVisualizerOptions extends CommonVisualizerOptions {
   type: FlowVisualizerType.ARCS;
 }
 
+export interface IconVisualizerOptions extends CommonVisualizerOptions {
+  type: FlowVisualizerType.ICONS;
+}
+
 export type FlowVisualizerOptions =
   | PointVisualizerOptions
   | LineVisualizerOptions
   | PolygonVisualizerOptions
-  | ArcVisualizerOptions;
+  | ArcVisualizerOptions
+  | IconVisualizerOptions;
 
 export interface LegendOptions {
   title?: string;
@@ -72,6 +78,21 @@ export interface ColorClause {
   byValue?: ByValueColorClause;
   legend?: LegendOptions;
   advanced?: AdvancedColorSettings;
+}
+
+export interface IconClause {
+  static?: StaticIconClause;
+  byValue?: ByValueIconClause;
+  legend?: LegendOptions;
+}
+
+export interface StaticIconClause {
+  icon: string;
+}
+
+export interface ByValueIconClause {
+  attribute: PropertySummary | null;
+  icons: [number, string][];
 }
 
 export interface SizeClause {

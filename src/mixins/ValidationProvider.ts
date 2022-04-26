@@ -1,5 +1,5 @@
 import { Component, Vue } from 'vue-property-decorator';
-import FormValidator, { ErrorDict } from '../utils/FormValidator';
+import FormValidator, { ErrorDict, GlobalErrorDict } from '../utils/FormValidator';
 
 /**
  * Mixin to use with form validation. Any error messages will be made available in the `this.errors`
@@ -71,10 +71,17 @@ import FormValidator, { ErrorDict } from '../utils/FormValidator';
 export default class ValidationProvider extends Vue {
   // Must be instantiate by consumers of this class
   validator!: FormValidator | null;
-  errors: ErrorDict = {};
+  errors: ErrorDict | GlobalErrorDict = {};
 
   get hasErrors() {
-    return Object.keys(this.errors).length;
+    for (const err of Object.values(this.errors)) {
+      if (typeof err === 'object') {
+        if (Object.keys(err).length) return true;
+      } else {
+        return true;
+      }
+    }
+    return false;
   }
 
   validated<T extends this, K extends keyof this>(key: keyof this, value: unknown) {

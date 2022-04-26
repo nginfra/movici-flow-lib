@@ -187,7 +187,7 @@ export type LayerParams<
 
 export interface ITapefile<T> {
   data: T[];
-  specialValue?: T
+  specialValue?: T;
   moveTo: (time: number) => void;
   copyState: () => T[];
   onSpecialValue: (cb: (val: unknown) => void) => void;

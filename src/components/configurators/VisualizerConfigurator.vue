@@ -103,9 +103,18 @@
             showAs="button"
           />
         </div>
-        <b-tabs class="flow-tabs pickers" v-if="geometry">
-          <b-tab-item v-for="conf in filteredConfigurators" :key="conf.name" :label="conf.name">
-            <component :is="conf.component" v-bind="conf.vBind" v-on="conf.vOn"></component>
+        <b-tabs class="flow-tabs pickers" v-if="filteredConfigurators.length" v-model="tab">
+          <b-tab-item v-for="conf in filteredConfigurators" :key="conf.name">
+            <template #header>
+              <span> {{ conf.name }} </span>
+              <b-icon
+                icon="exclamation-circle"
+                type="is-danger"
+                size="is-small"
+                v-if="tabHasErrors(conf.name)"
+              />
+            </template>
+            <component :is="conf.component" :name="conf.name" v-bind="conf.vBind" v-on="conf.vOn" />
           </b-tab-item>
         </b-tabs>
       </template>
@@ -154,28 +163,68 @@ import {
   FlowVisualizerOptions,
   FlowVisualizerType,
   ScenarioDataset,
+  SizeClause,
   VisualizationMode
 } from '@movici-flow-common/types';
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
 import GeometrySelector from '../widgets/GeometrySelector.vue';
 import { VisGroup } from '@movici-flow-common/visualizers';
+import VisibilityConfigurator from './VisibilityConfigurator.vue';
 import ColorConfigurator from './color/ColorConfigurator.vue';
 import SizeConfigurator from './size/SizeConfigurator.vue';
 import PopupConfigurator from './PopupConfigurator.vue';
-import VisibilityConfigurator from './VisibilityConfigurator.vue';
+import ShapeIconConfigurator from './icon/ShapeIconConfigurator.vue';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { propertyString, excludeKey } from '@movici-flow-common/utils';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 
+type Finalizers = {
+  popup: (val: FlowVisualizerOptions['popup']) => FlowVisualizerOptions['popup'] | undefined;
+  size: (val: FlowVisualizerOptions['size']) => FlowVisualizerOptions['size'];
+};
+
+const FINALIZERS: Finalizers = {
+  popup: (val: FlowVisualizerOptions['popup']) => {
+    // if popup clause is provided but user doesn't set labels
+    // for the attributes, we use its propertyString
+    return !val
+      ? undefined
+      : {
+          title: val.title,
+          when: val.when,
+          show: val.show,
+          dynamicTitle: val.dynamicTitle,
+          position: val.when === 'onClick' ? val.position : 'dynamic',
+          items: val.items.map(item => {
+            return {
+              name: item.name || propertyString(item.attribute),
+              attribute: item.attribute
+            };
+          })
+        };
+  },
+  size: (val: FlowVisualizerOptions['size']) => {
+    return !val
+      ? undefined
+      : Object.entries(val).reduce((acc, obj) => {
+          const [key, value] = obj;
+          delete value.minPixels;
+          delete value.maxPixels;
+
+          acc[key as 'byValue' | 'static'] = value;
+
+          return acc;
+        }, {} as SizeClause);
+  }
+};
+
 @Component({
+  name: 'VisualizerConfigurator',
   components: {
-    GeometrySelector,
-    ColorConfigurator,
-    SizeConfigurator,
-    PopupConfigurator
+    GeometrySelector
   }
 })
 export default class VisualizerConfigurator extends Mixins(SummaryListing, ValidationProvider) {
@@ -191,9 +240,10 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   settings: FlowVisualizerOptions | null = null;
   isDirty = false;
   displayName = '';
-
+  tab = 0;
+  tabsWithErrors: Record<number, boolean> = {};
   get entitySummaryProps() {
-    return this.entitySummary?.properties;
+    return this.entitySummary?.properties ?? [];
   }
 
   get composedVisualizer(): Partial<ComposableVisualizerInfo> {
@@ -225,76 +275,85 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
 
   // TODO: Maybe move these to helpers, this component is too big.
   get configurators() {
+    if (!this.entitySummaryProps || !this.validator || !this.geometry) return [];
+
+    const vBindDefaults = () => ({
+        entityProps: this.entitySummaryProps,
+        validator: this.validator,
+        geometry: this.geometry
+      }),
+      vOnDefaults = <T extends keyof FlowVisualizerOptions>(clauseType: T) => {
+        return {
+          input: (clause: FlowVisualizerOptions[T] | null) =>
+            this.updateSettings(clause, clauseType)
+        };
+      };
+
     return [
       {
         name: 'Colours',
         component: ColorConfigurator,
+        vBind: { ...vBindDefaults(), value: this.settings?.color },
+        vOn: { ...vOnDefaults('color') }
+      },
+      {
+        name: 'Shape / Icon',
+        filterGeometry: [FlowVisualizerType.ICONS],
+        component: ShapeIconConfigurator,
         vBind: {
-          entityProps: this.entitySummaryProps,
-          value: this.settings?.color,
-          validator: this.validator,
-          geometry: this.geometry
+          ...vBindDefaults(),
+          iconClause: this.settings?.icon,
+          shapeClause: this.settings?.shape
         },
         vOn: {
-          input: (event: FlowVisualizerOptions['color']) => this.updateSettings(event, 'color')
+          input: ({
+            shape,
+            icon
+          }: {
+            shape: FlowVisualizerOptions['shape'] | null;
+            icon: FlowVisualizerOptions['icon'] | null;
+          }) => {
+            this.updateSettings(shape, 'shape');
+            this.updateSettings(icon, 'icon');
+          }
         }
       },
       {
-        name: 'Radius',
-        filterGeometry: [FlowVisualizerType.POINTS],
-        component: SizeConfigurator,
-        vBind: {
-          entityProps: this.entitySummaryProps,
-          value: this.settings?.size,
-          validator: this.validator
-        },
-        vOn: {
-          input: (event: FlowVisualizerOptions['size'] | null) => this.updateSettings(event, 'size')
-        }
-      },
-      {
-        name: 'Thickness',
+        name: (() => {
+          switch (this.geometry) {
+            case FlowVisualizerType.POINTS:
+              return 'Radius';
+            case FlowVisualizerType.ICONS:
+              return 'Size';
+            case FlowVisualizerType.LINES:
+            case FlowVisualizerType.POLYGONS:
+            case FlowVisualizerType.ARCS:
+              return 'Thickness';
+          }
+        })(),
         filterGeometry: [
+          FlowVisualizerType.POINTS,
+          FlowVisualizerType.ICONS,
           FlowVisualizerType.LINES,
           FlowVisualizerType.POLYGONS,
           FlowVisualizerType.ARCS
         ],
         component: SizeConfigurator,
-        vBind: {
-          entityProps: this.entitySummaryProps,
-          value: this.settings?.size,
-          validator: this.validator
-        },
-        vOn: {
-          input: (event: FlowVisualizerOptions['size'] | null) => this.updateSettings(event, 'size')
-        }
+        vBind: { ...vBindDefaults(), value: this.settings?.size },
+        vOn: { ...vOnDefaults('size') }
       },
+
       {
         name: 'Visibility',
         component: VisibilityConfigurator,
-        vBind: {
-          entityProps: this.entitySummaryProps,
-          value: this.settings?.visibility?.byValue,
-          validator: this.validator
-        },
-        vOn: {
-          input: (event: FlowVisualizerOptions['visibility'] | null) => {
-            this.updateSettings(event, 'visibility');
-          }
-        }
+        vBind: { ...vBindDefaults(), value: this.settings?.visibility?.byValue },
+        vOn: { ...vOnDefaults('visibility') }
       },
       {
         name: 'Popup',
         component: PopupConfigurator,
-        vBind: {
-          entityProps: this.entitySummaryProps,
-          value: this.settings?.popup,
-          validator: this.validator
-        },
-        vOn: {
-          input: (event: FlowVisualizerOptions['popup'] | null) =>
-            this.updateSettings(event, 'popup')
-        }
+        vBind: { ...vBindDefaults(), value: this.settings?.popup },
+        vOn: { ...vOnDefaults('popup') }
       }
     ];
   }
@@ -313,6 +372,8 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
     );
   }
 
+  isEqual = isEqual;
+
   get hasPendingChanges() {
     const value = excludeKey('status', this.value),
       finalized = excludeKey('status', this.finalizedVisualizer);
@@ -320,10 +381,15 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
     return !isEqual(finalized, value);
   }
 
+  tabHasErrors(name: string) {
+    return this.errors[name] ? !!Object.keys(this.errors[name]).length : false;
+  }
+
   @Watch('currentEntityName')
   afterSetCurrentEntityName(currentEntityName: string, oldName: string) {
     if (!this.displayName || this.displayName === oldName) {
       this.validated('displayName', currentEntityName);
+      this.tab = 0;
     }
   }
 
@@ -332,8 +398,11 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
     if (!this.settings) {
       this.settings = { type: geometry };
     } else {
-      this.$set(this.settings, 'type', geometry);
+      this.settings = { ...this.settings, type: geometry };
     }
+
+    this.tab = 0;
+    this.tabsWithErrors = {};
   }
 
   @Watch('currentDataset')
@@ -426,27 +495,18 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
    * Function to finalize clauses
    */
   finalizeSettings(): FlowVisualizerOptions | null {
-    const settings = this.composedVisualizer.settings;
-    if (!settings) return null;
-    const rv = Object.assign({}, settings);
+    if (!this.composedVisualizer.settings) return null;
 
-    // if popup clause is provided but user doesn't set labels
-    // for the attributes, we use its propertyString
-    if (settings.popup) {
-      rv.popup = {
-        title: settings.popup.title,
-        when: settings.popup.when,
-        show: settings.popup.show,
-        dynamicTitle: settings.popup.dynamicTitle,
-        position: settings.popup.when === 'onClick' ? settings.popup.position : 'dynamic',
-        items: settings.popup.items.map(item => {
-          return {
-            name: item.name || propertyString(item.attribute),
-            attribute: item.attribute
-          };
-        })
-      };
+    let rv: FlowVisualizerOptions = Object.assign({}, this.composedVisualizer.settings);
+
+    if (rv.popup) {
+      rv.popup = FINALIZERS.popup(rv.popup);
     }
+
+    if (rv.size) {
+      rv.size = FINALIZERS.size(rv.size);
+    }
+
     return rv;
   }
 
@@ -470,8 +530,8 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
           }
         }
       },
-      onValidate: e => {
-        this.errors = e;
+      onValidate: (moduleErrors, globalErrors) => {
+        this.errors = globalErrors;
       }
     });
   }

@@ -19,22 +19,13 @@
         </b-field>
       </div>
     </div>
-    <div v-if="clauseType">
+    <template v-if="clauseType">
       <ColorStaticConfigurator
         v-if="clauseType === 'static'"
         :value="staticSettings"
         @input="updateSettings($event)"
         size="is-small"
       >
-        <template v-slot:legend-title v-if="showLegend">
-          <b-field :label="$t('flow.visualization.legendTitle')">
-            <b-input
-              :value="legend.title"
-              @input="updateLegend({ title: $event })"
-              size="is-small"
-            ></b-input>
-          </b-field>
-        </template>
       </ColorStaticConfigurator>
       <ColorByValueConfigurator
         v-else-if="clauseType === 'byValue'"
@@ -42,15 +33,6 @@
         :entityProps="entityProps"
         @input="updateSettings($event)"
       >
-        <template v-slot:legend-title v-if="showLegend">
-          <b-field :label="$t('flow.visualization.legendTitle')">
-            <b-input
-              :value="legend.title"
-              @input="updateLegend({ title: $event })"
-              size="is-small"
-            ></b-input>
-          </b-field>
-        </template>
         <template v-slot:legend-labels v-if="showLegend">
           <ColorLegendLabelsConfigurator
             :value="legend"
@@ -77,7 +59,7 @@
           />
         </template>
       </ColorAdvSettingsConfigurator>
-    </div>
+    </template>
   </div>
 </template>
 

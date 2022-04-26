@@ -41,6 +41,15 @@ export default class SizeModule<
     } = sizeClause ?? { units: 'pixels' };
 
     switch (params.type.layerName) {
+      case 'ShapeIconLayer':
+        params.props.getSize = accessor;
+        params.props.sizeUnits = units;
+        if (units == 'meters') {
+          params.props.sizeMaxPixels = maxPixels;
+          params.props.sizeMinPixels = minPixels;
+        }
+        updateTriggers = ['getSize'];
+        break;
       case 'ScatterplotLayer':
         params.props.getRadius = accessor;
         params.props.radiusUnits = units;

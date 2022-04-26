@@ -3,21 +3,51 @@ import {
   ByValueColorClause,
   FlowVisualizerType,
   LegendOptions,
-  StaticColorClause
+  StaticColorClause,
+  StaticIconClause
 } from './flowVisualizers';
 
-export class ColorLegendItem {
+export class LegendItem {
   title: string;
-  label?: string;
-  unit?: string;
+  icon?: IconShapeLegendItem | null;
+  color?: ColorLegendItem | null;
+
+  constructor({ title, icon, color }: LegendItem) {
+    this.title = title;
+    this.icon = icon;
+    this.color = color;
+  }
+}
+
+export type IconShapeLegendItem = {
+  icon?: IconLegendItem;
+  shape?: IconLegendItem;
+};
+
+export class IconLegendItem {
+  iconLegends: [string, string][];
+
+  constructor({ iconLegends }: IconLegendItem) {
+    this.iconLegends = iconLegends;
+  }
+}
+
+export class IconStaticLegendItem extends IconLegendItem {
+  constructor(static_?: StaticIconClause, legend?: LegendOptions) {
+    super({ iconLegends: [] });
+
+    if (static_ && legend) {
+      this.iconLegends = [['', static_.icon]];
+    }
+  }
+}
+
+export class ColorLegendItem {
   visualizerType?: FlowVisualizerType;
   colorType: 'buckets' | 'gradient';
   colorLegends: [string, RGBAColor][];
 
-  constructor({ title, label, visualizerType, colorType, colorLegends, unit }: ColorLegendItem) {
-    this.title = title;
-    this.label = label;
-    this.unit = unit;
+  constructor({ visualizerType, colorType, colorLegends }: ColorLegendItem) {
     this.visualizerType = visualizerType;
     this.colorType = colorType;
     this.colorLegends = colorLegends ?? [];
@@ -41,9 +71,7 @@ export class ColorStaticLegendItem extends ColorLegendItem {
     super(config);
 
     if (static_ && legend) {
-      this.colorLegends = [[legend.title || 'Topology', static_.color]];
+      this.colorLegends = [['', static_.color]];
     }
   }
 }
-
-export type LegendItem = ColorByValueLegendItem | ColorStaticLegendItem;

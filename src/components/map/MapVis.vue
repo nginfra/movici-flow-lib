@@ -161,7 +161,6 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
         return v.getLayer(this.timestamp);
       })
       .filter(l => l !== null) as unknown as Layer<D>[];
-
     this.setLayers(layers);
   }
 

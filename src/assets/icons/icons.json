@@ -1,0 +1,254 @@
+{
+  "archway": {
+    "x": 10,
+    "y": 10,
+    "width": 576,
+    "height": 512
+  },
+  "biohazard": {
+    "x": 670,
+    "y": 10,
+    "width": 576,
+    "height": 512
+  },
+  "bolt": {
+    "x": 1330,
+    "y": 10,
+    "width": 320,
+    "height": 512
+  },
+  "bomb": {
+    "x": 1990,
+    "y": 10,
+    "width": 512,
+    "height": 512
+  },
+  "broadcast-tower": {
+    "x": 2650,
+    "y": 10,
+    "width": 640,
+    "height": 512
+  },
+  "building": {
+    "x": 3310,
+    "y": 10,
+    "width": 448,
+    "height": 512
+  },
+  "church": {
+    "x": 3970,
+    "y": 10,
+    "width": 640,
+    "height": 512
+  },
+  "city": {
+    "x": 10,
+    "y": 670,
+    "width": 640,
+    "height": 512
+  },
+  "clinic-medical": {
+    "x": 670,
+    "y": 670,
+    "width": 576,
+    "height": 512
+  },
+  "digging": {
+    "x": 1330,
+    "y": 670,
+    "width": 576,
+    "height": 512
+  },
+  "exclamation": {
+    "x": 1990,
+    "y": 670,
+    "width": 192,
+    "height": 512
+  },
+  "farm": {
+    "x": 2650,
+    "y": 670,
+    "width": 576,
+    "height": 512
+  },
+  "fire-extinguisher": {
+    "x": 3310,
+    "y": 670,
+    "width": 448,
+    "height": 512
+  },
+  "fire": {
+    "x": 3970,
+    "y": 670,
+    "width": 384,
+    "height": 512
+  },
+  "futbol": {
+    "x": 10,
+    "y": 1330,
+    "width": 512,
+    "height": 512
+  },
+  "glasses": {
+    "x": 670,
+    "y": 1330,
+    "width": 576,
+    "height": 512
+  },
+  "hospital-symbol": {
+    "x": 1330,
+    "y": 1330,
+    "width": 512,
+    "height": 512
+  },
+  "hospital": {
+    "x": 1990,
+    "y": 1330,
+    "width": 448,
+    "height": 512
+  },
+  "hotel": {
+    "x": 2650,
+    "y": 1330,
+    "width": 576,
+    "height": 512
+  },
+  "house-damage": {
+    "x": 3310,
+    "y": 1330,
+    "width": 576,
+    "height": 512
+  },
+  "house-flood": {
+    "x": 3970,
+    "y": 1330,
+    "width": 576,
+    "height": 512
+  },
+  "house": {
+    "x": 10,
+    "y": 1990,
+    "width": 576,
+    "height": 512
+  },
+  "industry": {
+    "x": 670,
+    "y": 1990,
+    "width": 512,
+    "height": 512
+  },
+  "medkit": {
+    "x": 1330,
+    "y": 1990,
+    "width": 512,
+    "height": 512
+  },
+  "monument": {
+    "x": 1990,
+    "y": 1990,
+    "width": 384,
+    "height": 512
+  },
+  "mosque": {
+    "x": 2650,
+    "y": 1990,
+    "width": 640,
+    "height": 512
+  },
+  "music": {
+    "x": 3310,
+    "y": 1990,
+    "width": 512,
+    "height": 512
+  },
+  "police-box": {
+    "x": 3970,
+    "y": 1990,
+    "width": 384,
+    "height": 512
+  },
+  "question": {
+    "x": 10,
+    "y": 2650,
+    "width": 384,
+    "height": 512
+  },
+  "radiation": {
+    "x": 670,
+    "y": 2650,
+    "width": 496,
+    "height": 512
+  },
+  "school": {
+    "x": 1330,
+    "y": 2650,
+    "width": 640,
+    "height": 512
+  },
+  "seedling": {
+    "x": 1990,
+    "y": 2650,
+    "width": 512,
+    "height": 512
+  },
+  "store": {
+    "x": 2650,
+    "y": 2650,
+    "width": 616,
+    "height": 512
+  },
+  "subway": {
+    "x": 3310,
+    "y": 2650,
+    "width": 448,
+    "height": 512
+  },
+  "synagogue": {
+    "x": 3970,
+    "y": 2650,
+    "width": 640,
+    "height": 512
+  },
+  "tombstone": {
+    "x": 10,
+    "y": 3310,
+    "width": 512,
+    "height": 512
+  },
+  "tooth": {
+    "x": 670,
+    "y": 3310,
+    "width": 448,
+    "height": 512
+  },
+  "train": {
+    "x": 1330,
+    "y": 3310,
+    "width": 448,
+    "height": 512
+  },
+  "university": {
+    "x": 1990,
+    "y": 3310,
+    "width": 512,
+    "height": 512
+  },
+  "water": {
+    "x": 2650,
+    "y": 3310,
+    "width": 576,
+    "height": 512
+  },
+  "wheat": {
+    "x": 3310,
+    "y": 3310,
+    "width": 512,
+    "height": 512
+  },
+  "wind-turbine": {
+    "x": 3970,
+    "y": 3310,
+    "width": 514,
+    "height": 512
+  }
+}

@@ -118,7 +118,12 @@ export default class FlowLayerPicker extends Vue {
         confirmText: '' + this.$t('misc.yes'),
         type: 'is-primary',
         onConfirm: () => {
-          this.currentIndex = index;
+          this.vConfigOpen = false;
+          // this makes sure a fresh componenent is built without leftovers from previous values
+          this.$nextTick(() => {
+            this.currentIndex = index;
+            this.vConfigOpen = true;
+          });
         }
       });
     }

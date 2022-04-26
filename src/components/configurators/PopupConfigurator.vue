@@ -170,8 +170,8 @@ import FormValidator from '@movici-flow-common/utils/FormValidator';
 export default class PopupConfigurator extends Mixins(ValidationProvider) {
   @Prop({ default: () => {} }) value!: PopupClause;
   @Prop({ default: () => [] }) entityProps!: PropertyType[];
-  @Prop()
-  declare validator: FormValidator;
+  @Prop([String]) readonly name!: string;
+  @Prop() declare validator: FormValidator;
   items: PopupItem[] = [];
   showPopup = false;
   drag = false; // start your engines...
@@ -234,13 +234,13 @@ export default class PopupConfigurator extends Mixins(ValidationProvider) {
   addItem(prop: PropertyType) {
     this.items = this.items.concat({ name: '', attribute: prop });
     this.updateValue({ items: this.items });
-    this.validator.touch('popup-items');
+    this.validator.touch('popup-items', this.name);
   }
 
   removeItem(idx: number) {
     this.items = this.items.filter((item, x) => idx !== x);
     this.updateValue({ items: this.items });
-    this.validator.touch('popup-items');
+    this.validator.touch('popup-items', this.name);
   }
 
   updateName(idx: number, name: string) {
@@ -249,14 +249,14 @@ export default class PopupConfigurator extends Mixins(ValidationProvider) {
   }
 
   updateValue(props: Partial<PopupClause>) {
-    Object.keys(props).forEach(key => this.validator.touch('popup-' + key));
+    Object.keys(props).forEach(key => this.validator.touch('popup-' + key, this.name));
     const clause = Object.assign({}, this.currentClause, props);
     this.$emit('input', clause);
   }
 
   setupValidator() {
     this.validator.addModule({
-      name: 'popup',
+      name: this.name,
       validators: {
         'popup-items': () => {
           if (!this.items.length && this.showPopup) {

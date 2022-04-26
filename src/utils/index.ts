@@ -17,6 +17,19 @@ export function hasOwnProperty<O, K extends PropertyKey>(
   return Object.prototype.hasOwnProperty.call(obj, property);
 }
 
+export function excludeKeys<T, K extends (keyof T)[]>(obj: T, keys: K): Omit<T, K[number]> {
+  const ret = {} as {
+    [K in keyof typeof obj]: typeof obj[K];
+  };
+  let key: keyof typeof obj;
+  for (key in obj) {
+    if (!keys.includes(key)) {
+      ret[key] = obj[key];
+    }
+  }
+  return ret;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function excludeKey<T>(k: keyof T, { [k]: _, ...o }: T) {
   return o;

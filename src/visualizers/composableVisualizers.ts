@@ -18,12 +18,19 @@ import {
 } from '../types';
 import { parsePropertyString, propertyString } from '..//utils';
 import { ArcLayer, PathLayer, PolygonLayer, ScatterplotLayer } from '@deck.gl/layers';
+import ShapeIconLayer from './layers/ShapeIconLayer';
 import { BaseVisualizer, VisualizerContext } from './visualizers';
 import { LineTopologyGetter, PointTopologyGetter, PolygonTopologyGetter } from './geometry';
-import { ColorModule, PopupModule, VisualizerModule } from './visualizerModules';
-import SizeModule from './visualizerModules/SizeModule';
-import VisibilityModule from './visualizerModules/VisibilityModule';
-import RenderOrderModule from './visualizerModules/RenderOrderModule';
+import {
+  ColorModule,
+  PopupModule,
+  ShapeModule,
+  VisualizerModule,
+  SizeModule,
+  VisibilityModule,
+  IconModule,
+  RenderOrderModule
+} from './visualizerModules';
 import { isError } from 'lodash';
 
 abstract class ComposableVisualizer<
@@ -246,6 +253,39 @@ export class ComposablePointVisualizer extends ComposableVisualizer<
   }
 }
 
+export class ComposableIconVisualizer extends ComposableVisualizer<
+  PointGeometryData,
+  PointCoordinate,
+  TopologyLayerData<PointCoordinate>,
+  ShapeIconLayer<TopologyLayerData<PointCoordinate>>
+> {
+  getModules() {
+    return this.info instanceof ComposableVisualizerInfo
+      ? getCommonModules<PointCoordinate, TopologyLayerData<PointCoordinate>>(this.info)
+      : [];
+  }
+
+  get topologyGetter(): PointTopologyGetter {
+    return new PointTopologyGetter(this.datasetStore, this.info.entityGroup);
+  }
+
+  getDefaultParams(): LayerParams<TopologyLayerData<PointCoordinate>, PointCoordinate> {
+    return {
+      type: ShapeIconLayer as LayerConstructor<TopologyLayerData<PointCoordinate>>,
+      props: {
+        id: this.orderedId,
+        data: this.topology ?? [],
+        visible: this.info.visible,
+        getPosition: (d: TopologyLayerData<PointCoordinate>) => d.coordinates,
+        parameters: {
+          depthTest: false
+        },
+        updateTriggers: {}
+      }
+    };
+  }
+}
+
 export class ComposableLineVisualizer extends ComposableVisualizer<
   LineGeometryData,
   LineCoordinate,
@@ -344,6 +384,8 @@ function getCommonModules<Coord extends Coordinate, LData extends TopologyLayerD
     new PopupModule<Coord, LData>({ info }),
     new SizeModule<Coord, LData>({ info }),
     new VisibilityModule<Coord, LData>({ info }),
+    new IconModule<Coord, LData>({ info }),
+    new ShapeModule<Coord, LData>({ info }),
     new RenderOrderModule<Coord, LData>({ info })
   ];
 }

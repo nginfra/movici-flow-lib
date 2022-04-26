@@ -142,6 +142,18 @@
           "advColours": "Geavanceerde kleuren"
         }
       },
+      "iconConfig": {
+        "shape": "Vorm",
+        "icon": "Icoon",
+        "selectShape": "Selecteer een Vorm",
+        "selectIcon": "Selecteer een Icoon",
+        "far": "Normaal",
+        "fas": "Gevuld"
+      },
+      "visibilityConfig" : {
+        "value": "Waarde",
+        "visible": "Zichtbaar"
+      },
       "legendsConfig": {
         "reset": "Standaardwaardes invullen"
       },

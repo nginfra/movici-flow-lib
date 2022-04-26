@@ -37,6 +37,30 @@ export default class ColorModule<
       params.props.updateTriggers = {};
     }
     const accessor = this.updateAccessor(changed, visualizer);
+    let updateTriggers: string[];
+    switch (params.type.layerName) {
+      case 'ScatterplotLayer':
+        params.props.getFillColor = accessor;
+        updateTriggers = ['getFillColor'];
+        break;
+      case 'PolygonLayer':
+        params.props.getLineColor = accessor;
+        params.props.getFillColor = this.setOpacity(accessor, 80);
+        updateTriggers = ['getLineColor', 'getFillColor'];
+        break;
+      case 'ArcLayer':
+        params.props.getSourceColor = accessor;
+        params.props.getTargetColor = accessor;
+        updateTriggers = ['getSourceColor', 'getTargetColor'];
+        break;
+      case 'ShapeIconLayer':
+      default:
+        params.props.getColor = accessor;
+        updateTriggers = ['getColor'];
+    }
+    for (const trigger of updateTriggers) {
+      params.props.updateTriggers[trigger] = [this.currentSettings];
+    }
     return this.assignAccessor(params, accessor);
   }
 

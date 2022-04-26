@@ -11,10 +11,12 @@
       </div>
     </div>
     <div v-if="clauseType">
+      <!-- todo: add a radius / diameter in points option and account for it on the size module -->
       <SizeStaticConfigurator
         v-if="clauseType === 'static'"
         :value="currentClause"
         :validator="validator"
+        :geometry="geometry"
         @input="updateSettings($event)"
       >
       </SizeStaticConfigurator>
@@ -22,6 +24,7 @@
         v-else-if="clauseType === 'byValue'"
         :value="currentClause"
         :entityProps="entityProps"
+        :geometry="geometry"
         @input="updateSettings($event)"
       >
       </SizeByValueConfigurator>
@@ -34,7 +37,8 @@ import {
   ByValueSizeClause,
   SizeClause,
   StaticSizeClause,
-  PropertySummary
+  PropertySummary,
+  FlowVisualizerType
 } from '@movici-flow-common/types';
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import SizeStaticConfigurator from './SizeStaticConfigurator.vue';
@@ -50,8 +54,8 @@ import FormValidator from '@movici-flow-common/utils/FormValidator';
 export default class SizeConfigurator extends Vue {
   @Prop({ default: () => ({}) }) readonly value!: SizeClause;
   @Prop({ default: () => [] }) readonly entityProps!: PropertySummary[];
-  @Prop() validator!: FormValidator;
-
+  @Prop([String]) readonly geometry!: FlowVisualizerType;
+  @Prop([Object]) validator!: FormValidator;
   currentClause: SizeClause = {};
   clauseType: 'static' | 'byValue' | null = null;
 
