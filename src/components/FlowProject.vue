@@ -161,6 +161,7 @@ export default class FlowProject extends Vue {
 
       try {
         await flowStore.setupFlowStore({ config: { currentProjectName: this.currentProjectName } });
+
         flowUIStore.setLoading({ value: false });
       } catch (error) {
         if (error instanceof MoviciError) {

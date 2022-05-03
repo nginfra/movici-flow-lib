@@ -78,7 +78,6 @@ class FlowVisualizationStore extends VuexModule {
       throw new ViewInvalid();
     }
 
-    this.updateCurrentView(view);
     return view;
   }
 
@@ -90,6 +89,7 @@ class FlowVisualizationStore extends VuexModule {
   @Action({ rawError: true })
   async resetFlowStore() {
     this.SET_TIMESTAMP(0);
+    this.UPDATE_VIEW(null);
     this.UPDATE_VISUALIZERS([]);
   }
 

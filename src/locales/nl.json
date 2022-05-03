@@ -172,6 +172,7 @@
         "selectView": "View selecteren",
         "unsavedChanges": "<b>Wijzigingen zijn niet opgeslagen!</b> <br>Weet je zeker dat je de Configurator wilt sluiten?",
         "unsavedView": "<b>Wijzigingen zijn niet opgeslagen!</b> <br>Weet je zeker dat je de Visualisatie wilt verlaten?",
+        "leaveView": "Weet je zeker dat je de Visualisatie wilt verlaten?? <br>Je zult de View opnieuw moeten laden.",
         "viewCreateSuccess": "View succesvol opgeslagen",
         "viewDeleteSuccess": "View succesvol verwijderd",
         "viewUpdateSuccess": "View succesvol ge-updatet"

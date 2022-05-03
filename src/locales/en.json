@@ -172,6 +172,7 @@
         "selectView": "Select a View",
         "unsavedChanges": "<b>You have unsaved changes!</b> <br>Do you want to close the Configurator?",
         "unsavedView": "<b>You have an unsaved changes!</b> <br>Do you want to leave the Visualisation?",
+        "leaveView": "Do you want to leave the Visualisation? <br>You will need to reload the view.",
         "viewCreateSuccess": "View successfully saved",
         "viewDeleteSuccess": "View successfully deleted",
         "viewUpdateSuccess": "View successfully updated"

@@ -11,7 +11,7 @@ export default class Scale extends Vue {
 
   mounted() {
     this.control = new mapboxgl.ScaleControl({ maxWidth: 80 });
-    this.map.addControl(this.control);
+    this.map?.addControl(this.control);
   }
 
   beforeDestroy() {

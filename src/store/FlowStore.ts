@@ -28,6 +28,7 @@ import {
   SummaryEntityGroupNotFound
 } from '@movici-flow-common/errors';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
+import { flowVisualizationStore } from './store-accessor';
 
 @Module({
   name: 'flow',
@@ -150,6 +151,8 @@ export default class FlowStore extends VuexModule {
       scenario: true
     });
 
+    this.setCurrentFlowScenario(null);
+
     this.SET_CURRENT_PROJECT(project);
   }
 
@@ -169,9 +172,13 @@ export default class FlowStore extends VuexModule {
   }
 
   @Action({ rawError: true })
-  async setCurrentFlowScenario(scenario: Scenario) {
+  async setCurrentFlowScenario(scenario: Scenario | null) {
+    if (scenario?.uuid === this.scenario?.uuid) return;
+
     this.SET_CURRENT_SCENARIO(scenario);
     this.flowUIStore_?.enableSection({ visualization: !!scenario, export: !!scenario });
+
+    flowVisualizationStore.resetFlowStore();
   }
 
   @Action({ rawError: true })
@@ -315,7 +322,6 @@ export default class FlowStore extends VuexModule {
       throw new ViewNotInScenario();
     }
 
-    this.setCurrentFlowScenario(scenario);
     if (this.hasProjectsCapabilities) {
       await this.getProjects();
 
@@ -327,10 +333,14 @@ export default class FlowStore extends VuexModule {
       this.setCurrentFlowProject(project);
     }
 
+    this.setCurrentFlowScenario(scenario);
+
     this.setupFlowStore({
       config,
       reset: false
     });
+
+    flowVisualizationStore.updateCurrentView(view);
   }
 
   /**

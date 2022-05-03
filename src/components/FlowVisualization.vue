@@ -151,12 +151,22 @@ import { isError } from 'lodash';
   },
   beforeRouteLeave(to: unknown, from: unknown, next: () => void) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((this as any).isCurrentViewDirty) {
+    if ((this as FlowVisualization).isCurrentViewDirty) {
       this.$buefy.dialog.confirm({
         message: '' + this.$t('flow.visualization.dialogs.unsavedView'),
         cancelText: '' + this.$t('actions.cancel'),
         confirmText: '' + this.$t('actions.leave'),
         type: 'is-danger',
+        onConfirm: () => {
+          next();
+        }
+      });
+    } else if ((this as FlowVisualization).visualizers.length) {
+      this.$buefy.dialog.confirm({
+        message: '' + this.$t('flow.visualization.dialogs.leaveView'),
+        cancelText: '' + this.$t('actions.cancel'),
+        confirmText: '' + this.$t('actions.leave'),
+        type: 'is-warning',
         onConfirm: () => {
           next();
         }
