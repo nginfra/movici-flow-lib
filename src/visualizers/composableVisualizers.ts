@@ -179,29 +179,37 @@ abstract class ComposableVisualizer<
     this.forceUpdateTriggerCounter++;
   }
 
-  getLayer(timestamp: number, forceRender = false) {
+  getLayer(timestamp: number) {
     if (!this.layerParams) {
       return null;
     }
-
+    let layerParams;
     if (this.info.visible) {
       this.updateTimestamp(timestamp);
+
+      layerParams = this.appendUpdateTriggers({
+        params: this.layerParams,
+        value: timestamp,
+        copy: true
+      });
+      this.appendUpdateTriggers({ params: layerParams, value: this.forceUpdateTriggerCounter });
+    } else {
+      layerParams = this.removeUpdateTriggers({ params: this.layerParams, copy: true });
     }
-
-    forceRender && this.forceRender();
-
-    const layerParams = this.appendUpdateTriggers(
-      this.layerParams,
-      this.info.visible ? timestamp : null,
-      true
-    );
-    this.appendUpdateTriggers(layerParams, this.forceUpdateTriggerCounter);
 
     layerParams.props.id += ':' + this.forceRenderCounter;
     return new layerParams.type(layerParams.props) as unknown as Layer_;
   }
 
-  appendUpdateTriggers(params: LayerParams<LData, Coord>, value: unknown, copy = false) {
+  appendUpdateTriggers({
+    params,
+    value,
+    copy = false
+  }: {
+    params: LayerParams<LData, Coord>;
+    value: unknown;
+    copy?: boolean;
+  }) {
     if (copy) {
       params = {
         type: params.type,
@@ -215,6 +223,24 @@ abstract class ComposableVisualizer<
       },
       {} as Record<string, unknown>
     );
+    return params;
+  }
+  removeUpdateTriggers({
+    params,
+    copy = false
+  }: {
+    params: LayerParams<LData, Coord>;
+    copy?: boolean;
+  }) {
+    if (copy) {
+      params = {
+        type: params.type,
+        props: { ...params.props }
+      };
+    }
+    if (params.props.updateTriggers) {
+      delete params.props.updateTriggers;
+    }
     return params;
   }
 }
