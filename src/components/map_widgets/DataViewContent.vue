@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="data-content">
     <div class="header align-items-center is-flex mb-1">
       <label class="label is-size-6 is-flex-grow-1 mb-0" :title="titleTooltip">
         <template v-if="dynamicTitle">
@@ -101,7 +101,9 @@ export default class DataViewContent extends Vue {
             rv = Number(base).toFixed(3) + 'e' + exp;
           } else {
             // float numbers show 3 decimals tops
-            rv = rv.toFixed(3);
+            // check if decimals are non 0
+            const decimals = countDecimals(rv, 3);
+            rv = rv.toFixed(decimals);
           }
         }
         break;
@@ -113,19 +115,42 @@ export default class DataViewContent extends Vue {
     return rv;
   }
 }
+
+function countDecimals(value: number, max?: number) {
+  if (Math.floor(value) === value) return 0;
+  let rv = value.toString().split('.')[1].length || 0;
+  if (max !== undefined) {
+    rv = Math.min(rv, max);
+  }
+  return rv;
+}
 </script>
 
 <style scoped lang="scss">
-.attributes {
-  color: $black;
-  width: 100%;
-  white-space: nowrap;
-  .name {
-    padding-right: 0.75em;
+.data-content {
+  max-width: 500px;
+
+  .header {
+    min-height: 1.5rem;
+    .label {
+      margin: 0;
+      max-width: 450px;
+    }
   }
-  .value {
-    min-width: 50px;
-    text-align: right;
+  .attributes {
+    color: $black;
+    width: 100%;
+    .name {
+      padding-right: 0.75em;
+      max-width: 450px;
+    }
+    .value {
+      min-width: 50px;
+      text-align: right;
+    }
+  }
+  .close {
+    margin: -0.25rem -0.25rem 0 0;
   }
 }
 </style>

@@ -11,15 +11,15 @@
       v-for="layer in layers"
       :key="layer.id"
       :value="layer"
-      :headerButtons="[]"
+      :headerButtons="['errors']"
       tooltipActive
     >
-      <template #header>
+      <template #header="{ toggleSummary, isOpen }">
         <label class="label is-flex-grow-1 pl-1 pr-3" @click="$emit('selectLayer', layer)">
           <span class="is-block is-size-6-half text-ellipsis">{{ layer.name }}</span>
         </label>
-        <span class="export mr-1 has-text-primary" @click="$emit('selectLayer', layer)">
-          <b-icon size="is-small" pack="fas" icon="info-circle"></b-icon>
+        <span class="export mr-1" @click="toggleSummary">
+          <b-icon size="is-small" pack="fas" :icon="isOpen ? 'angle-up' : 'angle-down'"></b-icon>
         </span>
       </template>
     </VisualizerElement>

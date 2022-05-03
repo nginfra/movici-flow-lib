@@ -273,24 +273,4 @@ export default class DynamicDataView extends Vue {
   padding: 0.75rem;
   min-width: 250px;
 }
-
-.header {
-  min-height: 1.5rem;
-
-  .label {
-    margin: 0;
-  }
-}
-
-.attributes {
-  color: $black;
-  .value {
-    min-width: 50px;
-    text-align: right;
-  }
-}
-
-.close {
-  margin: -0.25rem -0.25rem 0 0;
-}
 </style>

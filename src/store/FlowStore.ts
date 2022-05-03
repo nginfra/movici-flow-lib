@@ -28,6 +28,7 @@ import {
   SummaryEntityGroupNotFound
 } from '@movici-flow-common/errors';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
+import { sortByKeys } from '@movici-flow-common/utils';
 import { flowVisualizationStore } from './store-accessor';
 
 @Module({
@@ -168,7 +169,11 @@ export default class FlowStore extends VuexModule {
 
   @Action({ rawError: true })
   async getDatasets(): Promise<Dataset[] | null> {
-    return (await this.backend?.dataset.list(this.project?.uuid)) ?? null;
+    return (
+      (await this.backend?.dataset.list(this.project?.uuid))?.sort(
+        sortByKeys(['+display_name', '+name'])
+      ) ?? null
+    );
   }
 
   @Action({ rawError: true })

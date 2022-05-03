@@ -16,7 +16,7 @@
             @input="validated('currentDatasetName', $event)"
           >
             <option v-for="dataset in datasets" :value="dataset.name" :key="dataset.name">
-              {{ dataset.display_name }}
+              {{ datasetDisplayName(dataset) }}
             </option>
           </b-select>
         </b-field>
@@ -108,6 +108,14 @@ export default class ExportForm extends Mixins(SummaryListing, ValidationProvide
 
   get currentScenario() {
     return flowStore.scenario;
+  }
+
+  datasetDisplayName(dataset: Dataset) {
+    if (dataset.display_name) {
+      return `${dataset.display_name} (${dataset.name})`;
+    } else {
+      return dataset.name;
+    }
   }
 
   @Watch('validator', { immediate: true })

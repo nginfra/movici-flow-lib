@@ -13,7 +13,7 @@
         v-for="(layer, idx) in value"
         :key="layer.id"
         :value="layer"
-        :header-buttons="['grip', 'label', 'visibility', 'more']"
+        :header-buttons="['grip', 'label', 'visibility', 'more', 'errors']"
         :action-buttons="['edit', 'delete', 'export']"
         @input="updateItem(idx, $event)"
         @delete="deleteItem(idx)"
