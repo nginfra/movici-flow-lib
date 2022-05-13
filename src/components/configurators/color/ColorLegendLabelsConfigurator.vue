@@ -85,12 +85,7 @@ export default class ColorLegendLabelsConfigurator extends Vue {
   }
 
   emitLabels(labels: string[]) {
-    const legend = { labels } as LegendOptions;
-    if (this.value?.title) {
-      legend.title = this.value?.title || '';
-    }
-
-    this.$emit('input', legend);
+    this.$emit('input', { labels } as LegendOptions);
   }
 
   @Watch('nItems', { immediate: true })

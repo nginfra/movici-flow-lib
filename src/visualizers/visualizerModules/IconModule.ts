@@ -49,7 +49,6 @@ export default class IconModule<
     for (const trigger of updateTriggers) {
       params.props.updateTriggers[trigger] = [this.currentSettings];
     }
-
     return params;
   }
 

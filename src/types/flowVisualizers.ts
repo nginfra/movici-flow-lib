@@ -89,10 +89,9 @@ export interface IconClause {
 export interface StaticIconClause {
   icon: string;
 }
-
 export interface ByValueIconClause {
   attribute: PropertySummary | null;
-  icons: [number, string][];
+  icons: [string, string][];
 }
 
 export interface SizeClause {
@@ -108,7 +107,7 @@ export interface StaticSizeClause {
   maxPixels?: number;
 }
 export interface ByValueSizeClause {
-  attribute: PropertyType | null;
+  attribute: PropertySummary | null;
   sizes: [number, number][]; // [value, sizeInUnits][]
   units: SizeUnits;
   minPixels?: number;
@@ -132,7 +131,7 @@ export interface PopupItem {
 export type VisibilityMapping = [boolean | number, boolean][];
 
 export interface ByValueVisibilityClause {
-  attribute: PropertyType;
+  attribute: PropertySummary;
   mapping: VisibilityMapping;
 }
 export interface VisibilityClause {

@@ -7,6 +7,14 @@ interface FormValidatorConfig {
   modules?: ValidationModule[];
 }
 
+export function required(value: unknown, resource = 'Input') {
+  if (value === undefined || value === null) return `${resource} is required.`;
+}
+
+export function isPositive(value: unknown, resource = 'Input') {
+  if (value && typeof value === 'number' && value < 0) return `${resource} must be at least 0.`;
+}
+
 export class ValidationError extends Error {}
 type ValidatorCallback = (e: ErrorDict, globals: GlobalErrorDict) => void;
 
@@ -76,10 +84,12 @@ export default class FormValidator {
     delete this.modules[identifier];
 
     const errors = this.errors[identifier];
-    for (const key of Object.keys(module.validators)) {
-      delete errors[key];
+    if (errors) {
+      for (const key of Object.keys(module.validators)) {
+        delete errors[key];
+      }
+      delete this.errors[identifier];
     }
-    delete this.errors[identifier];
     this.invokeCallbacks();
   }
 

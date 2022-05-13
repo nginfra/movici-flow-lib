@@ -15,19 +15,20 @@
       <SizeStaticConfigurator
         v-if="clauseType === 'static'"
         :value="currentClause"
+        :name="name"
         :validator="validator"
         :geometry="geometry"
         @input="updateSettings($event)"
-      >
-      </SizeStaticConfigurator>
+      />
       <SizeByValueConfigurator
         v-else-if="clauseType === 'byValue'"
         :value="currentClause"
+        :name="name"
+        :validator="validator"
         :entityProps="entityProps"
         :geometry="geometry"
         @input="updateSettings($event)"
-      >
-      </SizeByValueConfigurator>
+      />
     </div>
   </div>
 </template>
@@ -40,10 +41,12 @@ import {
   PropertySummary,
   FlowVisualizerType
 } from '@movici-flow-common/types';
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import SizeStaticConfigurator from './SizeStaticConfigurator.vue';
 import SizeByValueConfigurator from './SizeByValueConfigurator.vue';
+import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
+import isEqual from 'lodash/isEqual';
 
 @Component({
   components: {
@@ -51,16 +54,20 @@ import FormValidator from '@movici-flow-common/utils/FormValidator';
     SizeByValueConfigurator
   }
 })
-export default class SizeConfigurator extends Vue {
-  @Prop({ default: () => ({}) }) readonly value!: SizeClause;
-  @Prop({ default: () => [] }) readonly entityProps!: PropertySummary[];
+export default class SizeConfigurator extends Mixins(ValidationProvider) {
+  @Prop([Object]) readonly value!: SizeClause;
+  @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
   @Prop([String]) readonly geometry!: FlowVisualizerType;
-  @Prop([Object]) validator!: FormValidator;
+  @Prop([Object]) declare validator: FormValidator;
   currentClause: SizeClause = {};
   clauseType: 'static' | 'byValue' | null = null;
 
   get staticSettings(): Partial<StaticSizeClause> {
     return this.currentClause.static ?? {};
+  }
+
+  get byValueSettings(): Partial<ByValueSizeClause> {
+    return this.currentClause.byValue ?? {};
   }
 
   updateSettings(updatedClause: { static?: StaticSizeClause; byValue?: ByValueSizeClause }) {
@@ -80,6 +87,15 @@ export default class SizeConfigurator extends Vue {
     this.$emit('input', toEmit);
   }
 
+  @Watch('entityProps')
+  afterEntityProps(value: PropertySummary[], old?: PropertySummary[]) {
+    if (!isEqual(value, old)) {
+      delete this.currentClause.static;
+      delete this.currentClause.byValue;
+      this.clauseType = 'static';
+    }
+  }
+
   // Saves the old configuration if the user is changing between the kinds
   @Watch('clauseType')
   kindUpdated() {
@@ -88,10 +104,10 @@ export default class SizeConfigurator extends Vue {
   }
 
   @Watch('value', { immediate: true })
-  updateLocal() {
-    if (this.value) {
-      this.clauseType = this.value.byValue ? 'byValue' : 'static';
-      this.currentClause = Object.assign({}, this.currentClause, this.value);
+  updateLocal(value: SizeClause) {
+    if (value) {
+      this.clauseType = value.byValue ? 'byValue' : 'static';
+      this.currentClause = Object.assign({}, this.currentClause, value);
     } else {
       this.clauseType = 'static';
     }

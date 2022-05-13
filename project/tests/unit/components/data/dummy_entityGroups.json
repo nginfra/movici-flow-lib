@@ -1,0 +1,35 @@
+[
+  {
+    "name": "electrical_node_entities",
+    "count": 120,
+    "properties": [
+        {
+            "name": "electrical.grounded",
+            "component": "",
+            "data_type": "BOOLEAN",
+            "description": "Indicate if the node is short circuited (grounded)",
+            "unit": "",
+            "min_val": 0,
+            "max_val": 1
+        },
+        {
+            "name": "electrical.u",
+            "component": "",
+            "data_type": "DOUBLE",
+            "description": "Voltage result in value",
+            "unit": "volt",
+            "min_val": 0,
+            "max_val": 150000
+        },
+        {
+            "name": "urban.households",
+            "component": "",
+            "data_type": "INT",
+            "description": "Number of households aggregated per substation",
+            "unit": "",
+            "min_val": 0,
+            "max_val": 1000
+        }
+    ]
+  }
+]

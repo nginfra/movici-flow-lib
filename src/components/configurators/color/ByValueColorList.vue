@@ -15,7 +15,7 @@
             <label class="label mr-1 is-flex-grow-1">{{
               $t('flow.visualization.colorConfig.color')
             }}</label>
-            <MovActionMenu :value="actions" @invertColors="invertColors" />
+            <MovActionMenu :value="colorActions" @invertColors="invertColors" />
           </span>
           <span class="is-flex">
             <div class="gradient-container is-flex-shrink-1" v-if="isMode('gradient')">
@@ -39,7 +39,10 @@
       </div>
     </div>
     <div class="is-flex-grow-1 mapped-values">
-      <label class="label">{{ valuesLabel }}</label>
+      <span class="is-flex">
+        <label class="label mr-1 is-flex-grow-1">{{ valuesLabel }}</label>
+        <MovActionMenu :value="valueActions" @resetValues="$emit('resetValues')" />
+      </span>
       <template v-if="isMode('boolean')">
         <b-field v-for="(val, index) in mappingValues" class="is-align-items-center" :key="index">
           <b-input
@@ -124,12 +127,21 @@ export default class ByValueColorList extends Vue {
 
   selectedIndex = -1;
   showColorPicker = false;
-  actions: ActionMenuItem[] = [
+  colorActions: ActionMenuItem[] = [
     {
       label: '' + this.$t('flow.visualization.colorConfig.invertColors'),
       icon: 'sort',
       iconPack: 'far',
       event: 'invertColors'
+    }
+  ];
+
+  valueActions: ActionMenuItem[] = [
+    {
+      label: '' + this.$t('flow.visualization.colorConfig.resetValues'),
+      icon: 'undo',
+      iconPack: 'far',
+      event: 'resetValues'
     }
   ];
 

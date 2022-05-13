@@ -94,30 +94,28 @@
           </b-field>
         </div>
       </div>
-      <template>
-        <div class="geometry-settings mb-2">
-          <GeometrySelector
-            v-model="geometry"
-            :properties="entitySummaryProps"
-            :label="$t('flow.visualization.displayAs')"
-            showAs="button"
-          />
-        </div>
-        <b-tabs class="flow-tabs pickers" v-if="filteredConfigurators.length" v-model="tab">
-          <b-tab-item v-for="conf in filteredConfigurators" :key="conf.name">
-            <template #header>
-              <span> {{ conf.name }} </span>
-              <b-icon
-                icon="exclamation-circle"
-                type="is-danger"
-                size="is-small"
-                v-if="tabHasErrors(conf.name)"
-              />
-            </template>
-            <component :is="conf.component" :name="conf.name" v-bind="conf.vBind" v-on="conf.vOn" />
-          </b-tab-item>
-        </b-tabs>
-      </template>
+      <div class="geometry-settings mb-2">
+        <GeometrySelector
+          v-model="geometry"
+          :properties="properties"
+          :label="$t('flow.visualization.displayAs')"
+          showAs="button"
+        />
+      </div>
+      <b-tabs class="flow-tabs pickers" v-if="filteredConfigurators.length" v-model="tab">
+        <b-tab-item v-for="conf in filteredConfigurators" :key="conf.name">
+          <template #header>
+            <span> {{ conf.name }} </span>
+            <b-icon
+              icon="exclamation-circle"
+              type="is-danger"
+              size="is-small"
+              v-if="tabHasErrors(conf.name)"
+            />
+          </template>
+          <component :is="conf.component" :name="conf.name" v-bind="conf.vBind" v-on="conf.vOn" />
+        </b-tab-item>
+      </b-tabs>
     </div>
     <div class="bottom">
       <div class="left is-flex is-flex-grow-1"></div>
@@ -211,8 +209,10 @@ const FINALIZERS: Finalizers = {
       ? undefined
       : Object.entries(val).reduce((acc, obj) => {
           const [key, value] = obj;
-          delete value.minPixels;
-          delete value.maxPixels;
+          if (value.units !== 'meters') {
+            delete value.minPixels;
+            delete value.maxPixels;
+          }
 
           acc[key as 'byValue' | 'static'] = value;
 
@@ -242,9 +242,6 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   displayName = '';
   tab = 0;
   tabsWithErrors: Record<number, boolean> = {};
-  get entitySummaryProps() {
-    return this.entitySummary?.properties ?? [];
-  }
 
   get composedVisualizer(): Partial<ComposableVisualizerInfo> {
     if (this.currentDataset && this.currentEntityName && this.settings) {
@@ -275,29 +272,32 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
 
   // TODO: Maybe move these to helpers, this component is too big.
   get configurators() {
-    if (!this.entitySummaryProps || !this.validator || !this.geometry) return [];
+    if (!this.properties || !this.validator || !this.geometry) return [];
 
     const vBindDefaults = () => ({
-        entityProps: this.entitySummaryProps,
+        entityProps: this.properties,
         validator: this.validator,
         geometry: this.geometry
       }),
       vOnDefaults = <T extends keyof FlowVisualizerOptions>(clauseType: T) => {
         return {
-          input: (clause: FlowVisualizerOptions[T] | null) =>
-            this.updateSettings(clause, clauseType)
+          input: (clause: FlowVisualizerOptions[T] | null) => {
+            this.updateSettings(clause, clauseType);
+          }
         };
       };
 
     return [
       {
-        name: 'Colours',
+        name: '' + this.$t('flow.visualization.colorConfig.colors'),
         component: ColorConfigurator,
         vBind: { ...vBindDefaults(), value: this.settings?.color },
         vOn: { ...vOnDefaults('color') }
       },
       {
-        name: 'Shape / Icon',
+        name: `${this.$t('flow.visualization.iconConfig.shape')} / ${this.$t(
+          'flow.visualization.iconConfig.icon'
+        )}`,
         filterGeometry: [FlowVisualizerType.ICONS],
         component: ShapeIconConfigurator,
         vBind: {
@@ -322,13 +322,13 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
         name: (() => {
           switch (this.geometry) {
             case FlowVisualizerType.POINTS:
-              return 'Radius';
+              return '' + this.$t('flow.visualization.sizeConfig.radius');
             case FlowVisualizerType.ICONS:
-              return 'Size';
+              return '' + this.$t('flow.visualization.sizeConfig.size');
             case FlowVisualizerType.LINES:
             case FlowVisualizerType.POLYGONS:
             case FlowVisualizerType.ARCS:
-              return 'Thickness';
+              return '' + this.$t('flow.visualization.sizeConfig.thickness');
           }
         })(),
         filterGeometry: [
@@ -344,13 +344,13 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
       },
 
       {
-        name: 'Visibility',
+        name: '' + this.$t('flow.visualization.visibilityConfig.visibility'),
         component: VisibilityConfigurator,
-        vBind: { ...vBindDefaults(), value: this.settings?.visibility?.byValue },
+        vBind: { ...vBindDefaults(), value: this.settings?.visibility },
         vOn: { ...vOnDefaults('visibility') }
       },
       {
-        name: 'Popup',
+        name: '' + this.$t('flow.visualization.popup.popup'),
         component: PopupConfigurator,
         vBind: { ...vBindDefaults(), value: this.settings?.popup },
         vOn: { ...vOnDefaults('popup') }
@@ -372,8 +372,6 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
     );
   }
 
-  isEqual = isEqual;
-
   get hasPendingChanges() {
     const value = excludeKey('status', this.value),
       finalized = excludeKey('status', this.finalizedVisualizer);
@@ -394,13 +392,16 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   }
 
   @Watch('geometry')
-  ensureGeometry(geometry: FlowVisualizerType) {
-    if (!this.settings) {
-      this.settings = { type: geometry };
+  ensureGeometry(geometry: FlowVisualizerType | null) {
+    if (geometry) {
+      if (!this.settings) {
+        this.settings = { type: geometry };
+      } else {
+        this.settings = { ...this.settings, type: geometry };
+      }
     } else {
-      this.settings = { ...this.settings, type: geometry };
+      this.settings = null;
     }
-
     this.tab = 0;
     this.tabsWithErrors = {};
   }
@@ -448,11 +449,11 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
         // Also, when other configurators are mounted, once they stabilize they emit and call this function.
         // But since it is comparing to itself, this !isEqual will remain false
         this.$set(this.settings, clauseType, updatedClause);
-        this.updateIsDirty(this.hasPendingChanges);
       } else {
         this.$delete(this.settings, clauseType);
-        this.updateIsDirty(this.hasPendingChanges);
       }
+
+      this.updateIsDirty(this.hasPendingChanges);
     }
   }
 

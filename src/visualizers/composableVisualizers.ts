@@ -137,7 +137,7 @@ abstract class ComposableVisualizer<
       });
       for (const [idx, key] of toDownload.entries()) {
         this.tapefiles[key] = tapefiles[idx];
-        tapefiles[idx].onData(ts => {
+        tapefiles[idx].onData((ts: number) => {
           if (ts <= (this.timestamp ?? 0)) {
             this.forceUpdateTriggers();
           }

@@ -2,34 +2,27 @@
   <div>
     <div class="columns mb-0 is-multiline">
       <div class="column is-two-thirds-desktop is-full-tablet">
-        <b-field required v-if="selectedEntityProp" :label="$t('flow.visualization.basedOn')">
-          <b-select
-            :value="selectedEntityProp.name"
-            @input="selectEntityPropName"
-            :placeholder="$t('actions.select')"
-            size="is-small"
-            expanded
-          >
-            <option
-              v-for="(prop, index) in entityProps"
-              :disabled="!filterProp(prop)"
-              :class="{ 'attribute-option-disabled': !filterProp(prop) }"
-              :value="prop.name"
-              :key="index"
-              :title="prop.description"
-            >
-              {{ prop.name }}
-            </option>
-          </b-select>
+        <b-field
+          required
+          :label="$t('flow.visualization.basedOn')"
+          :message="errors['selectedEntityProp']"
+          :type="{ 'is-danger': errors['selectedEntityProp'] }"
+        >
+          <AttributeSelector
+            :value="selectedEntityProp"
+            :entity-props="entityProps"
+            :filter-prop="filterProp"
+            @input="updateAttribute"
+          />
         </b-field>
       </div>
       <div class="column is-one-third-desktop is-full-tablet">
         <slot name="legend-title" />
       </div>
     </div>
-    <div class="columns mb-0 is-multiline">
+    <div v-if="selectedEntityProp" class="columns mb-0 is-multiline">
       <div class="column is-two-thirds-desktop is-full-tablet">
-        <div v-if="selectedEntityProp && selectedDataType !== 'BOOLEAN'">
+        <div v-if="selectedDataType !== 'BOOLEAN'">
           <b-field class="fill-type">
             <b-radio class="mr-4" v-model="fillType" native-value="buckets" size="is-small">
               {{ $t('flow.visualization.colorConfig.buckets') }}
@@ -103,7 +96,7 @@
         </div>
       </div>
     </div>
-    <div class="columns mb-0 is-multiline">
+    <div v-if="selectedEntityProp" class="columns mb-0 is-multiline">
       <div class="column py-0 is-two-thirds-desktop is-full-tablet">
         <ByValueColorList
           v-if="colorMapping.length"
@@ -112,6 +105,7 @@
           :presets="colorPickerPresets"
           :min-value="minValue"
           :max-value.sync="currentMaxValue"
+          @resetValues="resetValues"
           reversed
         />
       </div>
@@ -123,19 +117,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
+import { Component, Mixins, Watch } from 'vue-property-decorator';
 import { hexToColorTriple, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
 import {
   ByValueColorClause,
+  ColorClause,
   ColorMapping,
   PropertySummary,
-  PropertyType,
   RGBAColor
 } from '@movici-flow-common/types';
-import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import ByValueColorList from './ByValueColorList.vue';
 import { recalculateColorMapping } from '../../configurators/helpers';
 import ColorPalettes, { DEFAULT_COLOR_PALETTES } from './colorPalettes';
+import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
+import ByValueMixin from '../ByValueMixin';
+import { MoviciError } from '@movici-flow-common/errors';
 
 interface RecalculateColorsParams {
   colors?: RGBAColor[];
@@ -145,24 +141,26 @@ interface RecalculateColorsParams {
 }
 
 @Component({
+  name: 'ColorByValueConfigurator',
   components: {
-    ByValueColorList
+    ByValueColorList,
+    AttributeSelector
   }
 })
-export default class ColorByValueConfigurator extends Mixins(ValidationProvider) {
-  @Prop([Object]) value?: Partial<ByValueColorClause>;
-  @Prop({ default: () => [] }) entityProps!: PropertySummary[];
-
+export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorClause>>(
+  ByValueMixin
+) {
+  // overrides ByValueMixin
+  allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
+  // custom variables
   colorMapping: ColorMapping = [];
-  nSteps = 4;
-  selectedEntityProp: PropertySummary | null = null;
-  attributeFromValue: PropertyType | null = null;
   colorPickerPresets = Object.values(MoviciColors);
   fillType: 'buckets' | 'gradient' = 'buckets';
   colorTypes: string[] = Object.keys(DEFAULT_COLOR_PALETTES);
-  selectedColorPaletteIndex = 0;
   selectedColorType: keyof typeof DEFAULT_COLOR_PALETTES = 'Sequential';
+  selectedColorPaletteIndex = 0;
   currentMaxValue = 1;
+  nSteps = 4;
   stepArray: number[] = [2, 3, 4, 5, 6, 7, 8];
 
   get mappingValues(): number[] {
@@ -171,18 +169,6 @@ export default class ColorByValueConfigurator extends Mixins(ValidationProvider)
 
   get colors(): RGBAColor[] {
     return this.colorMapping.map(val => val[1]);
-  }
-
-  get filteredEntityProps() {
-    return this.entityProps.filter(prop => {
-      return (
-        prop.data_type === 'BOOLEAN' || prop.data_type === 'INT' || prop.data_type === 'DOUBLE'
-      );
-    });
-  }
-
-  get selectedDataType() {
-    return this.selectedEntityProp?.data_type;
   }
 
   get selectedColorPalette(): string[] {
@@ -203,32 +189,27 @@ export default class ColorByValueConfigurator extends Mixins(ValidationProvider)
     return this.selectedDataType === 'BOOLEAN' ? 'boolean' : this.fillType;
   }
 
-  get colorClause(): ByValueColorClause | null {
-    if (this.selectedEntityProp) {
-      return {
-        type: this.fillType,
-        attribute: this.selectedEntityProp,
-        colors: this.colorMapping,
-        maxValue: this.currentMaxValue
-      };
-    }
-    return null;
-  }
+  get currentClause(): ByValueColorClause | null {
+    if (!this.selectedEntityProp) return null;
 
-  get minValue() {
-    return this.selectedEntityProp?.min_val ?? 0;
-  }
-
-  get maxValue() {
-    return this.selectedEntityProp?.max_val ?? 1;
+    return {
+      type: this.fillType,
+      attribute: this.selectedEntityProp,
+      colors: this.colorMapping,
+      maxValue: this.currentMaxValue
+    };
   }
 
   get currentMinValue() {
     return this.mappingValues[0] ?? this.minValue;
   }
 
-  filterProp(prop: PropertyType) {
-    return ['BOOLEAN', 'INT', 'DOUBLE'].indexOf(prop.data_type) !== -1;
+  get defaults() {
+    return {
+      type: 'buckets',
+      attribute: null,
+      colors: []
+    };
   }
 
   selectColorPalette(index: number) {
@@ -238,46 +219,45 @@ export default class ColorByValueConfigurator extends Mixins(ValidationProvider)
     });
   }
 
-  selectEntityPropName(name: string) {
-    const found = this.filteredEntityProps.find(entityProp => name === entityProp.name);
-    if (found) this.selectedEntityProp = found;
-  }
-
   updateSteps(nSteps: number) {
+    if (this.selectedDataType === 'BOOLEAN' && nSteps !== 2) {
+      throw new MoviciError('Invalid steps for boolean');
+    }
+
     this.nSteps = nSteps;
     this.recalculateColorMapping({
+      nSteps,
       colors: this.selectedColorPalette.map(hexColor => hexToColorTriple(hexColor))
     });
   }
 
-  @Watch('nSteps')
-  updateColorSteps(nSteps: number) {
-    this.recalculateColorMapping({ nSteps });
+  updateAttribute(val: PropertySummary | null) {
+    /**
+     * STATE: TOUCHED DEFINED RESET VALID CLAUSE
+     * When the user selects and attribute, this function is fired.
+     * We set the selectedEntityProp (aka attribute) with this.ensureProp
+     * After that we can reset it to show the default UI config for that
+     * data_type, like an ENUM, BOOLEAN, INT or DOUBLE.
+     * This state is achivable from both UNTOUCHED NULL CLAUSE and
+     * UNTOUCHED DEFINED VALID CLAUSE. After that it only may become
+     * TOUCHED INVALID CLAUSE if the user inputs invalid data.
+     */
+
+    if (val) {
+      this.ensureProp(val);
+      this.resetByDataType(val.data_type);
+
+      if (this.currentMaxValue !== this.maxValue) {
+        this.currentMaxValue = this.maxValue;
+      }
+    }
   }
 
-  @Watch('selectedEntityProp')
-  updateMaxValue(currentVal: PropertyType, prevVal?: PropertyType | null) {
-    if (!prevVal) {
-      return;
-    }
-    if (this.currentMaxValue !== this.maxValue) {
-      this.currentMaxValue = this.maxValue;
-      this.recalculateColorMapping({ forceRecalculateValues: true });
-    }
+  resetValues() {
+    this.currentMaxValue = this.maxValue;
+    this.recalculateColorMapping({ forceRecalculateValues: true });
   }
 
-  @Watch('filteredEntityProps')
-  pickSelectedEntityProp() {
-    this.selectedEntityProp =
-      this.filteredEntityProps.find(attr => {
-        return (
-          attr.component == this.attributeFromValue?.component &&
-          attr.name == this.attributeFromValue?.name
-        );
-      }) ??
-      this.filteredEntityProps[0] ??
-      null;
-  }
   // resets to the first of the sequential palettes with nSteps
   resetColorMapping(nSteps: number) {
     this.selectedColorType = 'Sequential';
@@ -297,10 +277,10 @@ export default class ColorByValueConfigurator extends Mixins(ValidationProvider)
     });
   }
 
-  @Watch('colorClause')
-  emitClause() {
-    if (this.selectedEntityProp) {
-      this.$emit('input', { byValue: this.colorClause });
+  @Watch('currentClause')
+  prepareEmitClause() {
+    if (this.currentClause) {
+      this.emitClause({ byValue: this.currentClause });
     }
   }
 
@@ -309,14 +289,11 @@ export default class ColorByValueConfigurator extends Mixins(ValidationProvider)
     this.selectColorPalette(0);
   }
 
-  @Watch('selectedDataType')
-  onDataTypeChange(dataType?: string, prevDataType?: string) {
-    if (!prevDataType) {
-      return;
-    }
+  resetByDataType(dataType: string) {
+    this.resetColorMapping(this.defaultDataTypeSteps);
+
     switch (dataType) {
       case 'BOOLEAN':
-        this.nSteps = 2;
         this.selectedColorType = 'Diverging';
         this.selectedColorPaletteIndex = 0;
         this.fillType = 'buckets';
@@ -327,37 +304,70 @@ export default class ColorByValueConfigurator extends Mixins(ValidationProvider)
         break;
       case 'INT':
       case 'DOUBLE':
-        if (prevDataType === 'INT' || prevDataType === 'DOUBLE') break;
-        this.resetColorMapping(4);
+      default:
+        this.resetValues();
         break;
     }
   }
 
   // TODO: create validator according to color length
-  setupValidator() {}
+  setupValidator() {
+    this.validator?.addModule({
+      name: this.name,
+      validators: {
+        ...this.getAttributeValidator()
+      },
+      onValidate: e => {
+        // IF 'e.length > 0'
+        // STATE: TOUCHED DEFINED SET INVALID CLAUSE
+        this.errors = e;
+      }
+    });
+  }
 
   mounted() {
-    const localValue: ByValueColorClause = Object.assign(
-      {
-        type: 'buckets',
-        attribute: this.filteredEntityProps[0] ?? null,
-        colors: []
-      },
-      this.value
-    );
+    // STATE: READY
+    this.setupValidator();
 
-    this.attributeFromValue = localValue.attribute ?? null;
-    this.pickSelectedEntityProp();
+    const localValue: ByValueColorClause = Object.assign({}, this.defaults, this.value?.byValue);
+    /**
+     * STATE: UNTOUCHED NULL INVALID UNSET CLAUSE
+     *
+     * IF 'this.value.byValue === undefined';
+     *   Here we have a brand new byValue configuration, byValue clause is undefined.
+     *   Although we fill currentMaxValue and fillType, because localValue.attribute is null
+     *   currentClause is also null. So after mount is done, this state has not changed
+     *   So We must set up so that the user selects the attribute, we add the default config.
+     *   After that the clause should behave like the it would be editing.
+     *
+     * IF this.value.byValue !== undefined
+     *   Here we received a byValueColorClause. After setting fillType and currentMaxValue,
+     *   the currentClause displays a value in this.pickSelectedEntityProp
+     *   UI Setup is pretty much done after we set the nSteps and colorMapping.
+     *   at this point the state is UNTOUCHED DEFINED VALID CLAUSE
+     */
+
     this.currentMaxValue = localValue.maxValue ?? this.maxValue;
     this.fillType = localValue.type;
-    if (!localValue.colors.length) {
-      this.resetColorMapping(4);
-    } else {
+    this.pickSelectedEntityProp(localValue.attribute);
+
+    if (localValue.colors.length) {
       this.nSteps = localValue.colors.length;
       this.colorMapping = localValue.colors;
+    } else {
+      this.resetColorMapping(this.defaultDataTypeSteps);
     }
 
-    this.setupValidator();
+    /**
+     * IF 'this.value.byValue !== undefined';
+     *   STATE: UNTOUCHED DEFINED VALID CLAUSE
+     */
+  }
+
+  beforeDestroy() {
+    if (this.validator) {
+      this.destroyValidator();
+    }
   }
 }
 </script>

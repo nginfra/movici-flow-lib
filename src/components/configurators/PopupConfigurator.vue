@@ -71,9 +71,6 @@
     <div class="columns mb-0 items" v-if="showPopup">
       <div class="column is-full">
         <label class="label">{{ $t('misc.properties') }}</label>
-        <span v-if="errors['popup-items']" class="error is-block is-size-7 has-text-danger">
-          {{ errors['popup-items'] }}
-        </span>
         <b-dropdown
           aria-role="list"
           :value="items"
@@ -102,7 +99,9 @@
             {{ propertyString(item.attribute) }}
           </b-dropdown-item>
         </b-dropdown>
-
+        <p v-if="errors['popup-items']" class="error is-size-7 has-text-danger mt-1">
+          {{ errors['popup-items'] }}
+        </p>
         <Draggable
           :list="items"
           @input="updateValue({ items: $event })"
@@ -156,7 +155,7 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
-import { PropertyType, PopupClause, PopupItem } from '@movici-flow-common/types';
+import { PropertySummary, PopupClause, PopupItem } from '@movici-flow-common/types';
 import { propertyString } from '@movici-flow-common/utils';
 import Draggable from 'vuedraggable';
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
@@ -169,8 +168,7 @@ import FormValidator from '@movici-flow-common/utils/FormValidator';
 })
 export default class PopupConfigurator extends Mixins(ValidationProvider) {
   @Prop({ default: () => {} }) value!: PopupClause;
-  @Prop({ default: () => [] }) entityProps!: PropertyType[];
-  @Prop([String]) readonly name!: string;
+  @Prop({ default: () => [] }) entityProps!: PropertySummary[];
   @Prop() declare validator: FormValidator;
   items: PopupItem[] = [];
   showPopup = false;
@@ -231,7 +229,7 @@ export default class PopupConfigurator extends Mixins(ValidationProvider) {
     this.updateValue(Object.assign(this.currentClause, { show: showPopup }));
   }
 
-  addItem(prop: PropertyType) {
+  addItem(prop: PropertySummary) {
     this.items = this.items.concat({ name: '', attribute: prop });
     this.updateValue({ items: this.items });
     this.validator.touch('popup-items', this.name);

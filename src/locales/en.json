@@ -124,6 +124,7 @@
       "colorConfig": {
         "buckets": "Buckets",
         "color": "Colour",
+        "colors": "Colours",
         "gradient": "Gradient",
         "palette": "Colour palette",
         "steps": "Steps",
@@ -131,6 +132,7 @@
         "value": "Value",
         "valueRange": "Value (range)",
         "invertColors": "Invert color order",
+        "resetValues": "Reset values to default",
         "advanced": {
           "title": "Advanced settings",
           "fillOpacity": "Fill Opacity",
@@ -151,6 +153,7 @@
         "fas": "Solid"
       },
       "visibilityConfig" : {
+        "visibility": "Visibility",
         "value": "Value",
         "visible": "Visible"
       },
@@ -178,6 +181,7 @@
         "viewUpdateSuccess": "View successfully updated"
       },
       "displayAs": "Display as",
+      "errorDisplayAs": "No compatible attributes found for this configurator",
       "editVisualizer": "Edit visualiser",
       "infoLabel": "View",
       "label": "Visualisation",
@@ -187,6 +191,7 @@
       "newVisualizer": "New visualiser",
       "noGeometry": "No display geometry for this Entity group",
       "popup": {
+        "popup": "Popup",
         "addItem": "Add item",
         "dynamic": "Dynamic",
         "onClick": "On click",

@@ -34,7 +34,7 @@ import {
   ByValueIconClause,
   IconClause,
   LegendOptions,
-  PropertyType,
+  PropertySummary,
   StaticIconClause
 } from '@movici-flow-common/types';
 
@@ -46,7 +46,7 @@ import {
 })
 export default class IconConfigurator extends Vue {
   @Prop() readonly value!: IconClause;
-  @Prop() entityProps!: PropertyType[];
+  @Prop() entityProps!: PropertySummary[];
   currentClause: IconClause = {};
   clauseType: 'static' | 'byValue' | null = null;
   showLegend = false;

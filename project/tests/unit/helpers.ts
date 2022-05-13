@@ -6,29 +6,26 @@ import Vuex, { StoreOptions } from 'vuex';
 import { VueClass } from 'vue-class-component/lib/declarations';
 import VueI18n from 'vue-i18n';
 import defaultStore from '@movici-flow-common/store';
+import VueRouter from 'vue-router';
 
 type wrapperOpts = {
-  overrides?: Record<string, unknown>;
+  mountOptions?: Record<string, unknown>;
+  mergeWithDefaults?: boolean;
   doShallowMount?: boolean;
   storeOpts?: StoreOptions<unknown>;
 };
 
 export function createComponentWrapper(
-  component: VueClass<unknown>,
-  { overrides, doShallowMount, storeOpts }: wrapperOpts = {}
+  component_: VueClass<unknown>,
+  { mountOptions, mergeWithDefaults, doShallowMount, storeOpts }: wrapperOpts = {}
 ) {
-  const localVue = getLocalVue(),
+  const localVue = getLocalVue({ mountOptions }),
     defaultMountingOptions = {
       localVue,
       i18n: new VueI18n({ locale: 'en' }),
-      stubs: {
-        RouterLink: RouterLinkStub
-      },
+      stubs: ['router-view', 'router-link'],
       mocks: {
         $t: (val: string) => val,
-        $router: {
-          push: jest.fn()
-        },
         $flow: {
           successMessage: jest.fn(),
           failMessage: jest.fn()
@@ -37,12 +34,36 @@ export function createComponentWrapper(
       store: storeOpts ? new Vuex.Store(storeOpts) : defaultStore
     };
 
-  const mountFunc = doShallowMount ? shallowMount : mount;
-  return mountFunc(component, merge(defaultMountingOptions, overrides));
+  let options: Record<string, unknown> = defaultMountingOptions;
+
+  if (mountOptions) {
+    if (!mergeWithDefaults) {
+      options = mountOptions;
+    } else {
+      options = merge({}, defaultMountingOptions, mountOptions);
+      if (Array.isArray(mountOptions.stubs)) {
+        options.stubs = [...defaultMountingOptions.stubs, ...mountOptions.stubs] as Array<string>;
+      }
+    }
+  }
+
+  const doMount = (
+    m: typeof mount | typeof shallowMount,
+    component: VueClass<unknown>,
+    opts: Record<string, unknown>
+  ) => {
+    return m(component, opts);
+  };
+
+  return doMount(doShallowMount ? shallowMount : mount, component_, options);
 }
 
-export function getLocalVue(): VueConstructor<Vue> {
+export function getLocalVue(opts: { mountOptions?: Record<string, unknown> }): VueConstructor<Vue> {
   const localVue = createLocalVue();
+
+  if (opts.mountOptions) {
+    localVue.use(VueRouter);
+  }
 
   localVue.use(Vuex);
   localVue.use(VueI18n);

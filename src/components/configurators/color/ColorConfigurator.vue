@@ -22,16 +22,20 @@
     <template v-if="clauseType">
       <ColorStaticConfigurator
         v-if="clauseType === 'static'"
-        :value="staticSettings"
-        @input="updateSettings($event)"
+        :name="name"
+        :value="currentClause"
+        :validator="validator"
+        @input="updateSettings"
         size="is-small"
       >
       </ColorStaticConfigurator>
       <ColorByValueConfigurator
         v-else-if="clauseType === 'byValue'"
-        :value="byValueSettings"
+        :name="name"
+        :value="currentClause"
+        :validator="validator"
         :entityProps="entityProps"
-        @input="updateSettings($event)"
+        @input="updateSettings"
       >
         <template v-slot:legend-labels v-if="showLegend">
           <ColorLegendLabelsConfigurator
@@ -70,15 +74,18 @@ import {
   ColorClause,
   FlowVisualizerType,
   LegendOptions,
-  PropertyType,
+  PropertySummary,
   StaticColorClause
 } from '@movici-flow-common/types';
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import ColorStaticConfigurator from './ColorStaticConfigurator.vue';
 import ColorByValueConfigurator from './ColorByValueConfigurator.vue';
 import ColorLegendLabelsConfigurator from './ColorLegendLabelsConfigurator.vue';
 import ColorAdvSettingsConfigurator from './ColorAdvSettingsConfigurator.vue';
 import { getLegendPlaceholders, PlaceholderType } from '../helpers';
+import FormValidator from '@movici-flow-common/utils/FormValidator';
+import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
+import isEqual from 'lodash/isEqual';
 
 @Component({
   components: {
@@ -88,10 +95,11 @@ import { getLegendPlaceholders, PlaceholderType } from '../helpers';
     ColorAdvSettingsConfigurator
   }
 })
-export default class ColorConfigurator extends Vue {
-  @Prop() value!: ColorClause;
-  @Prop() entityProps!: PropertyType[];
-  @Prop() geometry!: FlowVisualizerType;
+export default class ColorConfigurator extends Mixins(ValidationProvider) {
+  @Prop([Object]) value!: ColorClause;
+  @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
+  @Prop([String]) readonly geometry!: FlowVisualizerType;
+  @Prop([Object]) declare validator: FormValidator;
   currentClause: ColorClause = {};
   clauseType: 'static' | 'byValue' | null = null;
   advancedSettings: AdvancedColorSettings | null = null;
@@ -173,6 +181,15 @@ export default class ColorConfigurator extends Vue {
     this.$emit('input', toEmit);
   }
 
+  @Watch('entityProps')
+  afterEntityProps(value: PropertySummary[], old?: PropertySummary[]) {
+    if (!isEqual(value, old)) {
+      delete this.currentClause.static;
+      delete this.currentClause.byValue;
+      this.clauseType = 'static';
+    }
+  }
+
   // Saves the old configuration if the user is changing between the kinds
   @Watch('clauseType')
   kindUpdated() {
@@ -181,15 +198,15 @@ export default class ColorConfigurator extends Vue {
   }
 
   @Watch('value', { immediate: true })
-  updateLocal() {
-    if (this.value) {
-      if (this.value?.legend) {
+  updateLocal(value: ColorClause) {
+    if (value) {
+      if (value?.legend) {
         this.showLegend = true;
-        this.legend = this.value.legend;
+        this.legend = value.legend;
       }
-      this.clauseType = this.value.byValue ? 'byValue' : 'static';
-      this.currentClause = Object.assign({}, this.currentClause, this.value);
-      this.advancedSettings = this.value.advanced ?? null;
+      this.clauseType = value.byValue ? 'byValue' : 'static';
+      this.currentClause = Object.assign({}, this.currentClause, value);
+      this.advancedSettings = value.advanced ?? null;
     } else {
       this.clauseType = 'static';
     }

@@ -2,47 +2,29 @@
   <div>
     <div class="columns mb-0 is-multiline">
       <div class="column is-two-thirds-desktop is-full-tablet">
-        <b-field required :label="$t('flow.visualization.basedOn')">
-          <b-select
-            :value="selectedEntityPropName"
-            @input="selectEntityPropName"
-            placeholder="Select..."
-            size="is-small"
-            expanded
-          >
-            <option
-              v-for="(prop, index) in entityProps"
-              :disabled="!filterProp(prop)"
-              :class="{ 'attribute-option-disabled': !filterProp(prop) }"
-              :value="prop.name"
-              :key="index"
-              :title="prop.description"
-            >
-              {{ prop.name }}
-            </option>
-          </b-select>
+        <b-field
+          required
+          :label="$t('flow.visualization.basedOn')"
+          :message="errors['selectedEntityProp']"
+          :type="{ 'is-danger': errors['selectedEntityProp'] }"
+        >
+          <AttributeSelector
+            :value="selectedEntityProp"
+            :entity-props="entityProps"
+            :filter-prop="filterProp"
+            @input="updateAttribute"
+          />
         </b-field>
       </div>
     </div>
-    <div v-if="value" class="columns mb-0 is-multiline">
+    <div v-if="selectedEntityProp" class="columns mb-0 is-multiline">
       <div class="column is-two-thirds-desktop is-full-tablet">
-        <div v-if="selectedEntityProp && selectedDataType !== 'BOOLEAN'">
+        <div v-if="selectedDataType !== 'BOOLEAN'">
           <b-field :label="$t('flow.visualization.displayAs')">
-            <b-radio
-              :value="currentClause.units"
-              @input="updateValue({ units: $event })"
-              native-value="meters"
-              size="is-small"
-              class="mr-4"
-            >
+            <b-radio v-model="units" native-value="meters" size="is-small" class="mr-4">
               {{ $t('units.meters') }}
             </b-radio>
-            <b-radio
-              :value="currentClause.units"
-              @input="updateValue({ units: $event })"
-              native-value="pixels"
-              size="is-small"
-            >
+            <b-radio v-model="units" native-value="pixels" size="is-small">
               {{ $t('units.pixels') }}
             </b-radio>
           </b-field>
@@ -50,14 +32,14 @@
       </div>
     </div>
     <!-- todo: change to look closer to color configurator -->
-    <div v-if="value" class="columns mb-0 is-multiline">
+    <div v-if="selectedEntityProp" class="columns mb-0 is-multiline">
       <div class="column pb-0 is-two-thirds-desktop is-full-tablet">
         <div class="is-flex min-max">
           <div class="values is-flex is-flex-shrink-1 is-flex-direction-column">
             <div class="is-flex">
               <b-field :label="$t('flow.visualization.sizeConfig.value')">
                 <b-numberinput
-                  v-model="currentMaxVal"
+                  v-model="currentMaxValue"
                   :controls="false"
                   :min-step="1e-15"
                   step="1"
@@ -78,7 +60,7 @@
             <div class="is-flex">
               <b-field>
                 <b-numberinput
-                  v-model="currentMinVal"
+                  v-model="currentMinValue"
                   :controls="false"
                   :min-step="1e-15"
                   step="1"
@@ -100,24 +82,13 @@
         </div>
       </div>
     </div>
-    <div class="columns mb-0 is-multiline" v-if="currentClause.units === 'meters'">
+    <div class="columns mb-0 is-multiline" v-if="units === 'meters'">
       <div class="column pb-0 is-flex is-two-thirds-desktop is-full-tablet min-max-px">
         <b-field class="mr-4" :label="$t('flow.visualization.sizeConfig.minPixels')">
-          <b-numberinput
-            :value="currentClause.minPixels"
-            @input="updateValue({ minPixels: Number($event) })"
-            :controls="false"
-            size="is-small"
-          />
-          <span class="ml-2 is-size-7">px</span>
+          <b-numberinput v-model="minPixels" :controls="false" size="is-small" />
         </b-field>
         <b-field :label="$t('flow.visualization.sizeConfig.maxPixels')">
-          <b-numberinput
-            :value="currentClause.maxPixels"
-            @input="updateValue({ maxPixels: Number($event) })"
-            :controls="false"
-            size="is-small"
-          /><span class="ml-2 is-size-7">px</span>
+          <b-numberinput v-model="maxPixels" :controls="false" size="is-small" />
         </b-field>
       </div>
     </div>
@@ -125,117 +96,75 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import {
-  ByValueSizeClause,
-  FlowVisualizerType,
-  PropertySummary,
-  PropertyType,
-  SizeClause
-} from '@movici-flow-common/types';
-import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
-import { DIMENSIONS } from '@movici-flow-common/visualizers/visualizers';
+import { Component, Mixins, Watch } from 'vue-property-decorator';
+import { ByValueSizeClause, PropertySummary, SizeClause } from '@movici-flow-common/types';
 import cloneDeep from 'lodash/cloneDeep';
+import ByValueMixin from '../ByValueMixin';
+import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
+import { BY_VALUE_DEFAULT_SIZES } from './defaults';
 
-const BY_VALUE_DEFAULT_CONFIG = {
-    sizes: [
-      [2, DIMENSIONS.SIZE_MIN_PIXELS],
-      [4, DIMENSIONS.SIZE_MIN_PIXELS * 2]
-    ],
-    units: 'pixels',
-    minPixels: DIMENSIONS.SIZE_MIN_PIXELS,
-    maxPixels: DIMENSIONS.SIZE_MAX_PIXELS,
-    attribute: null
-  },
-  BY_VALUE_ICON_DEFAULT_CONFIG = {
-    sizes: [
-      [2, DIMENSIONS.ICON_SIZE],
-      [4, DIMENSIONS.ICON_SIZE * 2]
-    ],
-    units: 'pixels',
-    minPixels: DIMENSIONS.ICON_SIZE_MIN_PIXELS,
-    maxPixels: DIMENSIONS.ICON_SIZE_MAX_PIXELS,
-    attribute: null
-  };
+@Component({
+  name: 'SizeByValueConfigurator',
+  components: {
+    AttributeSelector
+  }
+})
+export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeClause>>(
+  ByValueMixin
+) {
+  // overrides ByValueMixin
+  allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
+  // custom variables
+  sizes: [number, number][] = [];
+  units: 'pixels' | 'meters' = 'pixels';
+  minPixels!: number | undefined;
+  maxPixels!: number | undefined;
 
-@Component({})
-export default class SizeByValueConfigurator extends Mixins(ValidationProvider) {
-  @Prop([Object]) value?: SizeClause | null;
-  @Prop({ default: () => [] }) entityProps!: PropertySummary[];
-  @Prop() geometry!: FlowVisualizerType;
-
-  selectedEntityProp: PropertySummary | null = null;
-  attributeFromValue: PropertyType | null = null;
-
-  get filteredEntityProps() {
-    return this.entityProps.filter(prop => {
-      return (
-        prop.data_type === 'BOOLEAN' || prop.data_type === 'INT' || prop.data_type === 'DOUBLE'
-      );
-    });
+  get currentClause(): ByValueSizeClause | null {
+    if (!this.selectedEntityProp) return null;
+    return {
+      attribute: this.selectedEntityProp,
+      sizes: this.sizes,
+      units: this.units,
+      minPixels: this.minPixels,
+      maxPixels: this.maxPixels
+    };
   }
 
-  get selectedEntityPropName() {
-    return this.selectedEntityProp?.name;
+  get currentMinValue() {
+    return this.currentClause?.sizes[0]?.[0];
   }
 
-  get minValue() {
-    return this.selectedEntityProp?.min_val ?? 0;
+  set currentMinValue(val: number | undefined) {
+    if (val) this.updateMapping(0, 0, val);
   }
 
-  get maxValue() {
-    return this.selectedEntityProp?.max_val ?? 1;
+  get currentMaxValue() {
+    return this.currentClause?.sizes[1]?.[0];
   }
 
-  get currentClause(): ByValueSizeClause {
-    return Object.assign({}, this.defaults, this.value?.byValue);
-  }
-
-  get currentMinVal() {
-    return this.currentClause.sizes[0][0];
-  }
-
-  set currentMinVal(val: number) {
-    this.updateMapping(0, 0, val);
-  }
-
-  get currentMaxVal() {
-    return this.currentClause.sizes[1][0];
-  }
-
-  set currentMaxVal(val: number) {
-    this.updateMapping(1, 0, val);
+  set currentMaxValue(val: number | undefined) {
+    if (val) this.updateMapping(1, 0, val);
   }
 
   get currentMinSize() {
-    return this.currentClause.sizes[0][1];
+    return this.currentClause?.sizes[0]?.[1];
   }
 
-  set currentMinSize(val: number) {
-    this.updateMapping(0, 1, val);
+  set currentMinSize(val: number | undefined) {
+    if (val) this.updateMapping(0, 1, val);
   }
 
   get currentMaxSize() {
-    return this.currentClause.sizes[1][1];
+    return this.currentClause?.sizes[1]?.[1];
   }
 
-  set currentMaxSize(val: number) {
-    this.updateMapping(1, 1, val);
-  }
-
-  getSizesMinMaxValues(): [number, number][] {
-    return [
-      [this.selectedEntityProp?.min_val ?? 0, this.currentMinSize],
-      [this.selectedEntityProp?.max_val ?? 1, this.currentMaxSize]
-    ];
-  }
-
-  filterProp(prop: PropertyType) {
-    return ['BOOLEAN', 'INT', 'DOUBLE'].indexOf(prop.data_type) !== -1;
+  set currentMaxSize(val: number | undefined) {
+    if (val) this.updateMapping(1, 1, val);
   }
 
   get miniUnits() {
-    switch (this.currentClause.units) {
+    switch (this.currentClause?.units) {
       case 'meters':
         return 'm';
       case 'pixels':
@@ -245,71 +174,35 @@ export default class SizeByValueConfigurator extends Mixins(ValidationProvider) 
     }
   }
 
-  get selectedDataType() {
-    return this.selectedEntityProp?.data_type;
-  }
-
   get defaults() {
-    switch (this.geometry) {
-      case FlowVisualizerType.ICONS:
-        return BY_VALUE_ICON_DEFAULT_CONFIG;
-      case FlowVisualizerType.POINTS:
-      case FlowVisualizerType.LINES:
-      case FlowVisualizerType.POLYGONS:
-      case FlowVisualizerType.ARCS:
-      default:
-        return BY_VALUE_DEFAULT_CONFIG;
-    }
+    return BY_VALUE_DEFAULT_SIZES[this.geometry];
   }
 
-  @Watch('filteredEntityProps', { immediate: true })
-  pickSelectedEntityProp() {
-    let attribute = this.filteredEntityProps.find(attr => {
-      return (
-        attr.component == this.attributeFromValue?.component &&
-        attr.name == this.attributeFromValue?.name
-      );
-    });
+  updateAttribute(val: PropertySummary | null) {
+    if (val) {
+      this.ensureProp(val);
 
-    if (attribute) {
-      this.selectedEntityProp = attribute ?? null;
-    } else {
-      // if attribute can't be found, this means this is a new config
-      // so we use the first one and use it's min max
-      this.setEntityPropAndUpdate(this.filteredEntityProps[0]);
-    }
-  }
-
-  selectEntityPropName(name: string) {
-    this.setEntityPropAndUpdate(
-      this.filteredEntityProps.find(entityProp => name === entityProp.name)
-    );
-  }
-
-  setEntityPropAndUpdate(attribute?: PropertySummary) {
-    if (attribute) {
-      this.selectedEntityProp = attribute;
-      this.updateValue({ attribute, sizes: this.getSizesMinMaxValues() });
-    }
-  }
-
-  updateValue(props: Partial<ByValueSizeClause>) {
-    // check for this.value (is it a valid object?)
-    if (this.selectedEntityProp) {
-      const clause = Object.assign({}, this.currentClause, props);
-
-      if (clause.units === 'pixels') {
-        delete clause.minPixels;
-        delete clause.maxPixels;
+      if (this.currentMaxValue !== this.maxValue) {
+        this.currentMaxValue = this.maxValue;
       }
-      this.$emit('input', { byValue: clause });
+
+      if (this.currentMinValue !== this.minValue) {
+        this.currentMinValue = this.minValue;
+      }
+    }
+  }
+
+  @Watch('currentClause')
+  prepareEmitClause() {
+    if (this.currentClause) {
+      this.emitClause({ byValue: this.currentClause });
     }
   }
 
   updateMapping(i: number, j: number, value: number) {
-    const sizes = cloneDeep(this.currentClause.sizes);
+    const sizes = cloneDeep(this.sizes);
     sizes[i][j] = value;
-    this.updateValue({ sizes });
+    this.sizes = sizes;
   }
 
   // TODO: create validator according to color length
@@ -318,11 +211,32 @@ export default class SizeByValueConfigurator extends Mixins(ValidationProvider) 
   // values should be increasing
   // sizes should not negative
   // min max px should be not negative
-  setupValidator() {}
+  setupValidator() {
+    this.validator?.addModule({
+      name: this.name,
+      validators: {
+        ...this.getAttributeValidator()
+      },
+      onValidate: e => (this.errors = e)
+    });
+  }
 
   mounted() {
-    this.attributeFromValue = this.value?.byValue?.attribute ?? null;
     this.setupValidator();
+
+    const localValue: ByValueSizeClause = Object.assign({}, this.defaults, this.value.byValue);
+
+    this.minPixels = localValue?.minPixels;
+    this.maxPixels = localValue?.maxPixels;
+    this.sizes = localValue.sizes ?? [];
+    this.units = localValue.units;
+    this.pickSelectedEntityProp(localValue.attribute);
+  }
+
+  beforeDestroy() {
+    if (this.validator) {
+      this.destroyValidator();
+    }
   }
 }
 </script>
@@ -338,7 +252,7 @@ export default class SizeByValueConfigurator extends Mixins(ValidationProvider) 
 .min-max {
   ::v-deep {
     .b-numberinput {
-      width: 3.5rem;
+      width: 4.5rem;
     }
     .field {
       .field {

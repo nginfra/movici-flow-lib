@@ -8,11 +8,13 @@ describe('Deck.vue', () => {
   let wrapper;
 
   beforeEach(() => {
-    wrapper = createComponentWrapper(Deck);
+    wrapper = createComponentWrapper(Deck, { doShallowMount: true });
   });
+
   it('renders correctly', () => {
     expect(wrapper.element).toMatchSnapshot();
   });
+
   it('creates a Deck.gl instance', () => {
     expect(wrapper.vm.initDeck()).toBeInstanceOf(DeckGL);
   });

@@ -31,7 +31,7 @@ describe('Test layer mixin', () => {
     };
 
     wrapper = createComponentWrapper(LayerComponent, {
-      overrides: {
+      mountOptions: {
         propsData: {
           map: mockMap
         }

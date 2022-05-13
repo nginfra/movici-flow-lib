@@ -1,4 +1,4 @@
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import FormValidator, { ErrorDict, GlobalErrorDict } from '../utils/FormValidator';
 
 /**
@@ -70,6 +70,7 @@ import FormValidator, { ErrorDict, GlobalErrorDict } from '../utils/FormValidato
 @Component
 export default class ValidationProvider extends Vue {
   // Must be instantiate by consumers of this class
+  @Prop([String]) readonly name!: string;
   validator!: FormValidator | null;
   errors: ErrorDict | GlobalErrorDict = {};
 
@@ -84,8 +85,12 @@ export default class ValidationProvider extends Vue {
     return false;
   }
 
-  validated<T extends this, K extends keyof this>(key: keyof this, value: unknown) {
-    this.validator?.touch(key as string);
+  validated<T extends this, K extends keyof this>(
+    key: keyof this,
+    value: unknown,
+    moduleName?: string
+  ) {
+    this.validator?.touch(key as string, moduleName);
     this[key] = value as T[K];
   }
 }

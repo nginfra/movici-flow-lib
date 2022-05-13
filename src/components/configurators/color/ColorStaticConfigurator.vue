@@ -33,7 +33,7 @@ import {
   hexToColorTriple,
   MoviciColors
 } from '@movici-flow-common/visualizers/maps/colorMaps';
-import { ColorClause, RGBAColor, StaticColorClause } from '@movici-flow-common/types';
+import { ColorClause, RGBAColor } from '@movici-flow-common/types';
 import FlowColorPicker from './FlowColorPicker.vue';
 
 @Component({
@@ -42,7 +42,7 @@ import FlowColorPicker from './FlowColorPicker.vue';
   }
 })
 export default class ColorStaticConfigurator extends Vue {
-  @Prop() value!: StaticColorClause | null;
+  @Prop() value!: ColorClause | null;
   color: RGBAColor = hexToColorTriple(MoviciColors.GREEN);
   colorPickerPresets = Object.values(MoviciColors);
   showColorPicker = false;
@@ -61,8 +61,8 @@ export default class ColorStaticConfigurator extends Vue {
 
   @Watch('value', { immediate: true })
   setupColor() {
-    if (this.value?.color) {
-      this.color = this.value.color;
+    if (this.value?.static?.color) {
+      this.color = this.value.static.color;
     } else {
       this.updateColor(this.color);
     }

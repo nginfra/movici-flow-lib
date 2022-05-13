@@ -124,6 +124,7 @@
       "colorConfig": {
         "buckets": "Kleurvakken",
         "color": "Kleur",
+        "colors": "Kleuren",
         "gradient": "Gradient",
         "palette": "kleurenpalet",
         "steps": "Stappen",
@@ -131,6 +132,7 @@
         "value": "Waarde",
         "valueRange": "Waarde (bereik)",
         "invertColors": "Kleurvolgorde omkeren",
+        "resetValues": "Waarden terugzetten",
         "advanced": {
           "title": "Geavanceerd",
           "fillOpacity": "Fill opacity",
@@ -151,6 +153,7 @@
         "fas": "Gevuld"
       },
       "visibilityConfig" : {
+        "visibility": "Zichtbaarheid",
         "value": "Waarde",
         "visible": "Zichtbaar"
       },
@@ -178,6 +181,7 @@
         "viewUpdateSuccess": "View succesvol ge-updatet"
       },
       "displayAs": "Weergeven in",
+      "errorDisplayAs": "Geen compatibele attributen gevonden voor deze configurator",
       "editVisualizer": "Bewerk Visualizer",
       "infoLabel": "View",
       "label": "Visualisatie",
@@ -187,6 +191,7 @@
       "newVisualizer": "Nieuwe Visualiser",
       "noGeometry": "Deze Entiteitgroep heeft geen geometrie",
       "popup": {
+        "popup": "Popup",
         "addItem": "Add item",
         "dynamic": "Dynamisch",
         "onClick": "Bij klikken",
