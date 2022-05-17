@@ -1,16 +1,16 @@
-import { ColorMapping, VisibilityMapping, RGBAColor } from '@movici-flow-common/types';
-import { hexToColorTriple, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
-
 export type PlaceholderType = 'single' | 'range';
 
-export type RecalculateMappingValueParams = {
+export interface RecalculateMappingValueParams {
   values: number[];
   nSteps: number;
   minValue?: number;
   maxValue?: number;
   forceRecalculateValues?: boolean;
   maxValueAsLastValue?: boolean;
-};
+}
+export interface RecalculateMappingParams<T> extends RecalculateMappingValueParams {
+  output: T[];
+}
 
 export function getLegendPlaceholders(
   items: number[],
@@ -37,29 +37,17 @@ export function getSingleLegendPlaceholder(
   return rv;
 }
 
-export function recalculateColorMapping(
-  params: RecalculateMappingValueParams & { colors: RGBAColor[] }
-): ColorMapping {
-  const colors = recalculateColors(params);
-  return recalculateMappingValues(params).map((val, idx) => [val, colors[idx]]);
+export function recalculateMapping<T>(
+  params: RecalculateMappingParams<T>,
+  getDefault: () => T
+): [number, T][] {
+  const output = recalculateOutput(params, getDefault);
+  return recalculateMappingValues(params).map((val, idx) => [val, output[idx]]);
 }
 
-function recalculateColors(params: { colors: RGBAColor[]; nSteps: number }): RGBAColor[] {
-  const rv = Array(params.nSteps).fill(hexToColorTriple(MoviciColors.WHITE));
-  params.colors.forEach((c, idx) => (rv[idx] = c));
-  return rv;
-}
-
-export function recalculateVisibilityMapping(
-  params: RecalculateMappingValueParams & { visibilities: boolean[] }
-): VisibilityMapping {
-  const visibilities = recalculateVisibilities(params);
-  return recalculateMappingValues(params).map((val, idx) => [val, visibilities[idx]]);
-}
-
-function recalculateVisibilities(params: { visibilities: boolean[]; nSteps: number }): boolean[] {
-  const rv = Array(params.nSteps).fill(true);
-  params.visibilities.forEach((c, idx) => (rv[idx] = c));
+function recalculateOutput<T>(params: { output: T[]; nSteps: number }, getDefault: () => T): T[] {
+  const rv = Array(params.nSteps).fill(getDefault());
+  params.output.forEach((c, idx) => (rv[idx] = c));
   return rv;
 }
 

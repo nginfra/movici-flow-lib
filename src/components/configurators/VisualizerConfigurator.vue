@@ -575,9 +575,9 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   .editor-content {
     ::v-deep {
       .label {
-        font-size: 0.75rem !important;
-        margin-top: 0.25em !important;
-        margin-bottom: 0.5em !important;
+        font-size: 0.75rem;
+        margin-top: 0.25em;
+        margin-bottom: 0.5em;
       }
       .close {
         position: absolute;

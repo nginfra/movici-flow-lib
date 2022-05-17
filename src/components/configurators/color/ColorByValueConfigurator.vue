@@ -105,7 +105,9 @@
           :presets="colorPickerPresets"
           :min-value="minValue"
           :max-value.sync="currentMaxValue"
+          :dataType="selectedEntityProp.data_type"
           @resetValues="resetValues"
+          @interpolateMinMax="interpolateMinMax"
           reversed
         />
       </div>
@@ -127,18 +129,11 @@ import {
   RGBAColor
 } from '@movici-flow-common/types';
 import ByValueColorList from './ByValueColorList.vue';
-import { recalculateColorMapping } from '../../configurators/helpers';
+import { recalculateMapping, RecalculateMappingParams } from '../../configurators/helpers';
 import ColorPalettes, { DEFAULT_COLOR_PALETTES } from './colorPalettes';
 import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
 import ByValueMixin from '../ByValueMixin';
 import { MoviciError } from '@movici-flow-common/errors';
-
-interface RecalculateColorsParams {
-  colors?: RGBAColor[];
-  values?: number[];
-  nSteps?: number;
-  forceRecalculateValues?: boolean;
-}
 
 @Component({
   name: 'ColorByValueConfigurator',
@@ -215,7 +210,7 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
   selectColorPalette(index: number) {
     this.selectedColorPaletteIndex = index;
     this.recalculateColorMapping({
-      colors: this.selectedColorPalette.map(hexColor => hexToColorTriple(hexColor))
+      output: this.selectedColorPalette.map(hexColor => hexToColorTriple(hexColor))
     });
   }
 
@@ -227,7 +222,7 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
     this.nSteps = nSteps;
     this.recalculateColorMapping({
       nSteps,
-      colors: this.selectedColorPalette.map(hexColor => hexToColorTriple(hexColor))
+      output: this.selectedColorPalette.map(hexColor => hexToColorTriple(hexColor))
     });
   }
 
@@ -258,23 +253,41 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
     this.recalculateColorMapping({ forceRecalculateValues: true });
   }
 
-  // resets to the first of the sequential palettes with nSteps
   resetColorMapping(nSteps: number) {
     this.selectedColorType = 'Sequential';
     this.nSteps = nSteps;
+    // resets to the first of the sequential palettes with nSteps
     this.selectColorPalette(0);
   }
 
-  recalculateColorMapping(params?: RecalculateColorsParams) {
-    this.colorMapping = recalculateColorMapping({
-      colors: params?.colors ?? this.colors,
-      values: params?.values ?? this.mappingValues,
-      nSteps: params?.nSteps ?? this.nSteps,
-      minValue: params?.forceRecalculateValues ? this.minValue : this.currentMinValue,
-      maxValue: params?.forceRecalculateValues ? this.maxValue : this.currentMaxValue,
-      maxValueAsLastValue: this.colorMode !== 'buckets',
-      forceRecalculateValues: params?.forceRecalculateValues
-    });
+  recalculateColorMapping(params?: Partial<RecalculateMappingParams<RGBAColor>>) {
+    this.colorMapping = recalculateMapping(
+      {
+        output: params?.output ?? this.colors,
+        values: params?.values ?? this.mappingValues,
+        nSteps: params?.nSteps ?? this.nSteps,
+        minValue: params?.forceRecalculateValues ? this.minValue : this.currentMinValue,
+        maxValue: params?.forceRecalculateValues ? this.maxValue : this.currentMaxValue,
+        maxValueAsLastValue: this.colorMode !== 'buckets',
+        forceRecalculateValues: !!params?.forceRecalculateValues
+      },
+      () => hexToColorTriple(MoviciColors.WHITE)
+    );
+  }
+
+  interpolateMinMax() {
+    this.colorMapping = recalculateMapping(
+      {
+        output: this.colors,
+        values: this.mappingValues,
+        nSteps: this.nSteps,
+        minValue: this.currentMinValue,
+        maxValue: this.currentMaxValue,
+        maxValueAsLastValue: this.colorMode !== 'buckets',
+        forceRecalculateValues: true
+      },
+      () => hexToColorTriple(MoviciColors.WHITE)
+    );
   }
 
   @Watch('currentClause')
@@ -298,7 +311,7 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
         this.selectedColorPaletteIndex = 0;
         this.fillType = 'buckets';
         this.recalculateColorMapping({
-          colors: DEFAULT_COLOR_PALETTES['Diverging'][0].getColorTriplesForSize(2),
+          output: DEFAULT_COLOR_PALETTES['Diverging'][0].getColorTriplesForSize(2),
           forceRecalculateValues: true
         });
         break;

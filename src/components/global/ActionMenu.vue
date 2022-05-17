@@ -22,7 +22,7 @@
           :key="index"
           :focusable="false"
           :disabled="item.isDisabled"
-          :class="item.colorScheme"
+          :class="itemClass(item)"
           @click="emitAndClose(item.event, $event)"
           class="dropdown-item"
         >
@@ -51,6 +51,13 @@ export default class MovActionMenu extends Mixins(FixedPosition) {
     left: 4
   };
 
+  itemClass(item: ActionMenuItem) {
+    const rv = [];
+    if (item.colorScheme) rv.push(item.colorScheme);
+    if (item.isDisabled) rv.push('is-disabled');
+    return rv;
+  }
+
   emitAndClose(event: string, value: unknown) {
     this.$emit(event, value);
     this.visible = false;
@@ -63,7 +70,11 @@ export default class MovActionMenu extends Mixins(FixedPosition) {
   .dropdown-trigger {
     border: 0;
     background: transparent;
+    height: 24px;
     .ellipsis {
+      width: 16px;
+      height: 20px;
+      font-size: 16px !important;
       cursor: pointer;
     }
   }
@@ -75,29 +86,37 @@ export default class MovActionMenu extends Mixins(FixedPosition) {
   .dropdown-menu {
     a.dropdown-item {
       color: $black;
-      font-size: 0.8em;
-      &:hover {
-        color: $primary;
-        background-color: $primary-invert;
+      &.is-disabled {
+        color: $grey;
+        background-color: $white;
         .icon {
-          color: $primary;
+          color: $grey;
         }
       }
-      &.danger {
+      &:not(.is-disabled) {
         &:hover {
-          color: $danger;
-          background-color: $danger-invert;
+          color: $primary;
+          background-color: $primary-invert;
           .icon {
-            color: $danger;
+            color: $primary;
           }
         }
-      }
-      &.info {
-        &:hover {
-          color: $info;
-          background-color: $info-invert;
-          .icon {
+        &.danger {
+          &:hover {
+            color: $danger;
+            background-color: $danger-invert;
+            .icon {
+              color: $danger;
+            }
+          }
+        }
+        &.info {
+          &:hover {
             color: $info;
+            background-color: $info-invert;
+            .icon {
+              color: $info;
+            }
           }
         }
       }

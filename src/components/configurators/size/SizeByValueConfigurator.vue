@@ -19,7 +19,15 @@
     </div>
     <div v-if="selectedEntityProp" class="columns mb-0 is-multiline">
       <div class="column is-two-thirds-desktop is-full-tablet">
-        <div v-if="selectedDataType !== 'BOOLEAN'">
+        <div class="is-flex" v-if="selectedDataType !== 'BOOLEAN'">
+          <b-field
+            class="mr-4 is-flex-shrink-1"
+            :label="$t('flow.visualization.colorConfig.steps')"
+          >
+            <b-select :value="sizes.length" @input="updateSteps" size="is-small" expanded>
+              <option v-for="index in stepArray" :key="index" :value="index">{{ index }}</option>
+            </b-select>
+          </b-field>
           <b-field :label="$t('flow.visualization.displayAs')">
             <b-radio v-model="units" native-value="meters" size="is-small" class="mr-4">
               {{ $t('units.meters') }}
@@ -32,57 +40,22 @@
       </div>
     </div>
     <!-- todo: change to look closer to color configurator -->
-    <div v-if="selectedEntityProp" class="columns mb-0 is-multiline">
-      <div class="column pb-0 is-two-thirds-desktop is-full-tablet">
-        <div class="is-flex min-max">
-          <div class="values is-flex is-flex-shrink-1 is-flex-direction-column">
-            <div class="is-flex">
-              <b-field :label="$t('flow.visualization.sizeConfig.value')">
-                <b-numberinput
-                  v-model="currentMaxValue"
-                  :controls="false"
-                  :min-step="1e-15"
-                  step="1"
-                  size="is-small"
-                />
-                <b-icon class="mx-2" icon="angle-right" pack="far" size="is-small"></b-icon>
-              </b-field>
-              <b-field :label="$t('flow.visualization.sizeConfig.size') + ' (' + miniUnits + ')'">
-                <b-numberinput
-                  v-model="currentMaxSize"
-                  :controls="false"
-                  :min-step="1e-15"
-                  step="1"
-                  size="is-small"
-                />
-              </b-field>
-            </div>
-            <div class="is-flex">
-              <b-field>
-                <b-numberinput
-                  v-model="currentMinValue"
-                  :controls="false"
-                  :min-step="1e-15"
-                  step="1"
-                  size="is-small"
-                />
-                <b-icon class="mx-2" icon="angle-right" pack="far" size="is-small"></b-icon>
-              </b-field>
-              <b-field>
-                <b-numberinput
-                  v-model="currentMinSize"
-                  :controls="false"
-                  :min-step="1e-15"
-                  step="1"
-                  size="is-small"
-                />
-              </b-field>
-            </div>
-          </div>
-        </div>
+    <div v-if="value" class="columns mb-0 is-multiline">
+      <div class="column py-0 is-two-thirds-desktop is-full-tablet" v-if="sizes && sizes.length">
+        <ByValueSizeList
+          v-if="sizes.length"
+          v-model="sizes"
+          :min-value="minValue"
+          :max-value="maxValue"
+          :units="units"
+          :dataType="selectedEntityProp.data_type"
+          @resetValues="resetValues"
+          @interpolateMinMax="interpolateMinMax"
+          reversed
+        />
       </div>
     </div>
-    <div class="columns mb-0 is-multiline" v-if="units === 'meters'">
+    <div class="columns mt-2 mb-0 is-multiline" v-if="units === 'meters'">
       <div class="column pb-0 is-flex is-two-thirds-desktop is-full-tablet min-max-px">
         <b-field class="mr-4" :label="$t('flow.visualization.sizeConfig.minPixels')">
           <b-numberinput v-model="minPixels" :controls="false" size="is-small" />
@@ -98,15 +71,18 @@
 <script lang="ts">
 import { Component, Mixins, Watch } from 'vue-property-decorator';
 import { ByValueSizeClause, PropertySummary, SizeClause } from '@movici-flow-common/types';
-import cloneDeep from 'lodash/cloneDeep';
 import ByValueMixin from '../ByValueMixin';
 import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
 import { BY_VALUE_DEFAULT_SIZES } from './defaults';
+import ByValueSizeList from './ByValueSizeList.vue';
+import { recalculateMapping, RecalculateMappingParams } from '../helpers';
+import { MoviciError } from '@movici-flow-common/errors';
 
 @Component({
   name: 'SizeByValueConfigurator',
   components: {
-    AttributeSelector
+    AttributeSelector,
+    ByValueSizeList
   }
 })
 export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeClause>>(
@@ -117,61 +93,29 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
   // custom variables
   sizes: [number, number][] = [];
   units: 'pixels' | 'meters' = 'pixels';
-  minPixels!: number | undefined;
-  maxPixels!: number | undefined;
+  minPixels: number | null = null;
+  maxPixels: number | null = null;
+  nSteps = 2;
+  stepArray: number[] = [2, 3, 4, 5, 6, 7, 8];
 
   get currentClause(): ByValueSizeClause | null {
     if (!this.selectedEntityProp) return null;
-    return {
+
+    const rv: ByValueSizeClause = {
       attribute: this.selectedEntityProp,
       sizes: this.sizes,
-      units: this.units,
-      minPixels: this.minPixels,
-      maxPixels: this.maxPixels
+      units: this.units
     };
+
+    return rv;
   }
 
   get currentMinValue() {
-    return this.currentClause?.sizes[0]?.[0];
-  }
-
-  set currentMinValue(val: number | undefined) {
-    if (val) this.updateMapping(0, 0, val);
+    return this.sizes[0][0];
   }
 
   get currentMaxValue() {
-    return this.currentClause?.sizes[1]?.[0];
-  }
-
-  set currentMaxValue(val: number | undefined) {
-    if (val) this.updateMapping(1, 0, val);
-  }
-
-  get currentMinSize() {
-    return this.currentClause?.sizes[0]?.[1];
-  }
-
-  set currentMinSize(val: number | undefined) {
-    if (val) this.updateMapping(0, 1, val);
-  }
-
-  get currentMaxSize() {
-    return this.currentClause?.sizes[1]?.[1];
-  }
-
-  set currentMaxSize(val: number | undefined) {
-    if (val) this.updateMapping(1, 1, val);
-  }
-
-  get miniUnits() {
-    switch (this.currentClause?.units) {
-      case 'meters':
-        return 'm';
-      case 'pixels':
-        return 'px';
-      default:
-        return '';
-    }
+    return this.sizes[this.sizes.length - 1][0];
   }
 
   get defaults() {
@@ -181,14 +125,7 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
   updateAttribute(val: PropertySummary | null) {
     if (val) {
       this.ensureProp(val);
-
-      if (this.currentMaxValue !== this.maxValue) {
-        this.currentMaxValue = this.maxValue;
-      }
-
-      if (this.currentMinValue !== this.minValue) {
-        this.currentMinValue = this.minValue;
-      }
+      this.resetByDataType(val.data_type);
     }
   }
 
@@ -199,10 +136,62 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
     }
   }
 
-  updateMapping(i: number, j: number, value: number) {
-    const sizes = cloneDeep(this.sizes);
-    sizes[i][j] = value;
-    this.sizes = sizes;
+  updateSteps(nSteps: number) {
+    if (this.selectedDataType === 'BOOLEAN' && nSteps !== 2) {
+      throw new MoviciError('Invalid steps for boolean');
+    }
+
+    this.nSteps = nSteps;
+    this.recalculateSizeMapping({ nSteps });
+  }
+
+  recalculateSizeMapping(params?: Partial<RecalculateMappingParams<number>>) {
+    this.sizes = recalculateMapping(
+      {
+        values: params?.values ? params.values : this.sizes.map(size => size[0]),
+        output: params?.output ? params.output : this.sizes.map(size => size[1]),
+        nSteps: params?.nSteps ?? this.nSteps,
+        minValue: params?.forceRecalculateValues ? this.minValue : this.currentMinValue,
+        maxValue: params?.forceRecalculateValues ? this.maxValue : this.currentMaxValue,
+        maxValueAsLastValue: true,
+        forceRecalculateValues: params?.forceRecalculateValues
+      },
+      () => 0
+    );
+  }
+
+  interpolateMinMax() {
+    this.sizes = recalculateMapping(
+      {
+        values: this.sizes.map(size => size[0]),
+        output: this.sizes.map(size => size[1]),
+        nSteps: this.nSteps,
+        minValue: this.currentMinValue,
+        maxValue: this.currentMaxValue,
+        maxValueAsLastValue: true,
+        forceRecalculateValues: true
+      },
+      () => 0
+    );
+  }
+
+  resetByDataType(dataType: string) {
+    this.nSteps = this.defaultDataTypeSteps;
+
+    switch (dataType) {
+      case 'BOOLEAN':
+        this.recalculateSizeMapping({ nSteps: 2, forceRecalculateValues: true });
+        break;
+      case 'INT':
+      case 'DOUBLE':
+      default:
+        this.resetValues();
+        break;
+    }
+  }
+
+  resetValues() {
+    this.recalculateSizeMapping({ forceRecalculateValues: true });
   }
 
   // TODO: create validator according to color length
@@ -226,10 +215,11 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
 
     const localValue: ByValueSizeClause = Object.assign({}, this.defaults, this.value.byValue);
 
-    this.minPixels = localValue?.minPixels;
-    this.maxPixels = localValue?.maxPixels;
-    this.sizes = localValue.sizes ?? [];
+    this.sizes = localValue.sizes;
     this.units = localValue.units;
+    this.minPixels = localValue.minPixels ?? null;
+    this.maxPixels = localValue.maxPixels ?? null;
+
     this.pickSelectedEntityProp(localValue.attribute);
   }
 
@@ -244,8 +234,10 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
 <style scoped lang="scss">
 .size,
 .values {
-  .label {
-    height: 1.25rem;
+  ::v-deep {
+    .label {
+      height: 1.25rem;
+    }
   }
 }
 .min-max-px,

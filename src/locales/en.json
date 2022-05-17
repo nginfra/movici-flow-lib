@@ -132,7 +132,6 @@
         "value": "Value",
         "valueRange": "Value (range)",
         "invertColors": "Invert color order",
-        "resetValues": "Reset values to default",
         "advanced": {
           "title": "Advanced settings",
           "fillOpacity": "Fill Opacity",
@@ -180,6 +179,8 @@
         "viewDeleteSuccess": "View successfully deleted",
         "viewUpdateSuccess": "View successfully updated"
       },
+      "resetValues": "Reset values to default",
+      "interpolateMinMax": "Recalculate step values",
       "displayAs": "Display as",
       "errorDisplayAs": "No compatible attributes found for this configurator",
       "editVisualizer": "Edit visualiser",

@@ -41,7 +41,11 @@
     <div class="is-flex-grow-1 mapped-values">
       <span class="is-flex">
         <label class="label mr-1 is-flex-grow-1">{{ valuesLabel }}</label>
-        <MovActionMenu :value="valueActions" @resetValues="$emit('resetValues')" />
+        <MovActionMenu
+          :value="valueActions"
+          @resetValues="$emit('resetValues')"
+          @interpolateMinMax="$emit('interpolateMinMax')"
+        />
       </span>
       <template v-if="isMode('boolean')">
         <b-field v-for="(val, index) in mappingValues" class="is-align-items-center" :key="index">
@@ -124,30 +128,44 @@ export default class ByValueColorList extends Vue {
   @Prop({ default: 1 }) readonly maxValue!: number;
   @Prop({ type: Array, default: () => [] }) readonly presets!: (RGBAColor | string)[];
   @Prop({ type: Boolean, default: false }) readonly reversed!: boolean;
+  @Prop({ type: String, default: null }) readonly dataType!: string | null;
 
   selectedIndex = -1;
   showColorPicker = false;
-  colorActions: ActionMenuItem[] = [
-    {
-      label: '' + this.$t('flow.visualization.colorConfig.invertColors'),
-      icon: 'sort',
-      iconPack: 'far',
-      event: 'invertColors'
-    }
-  ];
 
-  valueActions: ActionMenuItem[] = [
-    {
-      label: '' + this.$t('flow.visualization.colorConfig.resetValues'),
-      icon: 'undo',
-      iconPack: 'far',
-      event: 'resetValues'
-    }
-  ];
+  get colorActions(): ActionMenuItem[] {
+    return [
+      {
+        label: '' + this.$t('flow.visualization.colorConfig.invertColors'),
+        icon: 'sort',
+        iconPack: 'far',
+        event: 'invertColors'
+      }
+    ];
+  }
+
+  get valueActions(): ActionMenuItem[] {
+    return [
+      {
+        label: '' + this.$t('flow.visualization.resetValues'),
+        icon: 'undo',
+        iconPack: 'far',
+        event: 'resetValues'
+      },
+      {
+        label: '' + this.$t('flow.visualization.interpolateMinMax'),
+        icon: 'sort',
+        iconPack: 'far',
+        event: 'interpolateMinMax',
+        isDisabled: this.dataType === 'BOOLEAN'
+      }
+    ];
+  }
 
   get orderedValue(): ColorMapping {
     return this.reversed ? this.value.slice().reverse() : this.value;
   }
+
   get colors(): RGBAColor[] {
     return this.orderedValue.map(val => val[1]);
   }
@@ -168,6 +186,11 @@ export default class ByValueColorList extends Vue {
 
   get translateY() {
     return this.selectedIndex * 42 - 7;
+  }
+
+  get gradientColorStyle() {
+    const gradientString = [...this.colors.map(color => colorTripleToHex(color))].join();
+    return 'background: linear-gradient(' + gradientString + ')';
   }
 
   invertColors() {
@@ -215,11 +238,6 @@ export default class ByValueColorList extends Vue {
       values = values.slice().reverse();
     }
     this.$emit('input', values);
-  }
-
-  get gradientColorStyle() {
-    const gradientString = [...this.colors.map(color => colorTripleToHex(color))].join();
-    return 'background: linear-gradient(' + gradientString + ')';
   }
 
   openColorPicker(index: number) {

@@ -132,7 +132,6 @@
         "value": "Waarde",
         "valueRange": "Waarde (bereik)",
         "invertColors": "Kleurvolgorde omkeren",
-        "resetValues": "Waarden terugzetten",
         "advanced": {
           "title": "Geavanceerd",
           "fillOpacity": "Fill opacity",
@@ -180,6 +179,8 @@
         "viewDeleteSuccess": "View succesvol verwijderd",
         "viewUpdateSuccess": "View succesvol ge-updatet"
       },
+      "resetValues": "Waarden terugzetten",
+      "interpolateMinMax": "Stap-waarden herberekenen",
       "displayAs": "Weergeven in",
       "errorDisplayAs": "Geen compatibele attributen gevonden voor deze configurator",
       "editVisualizer": "Bewerk Visualizer",
