@@ -14,22 +14,16 @@
           :message="errors['popup-when']"
         >
           <b-radio
+            v-for="(when, idx) in whenRadio"
+            :key="when"
             :value="currentClause.when"
-            @input="updateValue({ when: $event })"
-            class="mr-4"
+            @input="updateValue({ when })"
+            :class="{ 'mr-4': idx !== whenRadio.length - 1 }"
             size="is-small"
-            native-value="onHover"
+            :native-value="when"
           >
-            {{ $t('flow.visualization.popup.onHover') }}</b-radio
+            {{ $t('flow.visualization.popup.' + when) }}</b-radio
           >
-          <b-radio
-            :value="currentClause.when"
-            @input="updateValue({ when: $event })"
-            size="is-small"
-            native-value="onClick"
-          >
-            {{ $t('flow.visualization.popup.onClick') }}
-          </b-radio>
         </b-field>
       </div>
     </div>
@@ -37,22 +31,16 @@
       <div class="column is-two-thirds">
         <label class="label"> {{ $t('flow.visualization.popup.position') }}</label>
         <b-radio
+          v-for="(position, idx) in positionRadio"
+          :key="position"
           :value="currentClause.position"
-          @input="updateValue({ position: $event })"
-          class="mr-4"
+          @input="updateValue({ position })"
+          :class="{ 'mr-4': idx !== position.length - 1 }"
           size="is-small"
-          native-value="dynamic"
+          :native-value="position"
         >
-          {{ $t('flow.visualization.popup.dynamic') }}</b-radio
+          {{ $t('flow.visualization.popup.' + position) }}</b-radio
         >
-        <b-radio
-          :value="currentClause.position"
-          @input="updateValue({ position: $event })"
-          size="is-small"
-          native-value="static"
-        >
-          {{ $t('flow.visualization.popup.static') }}
-        </b-radio>
       </div>
     </div>
     <div class="columns mb-0" v-if="showPopup">
@@ -72,9 +60,11 @@
       <div class="column is-full">
         <label class="label">{{ $t('misc.properties') }}</label>
         <b-dropdown
-          aria-role="list"
+          class="mr-4"
           :value="items"
           @input="addItem($event)"
+          :close-on-click="false"
+          aria-role="list"
           scrollable
           max-height="200"
         >
@@ -92,6 +82,7 @@
             v-for="(item, index) in availableItems"
             :value="item.attribute"
             :key="index"
+            :title="item.attribute.description"
             :focusable="false"
             aria-role="listitem"
             class="is-size-7"
@@ -99,7 +90,13 @@
             {{ propertyString(item.attribute) }}
           </b-dropdown-item>
         </b-dropdown>
-        <p v-if="errors['popup-items']" class="error is-size-7 has-text-danger mt-1">
+        <AttributeSuggestions
+          :value="suggestions"
+          :items="items"
+          :entityProps="entityPropsFiltered"
+          @addItem="addItem"
+        />
+        <p v-if="errors['popup-items']" class="error is-size-7 has-text-danger mt-2">
           {{ errors['popup-items'] }}
         </p>
         <Draggable
@@ -107,7 +104,7 @@
           @input="updateValue({ items: $event })"
           v-bind="draggableOptions"
           class="draggable"
-          :class="{ dashed: drag }"
+          :class="{ dashed: drag, 'mt-0': !items.length, 'mt-2': items.length }"
           @start="drag = true"
           @end="drag = false"
         >
@@ -124,7 +121,7 @@
                 </span>
               </span>
               <label class="label is-flex-grow-1 pl-1 pr-3">
-                <span class="attribute text-ellipsis" :title="propertyString(item.attribute)">
+                <span class="attribute text-ellipsis" :title="item.attribute.description">
                   {{ propertyString(item.attribute) }}
                 </span>
               </label>
@@ -155,25 +152,36 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
-import { PropertySummary, PopupClause, PopupItem } from '@movici-flow-common/types';
+import {
+  PropertySummary,
+  PopupClause,
+  PopupItem,
+  FlowVisualizerOptions
+} from '@movici-flow-common/types';
 import { propertyString } from '@movici-flow-common/utils';
 import Draggable from 'vuedraggable';
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
+import AttributeSuggestions from './AttributeSuggestions.vue';
 
 @Component({
+  name: 'PopupConfigurator',
   components: {
-    Draggable
+    Draggable,
+    AttributeSuggestions
   }
 })
 export default class PopupConfigurator extends Mixins(ValidationProvider) {
   @Prop({ default: () => {} }) value!: PopupClause;
   @Prop({ default: () => [] }) entityProps!: PropertySummary[];
   @Prop() declare validator: FormValidator;
+  @Prop({ type: Object, default: () => new Object() }) settings!: FlowVisualizerOptions;
   items: PopupItem[] = [];
   showPopup = false;
   drag = false; // start your engines...
   dynamicTitle = false;
+  whenRadio = ['onHover', 'onClick'];
+  positionRadio = ['dynamic', 'static'];
   propertyString = propertyString;
 
   get defaults() {
@@ -216,6 +224,14 @@ export default class PopupConfigurator extends Mixins(ValidationProvider) {
       ghostClass: 'ghost',
       handle: '.grip'
     };
+  }
+
+  get suggestions() {
+    // any new byValue clauses must be added here!
+    return [
+      this.settings?.color?.byValue?.attribute,
+      this.settings?.size?.byValue?.attribute
+    ].filter(attr => attr);
   }
 
   // saves a last version of the clause, then emit whole settings object with new clause

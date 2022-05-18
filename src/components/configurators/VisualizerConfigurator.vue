@@ -171,7 +171,7 @@ import { VisGroup } from '@movici-flow-common/visualizers';
 import VisibilityConfigurator from './VisibilityConfigurator.vue';
 import ColorConfigurator from './color/ColorConfigurator.vue';
 import SizeConfigurator from './size/SizeConfigurator.vue';
-import PopupConfigurator from './PopupConfigurator.vue';
+import PopupConfigurator from './popup/PopupConfigurator.vue';
 import ShapeIconConfigurator from './icon/ShapeIconConfigurator.vue';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
@@ -277,7 +277,8 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
     const vBindDefaults = () => ({
         entityProps: this.properties,
         validator: this.validator,
-        geometry: this.geometry
+        geometry: this.geometry,
+        settings: this.settings
       }),
       vOnDefaults = <T extends keyof FlowVisualizerOptions>(clauseType: T) => {
         return {
@@ -352,7 +353,10 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
       {
         name: '' + this.$t('flow.visualization.popup.popup'),
         component: PopupConfigurator,
-        vBind: { ...vBindDefaults(), value: this.settings?.popup },
+        vBind: {
+          ...vBindDefaults(),
+          value: this.settings?.popup
+        },
         vOn: { ...vOnDefaults('popup') }
       }
     ];

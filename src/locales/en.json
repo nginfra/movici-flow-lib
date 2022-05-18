@@ -202,7 +202,8 @@
         "static": "Static",
         "title": "Popup title",
         "titlePlaceholder": "My visualiser",
-        "setAsDynamicTitle": "Set as title"
+        "setAsDynamicTitle": "Set as title",
+        "suggestions": "Suggestions"
       },
       "save": "Save",
       "saveAndClose": "Save and close",
