@@ -22,9 +22,7 @@
 import { MAPPED_ICONS } from '@movici-flow-common/visualizers/visualizerModules/iconCommon';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
-@Component({
-  name: 'ShapeSelector'
-})
+@Component({ name: 'ShapeSelector' })
 export default class ShapeSelector extends Vue {
   @Prop({ type: String, default: null }) readonly value!: string | null;
 

@@ -19,26 +19,18 @@
         </b-field>
       </div>
     </div>
-    <template v-if="clauseType">
-      <ShapeStaticConfigurator
-        v-if="clauseType === 'static'"
-        :value="staticSettings"
-        @input="updateSettings($event)"
-      />
-    </template>
+    <ShapeStaticConfigurator
+      v-if="clauseType === 'static'"
+      :value="currentClause"
+      @input="updateSettings"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import ShapeStaticConfigurator from './ShapeStaticConfigurator.vue';
-import {
-  ByValueIconClause,
-  IconClause,
-  LegendOptions,
-  PropertyType,
-  StaticIconClause
-} from '@movici-flow-common/types';
+import { IconClause, LegendOptions, PropertyType } from '@movici-flow-common/types';
 
 @Component({
   name: 'ShapeConfigurator',
@@ -47,8 +39,8 @@ import {
   }
 })
 export default class ShapeConfigurator extends Vue {
-  @Prop() readonly value!: IconClause;
-  @Prop() entityProps!: PropertyType[];
+  @Prop({ type: Object, default: () => new Object() }) readonly value!: IconClause;
+  @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertyType[];
   currentClause: IconClause = {};
   clauseType: 'static' | 'byValue' | null = null;
   showLegend = false;
@@ -58,14 +50,6 @@ export default class ShapeConfigurator extends Vue {
   advLegend: LegendOptions = {
     labels: ['Special', 'Undefined']
   };
-
-  get staticSettings(): Partial<StaticIconClause> {
-    return this.currentClause.static ?? {};
-  }
-
-  get byValueSettings(): Partial<ByValueIconClause> {
-    return this.currentClause.byValue ?? { icons: [] };
-  }
 
   updateSettings(updatedClause: IconClause) {
     this.currentClause = updatedClause;

@@ -2,7 +2,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class LayerMixin extends Vue {
-  @Prop([Object]) readonly map?: mapboxgl.Map;
+  @Prop({ type: Object }) readonly map?: mapboxgl.Map;
   sources: Record<string, mapboxgl.AnySourceData> | null = null;
   layer: mapboxgl.AnyLayer | null = null;
   id!: string;

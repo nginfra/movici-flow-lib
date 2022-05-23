@@ -60,9 +60,7 @@ function validFlowVisualizerTypeOrNull(val: unknown): val is FlowVisualizerType 
   return validFlowVisualizerType(val);
 }
 
-@Component({
-  name: 'GeometrySelector'
-})
+@Component({ name: 'GeometrySelector' })
 export default class GeometrySelector extends Vue {
   @Prop({ type: String }) readonly showAs!: 'button' | 'radio';
   @Prop({ type: String }) readonly label!: string;

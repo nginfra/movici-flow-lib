@@ -47,20 +47,18 @@ import { CameraOptions } from '@movici-flow-common/types';
 
 const DEFAULT_MIN_ZOOM = 0;
 const DEFAULT_MAX_ZOOM = 20;
-@Component({
-  name: 'NavigationControl'
-})
+@Component({ name: 'NavigationControl' })
 export default class NavigationControl extends Vue {
   @Prop({ type: Boolean, default: false }) readonly isRight!: boolean;
-  @Prop([Object]) readonly value!: CameraOptions;
-  @Prop([Object]) readonly centerCamera!: CameraOptions;
+  @Prop({ type: Object }) readonly value?: CameraOptions;
+  @Prop({ type: Object }) readonly centerCamera?: CameraOptions;
 
   get bearing() {
-    return this.value ? this.value.bearing : 0;
+    return this.value?.bearing ?? 0;
   }
 
   get zoom() {
-    return this.value ? this.value.zoom : 0;
+    return this.value?.zoom ?? 0;
   }
 
   set zoom(val: number) {

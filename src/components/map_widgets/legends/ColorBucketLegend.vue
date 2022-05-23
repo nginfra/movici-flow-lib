@@ -28,11 +28,9 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ColorLegendItem, FlowVisualizerType, RGBAColor } from '@movici-flow-common/types';
 import { colorTripleToHex } from '@movici-flow-common/visualizers/maps/colorMaps';
 
-@Component({
-  name: 'ColorBucketLegend'
-})
+@Component({ name: 'ColorBucketLegend' })
 export default class ColorBucketLegend extends Vue {
-  @Prop({ type: Object }) value!: ColorLegendItem;
+  @Prop({ type: Object }) readonly value!: ColorLegendItem;
 
   get reversedColors() {
     const colors = [...this.value.colorLegends];

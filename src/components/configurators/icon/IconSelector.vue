@@ -27,9 +27,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import SOLID_ICONS from '@movici-flow-common/assets/icons/icons.json';
 import { IconPackName } from '@movici-flow-common/visualizers/visualizerModules/iconCommon';
 
-@Component({
-  name: 'IconSelector'
-})
+@Component({ name: 'IconSelector' })
 export default class IconSelector extends Vue {
   @Prop({ type: String, default: null }) readonly value!: string | null;
   @Prop({ type: String, default: 'fas' }) readonly pack!: IconPackName;

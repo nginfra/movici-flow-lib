@@ -35,11 +35,9 @@
 import View from '@deck.gl/core/views/view';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
-@Component({
-  name: 'ViewLoaderModal'
-})
+@Component({ name: 'ViewLoaderModal' })
 export default class ViewLoaderModal extends Vue {
-  @Prop({ type: Array, default: () => [] }) views!: View[];
+  @Prop({ type: Array, default: () => [] }) readonly views!: View[];
 
   selectedView: View | null = null;
 

@@ -235,18 +235,19 @@ const DEFAULT_OPTION_CONTAINERS: { [key: string]: FeatureDrawOption } = {
   }
 };
 
-@Component({
-  name: 'FeatureDrawControl'
-})
+@Component({ name: 'FeatureDrawControl' })
 export default class FeatureDrawControl extends Vue {
-  @Prop({ type: Array, default: () => [] }) value!: Feature<Geometry, GeoJsonProperties>[];
-  @Prop({ type: Array, default: () => [] }) options!: (Partial<FeatureDrawOption> | string)[];
+  @Prop({ type: Array, default: () => [] }) readonly value!: Feature<Geometry, GeoJsonProperties>[];
+  @Prop({ type: Array, default: () => [] }) readonly options!: (
+    | Partial<FeatureDrawOption>
+    | string
+  )[];
   @Prop({ type: String, default: 'geojson-layer' }) readonly layerId!: string;
-  @Prop({ type: Function }) setCursorCallback!: (cb: CursorCallback) => void;
-  @Prop({ type: Function }) registerMapOnClick!: (
+  @Prop({ type: Function }) readonly setCursorCallback?: (cb: CursorCallback) => void;
+  @Prop({ type: Function }) readonly registerMapOnClick?: (
     callbacks: Record<string, MapOnClickCallback>
   ) => void;
-  @Prop({ type: Array, default: () => [] }) selectedFeatureIndexes!: number[];
+  @Prop({ type: Array, default: () => [] }) readonly selectedFeatureIndexes!: number[];
   nebulaMode: NebulaMode = new ViewMode();
   modeConfig: { [key: string]: unknown } = {};
   activeOption = '';
@@ -341,7 +342,7 @@ export default class FeatureDrawControl extends Vue {
 
   @Watch('registerMapOnClick', { immediate: true })
   _registerMapOnClick() {
-    this.registerMapOnClick({
+    this.registerMapOnClick?.({
       selected: (e: PickInfo<unknown>) => {
         if (!e.layer && !this.isOptionActive('edit-feature')) {
           this.updateSelected([]);

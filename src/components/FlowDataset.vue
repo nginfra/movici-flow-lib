@@ -125,6 +125,7 @@ import { MoviciError } from '@movici-flow-common/errors';
 import { sortByKeys } from '@movici-flow-common/utils';
 
 @Component({
+  name: 'FlowDataset',
   components: {
     FlowContainer,
     ProjectInfoBox,
@@ -132,8 +133,8 @@ import { sortByKeys } from '@movici-flow-common/utils';
   }
 })
 export default class FlowDataset extends Vue {
-  @Prop([String]) currentProjectName?: string;
-  @Prop([String]) currentScenarioName?: string;
+  @Prop({ type: String }) readonly currentProjectName?: string;
+  @Prop({ type: String }) readonly currentScenarioName?: string;
   currentDataset: Dataset | null = null;
   search = '';
   datasets: Dataset[] = [];

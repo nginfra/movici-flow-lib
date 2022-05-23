@@ -89,13 +89,12 @@ import { STATIC_DEFAULT_SIZES } from './defaults';
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import FormValidator, { isPositive } from '@movici-flow-common/utils/FormValidator';
 
-@Component({
-  name: 'SizeStaticConfigurator'
-})
+@Component({ name: 'SizeStaticConfigurator' })
 export default class SizeStaticConfigurator extends Mixins(ValidationProvider) {
-  @Prop([Object]) readonly value!: SizeClause;
-  @Prop([String]) readonly geometry!: FlowVisualizerType;
-  @Prop([Object]) declare validator: FormValidator;
+  @Prop({ type: Object, default: () => new Object() }) readonly value!: SizeClause;
+  @Prop({ type: String, default: FlowVisualizerType.POINTS })
+  readonly geometry!: FlowVisualizerType;
+  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
   size = 2;
   units: 'pixels' | 'meters' = 'pixels';
   minPixels: number | null = null;

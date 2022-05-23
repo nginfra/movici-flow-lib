@@ -58,11 +58,9 @@ function getCanvasDimensions(map: mapboxgl.Map): [number, number] {
   return [dimensions.width, dimensions.height];
 }
 
-@Component({
-  name: 'Deck'
-})
+@Component({ name: 'Deck' })
 export default class Deck extends Vue {
-  @Prop({ type: Object }) readonly value!: Nullable<CameraOptions>;
+  @Prop({ type: Object, default: null }) readonly value!: Nullable<CameraOptions>;
   @Prop({ type: String, default: 'mapbox://styles/mapbox/light-v10' }) readonly basemap!: string;
   @Prop({ type: String, default: process.env.VUE_APP_MAPBOX_TOKEN }) readonly accessToken!: string;
   @Prop({ type: Object }) readonly controller!: ControllerOptions;

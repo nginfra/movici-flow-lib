@@ -49,14 +49,12 @@ import {
 import { flowUIStore, geocodeStore } from '@movici-flow-common/store/store-accessor';
 import mapboxgl from 'mapbox-gl';
 
-@Component({
-  name: 'SearchBar'
-})
+@Component({ name: 'SearchBar' })
 export default class SearchBar extends Vue {
-  @Prop([Object]) readonly viewState!: CameraOptions;
+  @Prop({ type: Object, default: () => new Object() }) readonly viewState!: CameraOptions;
   @Prop({ type: Object, default: null }) readonly map!: mapboxgl.Map | null;
   @Prop({ type: Boolean, default: false }) readonly isRight!: boolean;
-  @Ref() readonly autocomplete!: { focus: () => void };
+  @Ref('autocomplete') readonly autocomplete!: { focus: () => void };
 
   search = '';
   errors = '';

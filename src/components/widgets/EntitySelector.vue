@@ -72,14 +72,15 @@ interface TypedEntityGroupSummary extends EntityGroupSummary {
 }
 
 @Component({
+  name: 'EntitySelector',
   components: {
     GeometrySelector,
     WidgetContainer
   }
 })
 export default class EntitySelector extends Vue {
-  @Prop() summary!: DatasetSummary;
-  @Prop() currentDataset!: ScenarioDataset | null;
+  @Prop({ type: Object, default: () => new Object() }) readonly summary!: DatasetSummary;
+  @Prop({ type: Object, default: null }) readonly currentDataset!: ScenarioDataset | null;
   activeEntityGroups: boolean[] = [];
   isOpen = true;
   colors = [

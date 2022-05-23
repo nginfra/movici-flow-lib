@@ -12,8 +12,8 @@ import upperFirst from 'lodash/upperFirst';
 
 @Component({ name: 'MovLanguagePicker' })
 export default class MovLanguagePicker extends Vue {
-  @Prop({ type: String, default: 'en' }) value!: string;
-  @Prop({ type: Boolean, default: false }) hasLabel!: boolean;
+  @Prop({ type: String, default: 'en' }) readonly value!: string;
+  @Prop({ type: Boolean, default: false }) readonly hasLabel!: boolean;
 
   languages = ['en', 'nl'];
 

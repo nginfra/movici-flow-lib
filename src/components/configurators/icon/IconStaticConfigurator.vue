@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { StaticIconClause } from '@movici-flow-common/types';
+import { IconClause } from '@movici-flow-common/types';
 import IconSelector from './IconSelector.vue';
 
 @Component({
@@ -21,18 +21,18 @@ import IconSelector from './IconSelector.vue';
   }
 })
 export default class IconStaticConfigurator extends Vue {
-  @Prop() readonly value!: StaticIconClause;
+  @Prop({ type: Object, default: null }) readonly value!: IconClause | null;
 
   get currentIcon() {
-    return this.value.icon ?? null;
+    return this.value?.static?.icon ?? null;
   }
 
   updateIcon(icon: string | null) {
     this.updateSettings(!icon ? {} : { static: { icon } });
   }
 
-  updateSettings(updatedClause: { static?: StaticIconClause }) {
-    this.$emit('input', updatedClause);
+  updateSettings(updatedClause: IconClause) {
+    this.$emit('input', updatedClause as IconClause);
   }
 }
 </script>

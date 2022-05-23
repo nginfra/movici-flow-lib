@@ -18,11 +18,9 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
-@Component({
-  name: 'ModalContent'
-})
+@Component({ name: 'ModalContent' })
 export default class ModalContent extends Vue {
-  @Prop([String]) title?: string;
+  @Prop({ type: String }) readonly title?: string;
 
   get hasFooter() {
     return !!this.$slots.footer;

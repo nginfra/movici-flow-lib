@@ -17,12 +17,10 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
-@Component({
-  name: 'MovPicker'
-})
+@Component({ name: 'MovPicker' })
 export default class MovPicker extends Vue {
-  @Prop({ type: Object }) value!: unknown;
-  @Prop({ type: String, default: '' }) readonly size!: string;
+  @Prop({ type: Object, default: null }) readonly value!: unknown | null;
+  @Prop({ type: String, default: 'is-default' }) readonly size!: string;
   @Prop({ type: String, default: '' }) readonly label!: string;
   @Prop({ type: String, default: '' }) readonly type!: string;
   @Prop({ type: String, default: '' }) readonly placeholder!: string;

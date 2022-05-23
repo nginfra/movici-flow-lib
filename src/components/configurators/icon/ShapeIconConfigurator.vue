@@ -13,7 +13,6 @@
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 import IconConfigurator from './IconConfigurator.vue';
 import ShapeConfigurator from './ShapeConfigurator.vue';
-
 import { IconClause, PropertySummary } from '@movici-flow-common/types';
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
@@ -26,10 +25,10 @@ import FormValidator from '@movici-flow-common/utils/FormValidator';
   }
 })
 export default class ShapeIconConfigurator extends Mixins(ValidationProvider) {
-  @Prop([Object]) readonly shapeClause!: IconClause | null;
-  @Prop([Object]) readonly iconClause!: IconClause | null;
-  @Prop([Array]) readonly entityProps!: PropertySummary[];
-  @Prop([Object]) declare validator: FormValidator;
+  @Prop({ type: Object, default: null }) readonly shapeClause!: IconClause | null;
+  @Prop({ type: Object, default: null }) readonly iconClause!: IconClause | null;
+  @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
+  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
 
   get shapeSettings() {
     return this.shapeClause;

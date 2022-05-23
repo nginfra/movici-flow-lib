@@ -57,12 +57,9 @@ import { flowStore } from '@movici-flow-common/store/store-accessor';
   components: { VisualizerElement, VisualizerConfigurator, Draggable }
 })
 export default class FlowLayerPicker extends Vue {
-  @Prop({ type: Array, default: () => [] })
-  readonly value!: ComposableVisualizerInfo[];
-  @Prop({ type: Object, default: null })
-  readonly scenario!: Scenario | null;
-  @Prop({ type: Number, default: null })
-  readonly timestamp!: number | null;
+  @Prop({ type: Array, default: () => [] }) readonly value!: ComposableVisualizerInfo[];
+  @Prop({ type: Object, default: null }) readonly scenario!: Scenario | null;
+  @Prop({ type: Number, default: null }) readonly timestamp!: number | null;
 
   currentIndex: number | null = null;
   vConfigOpen = false;

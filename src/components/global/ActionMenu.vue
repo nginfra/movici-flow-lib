@@ -43,7 +43,7 @@ import { ActionMenuItem } from '@movici-flow-common/types';
 
 @Component({ name: 'MovActionMenu' })
 export default class MovActionMenu extends Mixins(FixedPosition) {
-  @Prop({ default: [] }) readonly value!: ActionMenuItem[];
+  @Prop({ type: Array, default: () => [] }) readonly value!: ActionMenuItem[];
   @Ref('anchorRef') declare readonly anchorRef: HTMLElement;
   @Ref('popupRef') declare readonly popupRef: HTMLElement;
   adjust = {

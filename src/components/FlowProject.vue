@@ -76,6 +76,7 @@ import { buildFlowUrl } from '@movici-flow-common/utils';
 import { MoviciError } from '@movici-flow-common/errors';
 
 @Component({
+  name: 'FlowProject',
   components: {
     FlowContainer,
     MapVis,
@@ -86,8 +87,8 @@ import { MoviciError } from '@movici-flow-common/errors';
   }
 })
 export default class FlowProject extends Vue {
-  @Prop([String]) currentProjectName?: string;
-  @Prop([String]) currentScenarioName?: string;
+  @Prop({ type: String }) readonly currentProjectName?: string;
+  @Prop({ type: String }) readonly currentScenarioName?: string;
 
   viewState: Nullable<CameraOptions> = defaults.viewState();
 

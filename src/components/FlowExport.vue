@@ -60,6 +60,7 @@ import FormValidator from '../utils/FormValidator';
 import { flowStore, flowVisualizationStore } from '../store/store-accessor';
 
 @Component({
+  name: 'FlowExport',
   components: {
     FlowLayerPicker,
     FlowContainer,

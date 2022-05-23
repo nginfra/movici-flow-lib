@@ -41,14 +41,12 @@ interface DynamicPositionOpts {
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { CameraOptions, PopupContent } from '@movici-flow-common/types';
 
-@Component({
-  name: 'DynamicDataView'
-})
+@Component({ name: 'DynamicDataView' })
 export default class DynamicDataView extends Vue {
   @Prop({ type: Object, default: null }) readonly value!: PopupContent | null;
   @Prop({ type: Object, default: null }) readonly map!: mapboxgl.Map | null;
-  @Prop([Object]) readonly viewState!: CameraOptions;
-  @Prop([Object]) readonly borderPadding?: {
+  @Prop({ type: Object }) readonly viewState?: CameraOptions;
+  @Prop({ type: Object }) readonly borderPadding?: {
     top: number;
     right: number;
     bottom: number;

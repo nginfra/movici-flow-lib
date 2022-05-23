@@ -70,7 +70,7 @@ import FormValidator, { ErrorDict, GlobalErrorDict } from '../utils/FormValidato
 @Component
 export default class ValidationProvider extends Vue {
   // Must be instantiate by consumers of this class
-  @Prop([String]) readonly name!: string;
+  @Prop({ type: String, default: '' }) readonly name!: string;
   validator!: FormValidator | null;
   errors: ErrorDict | GlobalErrorDict = {};
 

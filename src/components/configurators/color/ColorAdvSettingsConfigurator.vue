@@ -65,10 +65,11 @@ import { MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
   }
 })
 export default class ColorAdvSettingsConfigurator extends Vue {
-  @Prop() value!: AdvancedColorSettings | null;
-  @Prop() geometry!: FlowVisualizerType;
-  @Prop() fillType!: 'buckets' | 'gradient';
-  @Prop() clauseType!: 'static' | 'byValue' | null;
+  @Prop({ type: Object, default: null }) readonly value!: AdvancedColorSettings | null;
+  @Prop({ type: String, default: FlowVisualizerType.POINTS })
+  readonly geometry!: FlowVisualizerType;
+  @Prop({ type: String, default: 'buckets' }) readonly fillType!: 'buckets' | 'gradient';
+  @Prop({ type: String, default: null }) readonly clauseType!: 'static' | 'byValue' | null;
   fillOpacity = 100;
   renderOrder: RenderOrderType = RenderOrderType.DISABLED;
   isOpen = false;

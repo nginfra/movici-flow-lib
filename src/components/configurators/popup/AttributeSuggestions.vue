@@ -22,13 +22,11 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { PropertySummary, PopupItem } from '@movici-flow-common/types';
 import { sortByKeys } from '@movici-flow-common/utils';
 
-@Component({
-  name: 'AttributeSuggestions'
-})
+@Component({ name: 'AttributeSuggestions' })
 export default class AttributeSuggestions extends Vue {
-  @Prop({ type: Array, default: () => [] }) value!: PropertySummary[];
-  @Prop({ type: Array, default: () => [] }) items!: PopupItem[];
-  @Prop({ type: Array, default: () => [] }) entityProps!: PropertySummary[];
+  @Prop({ type: Array, default: () => [] }) readonly value!: PropertySummary[];
+  @Prop({ type: Array, default: () => [] }) readonly items!: PopupItem[];
+  @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
   @Prop({ type: Array, default: () => ['id', 'display_name', 'name', 'reference'] })
   defaultSuggestionNames!: string[];
 

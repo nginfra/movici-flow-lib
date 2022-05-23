@@ -25,6 +25,10 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { SimulationMode, TimeOrientedSimulationInfo } from '@movici-flow-common/types';
 
+function defaultCustomTimeFormat(val: number) {
+  return new Date(val * 1000).toLocaleString('NL-nl');
+}
+
 function defaultTimelineInfo(): TimeOrientedSimulationInfo {
   return {
     mode: SimulationMode.TIME_ORIENTED,
@@ -34,24 +38,19 @@ function defaultTimelineInfo(): TimeOrientedSimulationInfo {
     duration: 86400
   };
 }
-@Component({
-  name: 'TimeSlider'
-})
+
+@Component({ name: 'TimeSlider' })
 export default class TimeSlider extends Vue {
   @Prop({ type: Number, default: 0 }) readonly value!: number;
   @Prop({ type: String, default: 'is-primary' }) readonly type!: string;
   @Prop({ type: Boolean, default: true }) readonly tooltip!: boolean;
   @Prop({ type: Object, default: () => defaultTimelineInfo() })
   readonly timelineInfo!: TimeOrientedSimulationInfo;
-  @Prop([Function]) readonly customTimeFormat?: (val: number) => string;
+  @Prop({ type: Function, default: () => defaultCustomTimeFormat })
+  readonly customTimeFormat!: (val: number) => string;
 
   get customFormatter(): (val: number) => string {
-    return (
-      this.customTimeFormat ||
-      ((val: number) => {
-        return new Date(val * 1000).toLocaleString('NL-nl');
-      })
-    );
+    return this.customTimeFormat;
   }
 
   toFormattedDateTime(relativeTime: number) {

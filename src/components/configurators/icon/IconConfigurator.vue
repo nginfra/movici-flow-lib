@@ -21,7 +21,7 @@
     </div>
     <IconStaticConfigurator
       v-if="clauseType === 'static'"
-      :value="staticSettings"
+      :value="currentClause"
       @input="updateSettings"
     />
   </div>
@@ -30,13 +30,7 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import IconStaticConfigurator from './IconStaticConfigurator.vue';
-import {
-  ByValueIconClause,
-  IconClause,
-  LegendOptions,
-  PropertySummary,
-  StaticIconClause
-} from '@movici-flow-common/types';
+import { IconClause, LegendOptions, PropertySummary } from '@movici-flow-common/types';
 
 @Component({
   name: 'IconConfigurator',
@@ -45,22 +39,14 @@ import {
   }
 })
 export default class IconConfigurator extends Vue {
-  @Prop() readonly value!: IconClause;
-  @Prop() entityProps!: PropertySummary[];
+  @Prop({ type: Object, default: () => new Object() }) readonly value!: IconClause;
+  @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
   currentClause: IconClause = {};
   clauseType: 'static' | 'byValue' | null = null;
   showLegend = false;
   legend: LegendOptions = {
     title: ''
   };
-
-  get staticSettings(): Partial<StaticIconClause> {
-    return this.currentClause.static ?? {};
-  }
-
-  get byValueSettings(): Partial<ByValueIconClause> {
-    return this.currentClause.byValue ?? { icons: [] };
-  }
 
   updateSettings(updatedClause: IconClause) {
     this.currentClause = updatedClause;

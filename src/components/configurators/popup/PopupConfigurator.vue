@@ -172,10 +172,11 @@ import AttributeSuggestions from './AttributeSuggestions.vue';
   }
 })
 export default class PopupConfigurator extends Mixins(ValidationProvider) {
-  @Prop({ default: () => {} }) value!: PopupClause;
-  @Prop({ default: () => [] }) entityProps!: PropertySummary[];
-  @Prop() declare validator: FormValidator;
-  @Prop({ type: Object, default: () => new Object() }) settings!: FlowVisualizerOptions;
+  @Prop({ type: Object }) readonly value?: PopupClause;
+  @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
+  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
+  @Prop({ type: Object }) readonly settings?: FlowVisualizerOptions;
+
   items: PopupItem[] = [];
   showPopup = false;
   drag = false; // start your engines...

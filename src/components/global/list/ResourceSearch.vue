@@ -13,9 +13,7 @@
 import { hasOwnProperty } from '@movici-flow-common/utils';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
-@Component({
-  name: 'MovResourceSearch'
-})
+@Component({ name: 'MovResourceSearch' })
 export default class MovResourceSearch<T> extends Vue {
   @Prop({ type: Array, default: () => [] }) readonly value!: T[];
   @Prop({ type: Array, default: () => [] }) readonly items!: T[];

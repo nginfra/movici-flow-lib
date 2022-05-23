@@ -43,9 +43,7 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { Field } from '@/types';
 import { ButtonItem } from '@movici-flow-common/types';
 
-@Component({
-  name: 'EditModal'
-})
+@Component({ name: 'EditModal' })
 export default class EditModal<T> extends Vue {
   @Prop({ type: Boolean }) readonly active!: boolean;
   @Prop({ type: Object }) readonly value!: T;

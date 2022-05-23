@@ -42,11 +42,9 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { flowStore } from '@movici-flow-common/store/store-accessor';
 import { ActionMenuItem } from '@movici-flow-common/types';
 
-@Component({
-  name: 'ProjectInfoBox'
-})
+@Component({ name: 'ProjectInfoBox' })
 export default class ProjectInfoBox extends Vue {
-  @Prop({ type: Boolean, default: false }) edit!: boolean;
+  @Prop({ type: Boolean, default: false }) readonly edit!: boolean;
   actions: ActionMenuItem[] = [];
 
   get currentProject() {

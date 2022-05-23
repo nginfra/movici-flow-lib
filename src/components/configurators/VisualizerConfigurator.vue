@@ -76,23 +76,6 @@
             />
           </b-field>
         </div>
-        <!-- won't do anything while we got no groups -->
-        <div class="column" v-if="vGroups.length">
-          <b-field :label="$t('resources.visualizerGroup')">
-            <b-select
-              expanded
-              :placeholder="$t('flow.visualizerGroup.select')"
-              :value="vGroupIndex"
-              size="is-small"
-              @input="$emit('update:vGroupIndex', $event)"
-            >
-              <option v-for="(vg, index) in vGroups" :value="index" :key="vg.name">
-                {{ vg.name }}
-              </option>
-            </b-select>
-            <b-button icon-left="plus" class="movici is-round"></b-button>
-          </b-field>
-        </div>
       </div>
       <div class="geometry-settings mb-2">
         <GeometrySelector
@@ -167,7 +150,6 @@ import {
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
 import GeometrySelector from '../widgets/GeometrySelector.vue';
-import { VisGroup } from '@movici-flow-common/visualizers';
 import VisibilityConfigurator from './VisibilityConfigurator.vue';
 import ColorConfigurator from './color/ColorConfigurator.vue';
 import SizeConfigurator from './size/SizeConfigurator.vue';
@@ -230,9 +212,8 @@ const FINALIZERS: Finalizers = {
 export default class VisualizerConfigurator extends Mixins(SummaryListing, ValidationProvider) {
   @Prop({ type: Object, default: () => new ComposableVisualizerInfo() })
   readonly value!: ComposableVisualizerInfo;
-  @Prop([String]) readonly scenarioUUID!: string | null;
+  @Prop({ type: String, default: null }) readonly scenarioUUID!: string | null;
   @Prop({ type: Number, default: -1 }) readonly vGroupIndex!: number;
-  @Prop({ type: Array, default: [] }) readonly vGroups!: VisGroup[];
   @Prop({ type: Boolean, default: false }) readonly noGroups!: boolean;
   datasets: ScenarioDataset[] = [];
   currentDataset: ScenarioDataset | null = null;
@@ -274,12 +255,12 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   get configurators() {
     if (!this.properties || !this.validator || !this.geometry) return [];
 
-    const vBindDefaults = () => ({
+    const vBindDefaults = {
         entityProps: this.properties,
         validator: this.validator,
         geometry: this.geometry,
         settings: this.settings
-      }),
+      },
       vOnDefaults = <T extends keyof FlowVisualizerOptions>(clauseType: T) => {
         return {
           input: (clause: FlowVisualizerOptions[T] | null) => {
@@ -292,7 +273,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
       {
         name: '' + this.$t('flow.visualization.colorConfig.colors'),
         component: ColorConfigurator,
-        vBind: { ...vBindDefaults(), value: this.settings?.color },
+        vBind: { ...vBindDefaults, value: this.settings?.color },
         vOn: { ...vOnDefaults('color') }
       },
       {
@@ -302,7 +283,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
         filterGeometry: [FlowVisualizerType.ICONS],
         component: ShapeIconConfigurator,
         vBind: {
-          ...vBindDefaults(),
+          ...vBindDefaults,
           iconClause: this.settings?.icon,
           shapeClause: this.settings?.shape
         },
@@ -340,21 +321,21 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
           FlowVisualizerType.ARCS
         ],
         component: SizeConfigurator,
-        vBind: { ...vBindDefaults(), value: this.settings?.size },
+        vBind: { ...vBindDefaults, value: this.settings?.size },
         vOn: { ...vOnDefaults('size') }
       },
 
       {
         name: '' + this.$t('flow.visualization.visibilityConfig.visibility'),
         component: VisibilityConfigurator,
-        vBind: { ...vBindDefaults(), value: this.settings?.visibility },
+        vBind: { ...vBindDefaults, value: this.settings?.visibility },
         vOn: { ...vOnDefaults('visibility') }
       },
       {
         name: '' + this.$t('flow.visualization.popup.popup'),
         component: PopupConfigurator,
         vBind: {
-          ...vBindDefaults(),
+          ...vBindDefaults,
           value: this.settings?.popup
         },
         vOn: { ...vOnDefaults('popup') }

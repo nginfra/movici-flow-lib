@@ -133,6 +133,7 @@ import { transformBBox } from '@movici-flow-common/crs';
 import { isError } from 'lodash';
 
 @Component({
+  name: 'FlowVisualization',
   components: {
     FlowLayerPicker,
     FlowContainer,
@@ -177,9 +178,9 @@ import { isError } from 'lodash';
   }
 })
 export default class FlowVisualization extends Vue {
-  @Prop([String]) currentProjectName?: string;
-  @Prop([String]) currentScenarioName?: string;
-  @Prop([String]) currentViewUUID?: UUID;
+  @Prop({ type: String }) readonly currentProjectName?: string;
+  @Prop({ type: String }) readonly currentScenarioName?: string;
+  @Prop({ type: String }) readonly currentViewUUID?: UUID;
   @Ref('tabs') readonly tabs?: Vue;
   @Ref('mapVis') readonly mapVisEl!: MapVis;
   tabHeight: Partial<CSSStyleDeclaration> = {};

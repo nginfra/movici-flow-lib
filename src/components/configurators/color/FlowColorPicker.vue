@@ -28,11 +28,7 @@ interface RGBAObject {
   }
 })
 export default class FlowColorPicker extends Vue {
-  @Prop({
-    type: Array,
-    default: () => DEFAULT_UNDEFINED_COLOR_TRIPLE
-  })
-  readonly value!: RGBAColor;
+  @Prop({ type: Array, default: () => DEFAULT_UNDEFINED_COLOR_TRIPLE }) readonly value!: RGBAColor;
   @Prop({ type: Array, default: () => [] }) readonly presets!: (RGBAColor | string)[];
   @Prop({ type: Boolean, default: false }) readonly open!: boolean;
   @Prop({ type: Number, default: 0 }) readonly translateY!: number;

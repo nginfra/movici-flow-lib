@@ -4,6 +4,11 @@ import entityGroups from '../../data/dummy_entityGroups.json';
 import byValue from '../../data/dummy_byValueClause.json';
 import { cloneDeep } from 'lodash';
 
+const validator = {
+  addModule: jest.fn(),
+  touch: jest.fn()
+};
+
 function updateMapping(mapping_, i, val) {
   const mapping = cloneDeep(mapping_);
   mapping[i][0] = val;
@@ -19,7 +24,8 @@ function wrapperOptions(opts = {}) {
         name: 'Colour',
         value, // if value is undefined, this is a new visualizer
         entityProps,
-        geometry
+        geometry,
+        validator
       }
     },
     mergeWithDefaults: true,

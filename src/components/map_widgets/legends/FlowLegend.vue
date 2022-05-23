@@ -68,7 +68,7 @@ import WidgetContainer from '../WidgetContainer.vue';
   components: { IconLegend, ColorBucketLegend, ColorGradientLegend, WidgetContainer }
 })
 export default class FlowLegend extends Vue {
-  @Prop({ type: Array, default: () => [] }) value!: ComposableVisualizerInfo[];
+  @Prop({ type: Array, default: () => [] }) readonly value!: ComposableVisualizerInfo[];
   legendList: LegendItem[] = [];
 
   isBuckets(colorLegendItem: ColorLegendItem) {

@@ -45,8 +45,3 @@ export function getVisualizerType(info: ComposableVisualizerInfo): Nullable<Visu
       return null;
   }
 }
-
-export interface VisGroup {
-  name: string;
-  layerInfos: ComposableVisualizerInfo[];
-}

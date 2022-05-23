@@ -40,12 +40,10 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
-@Component({
-  name: 'BaseMapControl'
-})
+@Component({ name: 'BaseMapControl' })
 export default class BaseMapControl extends Vue {
   @Prop({ type: Boolean, default: false }) readonly isRight!: boolean;
-  @Prop({ default: 'mapbox://styles/mapbox/light-v10', type: String })
+  @Prop({ type: String, default: 'mapbox://styles/mapbox/light-v10' })
   value!: string;
   value_ = '';
   toggle = false;

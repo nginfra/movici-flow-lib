@@ -124,8 +124,8 @@ type modes = 'buckets' | 'gradient' | 'boolean';
 export default class ByValueColorList extends Vue {
   @Prop({ type: Array, default: () => [] }) readonly value!: ColorMapping;
   @Prop({ type: String, default: 'buckets' }) readonly mode!: modes;
-  @Prop({ default: 0 }) readonly minValue!: number;
-  @Prop({ default: 1 }) readonly maxValue!: number;
+  @Prop({ type: Number, default: 0 }) readonly minValue!: number;
+  @Prop({ type: Number, default: 1 }) readonly maxValue!: number;
   @Prop({ type: Array, default: () => [] }) readonly presets!: (RGBAColor | string)[];
   @Prop({ type: Boolean, default: false }) readonly reversed!: boolean;
   @Prop({ type: String, default: null }) readonly dataType!: string | null;

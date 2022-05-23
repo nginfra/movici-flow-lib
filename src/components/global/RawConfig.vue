@@ -9,12 +9,10 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
-@Component({
-  name: 'MovRawConfig'
-})
+@Component({ name: 'MovRawConfig' })
 export default class MovRawConfig extends Vue {
-  @Prop([Object]) value!: unknown;
-  @Prop({ type: String }) label!: string;
+  @Prop({ type: Object, default: () => new Object() }) readonly value!: unknown;
+  @Prop({ type: String }) readonly label!: string;
   errors: string[] = [];
   formattedRawData = '';
   initialRawData = '';

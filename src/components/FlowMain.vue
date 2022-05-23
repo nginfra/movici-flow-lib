@@ -58,7 +58,7 @@ import FlowExport from './FlowExport.vue';
 import { flowStore, flowUIStore } from '../store/store-accessor'; // create getters for other store it interacts with?
 import { buildFlowUrl } from '@movici-flow-common/utils';
 
-@Component({})
+@Component({ name: 'FlowMain' })
 export default class FlowMain extends Vue {
   get sectionMenu() {
     return flowUIStore.flowSections ?? [];

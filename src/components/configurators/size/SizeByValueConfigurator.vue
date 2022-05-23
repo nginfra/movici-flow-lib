@@ -213,7 +213,7 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
   mounted() {
     this.setupValidator();
 
-    const localValue: ByValueSizeClause = Object.assign({}, this.defaults, this.value.byValue);
+    const localValue: ByValueSizeClause = Object.assign({}, this.defaults, this.value?.byValue);
 
     this.sizes = localValue.sizes;
     this.units = localValue.units;

@@ -27,13 +27,13 @@ import FixedPosition from '@movici-flow-common/mixins/FixedPosition';
 
 @Component({ name: 'MovTooltipInfo' })
 export default class MovTooltipInfo extends Mixins(FixedPosition) {
-  @Prop({ type: String, default: '' }) text!: string;
-  @Prop({ type: String, default: 'info' }) icon!: string;
-  @Prop({ type: String, default: 'is-bottom' }) position!: string;
-  @Prop({ type: String, default: 'is-black' }) color!: string;
-  @Prop({ type: String, default: 'is-small' }) size!: string;
-  @Prop({ type: Boolean, default: false }) active!: boolean;
-  @Prop({ type: Number, default: 0 }) delay!: number;
+  @Prop({ type: String, default: '' }) readonly text!: string;
+  @Prop({ type: String, default: 'info' }) readonly icon!: string;
+  @Prop({ type: String, default: 'is-bottom' }) readonly position!: string;
+  @Prop({ type: String, default: 'is-black' }) readonly color!: string;
+  @Prop({ type: String, default: 'is-small' }) readonly size!: string;
+  @Prop({ type: Boolean, default: false }) readonly active!: boolean;
+  @Prop({ type: Number, default: 0 }) readonly delay!: number;
   @Ref('anchorRef') declare readonly anchorRef: HTMLElement;
   @Ref('popupRef') declare readonly popupRef: HTMLElement;
   adjust = {

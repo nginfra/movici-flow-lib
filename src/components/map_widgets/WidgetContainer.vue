@@ -15,12 +15,10 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
-@Component({
-  name: 'WidgetContainer'
-})
+@Component({ name: 'WidgetContainer' })
 export default class WidgetContainer extends Vue {
-  @Prop({ type: Boolean }) collapsable!: boolean;
-  @Prop({ type: Boolean, default: false }) startCollapsed!: boolean;
+  @Prop({ type: Boolean, default: false }) readonly collapsable!: boolean;
+  @Prop({ type: Boolean, default: false }) readonly startCollapsed!: boolean;
   collapsed_: null | boolean = null;
 
   get collapsedComputed() {

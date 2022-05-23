@@ -17,11 +17,9 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ColorLegendItem } from '@movici-flow-common/types';
 import { colorTripleToHex } from '@movici-flow-common/visualizers/maps/colorMaps';
 
-@Component({
-  name: 'ColorGradientLegend'
-})
+@Component({ name: 'ColorGradientLegend' })
 export default class ColorGradientLegend extends Vue {
-  @Prop({ type: Object }) value!: ColorLegendItem;
+  @Prop({ type: Object }) readonly value!: ColorLegendItem;
 
   gradientColorStyle(item: ColorLegendItem): string {
     const colors = item.colorLegends.map(cl => cl[1]),

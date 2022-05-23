@@ -64,11 +64,11 @@ import VisualizerSummary from './VisualizerSummary.vue';
   }
 })
 export default class VisualizerElement extends Vue {
-  @Prop([Object]) readonly value?: ComposableVisualizerInfo;
+  @Prop({ type: Object, required: true }) readonly value!: ComposableVisualizerInfo;
   @Prop({ type: Array, default: () => [] }) readonly headerButtons!: string[];
   @Prop({ type: Array, default: () => [] }) readonly actionButtons!: string[];
   @Prop({ type: String, default: 'is-bottom' }) readonly tooltipPosition!: string;
-  @Prop({ type: Boolean, default: false }) tooltipActive!: boolean;
+  @Prop({ type: Boolean, default: false }) readonly tooltipActive!: boolean;
   progress: number | null = null;
   isOpen = false;
   actions: ActionMenuItem[] = [
@@ -163,7 +163,7 @@ $container-bg: $white-ter;
       }
       &.not-ready {
         font-style: italic;
-        font-weight: normal;
+        font-weight: bold;
         color: $grey-dark !important;
       }
       cursor: pointer;

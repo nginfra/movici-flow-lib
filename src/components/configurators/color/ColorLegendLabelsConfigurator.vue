@@ -16,9 +16,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { ActionMenuItem, LegendOptions } from '@movici-flow-common/types';
 
-@Component({
-  name: 'ColorLegendLabelsConfigurator'
-})
+@Component({ name: 'ColorLegendLabelsConfigurator' })
 export default class ColorLegendLabelsConfigurator extends Vue {
   @Prop({ type: Object, default: null }) readonly value!: LegendOptions | null;
   @Prop({ type: Number, required: true }) readonly nItems!: number;

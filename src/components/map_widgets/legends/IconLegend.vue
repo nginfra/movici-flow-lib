@@ -33,11 +33,9 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { IconShapeLegendItem } from '@movici-flow-common/types';
 
-@Component({
-  name: 'IconLegend'
-})
+@Component({ name: 'IconLegend' })
 export default class IconLegend extends Vue {
-  @Prop({ type: Object }) value!: IconShapeLegendItem;
+  @Prop({ type: Object }) readonly value!: IconShapeLegendItem;
 
   get isShapeStatic() {
     return (this.value?.shape?.iconLegends.length ?? []) === 1;

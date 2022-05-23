@@ -2,9 +2,7 @@
 import { Component, Mixins } from 'vue-property-decorator';
 import LayerMixin from './LayerMixin';
 
-@Component({
-  name: 'Buildings'
-})
+@Component({ name: 'Buildings' })
 export default class Buildings extends Mixins(LayerMixin) {
   id = 'basemap-static-buildings';
   sources: Record<string, mapboxgl.AnySourceData> = {

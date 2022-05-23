@@ -14,7 +14,7 @@
       />
       <BaseMapControl :value="basemap" @input="setBasemap" />
     </template>
-    <template #control-right="{ popupContent, closePopup }">
+    <template v-if="value" #control-right="{ popupContent, closePopup }">
       <EntitySelector
         :summary="summary"
         :currentDataset="value"
@@ -57,7 +57,7 @@ import { transformBBox } from '@movici-flow-common/crs';
   }
 })
 export default class DatasetViewer extends Mixins(SummaryListing) {
-  @Prop([Object]) value!: Dataset;
+  @Prop({ type: Object }) readonly value?: Dataset;
   @Ref('mapVis') readonly mapVisEl!: MapVis;
   layers: ComposableVisualizerInfo[] = [];
   viewState: Nullable<CameraOptions> = defaults.viewState();

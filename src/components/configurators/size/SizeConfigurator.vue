@@ -49,16 +49,18 @@ import FormValidator from '@movici-flow-common/utils/FormValidator';
 import isEqual from 'lodash/isEqual';
 
 @Component({
+  name: 'SizeConfigurator',
   components: {
     SizeStaticConfigurator,
     SizeByValueConfigurator
   }
 })
 export default class SizeConfigurator extends Mixins(ValidationProvider) {
-  @Prop([Object]) readonly value!: SizeClause;
+  @Prop({ type: Object, default: () => new Object() }) readonly value!: SizeClause;
   @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
-  @Prop([String]) readonly geometry!: FlowVisualizerType;
-  @Prop([Object]) declare validator: FormValidator;
+  @Prop({ type: String, default: FlowVisualizerType.POINTS })
+  readonly geometry!: FlowVisualizerType;
+  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
   currentClause: SizeClause = {};
   clauseType: 'static' | 'byValue' | null = null;
 

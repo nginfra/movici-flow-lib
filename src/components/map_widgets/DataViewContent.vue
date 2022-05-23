@@ -30,9 +30,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { PopupContent, PropertyType } from '@movici-flow-common/types';
 
-@Component({
-  name: 'DataViewContent'
-})
+@Component({ name: 'DataViewContent' })
 export default class DataViewContent extends Vue {
   @Prop({ type: Object, default: null }) readonly value!: PopupContent | null;
   @Prop({ type: Number, default: null }) readonly timestamp!: number | null;

@@ -30,11 +30,9 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { RenderOrderType } from '@movici-flow-common/types';
 
-@Component({
-  name: 'RenderOrder'
-})
+@Component({ name: 'RenderOrder' })
 export default class RenderOrder extends Vue {
-  @Prop({ default: RenderOrderType.DISABLED }) value!: RenderOrderType;
+  @Prop({ type: String, default: RenderOrderType.DISABLED }) readonly value!: RenderOrderType;
 
   get labels(): RenderOrderType[] {
     return Object.values(RenderOrderType);

@@ -88,6 +88,7 @@ import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import isEqual from 'lodash/isEqual';
 
 @Component({
+  name: 'ColorConfigurator',
   components: {
     ColorLegendLabelsConfigurator,
     ColorStaticConfigurator,
@@ -96,10 +97,11 @@ import isEqual from 'lodash/isEqual';
   }
 })
 export default class ColorConfigurator extends Mixins(ValidationProvider) {
-  @Prop([Object]) value!: ColorClause;
+  @Prop({ type: Object }) readonly value?: ColorClause;
   @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
-  @Prop([String]) readonly geometry!: FlowVisualizerType;
-  @Prop([Object]) declare validator: FormValidator;
+  @Prop({ type: String, default: FlowVisualizerType.POINTS })
+  readonly geometry!: FlowVisualizerType;
+  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
   currentClause: ColorClause = {};
   clauseType: 'static' | 'byValue' | null = null;
   advancedSettings: AdvancedColorSettings | null = null;

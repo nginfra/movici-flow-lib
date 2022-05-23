@@ -41,11 +41,9 @@ import { flowStore } from '@movici-flow-common/store/store-accessor';
 import { ActionMenuItem } from '@movici-flow-common/types';
 import { getClassFromStatus } from '@movici-flow-common/utils';
 
-@Component({
-  name: 'ScenarioInfoBox'
-})
+@Component({ name: 'ScenarioInfoBox' })
 export default class ScenarioInfoBox extends Vue {
-  @Prop({ type: Boolean, default: false }) edit!: boolean;
+  @Prop({ type: Boolean, default: false }) readonly edit!: boolean;
   actions: ActionMenuItem[] = [];
 
   get currentScenarioUUID() {

@@ -7,9 +7,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
-@Component({
-  name: 'ResourceCounter'
-})
+@Component({ name: 'ResourceCounter' })
 export default class ResourceCounter extends Vue {
   @Prop({ type: Number }) readonly filteredLength!: number;
   @Prop({ type: Number }) readonly checkedLength!: number;

@@ -82,11 +82,9 @@ import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/Visual
 import { colorTripleToHex } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { FlowVisualizerType, RGBAColor } from '@movici-flow-common/types';
 
-@Component({
-  name: 'VisualizerSummary'
-})
+@Component({ name: 'VisualizerSummary' })
 export default class VisualizerSummary extends Vue {
-  @Prop([Object]) readonly value!: ComposableVisualizerInfo;
+  @Prop({ type: Object, required: true }) readonly value!: ComposableVisualizerInfo;
   @Prop({ type: Number, default: 0 }) readonly progress!: number;
   @Prop({ type: Boolean, default: false }) readonly show!: boolean;
 

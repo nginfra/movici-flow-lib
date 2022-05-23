@@ -114,6 +114,7 @@ import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
 import { MoviciError } from '@movici-flow-common/errors';
 
 @Component({
+  name: 'FlowScenario',
   components: {
     FlowContainer,
     ProjectInfoBox,
@@ -121,8 +122,8 @@ import { MoviciError } from '@movici-flow-common/errors';
   }
 })
 export default class FlowScenario extends Vue {
-  @Prop([String]) currentProjectName?: string;
-  @Prop([String]) currentScenarioName?: string;
+  @Prop({ type: String }) readonly currentProjectName?: string;
+  @Prop({ type: String }) readonly currentScenarioName?: string;
   initialRawData!: string;
 
   get hasProjectsCapabilities() {

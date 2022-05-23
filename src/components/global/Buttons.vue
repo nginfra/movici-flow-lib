@@ -37,7 +37,7 @@ export default class MovButtons extends Vue {
 .is-sticky {
   position: sticky;
   bottom: 0;
-  z-index: 99;
+  z-index: 39;
   div {
     display: flex;
     justify-content: flex-end;

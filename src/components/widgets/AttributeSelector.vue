@@ -23,11 +23,9 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { PropertySummary, PropertyType } from '@movici-flow-common/types';
 
-@Component({
-  name: 'AttributeSelector'
-})
+@Component({ name: 'AttributeSelector' })
 export default class AttributeSelector extends Vue {
-  @Prop({ type: Object }) readonly value!: PropertySummary | null;
+  @Prop({ type: Object, default: null }) readonly value!: PropertySummary | null;
   @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
   @Prop({ type: Function, default: () => () => true }) readonly filterProp!: (
     prop: PropertyType

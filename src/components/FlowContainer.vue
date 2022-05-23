@@ -23,13 +23,10 @@
 
 <script lang="ts">
 import { flowUIStore } from '../store/store-accessor';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
-@Component({})
+@Component({ name: 'FlowContainer' })
 export default class FlowContainer extends Vue {
-  @Prop()
-  actions!: Record<string, boolean> | null;
-
   get disableCollapser() {
     return flowUIStore.disableCollapser;
   }

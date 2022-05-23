@@ -6,10 +6,11 @@ import { Component, Mixins, Prop } from 'vue-property-decorator';
 
 @Component
 export default class ByValueMixin<D> extends Mixins(ValidationProvider) {
-  @Prop([Object]) value!: D;
-  @Prop([String]) readonly geometry!: FlowVisualizerType;
-  @Prop([Object]) declare validator: FormValidator;
-  @Prop({ default: () => [] }) entityProps!: PropertySummary[];
+  @Prop({ type: Object }) readonly value?: D;
+  @Prop({ type: String, default: FlowVisualizerType.POINTS })
+  readonly geometry!: FlowVisualizerType;
+  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
+  @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
   selectedEntityProp: PropertySummary | null = null;
   allowedPropertyTypes: string[] = [];
 

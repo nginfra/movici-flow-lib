@@ -1,7 +1,7 @@
 <template>
   <div class="columns is-multiline">
     <div class="column is-two-thirds-desktop is-full-tablet">
-      <ShapeSelector :value="currentShape" @input="updateStaticSettings($event)" />
+      <ShapeSelector :value="currentShape" @input="updateIcon($event)" />
     </div>
     <div class="column is-one-third-desktop is-full-tablet">
       <slot name="legend-title"></slot>
@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { StaticIconClause } from '@movici-flow-common/types';
+import { IconClause } from '@movici-flow-common/types';
 import ShapeSelector from './ShapeSelector.vue';
 
 @Component({
@@ -21,18 +21,18 @@ import ShapeSelector from './ShapeSelector.vue';
   }
 })
 export default class ShapeStaticConfigurator extends Vue {
-  @Prop() readonly value!: StaticIconClause;
+  @Prop({ type: Object, default: null }) readonly value!: IconClause | null;
 
   get currentShape() {
-    return this.value.icon ?? null;
+    return this.value?.static?.icon ?? null;
   }
 
-  updateStaticSettings(icon: string | null) {
-    this.updateSettings(icon ? { static: { icon } } : {});
+  updateIcon(icon: string | null) {
+    this.updateSettings(!icon ? {} : { static: { icon } });
   }
 
-  updateSettings(updatedClause: { static?: StaticIconClause }) {
-    this.$emit('input', updatedClause);
+  updateSettings(updatedClause: IconClause) {
+    this.$emit('input', updatedClause as IconClause);
   }
 }
 </script>
