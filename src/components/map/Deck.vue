@@ -2,16 +2,16 @@
   <div id="mapbox-container">
     <div id="map" />
     <canvas id="deckgl-overlay" />
-    <div class="map-control-zero" v-if="loaded">
+    <div class="map-control-zero" v-if="loaded && hasMapControl('control-zero')">
       <slot name="control-zero" v-bind="{ ...slotProps }" />
     </div>
-    <div class="map-control-left" v-if="loaded">
+    <div class="map-control-left" v-if="loaded && hasMapControl('control-left')">
       <slot name="control-left" v-bind="{ ...slotProps }" />
     </div>
-    <div class="map-control-right" v-if="loaded">
+    <div class="map-control-right" v-if="loaded && hasMapControl('control-right')">
       <slot name="control-right" v-bind="{ ...slotProps }" />
     </div>
-    <div class="map-control-bottom" v-if="loaded">
+    <div class="map-control-bottom" v-if="loaded && hasMapControl('control-bottom')">
       <slot name="control-bottom" v-bind="{ ...slotProps }" />
     </div>
     <template v-if="loaded">
@@ -58,6 +58,8 @@ function getCanvasDimensions(map: mapboxgl.Map): [number, number] {
   return [dimensions.width, dimensions.height];
 }
 
+type DeckSlots = 'control-zero' | 'control-left' | 'control-right' | 'control-bottom';
+
 @Component({ name: 'Deck' })
 export default class Deck extends Vue {
   @Prop({ type: Object, default: null }) readonly value!: Nullable<CameraOptions>;
@@ -79,6 +81,16 @@ export default class Deck extends Vue {
       setCursorCallback: this.setCursorCallback,
       zoomToBBox: this.zoomToBBox
     };
+  }
+
+  /**
+   * If there are children elements inside the scopedSlots this returns true.
+   *
+   * @param control one of the allowed scopedSlots (DeckSlots)
+   * @returns boolean
+   */
+  hasMapControl(control: DeckSlots) {
+    return !!this.$scopedSlots[control]?.({});
   }
 
   registerMapOnClick(callbacks: Record<string, (event: PickInfo<unknown>) => void>) {
@@ -243,14 +255,14 @@ export default class Deck extends Vue {
     }
 
     .map-control-bottom {
-      position: absolute;
+      $left-menu-size: 300px;
+      position: fixed;
       bottom: 24px;
       height: 100px;
       z-index: 1;
       left: 0;
       right: 0;
-      width: calc(100vw - #{$left-menu-size} - #{$menu-item-size});
-      $left-menu-size: 300px;
+      width: calc(80vw - #{$left-menu-size} - #{$menu-item-size});
       display: flex;
       justify-content: center;
       transition: transform 0.5s, width 0.5s;

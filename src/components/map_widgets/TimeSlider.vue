@@ -72,7 +72,6 @@ export default class TimeSlider extends Vue {
   }
 }
 .timeslider {
-  width: 75%;
-  margin: 0 20px;
+  width: 100%;
 }
 </style>

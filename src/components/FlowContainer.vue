@@ -74,7 +74,7 @@ export default class FlowContainer extends Vue {
         transform: translateX($left-menu-size + $menu-item-size) !important ;
       }
       .map-control-bottom {
-        transform: translateX($left-menu-size + $menu-item-size);
+        transform: translateX(10vw) translateX($left-menu-size + $menu-item-size);
       }
     }
   }
@@ -94,8 +94,8 @@ export default class FlowContainer extends Vue {
         transform: translateX(-$menu-item-size) !important;
       }
       .map-control-bottom {
-        transform: translateX($menu-item-size) !important;
-        width: calc(100vw - #{$menu-item-size}) !important;
+        transform: translateX(10vw) translateX($menu-item-size) !important;
+        width: calc(80vw - #{$menu-item-size}) !important;
       }
       .map-control-left {
         transform: translateX($menu-item-size) !important;
