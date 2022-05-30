@@ -46,7 +46,7 @@
     </div>
     <div class="columns mb-0">
       <div class="column is-full-desktop is-full-tablet">
-        <b-field :label="$t('misc.timestamp')" v-if="timelineInfo">
+        <b-field :label="$t('misc.timestamp')">
           <TimeSlider v-model="currentTimestamp" :timeline-info="timelineInfo"></TimeSlider>
         </b-field>
         <b-button
@@ -94,7 +94,7 @@ import { flowStore } from '@movici-flow-common/store/store-accessor';
 })
 export default class ExportForm extends Mixins(SummaryListing, ValidationProvider) {
   @Prop({ type: Object, default: null }) readonly value!: ComposableVisualizerInfo | null;
-  @Prop({ type: Object, default: null }) readonly timelineInfo!: TimeOrientedSimulationInfo | null;
+  @Prop({ type: Object, required: true }) readonly timelineInfo!: TimeOrientedSimulationInfo;
   @Prop({ type: String, default: null }) readonly scenarioUuid!: string | null;
   @Prop({ type: Number, default: 0 }) readonly timestamp!: number;
 

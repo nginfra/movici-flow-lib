@@ -226,12 +226,34 @@ export default class ColorConfigurator extends Mixins(ValidationProvider) {
     min-width: 30px;
     height: 30px;
     line-height: unset;
-    &:hover {
-      border-color: $grey-light;
-    }
     &.active {
       border-color: $primary;
-      box-shadow: 0 0 0 0.125em rgba($primary, 0.25);
+    }
+  }
+  .caret {
+    position: absolute;
+    width: 0;
+    height: 0;
+    top: 9px;
+    right: -8px;
+    border: 4px solid $black;
+    border-color: $white-ter $white-ter transparent transparent;
+    transform-origin: 0 0;
+    transform: rotate(45deg);
+  }
+  .grip {
+    .icon {
+      height: 0.8rem;
+      width: 0.6rem;
+      font-size: 14px;
+    }
+  }
+  &:hover {
+    .caret {
+      border-color: $grey-light $grey-light transparent transparent;
+    }
+    .color-wrap {
+      border-color: $grey-light;
     }
   }
 }

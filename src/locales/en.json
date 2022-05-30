@@ -132,6 +132,8 @@
         "value": "Value",
         "valueRange": "Value (range)",
         "invertColors": "Invert color order",
+        "addRow": "Add row",
+        "removeRow": "Remove row",
         "advanced": {
           "title": "Advanced settings",
           "fillOpacity": "Fill Opacity",

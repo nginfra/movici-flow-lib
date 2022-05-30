@@ -1,6 +1,7 @@
 <template>
   <div
     class="color-picker-container"
+    :class="position"
     ref="colorPickerContainer"
     :style="style"
     v-if="open"
@@ -31,7 +32,9 @@ export default class FlowColorPicker extends Vue {
   @Prop({ type: Array, default: () => DEFAULT_UNDEFINED_COLOR_TRIPLE }) readonly value!: RGBAColor;
   @Prop({ type: Array, default: () => [] }) readonly presets!: (RGBAColor | string)[];
   @Prop({ type: Boolean, default: false }) readonly open!: boolean;
+  @Prop({ type: Number, default: 0 }) readonly translateX!: number;
   @Prop({ type: Number, default: 0 }) readonly translateY!: number;
+  @Prop({ type: String, default: 'top' }) readonly position!: string;
   @Ref('colorPickerContainer') readonly colorPickerContainer!: HTMLElement;
 
   get preparedColorPresets(): (string | RGBAObject)[] {
@@ -42,17 +45,18 @@ export default class FlowColorPicker extends Vue {
   get style() {
     return {
       top: {
-        transform: 'translateY(-100%) translateY(' + this.translateY + 'px)'
+        transform: `translateY(-96%) translateY(${this.translateY}px) translateX(${this.translateX}px)`
       },
       right: {
-        transform: 'translateY(-50%) translateY(' + this.translateY + 'px) translateX(20%)'
+        transform: `translateY(-35%) translateY(${this.translateY}px) translateX(20%) translateX(${this.translateX}px)`
       }
-    }['right'];
+    }[this.position];
   }
 
   get rgba(): RGBAObject {
     return colorTripleToRGBA(this.value);
   }
+
   set rgba({ rgba }: RGBAObject) {
     const color = [rgba.r, rgba.g, rgba.b];
     if (rgba.a < 1) {
@@ -91,28 +95,40 @@ function colorTripleToRGBA(color: RGBAColor): RGBAObject {
   outline: none;
   position: absolute !important;
   z-index: 10;
-  top: 33px;
-  padding-top: 10px;
+  &::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    box-sizing: border-box !important;
+    border: 8px solid black;
+    transform-origin: 0 0;
+  }
+  &.top {
+    &::after {
+      bottom: -4px;
+      left: 16px;
+      border-color: transparent $white $white transparent;
+      transform: rotate(45deg);
+      box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.1) !important;
+    }
+  }
+  &.right {
+    &::after {
+      bottom: 50%;
+      left: 0;
+      border-color: transparent transparent $white $white;
+      transform: rotate(45deg);
+      box-shadow: -3px 3px 3px 0 rgba(0, 0, 0, 0.1) !important;
+    }
+  }
 }
 ::v-deep {
   .vc-sketch {
     width: 250px !important;
     box-sizing: border-box;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1) !important;
-    &::after {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 0;
-      top: 50%;
-      left: 0;
-      box-sizing: border-box !important;
-      border: 8px solid black;
-      border-color: transparent transparent $white $white;
-      transform-origin: 0 0;
-      transform: rotate(45deg);
-      box-shadow: -3px 3px 3px 0 rgba(0, 0, 0, 0.1) !important;
-    }
+
     span {
       line-height: inherit;
     }

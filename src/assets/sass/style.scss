@@ -234,6 +234,8 @@
   }
 
   .draggable {
+    margin: -1px;
+    border: 1px solid transparent;
     &.dashed {
       border: 1px dashed $grey;
     }
@@ -243,11 +245,12 @@
     .no-move {
       transition: transform 0s;
     }
-    .ghost {
-      background: transparent;
-    }
     .list-group {
       min-height: 20px;
+    }
+    .grip {
+      cursor: grab;
+      color: $grey-light;
     }
   }
 
@@ -276,12 +279,6 @@
       flex-direction: column;
       margin: 0 auto 0 0;
       color: $black !important;
-    }
-    & > span {
-      &.grip {
-        cursor: n-resize;
-        color: $grey-light;
-      }
     }
   }
 }

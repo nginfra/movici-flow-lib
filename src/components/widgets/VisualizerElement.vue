@@ -2,41 +2,43 @@
   <div class="group-picker visualizer-element is-flex is-flex-direction-column is-relative">
     <div class="header">
       <slot name="header" v-bind="{ toggleSummary, isOpen }"></slot>
-      <span class="grip mr-1" v-if="showOnHeader('grip')">
-        <span class="icon is-small fa-stack">
-          <i class="far fa-ellipsis-v"></i>
-          <i class="far fa-ellipsis-v"></i>
+      <template v-if="value">
+        <span class="grip mr-1" v-if="showOnHeader('grip')">
+          <span class="icon is-small fa-stack">
+            <i class="far fa-ellipsis-v"></i>
+            <i class="far fa-ellipsis-v"></i>
+          </span>
         </span>
-      </span>
-      <label
-        v-if="showOnHeader('label')"
-        class="is-flex-grow-1 label"
-        @click="toggleSummary"
-        :class="{ 'not-ready': progress < 100 }"
-      >
-        <span class="is-block is-size-6-half text-ellipsis">{{ value.name }}</span>
-      </label>
-      <span v-if="showOnHeader('errors') && errors.length" class="errors mr-2">
-        <b-icon
-          :title="errors.join('\n')"
-          :type="errorColor"
-          size="is-small"
-          pack="far"
-          icon="exclamation-triangle"
-        />
-      </span>
-      <span
-        v-if="showOnHeader('visibility')"
-        @click="toggleVisibility()"
-        class="visibility mr-1"
-        :class="{ enabled: value.visible }"
-      >
-        <b-icon
-          size="is-small"
-          pack="fak"
-          :icon="value.visible ? 'fa-visibility' : 'fa-visibility-off'"
-        ></b-icon>
-      </span>
+        <label
+          v-if="showOnHeader('label')"
+          class="is-flex-grow-1 label"
+          @click="toggleSummary"
+          :class="{ 'not-ready': progress < 100 }"
+        >
+          <span class="is-block is-size-6-half text-ellipsis">{{ value.name }}</span>
+        </label>
+        <span v-if="showOnHeader('errors') && errors.length" class="errors mr-2">
+          <b-icon
+            :title="errors.join('\n')"
+            :type="errorColor"
+            size="is-small"
+            pack="far"
+            icon="exclamation-triangle"
+          />
+        </span>
+        <span
+          v-if="showOnHeader('visibility')"
+          @click="toggleVisibility()"
+          class="visibility mr-1"
+          :class="{ enabled: value.visible }"
+        >
+          <b-icon
+            size="is-small"
+            pack="fak"
+            :icon="value.visible ? 'fa-visibility' : 'fa-visibility-off'"
+          ></b-icon>
+        </span>
+      </template>
       <MovActionMenu
         v-if="showOnHeader('more')"
         :value="filteredActions"
@@ -45,7 +47,7 @@
         @delete="handleEvent('delete')"
       />
     </div>
-    <VisualizerSummary :value="value" :progress="progress" :show="isOpen" />
+    <VisualizerSummary v-if="value" :value="value" :progress="progress" :show="isOpen" />
     <b-progress v-if="showLoader" :class="{ fade: progress >= 100 }" :value="progress" />
   </div>
 </template>
@@ -64,7 +66,7 @@ import VisualizerSummary from './VisualizerSummary.vue';
   }
 })
 export default class VisualizerElement extends Vue {
-  @Prop({ type: Object, required: true }) readonly value!: ComposableVisualizerInfo;
+  @Prop({ type: Object, default: null }) readonly value!: ComposableVisualizerInfo | null;
   @Prop({ type: Array, default: () => [] }) readonly headerButtons!: string[];
   @Prop({ type: Array, default: () => [] }) readonly actionButtons!: string[];
   @Prop({ type: String, default: 'is-bottom' }) readonly tooltipPosition!: string;
@@ -122,11 +124,13 @@ export default class VisualizerElement extends Vue {
   }
 
   toggleVisibility(force?: boolean) {
-    this.updateValue({ visible: force ?? !this.value?.visible });
-  }
-
-  updateValue(value: Partial<ComposableVisualizerInfo>) {
-    this.$emit('input', Object.assign(new ComposableVisualizerInfo(this.value), value));
+    if (this.value)
+      this.$emit(
+        'input',
+        Object.assign(new ComposableVisualizerInfo(this.value), {
+          visible: force ?? !this.value?.visible
+        })
+      );
   }
 
   showOnHeader(button: string) {

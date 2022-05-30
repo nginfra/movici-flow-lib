@@ -3,10 +3,9 @@
     <Draggable
       :value="value"
       v-bind="draggableOptions"
-      class="x-overflow draggable"
+      v-on="draggableEvents"
+      class="draggable"
       :class="{ dashed: drag }"
-      @start="drag = true"
-      @end="drag = false"
       @change="updateDraggable"
     >
       <VisualizerElement
@@ -44,26 +43,26 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Mixins, Prop } from 'vue-property-decorator';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import VisualizerElement from './VisualizerElement.vue';
 import VisualizerConfigurator from '../configurators/VisualizerConfigurator.vue';
 import { Scenario, TimeOrientedSimulationInfo } from '@movici-flow-common/types';
-import Draggable from 'vuedraggable';
 import { flowStore } from '@movici-flow-common/store/store-accessor';
+import Draggable from 'vuedraggable';
+import DraggableMixin from '@movici-flow-common/mixins/DraggableMixin';
 
 @Component({
   name: 'FlowLayerPicker',
   components: { VisualizerElement, VisualizerConfigurator, Draggable }
 })
-export default class FlowLayerPicker extends Vue {
+export default class FlowLayerPicker extends Mixins(DraggableMixin) {
   @Prop({ type: Array, default: () => [] }) readonly value!: ComposableVisualizerInfo[];
   @Prop({ type: Object, default: null }) readonly scenario!: Scenario | null;
   @Prop({ type: Number, default: null }) readonly timestamp!: number | null;
-
   currentIndex: number | null = null;
   vConfigOpen = false;
-  drag = false; // may the best woman win
+  group = 'visualizers';
 
   get currentItem(): ComposableVisualizerInfo | undefined {
     return this.currentIndex === null ? undefined : this.value[this.currentIndex];
@@ -73,33 +72,16 @@ export default class FlowLayerPicker extends Vue {
     return this.scenario?.uuid ?? null;
   }
 
-  get draggableOptions() {
-    return {
-      animation: 500,
-      group: 'visualizers',
-      disabled: false,
-      ghostClass: 'ghost',
-      handle: '.grip'
-    };
-  }
-
   get timelineInfo(): TimeOrientedSimulationInfo | null {
     return flowStore.timelineInfo;
-  }
-
-  updateDraggable(event: { moved: { oldIndex: number; newIndex: number } }) {
-    this.move(event.moved.oldIndex, event.moved.newIndex);
   }
 
   close() {
     this.vConfigOpen = false;
   }
 
-  move(currentIdx: number, targetIdx: number) {
-    const data = [...this.value];
-    const item = data.splice(currentIdx, 1)[0];
-    data.splice(targetIdx, 0, item);
-    this.$emit('input', data);
+  updateDraggable(event: { moved: { oldIndex: number; newIndex: number } }) {
+    this.$emit('input', this.move(event.moved.oldIndex, event.moved.newIndex, this.value));
   }
 
   // wip

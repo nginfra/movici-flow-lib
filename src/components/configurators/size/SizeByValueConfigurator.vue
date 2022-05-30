@@ -41,9 +41,11 @@
     </div>
     <!-- todo: change to look closer to color configurator -->
     <div v-if="value" class="columns mb-0 is-multiline">
-      <div class="column py-0 is-two-thirds-desktop is-full-tablet" v-if="sizes && sizes.length">
+      <div
+        class="column py-0 is-two-thirds-desktop is-full-tablet"
+        v-if="sizes && sizes.length && selectedEntityProp"
+      >
         <ByValueSizeList
-          v-if="sizes.length"
           v-model="sizes"
           :min-value="minValue"
           :max-value="maxValue"

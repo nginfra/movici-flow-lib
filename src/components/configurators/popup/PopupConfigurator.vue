@@ -60,7 +60,7 @@
       <div class="column is-full">
         <label class="label">{{ $t('misc.properties') }}</label>
         <b-dropdown
-          class="mr-4"
+          class="mr-4 mb-2"
           :value="items"
           @input="addItem($event)"
           :close-on-click="false"
@@ -100,13 +100,12 @@
           {{ errors['popup-items'] }}
         </p>
         <Draggable
-          :list="items"
-          @input="updateValue({ items: $event })"
+          :value="items"
           v-bind="draggableOptions"
+          v-on="draggableEvents"
           class="draggable"
           :class="{ dashed: drag, 'mt-0': !items.length, 'mt-2': items.length }"
-          @start="drag = true"
-          @end="drag = false"
+          @change="updateDraggable"
         >
           <div
             class="group-picker popup-property"
@@ -160,6 +159,7 @@ import {
 } from '@movici-flow-common/types';
 import { propertyString } from '@movici-flow-common/utils';
 import Draggable from 'vuedraggable';
+import DraggableMixin from '@movici-flow-common/mixins/DraggableMixin';
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
 import AttributeSuggestions from './AttributeSuggestions.vue';
@@ -171,15 +171,14 @@ import AttributeSuggestions from './AttributeSuggestions.vue';
     AttributeSuggestions
   }
 })
-export default class PopupConfigurator extends Mixins(ValidationProvider) {
+export default class PopupConfigurator extends Mixins(ValidationProvider, DraggableMixin) {
   @Prop({ type: Object }) readonly value?: PopupClause;
   @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
   @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
   @Prop({ type: Object }) readonly settings?: FlowVisualizerOptions;
-
+  group = 'popup-config';
   items: PopupItem[] = [];
   showPopup = false;
-  drag = false; // start your engines...
   dynamicTitle = false;
   whenRadio = ['onHover', 'onClick'];
   positionRadio = ['dynamic', 'static'];
@@ -217,16 +216,6 @@ export default class PopupConfigurator extends Mixins(ValidationProvider) {
     });
   }
 
-  get draggableOptions() {
-    return {
-      animation: 500,
-      group: 'popup-config',
-      disabled: false,
-      ghostClass: 'ghost',
-      handle: '.grip'
-    };
-  }
-
   get suggestions() {
     // any new byValue clauses must be added here!
     return [
@@ -256,6 +245,11 @@ export default class PopupConfigurator extends Mixins(ValidationProvider) {
     this.items = this.items.filter((item, x) => idx !== x);
     this.updateValue({ items: this.items });
     this.validator.touch('popup-items', this.name);
+  }
+
+  updateDraggable(event: { moved: { oldIndex: number; newIndex: number } }) {
+    const items = this.move(event.moved.oldIndex, event.moved.newIndex, this.items);
+    this.updateValue({ items });
   }
 
   updateName(idx: number, name: string) {
@@ -315,19 +309,5 @@ $container-bg: $white-ter;
       flex: 1;
     }
   }
-}
-.flip-list-move {
-  transition: transform 0.5s;
-}
-.no-move {
-  transition: transform 0s;
-}
-.ghost {
-  opacity: 0.5;
-  background: $grey;
-}
-
-.list-group {
-  min-height: 20px;
 }
 </style>

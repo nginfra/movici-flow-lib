@@ -1,15 +1,11 @@
 <template>
-  <div class="is-flex is-flex-direction-column summary active" v-if="value" :class="{ show: show }">
-    <span class="name is-size-7 has-text-weight-bold is-flex mb-2 pr-1" :title="value.name">
+  <div
+    v-if="value"
+    class="is-flex is-flex-direction-column summary active"
+    :class="{ show: show, 'mb-1': show }"
+  >
+    <span class="name is-size-7 has-text-weight-bold is-flex mb-2" :title="value.name">
       <div class="is-flex-grow-1">{{ value.name }}</div>
-      <b-icon
-        class="loaded-status"
-        size="is-tiny"
-        type="is-grey"
-        :icon="getLoaderStatus()[0]"
-        :title="getLoaderStatus()[1]"
-        :class="{ 'fa-spin': getLoaderStatus()[2] }"
-      ></b-icon>
     </span>
     <span
       class="type is-size-7 is-italic text-ellipsis"
@@ -88,14 +84,6 @@ export default class VisualizerSummary extends Vue {
   @Prop({ type: Number, default: 0 }) readonly progress!: number;
   @Prop({ type: Boolean, default: false }) readonly show!: boolean;
 
-  getLoaderStatus() {
-    return !this.progress
-      ? ['minus-circle', 'Not loaded', false]
-      : this.progress > 0 && this.progress < 100
-      ? ['spinner', 'Loading...', true]
-      : ['check-circle', 'Loaded', false];
-  }
-
   get colorByValue() {
     return this.value?.settings?.color?.byValue;
   }
@@ -148,7 +136,7 @@ export default class VisualizerSummary extends Vue {
   &.show {
     opacity: 1;
     height: auto;
-    padding: 0.5em 0 0.5em 0.5em;
+    padding: 0.5em;
   }
 
   & > span {

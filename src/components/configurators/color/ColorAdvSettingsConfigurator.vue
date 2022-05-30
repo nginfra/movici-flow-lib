@@ -76,7 +76,7 @@ export default class ColorAdvSettingsConfigurator extends Vue {
   colorPickerPresets = Object.values(MoviciColors);
 
   get hasRenderOrder() {
-    return this.fillType === 'buckets' && this.clauseType === 'byValue';
+    return this.fillType === 'buckets';
   }
 
   get hasFillOpacity() {
@@ -103,6 +103,8 @@ export default class ColorAdvSettingsConfigurator extends Vue {
 
     if (this.hasRenderOrder) {
       value.renderOrder = this.renderOrder;
+    } else {
+      delete value.renderOrder;
     }
 
     if (this.hasFillOpacity) {

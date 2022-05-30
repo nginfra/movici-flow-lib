@@ -10,6 +10,7 @@
           :open="showColorPicker"
           @close="showColorPicker = false"
           :translateY="translateY"
+          position="top"
         />
       </div>
       <b-field class="is-flex color-item" v-for="(color, index) in hexColors" :key="index">
@@ -65,7 +66,7 @@ export default class AdvColorList extends Vue {
   }
 
   get translateY() {
-    return this.selectedIndex * 42 - 34;
+    return this.selectedIndex * 42 - 24;
   }
 
   updateColor(id: number, newValue: RGBAColor) {

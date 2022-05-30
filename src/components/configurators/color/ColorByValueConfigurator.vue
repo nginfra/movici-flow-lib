@@ -290,6 +290,11 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
     );
   }
 
+  @Watch('colorMapping')
+  afterColorMapping() {
+    this.nSteps = this.colorMapping.length;
+  }
+
   @Watch('currentClause')
   prepareEmitClause() {
     if (this.currentClause) {

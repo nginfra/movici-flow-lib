@@ -132,6 +132,8 @@
         "value": "Waarde",
         "valueRange": "Waarde (bereik)",
         "invertColors": "Kleurvolgorde omkeren",
+        "addRow": "Rij toevoegen",
+        "removeRow": "Rij verwijderen",
         "advanced": {
           "title": "Geavanceerd",
           "fillOpacity": "Fill opacity",
