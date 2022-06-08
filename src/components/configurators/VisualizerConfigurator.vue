@@ -255,11 +255,13 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   get configurators() {
     if (!this.properties || !this.validator || !this.geometry) return [];
 
-    const vBindDefaults = {
-        entityProps: this.properties,
-        validator: this.validator,
-        geometry: this.geometry,
-        settings: this.settings
+    const vBindDefaults = (key: string) => {
+        return {
+          entityProps: this.properties,
+          validator: this.validator?.child(key),
+          geometry: this.geometry,
+          settings: this.settings
+        };
       },
       vOnDefaults = <T extends keyof FlowVisualizerOptions>(clauseType: T) => {
         return {
@@ -273,7 +275,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
       {
         name: '' + this.$t('flow.visualization.colorConfig.colors'),
         component: ColorConfigurator,
-        vBind: { ...vBindDefaults, value: this.settings?.color },
+        vBind: { ...vBindDefaults('color'), value: this.settings?.color },
         vOn: { ...vOnDefaults('color') }
       },
       {
@@ -283,7 +285,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
         filterGeometry: [FlowVisualizerType.ICONS],
         component: ShapeIconConfigurator,
         vBind: {
-          ...vBindDefaults,
+          ...vBindDefaults('icon-shape'),
           iconClause: this.settings?.icon,
           shapeClause: this.settings?.shape
         },
@@ -321,21 +323,21 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
           FlowVisualizerType.ARCS
         ],
         component: SizeConfigurator,
-        vBind: { ...vBindDefaults, value: this.settings?.size },
+        vBind: { ...vBindDefaults('size'), value: this.settings?.size },
         vOn: { ...vOnDefaults('size') }
       },
 
       {
         name: '' + this.$t('flow.visualization.visibilityConfig.visibility'),
         component: VisibilityConfigurator,
-        vBind: { ...vBindDefaults, value: this.settings?.visibility },
+        vBind: { ...vBindDefaults('visibility'), value: this.settings?.visibility },
         vOn: { ...vOnDefaults('visibility') }
       },
       {
         name: '' + this.$t('flow.visualization.popup.popup'),
         component: PopupConfigurator,
         vBind: {
-          ...vBindDefaults,
+          ...vBindDefaults('popup'),
           value: this.settings?.popup
         },
         vOn: { ...vOnDefaults('popup') }
@@ -360,7 +362,6 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   get hasPendingChanges() {
     const value = excludeKey('status', this.value),
       finalized = excludeKey('status', this.finalizedVisualizer);
-
     return !isEqual(finalized, value);
   }
 
@@ -516,8 +517,8 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
           }
         }
       },
-      onValidate: (moduleErrors, globalErrors) => {
-        this.errors = globalErrors;
+      onValidate: errors => {
+        this.errors = errors;
       }
     });
   }

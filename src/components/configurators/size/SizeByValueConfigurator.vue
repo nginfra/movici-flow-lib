@@ -59,13 +59,47 @@
     </div>
     <div class="columns mt-2 mb-0 is-multiline" v-if="units === 'meters'">
       <div class="column pb-0 is-flex is-two-thirds-desktop is-full-tablet min-max-px">
-        <b-field class="mr-4" :label="$t('flow.visualization.sizeConfig.minPixels')">
-          <b-numberinput v-model="minPixels" :controls="false" size="is-small" />
+        <b-field
+          class="mr-4 mb-0"
+          :label="$t('flow.visualization.sizeConfig.minPixels')"
+          :type="{ 'is-danger': errors['minPixels'] }"
+          :addons="false"
+        >
+          <span class="is-flex is-align-items-center">
+            <b-numberinput
+              :value="minPixels"
+              @input="validated('minPixels', $event)"
+              :controls="false"
+              size="is-small"
+            />
+            <span class="ml-1 is-size-7">px</span>
+          </span>
         </b-field>
-        <b-field :label="$t('flow.visualization.sizeConfig.maxPixels')">
-          <b-numberinput v-model="maxPixels" :controls="false" size="is-small" />
+        <b-field
+          :label="$t('flow.visualization.sizeConfig.maxPixels')"
+          :type="{ 'is-danger': errors['maxPixels'] }"
+          :addons="false"
+        >
+          <span class="is-flex is-align-items-center">
+            <b-numberinput
+              :value="maxPixels"
+              @input="validated('maxPixels', $event)"
+              :controls="false"
+              size="is-small"
+            />
+            <span class="ml-1 is-size-7">px</span>
+          </span>
         </b-field>
       </div>
+    </div>
+    <div class="errors">
+      <p
+        class="has-text-danger is-size-7 mt-1"
+        v-for="(error, key) in minMaxPixelErrors"
+        :key="key"
+      >
+        {{ error }}
+      </p>
     </div>
   </div>
 </template>
@@ -79,6 +113,9 @@ import { BY_VALUE_DEFAULT_SIZES } from './defaults';
 import ByValueSizeList from './ByValueSizeList.vue';
 import { recalculateMapping, RecalculateMappingParams } from '../helpers';
 import { MoviciError } from '@movici-flow-common/errors';
+import { isPositive } from '@movici-flow-common/utils/FormValidator';
+import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
+import { pick } from 'lodash';
 
 @Component({
   name: 'SizeByValueConfigurator',
@@ -87,9 +124,10 @@ import { MoviciError } from '@movici-flow-common/errors';
     ByValueSizeList
   }
 })
-export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeClause>>(
-  ByValueMixin
-) {
+export default class SizeByValueConfigurator extends Mixins<
+  ByValueMixin<SizeClause>,
+  ValidationProvider
+>(ByValueMixin, ValidationProvider) {
   // overrides ByValueMixin
   allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
   // custom variables
@@ -100,6 +138,10 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
   nSteps = 2;
   stepArray: number[] = [2, 3, 4, 5, 6, 7, 8];
 
+  get defaultDataTypeSteps() {
+    return 2;
+  }
+
   get currentClause(): ByValueSizeClause | null {
     if (!this.selectedEntityProp) return null;
 
@@ -108,6 +150,13 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
       sizes: this.sizes,
       units: this.units
     };
+    if (this.minPixels !== null) {
+      rv.minPixels = this.minPixels;
+    }
+
+    if (this.maxPixels !== null) {
+      rv.maxPixels = this.maxPixels;
+    }
 
     return rv;
   }
@@ -124,6 +173,9 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
     return BY_VALUE_DEFAULT_SIZES[this.geometry];
   }
 
+  get minMaxPixelErrors() {
+    return pick(this.errors, 'minPixels', 'maxPixels', 'minMaxPixels');
+  }
   updateAttribute(val: PropertySummary | null) {
     if (val) {
       this.ensureProp(val);
@@ -197,16 +249,35 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
   }
 
   // TODO: create validator according to color length
-  // check for attribute
   // check for units
   // values should be increasing
   // sizes should not negative
-  // min max px should be not negative
   setupValidator() {
-    this.validator?.addModule({
-      name: this.name,
+    this.validator?.configure({
       validators: {
-        ...this.getAttributeValidator()
+        ...this.getAttributeValidator(),
+        minPixels: () => {
+          if (this.units === 'pixels') return;
+          return isPositive(this.minPixels, 'Min size');
+        },
+
+        maxPixels: () => {
+          if (this.units === 'pixels') return;
+          return isPositive(this.maxPixels, 'Max size');
+        },
+
+        minMaxPixels: {
+          depends: ['minPixels', 'maxPixels'],
+          validator: () => {
+            if (this.units === 'pixels') return;
+            if (
+              this.minPixels !== null &&
+              this.maxPixels !== null &&
+              this.minPixels > this.maxPixels
+            )
+              return 'Max size must be at least min size.';
+          }
+        }
       },
       onValidate: e => (this.errors = e)
     });

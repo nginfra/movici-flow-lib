@@ -10,7 +10,7 @@
           >
             <b-numberinput
               :value="size"
-              @input="validated('size', $event, name)"
+              @input="validated('size', $event)"
               :controls="false"
               size="is-small"
               :min-step="1e-15"
@@ -20,7 +20,7 @@
           <b-field class="is-flex-grow-1 ml-4" :label="$t('flow.visualization.displayAs')">
             <b-radio
               :value="units"
-              @input="validated('units', $event, name)"
+              @input="validated('units', $event)"
               native-value="meters"
               size="is-small"
               class="mr-4"
@@ -29,7 +29,7 @@
             </b-radio>
             <b-radio
               :value="units"
-              @input="validated('units', $event, name)"
+              @input="validated('units', $event)"
               native-value="pixels"
               size="is-small"
             >
@@ -51,7 +51,7 @@
           <span class="is-flex is-align-items-center">
             <b-numberinput
               :value="minPixels"
-              @input="validated('minPixels', $event, name)"
+              @input="validated('minPixels', $event)"
               :controls="false"
               size="is-small"
             />
@@ -66,7 +66,7 @@
           <span class="is-flex is-align-items-center">
             <b-numberinput
               :value="maxPixels"
-              @input="validated('maxPixels', $event, name)"
+              @input="validated('maxPixels', $event)"
               :controls="false"
               size="is-small"
             />
@@ -76,8 +76,9 @@
       </div>
     </div>
     <div class="errors">
-      <p class="has-text-danger is-size-7 mt-1" v-if="errors.minPixels">{{ errors.minPixels }}</p>
-      <p class="has-text-danger is-size-7 mt-1" v-if="errors.maxPixels">{{ errors.maxPixels }}</p>
+      <p class="has-text-danger is-size-7 mt-1" v-for="(error, key) in errors" :key="key">
+        {{ error }}
+      </p>
     </div>
   </div>
 </template>
@@ -124,8 +125,8 @@ export default class SizeStaticConfigurator extends Mixins(ValidationProvider) {
   @Watch('units')
   afterUnits(curr: 'pixels' | 'meters', old: 'pixels' | 'meters') {
     if (curr !== old) {
-      this.validator.touch('minPixel', this.name);
-      this.validator.touch('maxPixel', this.name);
+      this.validator.touch('minPixels');
+      this.validator.touch('maxPixels');
     }
   }
 
@@ -137,30 +138,30 @@ export default class SizeStaticConfigurator extends Mixins(ValidationProvider) {
   }
 
   setupValidator() {
-    this.validator.addModule({
-      name: this.name,
+    this.validator?.configure({
       validators: {
         size: () => isPositive(this.currentClause.size, 'Size'),
         minPixels: () => {
           if (this.currentClause.units === 'pixels') return;
-          if (
-            this.currentClause.minPixels !== undefined &&
-            this.currentClause.maxPixels !== undefined &&
-            this.currentClause.minPixels > this.currentClause.maxPixels
-          )
-            return 'Min size must be less than max size.';
           return isPositive(this.currentClause.minPixels, 'Min size');
         },
+
         maxPixels: () => {
           if (this.currentClause.units === 'pixels') return;
-          if (
-            this.currentClause.minPixels !== undefined &&
-            this.currentClause.maxPixels !== undefined &&
-            this.currentClause.minPixels > this.currentClause.maxPixels
-          )
-            return 'Max size must be at least min size.';
-
           return isPositive(this.currentClause.maxPixels, 'Max size');
+        },
+
+        minMaxPixels: {
+          depends: ['minPixels', 'maxPixels'],
+          validator: () => {
+            if (this.currentClause.units === 'pixels') return;
+            if (
+              this.currentClause.minPixels !== undefined &&
+              this.currentClause.maxPixels !== undefined &&
+              this.currentClause.minPixels > this.currentClause.maxPixels
+            )
+              return 'Max size must be at least min size.';
+          }
         }
       },
       onValidate: e => (this.errors = e)

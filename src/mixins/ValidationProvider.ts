@@ -1,5 +1,5 @@
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import FormValidator, { ErrorDict, GlobalErrorDict } from '../utils/FormValidator';
+import { Component, Vue } from 'vue-property-decorator';
+import FormValidator, { ErrorDict } from '../utils/FormValidator';
 
 /**
  * Mixin to use with form validation. Any error messages will be made available in the `this.errors`
@@ -42,9 +42,7 @@ import FormValidator, { ErrorDict, GlobalErrorDict } from '../utils/FormValidato
  *  someValue = '';
  *
  *  mounted() {
- *    this.validator = new FormValidator();
- *    this.validator.addModule({
- *      name: 'MyModule',
+ *    this.validator = new FormValidator({
  *      validators: {
  *        someValue: () => {
  *          if (!this.someValue) {
@@ -60,7 +58,7 @@ import FormValidator, { ErrorDict, GlobalErrorDict } from '../utils/FormValidato
  *  }
  *
  *  beforeDestroy() {
- *    this.validator?.removeModule('MyModule');
+ *    this.validator?.remove();
  *  }
  * }
  * </script>
@@ -69,28 +67,16 @@ import FormValidator, { ErrorDict, GlobalErrorDict } from '../utils/FormValidato
  */
 @Component
 export default class ValidationProvider extends Vue {
-  // Must be instantiate by consumers of this class
-  @Prop({ type: String, default: '' }) readonly name!: string;
+  // validator be provided by consumers of this class (either through a prop, or as data)
   validator!: FormValidator | null;
-  errors: ErrorDict | GlobalErrorDict = {};
+  errors: ErrorDict = {};
 
   get hasErrors() {
-    for (const err of Object.values(this.errors)) {
-      if (typeof err === 'object') {
-        if (Object.keys(err).length) return true;
-      } else {
-        return true;
-      }
-    }
-    return false;
+    return Object.keys(this.errors).length > 0;
   }
 
-  validated<T extends this, K extends keyof this>(
-    key: keyof this,
-    value: unknown,
-    moduleName?: string
-  ) {
-    this.validator?.touch(key as string, moduleName);
+  validated<T extends this, K extends keyof this>(key: keyof this, value: unknown) {
+    this.validator?.touch(key as string);
     this[key] = value as T[K];
   }
 }

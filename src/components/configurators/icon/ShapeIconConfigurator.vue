@@ -35,7 +35,7 @@ export default class ShapeIconConfigurator extends Mixins(ValidationProvider) {
   }
 
   set shapeSettings(shape: IconClause | null) {
-    this.validator.touch('shapeOrIcon', this.name);
+    this.validator.touch('shapeOrIcon');
     this.$emit('input', { shape, icon: this.iconClause });
   }
 
@@ -44,7 +44,7 @@ export default class ShapeIconConfigurator extends Mixins(ValidationProvider) {
   }
 
   set iconSettings(icon: IconClause | null) {
-    this.validator.touch('shapeOrIcon', this.name);
+    this.validator.touch('shapeOrIcon');
     this.$emit('input', { shape: this.shapeClause, icon });
   }
 
@@ -57,8 +57,7 @@ export default class ShapeIconConfigurator extends Mixins(ValidationProvider) {
   }
 
   setupValidator() {
-    this.validator.addModule({
-      name: this.name,
+    this.validator?.configure({
       validators: {
         shapeOrIcon: () => {
           if (!this.hasShape && !this.hasIcon) {

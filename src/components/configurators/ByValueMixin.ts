@@ -30,7 +30,7 @@ export default class ByValueMixin<D> extends Mixins(ValidationProvider) {
     return this.selectedEntityProp?.max_val ?? 1;
   }
 
-  get defaultDataTypeSteps() {
+  get defaultDataTypeSteps(): number {
     switch (this.selectedDataType) {
       case 'BOOLEAN':
         return 2;
@@ -44,7 +44,7 @@ export default class ByValueMixin<D> extends Mixins(ValidationProvider) {
   ensureProp(prop: PropertySummary) {
     const found = this.filteredEntityProps.find(entityProp => prop.name === entityProp.name);
     if (found) {
-      this.validated('selectedEntityProp', found, this.name);
+      this.validated('selectedEntityProp', found);
     } else {
       throw new MoviciError('Invalid attribute selected');
     }
@@ -86,7 +86,6 @@ export default class ByValueMixin<D> extends Mixins(ValidationProvider) {
   }
 
   destroyValidator() {
-    this.validator?.removeModule(this.name);
-    this.validator?.validate();
+    this.validator?.reset();
   }
 }

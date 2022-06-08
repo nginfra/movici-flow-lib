@@ -15,16 +15,14 @@
       <SizeStaticConfigurator
         v-if="clauseType === 'static'"
         :value="currentClause"
-        :name="name"
-        :validator="validator"
+        :validator="staticValidator"
         :geometry="geometry"
         @input="updateSettings($event)"
       />
       <SizeByValueConfigurator
         v-else-if="clauseType === 'byValue'"
         :value="currentClause"
-        :name="name"
-        :validator="validator"
+        :validator="byValueValidator"
         :entityProps="entityProps"
         :geometry="geometry"
         @input="updateSettings($event)"
@@ -72,6 +70,13 @@ export default class SizeConfigurator extends Mixins(ValidationProvider) {
     return this.currentClause.byValue ?? {};
   }
 
+  get staticValidator() {
+    return this.validator.child('static');
+  }
+  get byValueValidator() {
+    return this.validator.child('byValue');
+  }
+
   updateSettings(updatedClause: { static?: StaticSizeClause; byValue?: ByValueSizeClause }) {
     this.currentClause = Object.assign({}, this.currentClause, updatedClause);
     this.emitClause();
@@ -112,6 +117,12 @@ export default class SizeConfigurator extends Mixins(ValidationProvider) {
       this.currentClause = Object.assign({}, this.currentClause, value);
     } else {
       this.clauseType = 'static';
+    }
+  }
+
+  beforeDestroy() {
+    if (this.validator) {
+      this.validator.reset();
     }
   }
 }

@@ -1,14 +1,14 @@
-import FormValidator, { ValidatorFunc } from '@movici-flow-common/utils/FormValidator';
+import FormValidator, { FormValidatorConfig } from '@movici-flow-common/utils/FormValidator';
 
 describe('formValidator', () => {
-  function newValidator(validators?: Record<string, ValidatorFunc>) {
+  function newValidator(validators?: FormValidatorConfig['validators']) {
     const onValidate = jest.fn();
     return { validator: new FormValidator({ validators: validators, onValidate }), onValidate };
   }
   it('returns empty dictionary on no errors', () => {
     const { validator, onValidate } = newValidator();
     validator.validate();
-    expect(onValidate).toBeCalledWith({}, {});
+    expect(onValidate).toBeCalledWith({});
   });
 
   it('can return multiple errors', () => {
@@ -17,62 +17,117 @@ describe('formValidator', () => {
       b: () => 'error b'
     });
     validator.validate();
-    expect(onValidate).toBeCalledWith(
-      { a: 'error a', b: 'error b' },
-      { _: { a: 'error a', b: 'error b' } }
-    );
+    expect(onValidate).toBeCalledWith({ a: 'error a', b: 'error b' });
   });
-  it('can add new validators', () => {
+
+  it('can spawn a child validator', () => {
+    const validator = new FormValidator();
+    expect(validator.child('child')).toBeInstanceOf(FormValidator);
+  });
+
+  it('reuses spawned child', () => {
+    const validator = new FormValidator();
+    expect(validator.child('child')).toBe(validator.child('child'));
+  });
+
+  it('Child can be configured', () => {
+    const child = new FormValidator().child('child');
+    const onValidate = jest.fn();
+    child.configure({
+      validators: {
+        a: () => 'error'
+      },
+      onValidate
+    });
+    child.validate();
+    expect(onValidate).toBeCalledWith({ a: 'error' });
+  });
+
+  it('Child reports errors back to parent', () => {
     const { validator, onValidate } = newValidator();
-    validator.setValidator('new', () => 'error');
-    validator.validate();
-    expect(onValidate).toBeCalledWith({ new: 'error' }, { _: { new: 'error' } });
-  });
-
-  it('can add module', () => {
-    const validator = new FormValidator();
-
-    const onValidate = jest.fn();
-    validator.addModule({
-      name: 'module',
-      validators: { key: () => 'error' },
-      onValidate
+    const child = validator.child('child');
+    child.configure({
+      validators: {
+        a: () => 'error'
+      }
     });
     validator.validate();
-    expect(onValidate).toBeCalledWith({ key: 'error' }, { module: { key: 'error' } });
+    expect(onValidate).toHaveBeenLastCalledWith({ 'child.a': 'error' });
   });
-  it('can remove a module', () => {
-    const validator = new FormValidator();
 
+  it('removing clears all validators, errors and callbacks', () => {
+    const validate = jest.fn();
+    const { validator, onValidate } = newValidator({ a: validate });
+    validator.reset();
+    validate.mockReset();
+    onValidate.mockReset();
+
+    validator.validate();
+    expect(onValidate).not.toBeCalled();
+    expect(validate).not.toBeCalled();
+  });
+
+  it('can remove a child', () => {
+    const validator = new FormValidator();
+    const child = validator.child('child');
     const onValidate = jest.fn();
-    validator.addModule({
-      name: 'module',
-      validators: {},
-      onValidate
-    });
-    validator.removeModule('module');
+    child.configure({ onValidate });
+    validator.removeChild('child');
+    onValidate.mockReset();
     validator.validate();
     expect(onValidate).not.toBeCalled();
   });
-  it('removing a module clears errors', () => {
-    const globalCallback = jest.fn();
-    const validator = new FormValidator({
-      onValidate: globalCallback,
-      modules: [
-        {
-          name: 'module',
-          validators: {
-            key() {
-              return 'error';
-            }
-          },
-          onValidate: jest.fn()
-        }
-      ]
+
+  it('removing a child clears errors', () => {
+    const { validator, onValidate } = newValidator();
+    const child = validator.child('child');
+    child.configure({
+      validators: {
+        a: () => 'error'
+      }
     });
     validator.validate();
-    expect(globalCallback).toHaveBeenLastCalledWith({}, { module: { key: 'error' } });
-    validator.removeModule('module');
-    expect(globalCallback).toHaveBeenLastCalledWith({}, {});
+    expect(onValidate).toHaveBeenLastCalledWith({ 'child.a': 'error' });
+    validator.removeChild('child');
+    expect(onValidate).toHaveBeenLastCalledWith({});
+  });
+
+  it('only calls onValidate once after removing child', () => {
+    const onValidate = jest.fn();
+    const validator = new FormValidator({ onValidate });
+    const child = validator.child('child');
+    child.child('grandchild');
+    expect(onValidate).toBeCalledTimes(0);
+
+    validator.removeChild('child');
+    expect(onValidate).toBeCalledTimes(1);
+  });
+
+  it('resets errors on touch', () => {
+    const { validator, onValidate } = newValidator({
+      a: () => 'error'
+    });
+    validator.validate();
+    expect(onValidate).toBeCalledWith({ a: 'error' });
+    validator.touch('a');
+    expect(onValidate).toBeCalledWith({});
+  });
+
+  it('can have dependent validators that are reset on touch', () => {
+    const { validator, onValidate } = newValidator({
+      c: () => {},
+      b: {
+        depends: ['c'],
+        validator: () => 'error b'
+      },
+      a: {
+        depends: ['b'],
+        validator: () => 'error a'
+      }
+    });
+    validator.validate();
+    expect(onValidate).toBeCalledWith({ a: 'error a', b: 'error b' });
+    validator.touch('c');
+    expect(onValidate).toBeCalledWith({});
   });
 });

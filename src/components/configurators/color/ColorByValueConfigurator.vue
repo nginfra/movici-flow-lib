@@ -330,8 +330,7 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
 
   // TODO: create validator according to color length
   setupValidator() {
-    this.validator?.addModule({
-      name: this.name,
+    this.validator?.configure({
       validators: {
         ...this.getAttributeValidator()
       },

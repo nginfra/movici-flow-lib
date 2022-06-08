@@ -22,7 +22,6 @@
     <template v-if="clauseType">
       <ColorStaticConfigurator
         v-if="clauseType === 'static'"
-        :name="name"
         :value="currentClause"
         :validator="validator"
         @input="updateSettings"
@@ -31,7 +30,6 @@
       </ColorStaticConfigurator>
       <ColorByValueConfigurator
         v-else-if="clauseType === 'byValue'"
-        :name="name"
         :value="currentClause"
         :validator="validator"
         :entityProps="entityProps"

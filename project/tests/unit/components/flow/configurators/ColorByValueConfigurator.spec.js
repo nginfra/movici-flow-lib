@@ -5,7 +5,7 @@ import byValue from '../../data/dummy_byValueClause.json';
 import { cloneDeep } from 'lodash';
 
 const validator = {
-  addModule: jest.fn(),
+  configure: jest.fn(),
   touch: jest.fn()
 };
 

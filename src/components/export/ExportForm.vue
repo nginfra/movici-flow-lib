@@ -120,8 +120,7 @@ export default class ExportForm extends Mixins(SummaryListing, ValidationProvide
 
   @Watch('validator', { immediate: true })
   setupValidator() {
-    this.validator?.addModule({
-      name: 'form',
+    this.validator?.configure({
       validators: {
         currentDatasetName: () => {
           if (!this.currentDatasetName) {

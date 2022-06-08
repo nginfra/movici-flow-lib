@@ -238,13 +238,13 @@ export default class PopupConfigurator extends Mixins(ValidationProvider, Dragga
   addItem(prop: PropertySummary) {
     this.items = this.items.concat({ name: '', attribute: prop });
     this.updateValue({ items: this.items });
-    this.validator.touch('popup-items', this.name);
+    this.validator.touch('popup-items');
   }
 
   removeItem(idx: number) {
     this.items = this.items.filter((item, x) => idx !== x);
     this.updateValue({ items: this.items });
-    this.validator.touch('popup-items', this.name);
+    this.validator.touch('popup-items');
   }
 
   updateDraggable(event: { moved: { oldIndex: number; newIndex: number } }) {
@@ -258,14 +258,13 @@ export default class PopupConfigurator extends Mixins(ValidationProvider, Dragga
   }
 
   updateValue(props: Partial<PopupClause>) {
-    Object.keys(props).forEach(key => this.validator.touch('popup-' + key, this.name));
+    Object.keys(props).forEach(key => this.validator.touch('popup-' + key));
     const clause = Object.assign({}, this.currentClause, props);
     this.$emit('input', clause);
   }
 
   setupValidator() {
-    this.validator.addModule({
-      name: this.name,
+    this.validator.configure({
       validators: {
         'popup-items': () => {
           if (!this.items.length && this.showPopup) {
@@ -287,6 +286,11 @@ export default class PopupConfigurator extends Mixins(ValidationProvider, Dragga
     this.showPopup = this.currentClause ? this.currentClause.show ?? true : false;
     this.dynamicTitle = !!this.currentClause.dynamicTitle;
     this.setupValidator();
+  }
+  beforeDestroy() {
+    if (this.validator) {
+      this.validator.reset();
+    }
   }
 }
 </script>

@@ -174,8 +174,7 @@ export default class VisibilityConfigurator extends Mixins<ByValueMixin<Visibili
   }
 
   setupValidator() {
-    this.validator?.addModule({
-      name: this.name,
+    this.validator.configure({
       validators: {
         ...this.getAttributeValidator()
       },

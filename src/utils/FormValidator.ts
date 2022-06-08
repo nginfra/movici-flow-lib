@@ -1,27 +1,30 @@
-export type GlobalErrorDict = Record<string, ErrorDict>;
 export type ErrorDict = Record<string, string>;
-export type ValidatorFunc = () => string | void;
-interface FormValidatorConfig {
-  validators?: Record<string, ValidatorFunc>;
+export type NestedErrorDict = { [key: string]: string | NestedErrorDict };
+
+export interface ValidatorFunc {
+  (): string | void;
+}
+
+export interface SingleValidatorConfig {
+  depends?: string | string[];
+  validator: ValidatorFunc;
+}
+export interface FormValidatorConfig {
+  validators?: Record<string, ValidatorFunc | SingleValidatorConfig>;
   onValidate?: ValidatorCallback;
-  modules?: ValidationModule[];
+  parentCallback?: ValidatorCallback;
 }
 
-export function required(value: unknown, resource = 'Input') {
-  if (value === undefined || value === null) return `${resource} is required.`;
-}
+type ValidatorCallback = (e: ErrorDict) => void;
 
-export function isPositive(value: unknown, resource = 'Input') {
-  if (value && typeof value === 'number' && value < 0) return `${resource} must be at least 0.`;
-}
-
-export class ValidationError extends Error {}
-type ValidatorCallback = (e: ErrorDict, globals: GlobalErrorDict) => void;
-
-export interface ValidationModule {
-  name: string;
-  validators: Record<string, ValidatorFunc>;
-  onValidate?: ValidatorCallback;
+export interface IFormValidator {
+  configure(module: FormValidatorConfig): void;
+  touch(key: string): void;
+  validate(): void;
+  onValidate(cb: ValidatorCallback): void;
+  child(name: string): IFormValidator;
+  reset(): void;
+  removeChild(name: string): void;
 }
 
 /**
@@ -32,101 +35,131 @@ export interface ValidationModule {
  * component and they'd check something in their own state. Validators are given a key by which the
  * error can be identified.
  *
- * After validation, at which all `ValidatorFunc`s are called, the `onValidate` callback is invoked
- * with a dictionary containing the keys and string output of all validators that produced an error.
- * This callback can be used to synchronize an Vue component attribute.
+ * A Validator function can also be given dependencies. In that case, the validator key holds an
+ * object with a `depends` attribute, next to a `validator` attribute. The `validator` holds the
+ * ValidatorFunc and the `depends attribute contains an array of strings, all keys to other
+ * validators. See the following example:
  *
- * Validators and an `onValidate` callback can also be grouped in a module and registered using the
- * `addModule` method. These can then later be removed from the FormValidator using the
- * `removeModule` method. This makes it possible to dynamically attach and detach a group of
- * validators
+ * ```
+ * formValidator.configure({
+ *  validators: {
+ *    a: ()=>{}
+ *    b: {
+ *       depends: ['a'],
+ *       validator: ()=>{}
+ *    }
+ *   }
+ * })
+ * ```
+ *
+ * Whenever `a` is touched (using formValidator.touch('a')), both any errors for `a` and `b` are
+ * reset, since `b` depends on `a`
+ *
+ * After validation, at which all `ValidatorFunc`s are called, the `onValidate` callback is invoked
+ * with a dictionary containing the keys and string output of all validators that produced an
+ * error. This callback can be used to synchronize a Vue component attribute.
+ *
+ * You can create child validators by calling `FormValidator.spawn`. This function takes a single
+ * `name` argument to identify the child Validator by. The child validator can be used as a
+ * standalone form validator. However, whenever `validate` is called on the parent, `validate` is
+ * also called on the child. The child validator has its own onValidate to report errors from the
+ * on the child FormValidator. the child validator also reports errors back to the parent
+ * validator. These errors are then also reported in the parent's `onValidate` callback, where they
+ * are prefixed by the child validators name and a `.`, such as `child.validator-key`
  *
  * see also `mixins/ValidationProvider.vue` for an example usage
  */
-export default class FormValidator {
-  private readonly modules: { _: ValidationModule; [key: string]: ValidationModule };
 
-  errors: GlobalErrorDict;
+export default class FormValidator implements IFormValidator {
+  private errors!: NestedErrorDict;
+  private children!: Record<string, IFormValidator>;
+  private validators!: Record<string, ValidatorFunc>;
+  private dependents!: Record<string, string[]>;
+  private callbacks!: ValidatorCallback[];
+  private resetting!: boolean;
+  private parentCallback?: ValidatorCallback;
 
   constructor(config?: FormValidatorConfig) {
+    this.doReset();
+    this.parentCallback = config?.parentCallback;
+    config && this.configure(config);
+  }
+
+  private doReset() {
+    this.resetting = false;
     this.errors = {};
-    this.modules = {
-      _: {
-        name: '_',
-        validators: config?.validators ?? {},
-        onValidate: config?.onValidate
+    this.children = {};
+    this.validators = {};
+    this.dependents = {};
+    this.callbacks = [];
+  }
+  configure(config: FormValidatorConfig) {
+    config.validators && this.processValidators(config.validators);
+    this.onValidate(config.onValidate);
+  }
+
+  private processValidators(validators: Record<string, ValidatorFunc | SingleValidatorConfig>) {
+    for (const [key, val] of Object.entries(validators)) {
+      if (typeof val === 'function') {
+        this.validators[key] = val;
+        continue;
       }
-    };
-    this.modules =
-      config?.modules?.reduce((result, module) => {
-        result[module.name] = module;
-        return result;
-      }, this.modules) ?? this.modules;
-  }
-
-  setValidator(key: string, func: ValidatorFunc) {
-    this.modules._.validators[key] = func;
-  }
-
-  setValidators(validators: Record<string, ValidatorFunc>) {
-    Object.assign(this.modules._.validators, validators);
-  }
-
-  addModule(module: ValidationModule) {
-    if (this.modules[module.name]) {
-      console.warn(`Duplicate validation module [${module.name}]`);
-    }
-    this.modules[module.name] = module;
-  }
-
-  removeModule(identifier: string) {
-    const module = this.modules[identifier];
-    delete this.modules[identifier];
-
-    const errors = this.errors[identifier];
-    if (errors) {
-      for (const key of Object.keys(module.validators)) {
-        delete errors[key];
+      let depends = val.depends ?? [];
+      if (typeof depends === 'string') {
+        depends = [depends];
       }
-      delete this.errors[identifier];
+      for (const dep of depends) {
+        if (!this.validators[dep] || !validators[dep]) {
+          throw new Error(`Undefined dependency '${dep}' for validator '${key}'`);
+        }
+        this.dependents[dep] ??= [];
+        this.dependents[dep].push(key);
+      }
+      this.validators[key] = val.validator;
     }
-    this.invokeCallbacks();
   }
 
-  onValidate(callback: ValidatorCallback) {
-    this.modules._.onValidate = callback;
+  onValidate(callback?: ValidatorCallback) {
+    callback && this.callbacks.push(callback);
   }
 
-  touch(key: string, module?: string) {
-    const errors = module ? this.errors[module] : this.errors;
-    if (errors) delete errors[key];
-    this.invokeCallbacks();
+  touch(key: string) {
+    this.resetError(key) && this.invokeCallbacks();
+  }
+
+  private resetError(key: string): boolean {
+    let touched = false;
+    if (this.errors[key]) {
+      delete this.errors[key];
+      touched = true;
+    }
+    for (const dep of this.dependents[key] ?? []) {
+      touched = this.resetError(dep) || touched;
+    }
+    return touched;
   }
 
   validate() {
     this.errors = {};
 
-    for (const [name, validators] of Object.values(this.modules).map(m => {
-      return [m.name, m.validators] as [string, Record<string, ValidatorFunc>];
-    })) {
-      for (const key of Object.keys(validators)) {
-        const result = this.getValidationResult(validators[key]);
-
-        if (typeof result === 'string') {
-          this.errors[name] ??= {};
-          this.errors[name][key] = result;
-        }
+    for (const [name, validator] of Object.entries(this.validators)) {
+      const result = this.getValidationResult(validator);
+      if (typeof result === 'string') {
+        this.errors[name] ??= result;
       }
+    }
+    for (const child of Object.values(this.children)) {
+      child.validate();
     }
 
     this.invokeCallbacks();
   }
 
   private invokeCallbacks() {
-    for (const [name, callback] of Object.values(this.modules).map(
-      m => [m.name, m.onValidate] as [string, ValidatorCallback]
-    )) {
-      callback && callback(this.errors[name] ?? {}, this.errors);
+    const errors = flatten(this.errors);
+    this.parentCallback?.(errors);
+    for (const cb of this.callbacks) {
+      cb(errors);
     }
   }
 
@@ -143,4 +176,71 @@ export default class FormValidator {
     }
     return result;
   }
+
+  child(name: string): IFormValidator {
+    if (!name) {
+      throw new Error('Validator name cannot be empty');
+    }
+
+    this.children[name] ??= new FormValidator({
+      onValidate: (e: ErrorDict) => {
+        this.processChildErrors(name, e);
+      }
+    });
+    return this.children[name];
+  }
+
+  reset(): void {
+    this.resetting = true;
+    for (const child of Object.keys(this.children)) {
+      this.removeChild(child);
+    }
+    this.errors = {};
+    this.invokeCallbacks();
+    this.doReset();
+  }
+
+  removeChild(name: string): void {
+    const validator = this.children[name];
+    if (validator) {
+      delete this.children[name];
+      delete this.errors[name];
+      validator.reset();
+    }
+  }
+
+  private processChildErrors(child: string, e: ErrorDict) {
+    if (this.resetting) return;
+
+    if (Object.keys(e).length) {
+      this.errors[child] = e;
+    } else {
+      delete this.errors[child];
+    }
+    this.invokeCallbacks();
+  }
+}
+
+function flatten(errors: NestedErrorDict, path = '', result: ErrorDict | null = null) {
+  result = result || {};
+
+  for (const [key, val] of Object.entries(errors)) {
+    if (typeof val === 'string') {
+      result[path + key] = val;
+    } else {
+      flatten(val, path + key + '.', result);
+    }
+  }
+  return result;
+}
+
+export class ValidationError extends Error {}
+
+export function required(value: unknown, resource = 'Input') {
+  ``;
+  if (value === undefined || value === null) return `${resource} is required.`;
+}
+
+export function isPositive(value: unknown, resource = 'Input') {
+  if (value && typeof value === 'number' && value < 0) return `${resource} must be at least 0.`;
 }
