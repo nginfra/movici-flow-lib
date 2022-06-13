@@ -288,7 +288,7 @@ function getUpdateDataTask({
     priority: update.timestamp
   };
 }
-class StreamingTapefile<T> extends BaseTapefile<T> {
+export class StreamingTapefile<T> extends BaseTapefile<T> {
   attribute: string;
   IDLE_MS = 3000;
   private pending: [number, EntityUpdate<T>][];
@@ -326,6 +326,7 @@ class StreamingTapefile<T> extends BaseTapefile<T> {
       length: index.length
     });
     this.writer = new TapefileWriter(index, this.inner, this.attribute);
+    this.writer.initializeTapefile();
     this.addUpdate(
       {
         timestamp: 0,

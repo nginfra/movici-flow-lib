@@ -1,5 +1,5 @@
 import Vue, { VueConstructor } from 'vue';
-import { createLocalVue, RouterLinkStub, mount, shallowMount } from '@vue/test-utils';
+import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
 import merge from 'lodash/merge';
 import Buefy from 'buefy';
 import Vuex, { StoreOptions } from 'vuex';

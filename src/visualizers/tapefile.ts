@@ -1,3 +1,4 @@
+import { range } from 'lodash';
 import {
   ComponentProperty,
   EntityGroupData,
@@ -22,6 +23,17 @@ export class TapefileWriter<T> {
     this.index = index;
     this.tapefile = tapefile;
     this.attribute = attribute;
+  }
+  initializeTapefile() {
+    const length = this.tapefile.state.length;
+    this.tapefile.updates = [
+      {
+        length,
+        timestamp: 0,
+        indices: range(length),
+        data: getEmptyArray(length)
+      }
+    ];
   }
   /**
    * Add an update to the tapefile, assuming it comes after the last update in the tapefile
