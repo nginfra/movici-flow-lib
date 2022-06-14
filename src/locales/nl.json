@@ -234,7 +234,10 @@
     "of": "van",
     "properties": "Eigenschappen",
     "timestamp": "Timestamp",
-    "yes": "Ja"
+    "yes": "Ja",
+    "noResources": "Geen items gevonden",
+    "deselectAllPages": "Deselecteer in alle pagina's",
+    "selectAllPages": "Selecteer in alle paginas"
   },
   "properties": {
     "actions": "Acties",

@@ -3,6 +3,8 @@ import { Dataset } from './datasets';
 import { Scenario, ScenarioDataset, ShortScenario } from './scenarios';
 import { BoundingBox } from '@mapbox/geo-viewport';
 
+export const IMPORTANT_ATTRIBUTES = ['id', 'reference', 'display_name', 'name'];
+
 export interface DatasetSummary {
   count: number;
   entity_groups: EntityGroupSummary[];

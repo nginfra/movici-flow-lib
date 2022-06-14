@@ -49,11 +49,11 @@
         </span>
       </template>
       <slot name="columns"></slot>
-      <template #empty>
-        <slot name="placeholder"></slot>
-        <p v-if="noResourcesDefault">No resources available</p>
-      </template>
     </b-table>
+    <div class="placeholder" v-else>
+      <slot name="placeholder" />
+      <p v-if="noResourcesDefault">{{ $t('misc.noResources') }}</p>
+    </div>
   </div>
 </template>
 
@@ -102,11 +102,11 @@ export default class ResourceList<T> extends Vue {
   }
 
   get checkedTooltipLabel() {
-    return this.allChecked ? 'Deselect from all pages' : 'Select from all pages';
+    return this.allChecked ? this.$t('misc.deselectAllPages') : this.$t('misc.selectAllPages');
   }
 
   get noResourcesDefault() {
-    return !this.$slots.placeholder && (!this.value || !this.value.length);
+    return !this.$scopedSlots.placeholder && (!this.value || !this.value.length);
   }
 
   @Watch('filteredItems')

@@ -14,12 +14,8 @@
       />
       <BaseMapControl :value="basemap" @input="setBasemap" />
     </template>
-    <template v-if="value" #control-right="{ popupContent, closePopup }">
-      <EntitySelector
-        :summary="summary"
-        :currentDataset="value"
-        @setLayerInfos="setLayerInfos"
-      ></EntitySelector>
+    <template #control-right="{ popupContent, closePopup }">
+      <EntitySelector :summary="summary" :currentDataset="value" @setLayerInfos="setLayerInfos" />
       <WidgetContainer v-if="popupContent" :value="popupContent">
         <DataViewContent @close="closePopup" :value="popupContent" :timestamp="0" />
       </WidgetContainer>
@@ -74,9 +70,13 @@ export default class DatasetViewer extends Mixins(SummaryListing) {
   }
 
   @Watch('value', { immediate: true })
-  setDatasetUUID() {
-    if (this.value) {
-      this.currentDatasetUUID = this.value.uuid;
+  afterValue(curr?: Dataset, old?: Dataset) {
+    if (curr) {
+      this.currentDatasetUUID = curr.uuid;
+
+      if (curr !== old) {
+        this.setLayerInfos([]);
+      }
     }
   }
 

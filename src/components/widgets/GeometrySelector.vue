@@ -1,6 +1,7 @@
 <template>
   <div class="holder">
     <b-field
+      class="buttons"
       v-if="showAs === 'button'"
       :type="{ 'is-danger': !!errorMessage }"
       :message="errorMessage"
@@ -28,10 +29,10 @@
         </template>
       </div>
     </b-field>
-    <div class="is-flex is-flex-direction-row" v-else-if="showAs === 'radio'">
+    <div class="is-flex is-flex-direction-row radios" v-else-if="showAs === 'radio'">
       <template v-for="c in choices">
         <b-radio
-          class="mt-2 is-flex"
+          class="is-flex"
           v-if="validChoices.length > 1 && c.enabled"
           v-model="choice"
           :native-value="c.geometry"
@@ -60,10 +61,19 @@ function validFlowVisualizerTypeOrNull(val: unknown): val is FlowVisualizerType 
   return validFlowVisualizerType(val);
 }
 
+type GeometryChoicesProps = {
+  enabled: boolean;
+  name: string;
+  icon: string;
+  iconPack: string;
+  geometry: FlowVisualizerType;
+};
+
 @Component({ name: 'GeometrySelector' })
 export default class GeometrySelector extends Vue {
   @Prop({ type: String }) readonly showAs!: 'button' | 'radio';
   @Prop({ type: String }) readonly label!: string;
+  @Prop({ type: Array, default: null }) readonly allowedGeometries!: FlowVisualizerType[] | null;
   @Prop({
     type: String,
     validator(val): boolean {
@@ -77,50 +87,47 @@ export default class GeometrySelector extends Vue {
     return this.properties.length && this.noChoice ? this.$t('flow.visualization.noGeometry') : '';
   }
 
-  get choices(): {
-    geometry: FlowVisualizerType;
-    enabled: boolean;
-    name: string;
-    icon?: string;
-    iconPack: string;
-  }[] {
-    return [
-      {
-        geometry: FlowVisualizerType.POINTS,
+  get choices(): GeometryChoicesProps[] {
+    const geometries: Record<FlowVisualizerType, Omit<GeometryChoicesProps, 'geometry'>> = {
+      [FlowVisualizerType.POINTS]: {
         enabled: isPoints(this.properties),
         name: 'Points',
         iconPack: 'fak',
         icon: 'fa-vis-info-' + FlowVisualizerType.POINTS
       },
-      {
-        geometry: FlowVisualizerType.LINES,
+      [FlowVisualizerType.LINES]: {
         enabled: isLines(this.properties),
         name: 'Lines',
         iconPack: 'fak',
         icon: 'fa-vis-info-' + FlowVisualizerType.LINES
       },
-      {
-        geometry: FlowVisualizerType.POLYGONS,
+      [FlowVisualizerType.POLYGONS]: {
         enabled: isPolygons(this.properties),
         name: 'Polygons',
         iconPack: 'fak',
         icon: 'fa-vis-info-' + FlowVisualizerType.POLYGONS
       },
-      {
-        geometry: FlowVisualizerType.ARCS,
+      [FlowVisualizerType.ARCS]: {
         enabled: isLines(this.properties) && this.showAs === 'button',
         name: 'Arcs',
         iconPack: 'fak',
         icon: 'fa-vis-info-' + FlowVisualizerType.ARCS
       },
-      {
-        geometry: FlowVisualizerType.ICONS,
+      [FlowVisualizerType.ICONS]: {
         enabled: isPoints(this.properties),
         name: 'Icons',
         iconPack: 'far',
         icon: 'map-marker-alt'
       }
-    ];
+    };
+
+    return (this.allowedGeometries ?? (Object.keys(geometries) as FlowVisualizerType[])).reduce(
+      (choices, geometry) => {
+        choices.push({ geometry, ...geometries[geometry] });
+        return choices;
+      },
+      [] as GeometryChoicesProps[]
+    );
   }
 
   get validChoices(): FlowVisualizerType[] {
@@ -174,5 +181,8 @@ export default class GeometrySelector extends Vue {
     color: $grey-light;
     background-color: $white-ter;
   }
+}
+.radios {
+  margin-top: -5px;
 }
 </style>

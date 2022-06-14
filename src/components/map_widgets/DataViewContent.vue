@@ -90,7 +90,11 @@ export default class DataViewContent extends Vue {
       case 'INT':
         rv = Number(value);
         break;
+      case 'LIST<INT>':
+        rv = value as number[];
+        break;
       case 'DOUBLE':
+      case 'FLOAT':
         rv = Number(value);
         if (rv !== 0) {
           if (Math.abs(rv) < 1e-3 || Math.abs(rv) > 1e5) {

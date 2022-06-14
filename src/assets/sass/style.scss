@@ -12,10 +12,6 @@
     color: $black;
   }
 
-  .b-radio.is-small, .b-checkbox.is-small {
-    height: 30px;
-  }
-
   // list
   ul.flow-list {
     padding-right: 0.25rem;
@@ -233,32 +229,34 @@
     z-index: 1;
   }
 
-  .draggable {
-    margin: -1px;
-    border: 1px solid transparent;
-    &.dashed {
-      border: 1px dashed $grey;
-    }
-    .flip-list-move {
-      transition: transform 0.5s;
-    }
-    .no-move {
-      transition: transform 0s;
-    }
-    .list-group {
-      min-height: 20px;
-    }
-    .grip {
-      cursor: grab;
-      color: $grey-light;
-    }
-  }
+  
 
   // count class for whenever we must show totals
   span.count {
     margin-left: 0.25rem;
     color: $grey;
     font-weight: normal;
+  }
+}
+
+.draggable {
+  margin: -1px;
+  border: 1px solid transparent;
+  &.dashed {
+    border: 1px dashed $grey;
+  }
+  .flip-list-move {
+    transition: transform 0.5s;
+  }
+  .no-move {
+    transition: transform 0s;
+  }
+  .list-group {
+    min-height: 20px;
+  }
+  .grip {
+    cursor: grab;
+    color: $grey-light;
   }
 }
 
@@ -287,6 +285,10 @@
   .modal-content {
     overflow: visible;
   }
+}
+
+.b-radio.is-small, .b-checkbox.is-small {
+  height: 30px;
 }
 
 .dialog {

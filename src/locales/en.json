@@ -234,7 +234,10 @@
     "of": "of",
     "properties": "Properties",
     "timestamp": "Timestamp",
-    "yes": "Yes"
+    "yes": "Yes",
+    "noResources": "No resources available",
+    "deselectAllPages": "Deselect from all pages",
+    "selectAllPages": "Select from all pages"
   },
   "properties": {
     "actions": "Actions",
