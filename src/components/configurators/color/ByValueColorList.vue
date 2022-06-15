@@ -5,8 +5,8 @@
         <div class="color-selection-container">
           <div class="fields-container is-flex-grow-1 is-flex is-flex-direction-column">
             <FlowColorPicker
-              :value="colors[selectedIndex]"
-              @input="updateColor(selectedIndex, $event)"
+              :value="output[selectedIndex]"
+              @input="updateOutput(selectedIndex, $event)"
               :presets="presets"
               :open="showColorPicker"
               @close="showColorPicker = false"
@@ -65,78 +65,49 @@
             :value="valueActions"
             @resetValues="$emit('resetValues')"
             @interpolateMinMax="$emit('interpolateMinMax')"
+            v-if="!isEnum"
           />
         </span>
-        <template v-if="isMode('boolean')">
-          <b-field v-for="(val, index) in mappingValues" class="is-align-items-center" :key="index">
-            <b-input
-              :value="String(Boolean(val))"
-              native-class="has-text-centered"
-              size="is-small"
-              disabled
-            ></b-input>
-          </b-field>
-        </template>
-        <template v-else>
-          <b-field
-            v-for="(val, index) in mappingValues"
-            class="is-align-items-center"
-            :key="index"
-            size="is-small"
-          >
-            <div class="values is-flex">
-              <span class="is-flex-grow-1 values-from">
-                <b-numberinput
-                  :value="val"
-                  @input="updateMappingValue(index, $event)"
-                  :controls="false"
-                  :min-step="1e-15"
-                  step="1"
-                  class="has-text-centered"
-                  size="is-small"
-                />
-              </span>
-              <template v-if="isMode('buckets')">
-                <span class="values-dash mx-1"> - </span>
-                <span class="is-flex-grow-1 values-to">
-                  <b-numberinput
-                    v-if="isMaxIndex(index)"
-                    :value="maxValue"
-                    @input="updateMaxValue"
-                    :controls="false"
-                    :min-step="1e-15"
-                    step="1"
-                    class="has-text-centered"
-                    size="is-small"
-                  />
-                  <b-numberinput
-                    v-else
-                    :value="mappingValues[bucketEndIndex(index)]"
-                    :controls="false"
-                    :min-step="1e-15"
-                    step="1"
-                    class="has-text-centered"
-                    size="is-small"
-                    disabled
-                  />
-                </span>
-              </template>
-              <b-button
-                @click="removeColor(index)"
-                :title="$t('flow.visualization.colorConfig.removeRow')"
-                class="ml-1 is-transparent is-borderless has-text-danger"
-                icon-pack="far"
-                icon-left="minus-circle"
+        <EnumInputs v-if="isEnum" :value="mappingValues" :enumLabels="entityEnums" />
+        <BooleanInputs :value="mappingValues" v-else-if="isMode('boolean')" />
+        <ByValueNumberInputs
+          :value="mappingValues"
+          @updateMappingValue="updateMappingValue($event.index, $event.val)"
+          @removeRow="removeRow"
+          :reversed="reversed"
+          hasRemoveButton
+          v-else-if="isMode('buckets') || isMode('gradient')"
+        >
+          <template v-if="isMode('buckets')" #after="{ index }">
+            <span class="values-dash mx-1"> - </span>
+            <span class="is-flex-grow-1 values-to">
+              <b-numberinput
+                v-if="isMaxIndex(index)"
+                :value="maxValue"
+                @input="updateMaxValue"
+                :controls="false"
+                :min-step="1e-15"
+                class="has-text-centered"
                 size="is-small"
               />
-            </div>
-          </b-field>
-        </template>
+              <b-numberinput
+                v-else
+                :value="mappingValues[bucketEndIndex(index)]"
+                :controls="false"
+                :min-step="1e-15"
+                class="has-text-centered"
+                size="is-small"
+                disabled
+              />
+            </span>
+          </template>
+        </ByValueNumberInputs>
       </div>
     </div>
     <b-button
-      @click="addColor"
-      :disabled="hexColors.length >= 8"
+      v-if="!isEnum"
+      @click="addRow"
+      :disabled="hexColors.length >= maxColors"
       class="is-size-7 is-transparent is-borderless has-text-primary has-text-weight-bold mt-2"
       icon-pack="far"
       icon-left="plus-circle"
@@ -150,30 +121,35 @@
 <script lang="ts">
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 import { colorTripleToHex } from '@movici-flow-common/visualizers/maps/colorMaps';
-import { ActionMenuItem, ColorMapping, RGBAColor } from '@movici-flow-common/types';
+import { ActionMenuItem, RGBAColor } from '@movici-flow-common/types';
 import FlowColorPicker from './FlowColorPicker.vue';
 import Draggable from 'vuedraggable';
+import ByValueListMixin from '../ByValueListMixin';
+import BooleanInputs from '../shared/BooleanInputs.vue';
+import ByValueNumberInputs from '../shared/ByValueNumberInputs.vue';
+import EnumInputs from '../shared/EnumInputs.vue';
 import DraggableMixin from '@movici-flow-common/mixins/DraggableMixin';
 
-type modes = 'buckets' | 'gradient' | 'boolean';
 @Component({
   name: 'ByValueColorList',
   components: {
     FlowColorPicker,
-    Draggable
+    Draggable,
+    BooleanInputs,
+    EnumInputs,
+    ByValueNumberInputs
   }
 })
-export default class ByValueColorList extends Mixins(DraggableMixin) {
-  @Prop({ type: Array, default: () => [] }) readonly value!: ColorMapping;
-  @Prop({ type: String, default: 'buckets' }) readonly mode!: modes;
-  @Prop({ type: Number, default: 0 }) readonly minValue!: number;
-  @Prop({ type: Number, default: 1 }) readonly maxValue!: number;
+export default class ByValueColorList extends Mixins<ByValueListMixin<RGBAColor>, DraggableMixin>(
+  ByValueListMixin,
+  DraggableMixin
+) {
   @Prop({ type: Array, default: () => [] }) readonly presets!: (RGBAColor | string)[];
-  @Prop({ type: Boolean, default: false }) readonly reversed!: boolean;
-  @Prop({ type: String, default: null }) readonly dataType!: string | null;
+  @Prop({ type: Number, default: 15 }) readonly maxColors!: number;
+  defaultOutputRow = [255, 255, 255] as RGBAColor;
   group = 'by-value-colors';
-  selectedIndex = -1;
   showColorPicker = false;
+  selectedIndex = -1;
 
   get colorActions(): ActionMenuItem[] {
     return [
@@ -186,42 +162,14 @@ export default class ByValueColorList extends Mixins(DraggableMixin) {
     ];
   }
 
-  get valueActions(): ActionMenuItem[] {
-    return [
-      {
-        label: '' + this.$t('flow.visualization.resetValues'),
-        icon: 'undo',
-        iconPack: 'far',
-        event: 'resetValues'
-      },
-      {
-        label: '' + this.$t('flow.visualization.interpolateMinMax'),
-        icon: 'sort',
-        iconPack: 'far',
-        event: 'interpolateMinMax',
-        isDisabled: this.dataType === 'BOOLEAN'
-      }
-    ];
-  }
-
-  get orderedValue(): ColorMapping {
-    return this.reversed ? this.value.slice().reverse() : this.value;
-  }
-
-  get colors(): RGBAColor[] {
-    return this.orderedValue.map(val => val[1]);
-  }
-
   get hexColors(): string[] {
     return this.orderedValue.map(c => colorTripleToHex(c[1]));
   }
 
-  get mappingValues(): number[] {
-    return this.orderedValue.map(val => val[0]);
-  }
-
   get valuesLabel() {
-    return this.mode == 'buckets'
+    return this.entityEnums?.length
+      ? this.$t('flow.visualization.colorConfig.valueEnum')
+      : this.mode == 'buckets'
       ? this.$t('flow.visualization.colorConfig.valueRange')
       : this.$t('flow.visualization.colorConfig.value');
   }
@@ -235,7 +183,7 @@ export default class ByValueColorList extends Mixins(DraggableMixin) {
   }
 
   get gradientColorStyle() {
-    const gradientString = [...this.colors.map(color => colorTripleToHex(color))].join();
+    const gradientString = [...this.hexColors].join();
     return 'background: linear-gradient(' + gradientString + ')';
   }
 
@@ -251,9 +199,11 @@ export default class ByValueColorList extends Mixins(DraggableMixin) {
 
   updateDraggable(event: { moved: { oldIndex: number; newIndex: number } }) {
     this.emitOriginalOrder(
-      this.move(event.moved.oldIndex, event.moved.newIndex, this.colors).map((d, idx) => {
-        return [this.mappingValues[idx], d];
-      })
+      this.move<RGBAColor>(event.moved.oldIndex, event.moved.newIndex, this.output).map(
+        (d, idx) => {
+          return [this.mappingValues[idx], d];
+        }
+      )
     );
   }
 
@@ -265,10 +215,6 @@ export default class ByValueColorList extends Mixins(DraggableMixin) {
     );
   }
 
-  isMode(mode: modes) {
-    return this.mode === mode;
-  }
-
   isMaxIndex(index: number) {
     return this.reversed ? index === 0 : index === this.orderedValue.length - 1;
   }
@@ -277,43 +223,8 @@ export default class ByValueColorList extends Mixins(DraggableMixin) {
     return this.reversed ? index - 1 : index + 1;
   }
 
-  updateMappingValue(idx: number, newValue: number) {
-    this.emitOriginalOrder(
-      this.orderedValue.map((item, arrayIdx) => {
-        return arrayIdx === idx ? [newValue, item[1]] : item;
-      })
-    );
-  }
-
-  addColor() {
-    const data = [...this.orderedValue];
-    data.push([0, [255, 255, 255]]);
-    this.emitOriginalOrder(data);
-  }
-
-  removeColor(idx: number) {
-    const data = [...this.orderedValue];
-    data.splice(idx, 1);
-    this.emitOriginalOrder(data);
-  }
-
-  updateColor(idx: number, newValue: RGBAColor) {
-    this.emitOriginalOrder(
-      this.orderedValue.map((item, arrayIdx) => {
-        return arrayIdx === idx ? [item[0], newValue] : item;
-      })
-    );
-  }
-
   updateMaxValue(val: number) {
     this.$emit('update:max-value', val);
-  }
-
-  emitOriginalOrder(values: ColorMapping) {
-    if (this.reversed) {
-      values = values.slice().reverse();
-    }
-    this.$emit('input', values);
   }
 
   openColorPicker(index: number) {

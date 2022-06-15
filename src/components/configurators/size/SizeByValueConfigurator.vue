@@ -24,7 +24,13 @@
             class="mr-4 is-flex-shrink-1"
             :label="$t('flow.visualization.colorConfig.steps')"
           >
-            <b-select :value="sizes.length" @input="updateSteps" size="is-small" expanded>
+            <b-select
+              :value="sizes.length"
+              @input="updateSteps"
+              size="is-small"
+              expanded
+              :disabled="selectedDataType === 'BOOLEAN' || isEnum"
+            >
               <option v-for="index in stepArray" :key="index" :value="index">{{ index }}</option>
             </b-select>
           </b-field>
@@ -47,10 +53,12 @@
       >
         <ByValueSizeList
           v-model="sizes"
+          :mode="sizeMode"
           :min-value="minValue"
           :max-value="maxValue"
           :units="units"
           :dataType="selectedEntityProp.data_type"
+          :entityEnums="entityEnums"
           @resetValues="resetValues"
           @interpolateMinMax="interpolateMinMax"
           reversed
@@ -114,7 +122,6 @@ import ByValueSizeList from './ByValueSizeList.vue';
 import { recalculateMapping, RecalculateMappingParams } from '../helpers';
 import { MoviciError } from '@movici-flow-common/errors';
 import { isPositive } from '@movici-flow-common/utils/FormValidator';
-import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import { pick } from 'lodash';
 
 @Component({
@@ -124,10 +131,9 @@ import { pick } from 'lodash';
     ByValueSizeList
   }
 })
-export default class SizeByValueConfigurator extends Mixins<
-  ByValueMixin<SizeClause>,
-  ValidationProvider
->(ByValueMixin, ValidationProvider) {
+export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeClause>>(
+  ByValueMixin
+) {
   // overrides ByValueMixin
   allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
   // custom variables
@@ -167,6 +173,18 @@ export default class SizeByValueConfigurator extends Mixins<
 
   get currentMaxValue() {
     return this.sizes[this.sizes.length - 1][0];
+  }
+
+  get entityEnums() {
+    return this.summary?.general?.enum?.[this.selectedEntityProp?.enum_name ?? ''] ?? null;
+  }
+
+  get isEnum() {
+    return !!this.entityEnums;
+  }
+
+  get sizeMode(): 'number' | 'boolean' {
+    return this.selectedDataType === 'BOOLEAN' ? 'boolean' : 'number';
   }
 
   get defaults() {
@@ -232,9 +250,19 @@ export default class SizeByValueConfigurator extends Mixins<
   resetByDataType(dataType: string) {
     this.nSteps = this.defaultDataTypeSteps;
 
+    if (this.isEnum) dataType = 'ENUM'; // overriding ENUMS
+
     switch (dataType) {
       case 'BOOLEAN':
         this.recalculateSizeMapping({ nSteps: 2, forceRecalculateValues: true });
+        break;
+      case 'ENUM':
+        this.nSteps = this.entityEnums?.length ?? 0;
+        this.recalculateSizeMapping({
+          output: Array(this.nSteps).fill(4),
+          nSteps: this.nSteps,
+          forceRecalculateValues: true
+        });
         break;
       case 'INT':
       case 'DOUBLE':

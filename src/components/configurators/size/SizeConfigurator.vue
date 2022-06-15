@@ -24,6 +24,7 @@
         :value="currentClause"
         :validator="byValueValidator"
         :entityProps="entityProps"
+        :summary="summary"
         :geometry="geometry"
         @input="updateSettings($event)"
       />
@@ -37,7 +38,8 @@ import {
   SizeClause,
   StaticSizeClause,
   PropertySummary,
-  FlowVisualizerType
+  FlowVisualizerType,
+  DatasetSummary
 } from '@movici-flow-common/types';
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import SizeStaticConfigurator from './SizeStaticConfigurator.vue';
@@ -59,6 +61,7 @@ export default class SizeConfigurator extends Mixins(ValidationProvider) {
   @Prop({ type: String, default: FlowVisualizerType.POINTS })
   readonly geometry!: FlowVisualizerType;
   @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
+  @Prop({ type: Object, default: null }) readonly summary!: DatasetSummary | null;
   currentClause: SizeClause = {};
   clauseType: 'static' | 'byValue' | null = null;
 

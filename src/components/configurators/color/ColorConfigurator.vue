@@ -26,21 +26,23 @@
         :validator="validator"
         @input="updateSettings"
         size="is-small"
-      >
-      </ColorStaticConfigurator>
+      />
       <ColorByValueConfigurator
         v-else-if="clauseType === 'byValue'"
         :value="currentClause"
         :validator="validator"
         :entityProps="entityProps"
+        :summary="summary"
         @input="updateSettings"
       >
-        <template v-slot:legend-labels v-if="showLegend">
+        <template #legend-labels="{ entityEnums }">
           <ColorLegendLabelsConfigurator
+            v-if="showLegend"
             :value="legend"
             @input="updateLegend($event)"
             :placeholders="legendPlaceholders"
             :nItems="nSteps"
+            :entityEnums="entityEnums"
             reversed
           />
         </template>
@@ -53,7 +55,7 @@
         :clauseType="clauseType"
         @input="updateAdvancedSettings($event)"
       >
-        <template v-slot:legend-labels v-if="showLegend">
+        <template #legend-labels v-if="showLegend">
           <ColorLegendLabelsConfigurator
             v-model="advLegend"
             :nItems="2"
@@ -73,7 +75,8 @@ import {
   FlowVisualizerType,
   LegendOptions,
   PropertySummary,
-  StaticColorClause
+  StaticColorClause,
+  DatasetSummary
 } from '@movici-flow-common/types';
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import ColorStaticConfigurator from './ColorStaticConfigurator.vue';
@@ -100,6 +103,7 @@ export default class ColorConfigurator extends Mixins(ValidationProvider) {
   @Prop({ type: String, default: FlowVisualizerType.POINTS })
   readonly geometry!: FlowVisualizerType;
   @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
+  @Prop({ type: Object, default: null }) readonly summary!: DatasetSummary | null;
   currentClause: ColorClause = {};
   clauseType: 'static' | 'byValue' | null = null;
   advancedSettings: AdvancedColorSettings | null = null;

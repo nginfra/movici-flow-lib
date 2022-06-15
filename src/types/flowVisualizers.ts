@@ -116,11 +116,11 @@ export interface ByValueSizeClause {
 
 export interface PopupClause {
   title: string;
-  dynamicTitle?: boolean;
   when: 'onClick' | 'onHover';
+  show?: boolean;
+  dynamicTitle?: boolean;
   position: 'dynamic' | 'static';
   items: PopupItem[];
-  show?: boolean;
 }
 
 export interface PopupItem {
@@ -149,7 +149,12 @@ export interface PopupContent<D = unknown> {
   position: 'dynamic' | 'static';
   when: 'onClick' | 'onHover';
   index: number;
-  items: { name: string; tapefile: ITapefile<unknown>; attribute: PropertyType }[];
+  items: PopupContentItem[];
+}
+
+export interface PopupContentItem extends PopupItem {
+  tapefile: ITapefile<unknown>;
+  enum?: string[];
 }
 
 export type PopupCallback = (content: PopupContent | null) => void;

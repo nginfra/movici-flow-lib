@@ -131,7 +131,16 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
     const visualizers = this.ensureVisualizers();
     if (visualizers) {
       visualizers
-        .updateVisualizers(this.layerInfos.filter(info => !Object.keys(info.errors).length))
+        .updateVisualizers(
+          this.layerInfos
+            .filter(info => !Object.keys(info.errors).length)
+            .map(info => {
+              if (info.datasetUUID) {
+                info.summary ??= flowStore.cachedSummaries[info.datasetUUID];
+              }
+              return info;
+            })
+        )
         .then(() => {});
     }
   }

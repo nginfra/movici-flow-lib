@@ -21,7 +21,11 @@ export default class ColorPalette {
   }
 
   getHexColorsForSize(size: number) {
-    const rv = this.colorsForSize[size].map((n: number) => this.colors[n]);
+    if (!this.colorsForSize[size]) {
+      size = Math.max(...Object.keys(this.colorsForSize).map(n => Number(n)));
+    }
+
+    const rv = this.colorsForSize[size].map((n: number) => this.colors[n] ?? '#ffffff');
     if (this.reversed) {
       rv.reverse();
     }

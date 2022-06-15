@@ -5,7 +5,8 @@ import {
   PopupClause,
   PopupContent,
   TopologyLayerData,
-  IVisualizer
+  IVisualizer,
+  PopupContentItem
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
 import { PickInfo } from '@deck.gl/core/lib/deck';
@@ -19,11 +20,13 @@ export default class PopupModule<
 > extends VisualizerModule<Coord, LData> {
   accessor: PickingHandler<LData> | null;
   currentSettings: PopupClause | null;
+  enums: Record<string, string[]>;
 
   constructor(params: VisualizerModuleParams) {
     super(params);
     this.currentSettings = null;
     this.accessor = null;
+    this.enums = this.info.summary?.general?.enum ?? {};
   }
 
   compose(params: LayerParams<LData, Coord>, visualizer: IVisualizer): LayerParams<LData, Coord> {
@@ -84,7 +87,7 @@ export default class PopupModule<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (info: any) => {
       if (info && info.object) {
-        visualizer[clause.when](accessor.getValue(info.object.idx, info));
+        visualizer[clause.when](accessor.getValue(info.object.idx, info, this.enums));
       } else {
         visualizer[clause.when](null);
       }
@@ -107,19 +110,31 @@ export class PopupContentAccessor {
     this.tapefiles[index] = tapefile;
   }
 
-  getValue(index: number, pickInfo: PickInfo<unknown>): PopupContent {
+  getValue(
+    index: number,
+    pickInfo: PickInfo<unknown>,
+    enums: Record<string, string[]>
+  ): PopupContent {
+    const { title, dynamicTitle, when, position, items } = this.popup;
+
     return {
-      title: this.popup.title,
+      title,
       pickInfo,
-      dynamicTitle: this.popup.dynamicTitle,
-      when: this.popup.when,
-      position: this.popup.position,
-      items: this.popup.items.map((item, idx) => {
-        return {
+      dynamicTitle,
+      when,
+      position,
+      items: items.map((item, idx) => {
+        const rv: PopupContentItem = {
           name: item.name,
           attribute: item.attribute,
           tapefile: this.tapefiles[idx]
         };
+
+        if (item.attribute.enum_name) {
+          rv.enum = enums[item.attribute.enum_name];
+        }
+
+        return rv;
       }),
       index
     };

@@ -89,6 +89,7 @@ export default class ColorAdvSettingsConfigurator extends Vue {
       ['null', this.value?.undefinedColor ?? DEFAULT_UNDEFINED_COLOR_TRIPLE]
     ];
   }
+
   updateColor({ id, newValue }: { id: number; newValue: RGBAColor }) {
     this.emitAdvancedSettings(id == 0 ? { specialColor: newValue } : { undefinedColor: newValue });
   }

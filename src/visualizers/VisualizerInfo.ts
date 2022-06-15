@@ -1,5 +1,10 @@
 import StatusTracker from '@movici-flow-common/utils/StatusTracker';
-import { FlowVisualizerConfig, FlowVisualizerOptions, VisualizationMode } from '../types';
+import {
+  DatasetSummary,
+  FlowVisualizerConfig,
+  FlowVisualizerOptions,
+  VisualizationMode
+} from '../types';
 
 abstract class BaseVisualizerInfo {
   name: string;
@@ -50,11 +55,13 @@ abstract class BaseVisualizerInfo {
 
 export class ComposableVisualizerInfo extends BaseVisualizerInfo {
   settings?: FlowVisualizerOptions;
+  summary: DatasetSummary | null;
   id: string;
   constructor(config?: Partial<ComposableVisualizerInfo>) {
     super(config);
     this.settings = config?.settings;
     this.id = config?.id ?? randomID();
+    this.summary = config?.summary ?? null;
   }
 
   toVisualizerConfig(): FlowVisualizerConfig {

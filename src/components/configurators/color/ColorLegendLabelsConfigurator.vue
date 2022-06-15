@@ -22,6 +22,7 @@ export default class ColorLegendLabelsConfigurator extends Vue {
   @Prop({ type: Number, required: true }) readonly nItems!: number;
   @Prop({ type: Array, default: null }) readonly placeholders!: string[] | null;
   @Prop({ type: Boolean, default: false }) readonly reversed!: boolean;
+  @Prop({ type: Array, default: () => [] }) readonly entityEnums!: string[];
 
   actions: ActionMenuItem[] = [
     {
@@ -43,9 +44,15 @@ export default class ColorLegendLabelsConfigurator extends Vue {
     return this.value?.labels ?? null;
   }
 
+  get isEnum() {
+    return !!this.entityEnums.length;
+  }
+
   resetLegends() {
     let labels = new Array(this.labels?.length).fill('');
-    if (this.placeholders) {
+    if (this.isEnum) {
+      labels = this.entityEnums;
+    } else if (this.placeholders) {
       labels = this.placeholders;
     }
 

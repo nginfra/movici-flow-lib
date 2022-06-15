@@ -201,6 +201,9 @@ export default class FlowStore extends VuexModule {
     return scenarios;
   }
 
+  get cachedSummaries() {
+    return this.scenario ? this.scenarioSummaries[this.scenario.uuid] : this.datasetSummaries;
+  }
   /**
    * Get a Dataset Summary by `params.datasetUUUID`. When omitting `params.scenarioUUID` the summary
    * will be either  for the init data or, if the `FlowStore` has a `currentScenarioUUID` defined,
@@ -215,8 +218,8 @@ export default class FlowStore extends VuexModule {
    */
   @Action({ rawError: true })
   async getDatasetSummary(params: {
-    datasetUUID: string;
-    scenarioUUID?: string | null;
+    datasetUUID: UUID;
+    scenarioUUID?: UUID | null;
   }): Promise<DatasetSummary> {
     const { datasetUUID } = params;
     let { scenarioUUID } = params;

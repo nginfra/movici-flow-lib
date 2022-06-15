@@ -1,7 +1,7 @@
 <template>
   <div class="data-content">
     <div class="header align-items-center is-flex mb-1">
-      <label class="label is-size-6 is-flex-grow-1 mb-0" :title="titleTooltip">
+      <label class="label is-size-6 is-flex-grow-1 mr-1" :title="titleTooltip">
         <template v-if="dynamicTitle">
           {{ dynamicTitle }}
         </template>
@@ -30,6 +30,13 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { PopupContent, PropertyType } from '@movici-flow-common/types';
 
+interface DataViewItem {
+  name: string;
+  value: unknown;
+  attribute: PropertyType;
+  enum?: string[];
+}
+
 @Component({ name: 'DataViewContent' })
 export default class DataViewContent extends Vue {
   @Prop({ type: Object, default: null }) readonly value!: PopupContent | null;
@@ -51,11 +58,7 @@ export default class DataViewContent extends Vue {
     return this.value?.dynamicTitle ? this.items[0].name : this.title;
   }
 
-  get items(): {
-    name: string;
-    value: unknown;
-    attribute: PropertyType;
-  }[] {
+  get items(): DataViewItem[] {
     if (!this.value) {
       return [];
     }
@@ -69,7 +72,8 @@ export default class DataViewContent extends Vue {
       return {
         name: item.name,
         attribute: item.attribute,
-        value: item?.tapefile.data[index]
+        value: item?.tapefile.data[index],
+        enum: item.enum
       };
     });
   }
@@ -78,27 +82,36 @@ export default class DataViewContent extends Vue {
     return this.dynamicTitle ? this.items.filter((val, idx) => idx !== 0) : this.items;
   }
 
-  formatValue({ value, attribute }: { value: unknown; attribute: PropertyType }) {
-    let rv;
+  formatValue(item: Omit<DataViewItem, 'name'>) {
+    const { value, attribute } = item,
+      enums = item.enum;
 
     if (typeof value === 'undefined' || value === null) return 'N/A';
 
+    let rv;
     switch (attribute.data_type) {
       case 'BOOLEAN':
         rv = value ? this.$t('misc.yes') : this.$t('misc.no');
         break;
       case 'INT':
         rv = Number(value);
+        if (enums) {
+          rv = parseEnum(enums, rv);
+        }
         break;
       case 'LIST<INT>':
         rv = value as number[];
+        if (enums) {
+          rv = rv.map(v => parseEnum(enums, v)).join(', ');
+        }
         break;
       case 'DOUBLE':
       case 'FLOAT':
         rv = Number(value);
         if (rv !== 0) {
           if (Math.abs(rv) < 1e-3 || Math.abs(rv) > 1e5) {
-            // if value is very small or very big, then show as scientific notation
+            // if value is very small or very big,
+            // then show as scientific notation
             const [base, exp] = rv.toExponential().split('e');
             rv = Number(base).toFixed(3) + 'e' + exp;
           } else {
@@ -118,6 +131,10 @@ export default class DataViewContent extends Vue {
   }
 }
 
+function parseEnum(enums: string[], value: number) {
+  return enums[value] ?? `N/A (${value})`;
+}
+
 function countDecimals(value: number, max?: number) {
   if (Math.floor(value) === value) return 0;
   let rv = value.toString().split('.')[1].length || 0;
@@ -131,24 +148,26 @@ function countDecimals(value: number, max?: number) {
 <style scoped lang="scss">
 .data-content {
   max-width: 500px;
-
+  min-width: max-content;
+  width: 100%;
   .header {
     min-height: 1.5rem;
     .label {
       margin: 0;
-      max-width: 450px;
     }
   }
   .attributes {
     color: $black;
     width: 100%;
     .name {
-      padding-right: 0.75em;
-      max-width: 450px;
+      text-align: left;
     }
     .value {
-      min-width: 50px;
+      padding-left: 0.75em;
       text-align: right;
+      span {
+        white-space: break-spaces;
+      }
     }
   }
   .close {

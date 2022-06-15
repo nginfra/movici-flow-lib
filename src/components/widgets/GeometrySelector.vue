@@ -1,7 +1,7 @@
 <template>
   <div class="holder">
     <b-field
-      class="buttons"
+      class="show-as-buttons"
       v-if="showAs === 'button'"
       :type="{ 'is-danger': !!errorMessage }"
       :message="errorMessage"
@@ -29,14 +29,17 @@
         </template>
       </div>
     </b-field>
-    <div class="is-flex is-flex-direction-row radios" v-else-if="showAs === 'radio'">
+    <div
+      class="is-flex is-flex-direction-row show-as-radios"
+      v-else-if="showAs === 'radio' && validChoices.length > 1"
+    >
       <template v-for="c in choices">
         <b-radio
-          class="is-flex"
-          v-if="validChoices.length > 1 && c.enabled"
           v-model="choice"
-          :native-value="c.geometry"
+          v-if="c.enabled"
           :key="c.geometry"
+          :native-value="c.geometry"
+          class="is-flex"
           size="is-small"
         >
           {{ c.name }}
@@ -163,26 +166,27 @@ export default class GeometrySelector extends Vue {
 }
 </script>
 <style scoped lang="scss">
-.v-info-geometry {
-  border: 0.125rem solid transparent;
-  opacity: 1 !important;
-  background-color: #e8f8f2;
-  color: #1ab67e;
-  height: 2.25rem;
-  width: 2.75rem;
-  font-size: 1.25rem;
-
-  &:active,
-  &.is-active {
-    background-color: $green;
-    color: $green-light;
-  }
-  &[disabled] {
-    color: $grey-light;
-    background-color: $white-ter;
+.show-as-buttons {
+  .v-info-geometry {
+    border: 0.125rem solid transparent;
+    opacity: 1 !important;
+    background-color: #e8f8f2;
+    color: #1ab67e;
+    height: 2.25rem;
+    width: 2.75rem;
+    font-size: 1.25rem;
+    &:active,
+    &.is-active {
+      background-color: $green;
+      color: $green-light;
+    }
+    &[disabled] {
+      color: $grey-light;
+      background-color: $white-ter;
+    }
   }
 }
-.radios {
+.show-as-radios {
   margin-top: -5px;
 }
 </style>

@@ -9,6 +9,9 @@ export interface DatasetSummary {
   count: number;
   entity_groups: EntityGroupSummary[];
   bounding_box: BoundingBox;
+  general?: {
+    enum?: Record<string, string[]>;
+  };
 }
 
 export enum DatasetFormat {

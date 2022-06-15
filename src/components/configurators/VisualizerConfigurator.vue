@@ -157,7 +157,7 @@ import PopupConfigurator from './popup/PopupConfigurator.vue';
 import ShapeIconConfigurator from './icon/ShapeIconConfigurator.vue';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
-import { propertyString, excludeKey } from '@movici-flow-common/utils';
+import { propertyString, excludeKeys } from '@movici-flow-common/utils';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 
@@ -260,7 +260,8 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
           entityProps: this.properties,
           validator: this.validator?.child(key),
           geometry: this.geometry,
-          settings: this.settings
+          settings: this.settings,
+          summary: this.summary
         };
       },
       vOnDefaults = <T extends keyof FlowVisualizerOptions>(clauseType: T) => {
@@ -336,10 +337,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
       {
         name: '' + this.$t('flow.visualization.popup.popup'),
         component: PopupConfigurator,
-        vBind: {
-          ...vBindDefaults('popup'),
-          value: this.settings?.popup
-        },
+        vBind: { ...vBindDefaults('popup'), value: this.settings?.popup },
         vOn: { ...vOnDefaults('popup') }
       }
     ];
@@ -360,8 +358,8 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   }
 
   get hasPendingChanges() {
-    const value = excludeKey('status', this.value),
-      finalized = excludeKey('status', this.finalizedVisualizer);
+    const value = excludeKeys(this.value, ['status', 'summary', 'errors']),
+      finalized = excludeKeys(this.finalizedVisualizer, ['status', 'summary', 'errors']);
     return !isEqual(finalized, value);
   }
 

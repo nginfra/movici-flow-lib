@@ -21,19 +21,36 @@
       </div>
     </div>
     <div v-if="selectedEntityProp" class="columns mb-0 is-multiline">
-      <div class="column is-two-thirds-desktop is-full-tablet">
-        <div v-if="selectedDataType !== 'BOOLEAN'">
+      <div class="column is-full">
+        <div>
           <b-field class="fill-type">
-            <b-radio class="mr-4" v-model="fillType" native-value="buckets" size="is-small">
+            <b-radio
+              class="mr-4"
+              v-model="fillType"
+              native-value="buckets"
+              size="is-small"
+              :disabled="isBooleanOrEnum"
+            >
               {{ $t('flow.visualization.colorConfig.buckets') }}
             </b-radio>
-            <b-radio v-model="fillType" native-value="gradient" size="is-small">
+            <b-radio
+              v-model="fillType"
+              native-value="gradient"
+              size="is-small"
+              :disabled="isBooleanOrEnum"
+            >
               {{ $t('flow.visualization.colorConfig.gradient') }}
             </b-radio>
           </b-field>
           <div class="steps mt-3 is-flex is-flex-direction-row">
             <b-field class="is-flex-shrink-1" :label="$t('flow.visualization.colorConfig.steps')">
-              <b-select :value="colorMapping.length" @input="updateSteps" size="is-small" expanded>
+              <b-select
+                :value="colorMapping.length"
+                @input="updateSteps"
+                size="is-small"
+                expanded
+                :disabled="isBooleanOrEnum"
+              >
                 <option v-for="index in stepArray" :key="index" :value="index">{{ index }}</option>
               </b-select>
             </b-field>
@@ -44,60 +61,19 @@
                 </option>
               </b-select>
             </b-field>
-            <b-field
-              class="is-flex-grow-1 ml-2"
-              :label="$t('flow.visualization.colorConfig.palette')"
-            >
-              <b-dropdown
-                :value="selectedColorPaletteIndex"
-                @input="selectColorPalette"
-                class="select is-small"
-                aria-role="list"
-                expanded
-              >
-                <template #trigger>
-                  <span class="color-option">
-                    <b-tooltip
-                      type="is-black"
-                      position="is-right"
-                      :label="colorPalettesFiltered[selectedColorPaletteIndex].name"
-                    >
-                      <span
-                        class="color-piece is-size-7"
-                        v-for="(color, index) in colorPalettesFiltered[
-                          selectedColorPaletteIndex
-                        ].getHexColorsForSize(nSteps)"
-                        :style="{ 'background-color': color }"
-                        :key="index"
-                      ></span>
-                    </b-tooltip>
-                  </span>
-                </template>
-                <b-dropdown-item
-                  class="color-option"
-                  v-for="(item, index) in colorPalettesFiltered"
-                  :value="index"
-                  :key="index"
-                  :focusable="false"
-                  aria-role="listitem"
-                >
-                  <b-tooltip type="is-black" position="is-right" :label="item.name">
-                    <span
-                      class="color-piece"
-                      v-for="(color, index) in item.getHexColorsForSize(nSteps)"
-                      :style="{ 'background-color': color }"
-                      :key="index"
-                    ></span>
-                  </b-tooltip>
-                </b-dropdown-item>
-              </b-dropdown>
-            </b-field>
+            <ColorPaletteSelector
+              v-if="colorPalettesFiltered.length"
+              :value="selectedColorPaletteIndex"
+              :colorPalettes="colorPalettesFiltered"
+              :nSteps="nSteps"
+              @input="selectColorPalette"
+            />
           </div>
         </div>
       </div>
     </div>
     <div v-if="selectedEntityProp" class="columns mb-0 is-multiline">
-      <div class="column py-0 is-two-thirds-desktop is-full-tablet">
+      <div class="column py-0 is-two-thirds-desktop">
         <ByValueColorList
           v-if="colorMapping.length"
           v-model="colorMapping"
@@ -106,13 +82,14 @@
           :min-value="minValue"
           :max-value.sync="currentMaxValue"
           :dataType="selectedEntityProp.data_type"
+          :entityEnums="entityEnums"
           @resetValues="resetValues"
           @interpolateMinMax="interpolateMinMax"
           reversed
         />
       </div>
       <div class="column py-0 is-one-third-desktop is-full-tablet">
-        <slot name="legend-labels" />
+        <slot name="legend-labels" v-bind="{ entityEnums }" />
       </div>
     </div>
   </div>
@@ -130,16 +107,19 @@ import {
 } from '@movici-flow-common/types';
 import ByValueColorList from './ByValueColorList.vue';
 import { recalculateMapping, RecalculateMappingParams } from '../../configurators/helpers';
+import ColorPaletteSelector from './ColorPaletteSelector.vue';
 import ColorPalettes, { DEFAULT_COLOR_PALETTES } from './colorPalettes';
 import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
 import ByValueMixin from '../ByValueMixin';
 import { MoviciError } from '@movici-flow-common/errors';
+import range from 'lodash/range';
 
 @Component({
   name: 'ColorByValueConfigurator',
   components: {
     ByValueColorList,
-    AttributeSelector
+    AttributeSelector,
+    ColorPaletteSelector
   }
 })
 export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorClause>>(
@@ -156,10 +136,13 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
   selectedColorPaletteIndex = 0;
   currentMaxValue = 1;
   nSteps = 4;
-  stepArray: number[] = [2, 3, 4, 5, 6, 7, 8];
 
   get mappingValues(): number[] {
     return this.colorMapping.map(val => val[0]);
+  }
+
+  get stepArray() {
+    return range(2, this.selectedColorPaletteLength + 2);
   }
 
   get colors(): RGBAColor[] {
@@ -167,13 +150,11 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
   }
 
   get selectedColorPalette(): string[] {
-    return this.colorPalettesFiltered[this.selectedColorPaletteIndex].getHexColorsForSize(
-      this.nSteps
-    );
+    return this.colorPalettes[this.selectedColorPaletteIndex].getHexColorsForSize(this.nSteps);
   }
 
-  get colorPalettesFiltered(): ColorPalettes[] {
-    return this.colorPalettes.filter(palette => palette.colorsForSize[this.nSteps]);
+  get selectedColorPaletteLength() {
+    return Object.keys(this.colorPalettes[this.selectedColorPaletteIndex].colorsForSize).length;
   }
 
   get colorPalettes(): ColorPalettes[] {
@@ -195,8 +176,20 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
     };
   }
 
+  get colorPalettesFiltered(): ColorPalettes[] {
+    return this.colorPalettes?.filter(palette => palette.colorsForSize[this.nSteps]);
+  }
+
   get currentMinValue() {
     return this.mappingValues[0] ?? this.minValue;
+  }
+
+  get entityEnums() {
+    return this.summary?.general?.enum?.[this.selectedEntityProp?.enum_name ?? ''] ?? null;
+  }
+
+  get isEnum() {
+    return !!this.entityEnums;
   }
 
   get defaults() {
@@ -205,6 +198,10 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
       attribute: null,
       colors: []
     };
+  }
+
+  get isBooleanOrEnum() {
+    return this.selectedDataType === 'BOOLEAN' || this.isEnum;
   }
 
   selectColorPalette(index: number) {
@@ -233,7 +230,7 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
      * We set the selectedEntityProp (aka attribute) with this.ensureProp
      * After that we can reset it to show the default UI config for that
      * data_type, like an ENUM, BOOLEAN, INT or DOUBLE.
-     * This state is achivable from both UNTOUCHED NULL CLAUSE and
+     * This state is achievable from both UNTOUCHED NULL CLAUSE and
      * UNTOUCHED DEFINED VALID CLAUSE. After that it only may become
      * TOUCHED INVALID CLAUSE if the user inputs invalid data.
      */
@@ -310,15 +307,38 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
   resetByDataType(dataType: string) {
     this.resetColorMapping(this.defaultDataTypeSteps);
 
+    if (this.isEnum) dataType = 'ENUM'; // overriding ENUMS
+
     switch (dataType) {
       case 'BOOLEAN':
         this.selectedColorType = 'Diverging';
         this.selectedColorPaletteIndex = 0;
         this.fillType = 'buckets';
         this.recalculateColorMapping({
-          output: DEFAULT_COLOR_PALETTES['Diverging'][0].getColorTriplesForSize(2),
+          output:
+            DEFAULT_COLOR_PALETTES[this.selectedColorType][
+              this.selectedColorPaletteIndex
+            ].getColorTriplesForSize(2),
           forceRecalculateValues: true
         });
+        break;
+      case 'ENUM':
+        this.selectedColorType = 'Qualitative';
+        this.selectedColorPaletteIndex = 0;
+        this.fillType = 'buckets';
+        this.nSteps = this.entityEnums?.length ?? 0;
+        this.colorMapping = recalculateMapping(
+          {
+            values: [...Array(this.nSteps).keys()], // creates and array filled with [0, 1, 2, ..., this.nSteps]
+            output: DEFAULT_COLOR_PALETTES[this.selectedColorType][
+              this.selectedColorPaletteIndex
+            ].getColorTriplesForSize(this.nSteps),
+            nSteps: this.nSteps,
+            maxValueAsLastValue: true,
+            forceRecalculateValues: true
+          },
+          () => hexToColorTriple(MoviciColors.WHITE)
+        );
         break;
       case 'INT':
       case 'DOUBLE':

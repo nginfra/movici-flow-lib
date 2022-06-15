@@ -1,6 +1,11 @@
 import { MoviciError } from '@movici-flow-common/errors';
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
-import { FlowVisualizerType, PropertySummary, PropertyType } from '@movici-flow-common/types';
+import {
+  DatasetSummary,
+  FlowVisualizerType,
+  PropertySummary,
+  PropertyType
+} from '@movici-flow-common/types';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 
@@ -11,6 +16,7 @@ export default class ByValueMixin<D> extends Mixins(ValidationProvider) {
   readonly geometry!: FlowVisualizerType;
   @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
   @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
+  @Prop({ type: Object, default: null }) readonly summary!: DatasetSummary | null;
   selectedEntityProp: PropertySummary | null = null;
   allowedPropertyTypes: string[] = [];
 

@@ -130,6 +130,7 @@
         "steps": "Steps",
         "type": "Colour type",
         "value": "Value",
+        "valueEnum": "Value (enumeration)",
         "valueRange": "Value (range)",
         "invertColors": "Invert color order",
         "addRow": "Add row",

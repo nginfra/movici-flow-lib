@@ -130,6 +130,7 @@
         "steps": "Stappen",
         "type": "palet-type",
         "value": "Waarde",
+        "valueEnum": "Waarde (enumeratie)",
         "valueRange": "Waarde (bereik)",
         "invertColors": "Kleurvolgorde omkeren",
         "addRow": "Rij toevoegen",

@@ -46,7 +46,7 @@
                     <i class="far fa-ellipsis-v"></i>
                   </span>
                 </span>
-                <div>
+                <div class="checkbox-holder">
                   <b-checkbox v-model="activeEntityGroups[idx]" size="is-small">
                     {{ group.name | snakeToSpaces | upperFirst }} ({{ group.count }})
                   </b-checkbox>
@@ -55,7 +55,7 @@
                     @input="$set(group, 'type', $event)"
                     :properties="group.properties"
                     :allowed-geometries="allowedGeometries"
-                    class="entity-geometry-selector mt-0 ml-3"
+                    class="entity-geometry-selector ml-5"
                     v-show="activeEntityGroups[idx]"
                     showAs="radio"
                   />
@@ -268,12 +268,13 @@ export default class EntitySelector extends Mixins(DraggableMixin) {
           color: $black;
         }
       }
-
+      .checkbox-holder {
+        width: 100%;
+      }
       &.zero-results {
         cursor: not-allowed;
       }
       &:not(:last-child) {
-        margin-bottom: 2px;
         border-bottom: 1px solid $white-ter !important;
       }
     }
