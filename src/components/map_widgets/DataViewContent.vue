@@ -29,6 +29,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { PopupContent, PropertyType } from '@movici-flow-common/types';
+import { Formatter, formatValueByDataType } from '@movici-flow-common/utils/format';
 
 interface DataViewItem {
   name: string;
@@ -83,65 +84,17 @@ export default class DataViewContent extends Vue {
   }
 
   formatValue(item: Omit<DataViewItem, 'name'>) {
-    const { value, attribute } = item,
-      enums = item.enum;
+    const { value, attribute, enum: enums } = item;
 
-    if (typeof value === 'undefined' || value === null) return 'N/A';
-
-    let rv;
-    switch (attribute.data_type) {
-      case 'BOOLEAN':
-        rv = value ? this.$t('misc.yes') : this.$t('misc.no');
-        break;
-      case 'INT':
-        rv = Number(value);
-        if (enums) {
-          rv = parseEnum(enums, rv);
-        }
-        break;
-      case 'LIST<INT>':
-        rv = value as number[];
-        if (enums) {
-          rv = rv.map(v => parseEnum(enums, v)).join(', ');
-        }
-        break;
-      case 'DOUBLE':
-      case 'FLOAT':
-        rv = Number(value);
-        if (rv !== 0) {
-          if (Math.abs(rv) < 1e-3 || Math.abs(rv) > 1e5) {
-            // if value is very small or very big,
-            // then show as scientific notation
-            const [base, exp] = rv.toExponential().split('e');
-            rv = Number(base).toFixed(3) + 'e' + exp;
-          } else {
-            // float numbers show 3 decimals tops
-            // check if decimals are non 0
-            const decimals = countDecimals(rv, 3);
-            rv = rv.toFixed(decimals);
-          }
-        }
-        break;
-      default:
-        rv = value;
-        break;
+    const formatters: Record<string, Formatter> = {
+      NULL: () => 'N/A',
+      BOOLEAN: (val: unknown) => String(val ? this.$t('misc.yes') : this.$t('misc.no'))
+    };
+    if (enums) {
+      formatters.ENUM = (val: unknown) => enums[Number(val)] ?? `N/A (${val})`;
     }
-
-    return rv;
+    return formatValueByDataType(value, attribute.data_type, formatters);
   }
-}
-
-function parseEnum(enums: string[], value: number) {
-  return enums[value] ?? `N/A (${value})`;
-}
-
-function countDecimals(value: number, max?: number) {
-  if (Math.floor(value) === value) return 0;
-  let rv = value.toString().split('.')[1].length || 0;
-  if (max !== undefined) {
-    rv = Math.min(rv, max);
-  }
-  return rv;
 }
 </script>
 

@@ -185,11 +185,6 @@ export default class EntitySelector extends Mixins(DraggableMixin) {
     return this.entityGroupsFiltered.reduce((arr, group, idx) => {
       if (this.currentDataset && this.activeEntityGroups?.[idx] && group.type) {
         const items = group.properties
-          .filter(prop =>
-            ['INT', 'DOUBLE', 'BOOLEAN', 'STRING', 'LIST<INT>', 'LIST<STRING>'].some(
-              t => prop.data_type === t
-            )
-          )
           .sort(a => (IMPORTANT_ATTRIBUTES.some(attr => a.name === attr) ? -1 : 1));
 
         arr.push(
