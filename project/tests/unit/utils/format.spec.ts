@@ -1,5 +1,8 @@
 import { formatValueByDataType } from '@movici-flow-common/utils/format';
 
+function rightIndented(text: string, indentation: number) {
+  return text + ' '.repeat(indentation);
+}
 describe('formatValueByDataType', () => {
   it.each([
     ['INT', 42, '42'],
@@ -49,29 +52,6 @@ describe('formatValueByDataType', () => {
     expect(
       formatValueByDataType(
         [
-          [1, 2],
-          [3, 4]
-        ],
-        'LIST<TUPLE<INT,INT>>'
-      )
-    ).toEqual('[ 1, 2 ],\n[ 3, 4 ],');
-  });
-
-  it('formats nested lists', () => {
-    expect(
-      formatValueByDataType(
-        [
-          [1, 2],
-          [3, 4]
-        ],
-        'LIST<TUPLE<INT,INT>>'
-      )
-    ).toEqual('[ 1, 2 ],\n[ 3, 4 ],');
-  });
-  it('truncates long nested lists', () => {
-    expect(
-      formatValueByDataType(
-        [
           [1, 1],
           [2, 2],
           [3, 3],
@@ -80,7 +60,43 @@ describe('formatValueByDataType', () => {
         ],
         'LIST<TUPLE<INT,INT>>'
       )
-    ).toEqual('[ 1, 1 ],\n[ 2, 2 ],\n[ 3, 3 ],\n[ 4, 4 ],\n...');
+    ).toEqual(
+      [
+        rightIndented('[', 20),
+        '[ 1, 1 ],',
+        '[ 2, 2 ],',
+        '[ 3, 3 ],',
+        '[ 4, 4 ],',
+        '[ 5, 5 ],',
+        rightIndented(']', 20)
+      ].join('\n')
+    );
+  });
+
+  it('truncates long nested lists', () => {
+    expect(
+      formatValueByDataType(
+        [
+          [1, 1],
+          [2, 2],
+          [3, 3],
+          [4, 4],
+          [5, 5],
+          [6, 6]
+        ],
+        'LIST<TUPLE<INT,INT>>'
+      )
+    ).toEqual(
+      [
+        rightIndented('[', 20),
+        '[ 1, 1 ],',
+        '[ 2, 2 ],',
+        '[ 3, 3 ],',
+        '[ 4, 4 ],',
+        rightIndented('...', 13),
+        rightIndented(']', 20)
+      ].join('\n')
+    );
   });
   it('raises on unsupported data type', () => {
     expect(() =>

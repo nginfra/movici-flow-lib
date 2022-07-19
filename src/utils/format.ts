@@ -100,16 +100,12 @@ const NEWLINE = '\n';
 const COMMA = ',';
 const TRUNCATE = '...';
 
-// Ideally we would indent nested lists of values. However, we're right-aligning the values
-// in the popup, which makes left-indentation tricky. For now we've disable indentation by setting
-// repeat to 0
-const INDENT = SPACE.repeat(0);
+// Estimate the average character width in number of spaces. Obtained by trial and error. Used
+// for right-aligned indentation to determine the (max) line width in number of spaces
+const REL_CHAR_WIDTH = 2.3;
 
 function formatRows(rows: NestedRows): string {
   let lines = generateLines(rows);
-  if (lines.length > 4) {
-    lines = lines.slice(0, 4).concat('...');
-  }
   return lines.join(NEWLINE);
 }
 
@@ -118,11 +114,23 @@ function generateLines(rows: NestedRows): string[] {
     return [generateInnerLine(rows as string[])];
   }
 
-  let lines = rows.flatMap(r => generateLines(r as NestedRows)).map(line => INDENT + line + COMMA);
+  let lines = rows.flatMap(r => generateLines(r as NestedRows)).map(line => line + COMMA);
+  let truncated = false;
   if (lines.length > 5) {
-    lines = lines.slice(0, 4).concat(TRUNCATE);
+    lines = lines.slice(0, 4);
+    truncated = true;
   }
-  return lines;
+
+  const maxLen = Math.max(...lines.map(l => l.length));
+  const trailingSpaces = Math.floor(maxLen * REL_CHAR_WIDTH);
+  if (truncated) {
+    lines.push(TRUNCATE + SPACE.repeat(Math.floor(trailingSpaces - 3 * REL_CHAR_WIDTH)));
+  }
+  return [
+    BRACKET_OPEN + SPACE.repeat(trailingSpaces),
+    ...lines,
+    BRACKET_CLOSE + SPACE.repeat(trailingSpaces)
+  ];
 }
 
 function generateInnerLine(row: string[]): string {
