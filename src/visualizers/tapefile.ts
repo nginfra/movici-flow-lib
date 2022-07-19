@@ -10,6 +10,7 @@ export interface TapefileUpdate<T> {
   timestamp: number;
   length: number;
   indices: number[];
+  version: number;
   data: T[];
   rollback?: T[];
   fullRollback?: boolean;
@@ -30,6 +31,7 @@ export class TapefileWriter<T> {
       {
         length,
         timestamp: 0,
+        version: 1,
         indices: range(length),
         data: getEmptyArray(length)
       }
@@ -88,6 +90,7 @@ export class TapefileWriter<T> {
     return {
       timestamp: update.timestamp,
       length: dataArray.length,
+      version: 1,
       indices,
       data: dataArray
     };
@@ -112,6 +115,7 @@ export class TapefileWriter<T> {
     const rv: TapefileUpdate<T> = {
       timestamp: first.timestamp,
       length: updateMap.size,
+      version: first.version + 1,
       data: new Array(updateMap.size),
       indices: new Array(updateMap.size)
     };
@@ -167,6 +171,7 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
   state: PropertyState<T>;
   updates: TapefileUpdate<T>[];
   currentUpdateIdx: number | null;
+  currentUpdateVersion: number | null;
 
   private trimmedUntil: number;
   private lastRollback: number;
@@ -186,10 +191,10 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
     this.state = new PropertyState(length);
     this.updates = updates ?? [];
     this.currentUpdateIdx = null;
+    this.currentUpdateVersion = null;
 
     if (this.updates?.length) {
-      this.state.applyUpdate(this.updates[0]);
-      this.currentUpdateIdx = 0;
+      this.applyUpdateAtIndex(0);
     }
 
     this.trimmedUntil = 0;
@@ -205,20 +210,28 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
   }
 
   get currentTime() {
-    return this.currentUpdateIdx === null ? null : this.updates[this.currentUpdateIdx].timestamp;
+    return this.currentUpdate?.timestamp ?? null;
   }
+
   get minTime() {
     return this.updates[0]?.timestamp ?? -1;
   }
+
   get maxTime() {
     return this.updates[this.updates.length - 1].timestamp ?? -1;
   }
+
   get nextTime() {
     if (this.currentUpdateIdx === null || this.currentUpdateIdx === this.updates.length - 1) {
       return Infinity;
     }
     return this.updates[this.currentUpdateIdx + 1].timestamp;
   }
+
+  get currentUpdate() {
+    return this.currentUpdateIdx === null ? null : this.updates[this.currentUpdateIdx];
+  }
+
   copyState() {
     return this.state.copyState();
   }
@@ -226,12 +239,19 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
     let currentTime = this.currentTime;
     if (currentTime === null) {
       if (!this.updates.length) return;
-      this.currentUpdateIdx = 0;
-      const newUpdate = this.updates[this.currentUpdateIdx];
-      this.state.applyUpdate(newUpdate);
-      currentTime = newUpdate.timestamp;
+      this.applyUpdateAtIndex(0);
+      currentTime = this.currentTime as number;
     }
-    if (time === currentTime) return;
+    if (time === currentTime) {
+      if (
+        this.currentUpdateIdx != null &&
+        this.currentUpdateVersion !== this.updates[this.currentUpdateIdx].version
+      ) {
+        this.applyUpdateAtIndex(this.currentUpdateIdx);
+      }
+      return;
+    }
+
     if (time > currentTime) {
       return this.moveForward(time);
     }
@@ -263,7 +283,7 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
     // In case we there is no rollback calculated for the newUpdate yet, we need to calculate it
     // just before we apply it, otherwise we cannot later undo (ie rollback) the newUpdate.
     this.calculateRollback(newUpdate, this.currentUpdateIdx === this.updates.length - 1);
-    this.state.applyUpdate(newUpdate);
+    this.applyUpdateAtIndex(this.currentUpdateIdx);
   }
 
   stepBackward() {
@@ -274,7 +294,19 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
     this.state.rollbackUpdate(currentUpdate);
 
     this.currentUpdateIdx--;
+    this.currentUpdateVersion = this.updates[this.currentUpdateIdx].version;
   }
+
+  applyUpdateAtIndex(idx: number) {
+    if (idx >= this.updates.length) {
+      throw new Error(`Index ${idx} out of bounds for tapefile`);
+    }
+    this.currentUpdateIdx = idx;
+    const toApply = this.updates[idx];
+    this.state.applyUpdate(toApply);
+    this.currentUpdateVersion = toApply.version;
+  }
+
   calculateNextRollback() {
     if (!this.updates.length) return false;
     const lastRollback = this.lastRollback,

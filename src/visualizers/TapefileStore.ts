@@ -291,9 +291,9 @@ function getUpdateDataTask({
 export class StreamingTapefile<T> extends BaseTapefile<T> {
   attribute: string;
   IDLE_MS = 3000;
+  inner?: SinglePropertyTapefile<T>;
   private pending: [number, EntityUpdate<T>][];
   private nextUpdateSequence: number;
-  private inner?: SinglePropertyTapefile<T>;
   private writer?: TapefileWriter<T>;
   private worker?: IdleWorker;
   private timestampCallbacks: ((timestamp: number) => void)[];
@@ -312,6 +312,7 @@ export class StreamingTapefile<T> extends BaseTapefile<T> {
   get data() {
     return this.inner?.data ?? [];
   }
+
   moveTo(time: number) {
     this.worker?.notIdle();
     return this.inner?.moveTo(time);

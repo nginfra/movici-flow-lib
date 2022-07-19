@@ -49,4 +49,18 @@ describe('StreamingTapefile', () => {
     tf.moveTo(1);
     expect(tf.copyState()).toStrictEqual([11, 21]);
   });
+  it('bumps update version on merge', () => {
+    const initialData = { id: [1, 2] };
+    tf.initialize({ index, initialData });
+    expect(tf.inner?.updates[0].version).toStrictEqual(1);
+    tf.addUpdate(
+      {
+        timestamp: 0,
+        iteration: 0,
+        data: { id: [1], attr: [11] }
+      },
+      0
+    );
+    expect(tf.inner?.updates[0].version).toStrictEqual(2);
+  });
 });

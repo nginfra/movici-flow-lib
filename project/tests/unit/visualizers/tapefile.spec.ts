@@ -3,6 +3,13 @@ import {
   SinglePropertyTapefile,
   TapefileUpdate
 } from '@movici-flow-common/visualizers/tapefile';
+import { omit } from 'lodash';
+function filterVersion<T>(updates: TapefileUpdate<T> | TapefileUpdate<T>[]) {
+  if (Array.isArray(updates)) {
+    return updates.map(upd => omit(upd, ['version']));
+  }
+  return omit(updates, ['version']);
+}
 
 describe('tapefile.js/createTapefileFromStateAndUpdates', () => {
   const tapefile = createTapefileFromStateAndUpdates(
@@ -51,7 +58,7 @@ describe('tapefile.js/createTapefileFromStateAndUpdates', () => {
     expect(tapefile.specialValue).toEqual(12);
   });
   it('has the right updates', () => {
-    expect(tapefile.updates).toStrictEqual([
+    expect(filterVersion(tapefile.updates)).toStrictEqual([
       {
         timestamp: -1,
         length: 3,
@@ -110,7 +117,7 @@ describe('tapefile.js/createTapefileFromStateAndUpdates', () => {
         }
       ]
     );
-    expect(tapefile.updates).toStrictEqual([
+    expect(filterVersion(tapefile.updates)).toStrictEqual([
       {
         timestamp: -1,
         length: 3,
@@ -206,6 +213,7 @@ describe('tapefile.js/SinglePropertyTapefile', () => {
     tapeFile.trimRollbacks();
     tapeFile.updates.push({
       timestamp: 4,
+      version: 1,
       indices: [0, 1, 2],
       data: [4, 4, 4],
       length: 3,
@@ -220,5 +228,17 @@ describe('tapefile.js/SinglePropertyTapefile', () => {
     tapeFile.updates[0].fullRollback = true;
     tapeFile.trimRollbacks();
     expect(tapeFile.updates[0].fullRollback).toBeTruthy();
+  });
+
+  it('updates state on moveTo with new version', () => {
+    const lastUpdate = tapeFile.updates[tapeFile.updates.length - 1];
+    tapeFile.moveTo(lastUpdate.timestamp);
+    const idx = lastUpdate.indices[0]
+    const currVal = tapeFile.copyState()[idx],
+      newVal = currVal + 1;
+    lastUpdate.data[0] = newVal;
+    lastUpdate.version++;
+    tapeFile.moveTo(lastUpdate.timestamp);
+    expect(tapeFile.copyState()[idx]).toStrictEqual(newVal);
   });
 });
