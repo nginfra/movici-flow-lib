@@ -105,7 +105,7 @@ const TRUNCATE = '...';
 const REL_CHAR_WIDTH = 2.3;
 
 function formatRows(rows: NestedRows): string {
-  let lines = generateLines(rows);
+  const lines = generateLines(rows);
   return lines.join(NEWLINE);
 }
 

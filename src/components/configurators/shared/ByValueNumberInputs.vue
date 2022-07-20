@@ -11,7 +11,7 @@
         <span class="is-flex-grow-1 values-from">
           <b-numberinput
             :value="val"
-            @input="$emit('updateMappingValue', { index, val })"
+            @input="$emit('updateMappingValue', { index, val: $event })"
             :controls="false"
             :min-step="1e-15"
             step="1"

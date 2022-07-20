@@ -233,7 +233,7 @@ describe('tapefile.js/SinglePropertyTapefile', () => {
   it('updates state on moveTo with new version', () => {
     const lastUpdate = tapeFile.updates[tapeFile.updates.length - 1];
     tapeFile.moveTo(lastUpdate.timestamp);
-    const idx = lastUpdate.indices[0]
+    const idx = lastUpdate.indices[0];
     const currVal = tapeFile.copyState()[idx],
       newVal = currVal + 1;
     lastUpdate.data[0] = newVal;
