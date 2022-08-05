@@ -17,7 +17,7 @@
           @input="updateVisualizationName"
         ></b-input>
         <slot name="quickSave"></slot>
-        <MovActionMenu
+        <MovKebabMenu
           :value="actions"
           @loadViewDialog="loadViewDialog"
           @saveView="$emit('save-view')"
@@ -76,7 +76,7 @@ export default class ViewInfoBox extends Vue {
       icon: 'trash',
       iconPack: 'far',
       event: 'deleteView',
-      colorScheme: 'danger'
+      colorScheme: 'is-danger'
     }
   ];
 

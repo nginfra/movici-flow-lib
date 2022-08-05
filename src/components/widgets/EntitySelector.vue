@@ -4,16 +4,12 @@
       <div
         class="is-flex-direction-row-reverse is-align-content-space-between is-flex is-align-items-center is-clickable"
       >
-        <b-tooltip
-          position="is-left"
-          size="is-small"
-          type="is-black"
-          :label="$t('flow.datasets.entitySummary')"
-          :active="collapsed"
-          :delay="1000"
-        >
-          <b-icon pack="far" :icon="collapsed ? 'stream' : 'minus-square'"></b-icon>
-        </b-tooltip>
+        <b-icon
+          :title="$t('flow.datasets.entitySummary')"
+          class="collapsed-icon"
+          pack="far"
+          :icon="collapsed ? 'stream' : 'minus-square'"
+        />
         <label class="label is-flex-grow-1 mb-0" v-show="!collapsed">
           {{ $t('flow.datasets.entitySummary') }}
         </label>
@@ -215,8 +211,6 @@ export default class EntitySelector extends Mixins(DraggableMixin) {
       type,
       popup: {
         title: entityGroup,
-        when: 'onClick',
-        position: 'static',
         show: true,
         items: items.map(prop => ({ name: prop.name, attribute: prop }))
       },
@@ -253,6 +247,13 @@ export default class EntitySelector extends Mixins(DraggableMixin) {
 }
 .grip {
   height: 30px;
+}
+::v-deep {
+  .collapsed-icon {
+    &:hover {
+      background: $white-ter;
+    }
+  }
 }
 
 .entity-selector {

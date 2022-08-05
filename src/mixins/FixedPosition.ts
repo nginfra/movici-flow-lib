@@ -20,7 +20,7 @@ function asElement(thing: Element | Vue | null): Element | null {
  */
 @Component
 export default class FixedPosition extends Vue {
-  readonly popupRef!: HTMLElement;
+  readonly popupRef_!: Vue | HTMLElement;
   readonly anchorRef!: HTMLElement;
   overflowParent: Element | null = null;
   style: Partial<CSSStyleDeclaration> = {};
@@ -29,6 +29,10 @@ export default class FixedPosition extends Vue {
     top: 0,
     left: 0
   };
+
+  get popupRef(): HTMLElement {
+    return ((this.popupRef_ as Vue).$el as HTMLElement) ?? this.popupRef_;
+  }
 
   toggle(force?: boolean) {
     this.visible = force ?? !this.visible;
@@ -141,6 +145,7 @@ export default class FixedPosition extends Vue {
       // Make sure we don't go too far down or up.
       popupStyle.top = Math.max(minTop, Math.min(naturalTop, maxTop)) + 'px';
       popupStyle.position = 'fixed !important';
+      popupStyle.zIndex = '99';
     }
 
     this.style = popupStyle;

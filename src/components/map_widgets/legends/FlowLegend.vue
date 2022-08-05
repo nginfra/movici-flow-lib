@@ -5,16 +5,12 @@
         class="is-flex-direction-row-reverse is-align-content-space-between is-flex is-align-items-center is-clickable"
         aria-controls="legend-container"
       >
-        <b-tooltip
-          position="is-left"
-          size="is-small"
-          type="is-black"
-          :label="$t('flow.legend.label')"
-          :active="collapsed"
-          :delay="1000"
-        >
-          <b-icon pack="far" :icon="collapsed ? 'list' : 'minus-square'"></b-icon>
-        </b-tooltip>
+        <b-icon
+          class="collapsed-icon"
+          :title="$t('flow.legend.label')"
+          pack="far"
+          :icon="collapsed ? 'list' : 'minus-square'"
+        />
         <label class="label is-flex-grow-1 is-size-6" v-show="!collapsed">
           {{ $t('flow.legend.label') }}
         </label>
@@ -169,5 +165,12 @@ export default class FlowLegend extends Vue {
 <style scoped lang="scss">
 hr {
   margin: 0.25em 0;
+}
+::v-deep {
+  .collapsed-icon {
+    &:hover {
+      background: $white-ter;
+    }
+  }
 }
 </style>

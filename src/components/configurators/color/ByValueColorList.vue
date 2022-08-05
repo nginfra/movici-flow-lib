@@ -18,7 +18,7 @@
               <label class="label mr-1 is-flex-grow-1">{{
                 $t('flow.visualization.colorConfig.color')
               }}</label>
-              <MovActionMenu :value="colorActions" @invertColors="invertColors" />
+              <MovKebabMenu :value="colorActions" @invertColors="invertColors" />
             </span>
             <span class="is-flex">
               <div class="field-container">
@@ -61,7 +61,7 @@
       <div class="is-flex-grow-1 mapped-values">
         <span class="is-flex">
           <label class="label mr-1 is-flex-grow-1">{{ valuesLabel }}</label>
-          <MovActionMenu
+          <MovKebabMenu
             :value="valueActions"
             @resetValues="$emit('resetValues')"
             @interpolateMinMax="$emit('interpolateMinMax')"

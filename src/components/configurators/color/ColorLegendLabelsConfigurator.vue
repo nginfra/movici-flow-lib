@@ -3,7 +3,7 @@
     <div v-if="value">
       <span class="is-flex">
         <label class="label is-flex-grow-1">{{ $t('flow.visualization.legendLabel') }}</label>
-        <MovActionMenu :value="actions" @resetLegends="resetLegends" @clearLegends="clearLegends" />
+        <MovKebabMenu :value="actions" @resetLegends="resetLegends" @clearLegends="clearLegends" />
       </span>
       <b-field v-for="(item, index) in orderedItems" :key="index">
         <b-input :value="item" @input="updateItem(index, $event)" size="is-small"></b-input>
@@ -23,7 +23,6 @@ export default class ColorLegendLabelsConfigurator extends Vue {
   @Prop({ type: Array, default: null }) readonly placeholders!: string[] | null;
   @Prop({ type: Boolean, default: false }) readonly reversed!: boolean;
   @Prop({ type: Array, default: () => [] }) readonly entityEnums!: string[];
-
   actions: ActionMenuItem[] = [
     {
       label: '' + this.$t('flow.visualization.legendsConfig.reset'),
@@ -36,7 +35,7 @@ export default class ColorLegendLabelsConfigurator extends Vue {
       icon: 'trash',
       iconPack: 'far',
       event: 'clearLegends',
-      colorScheme: 'danger'
+      colorScheme: 'is-danger'
     }
   ];
 
@@ -45,7 +44,18 @@ export default class ColorLegendLabelsConfigurator extends Vue {
   }
 
   get isEnum() {
-    return !!this.entityEnums.length;
+    return !!this.entityEnums?.length;
+  }
+
+  get orderedItems(): string[] | null {
+    if (this.labels) {
+      return this.reversed ? this.labels.slice().reverse() : this.labels;
+    }
+
+    if (this.placeholders) {
+      return Array(this.placeholders.length).fill('');
+    }
+    return null;
   }
 
   resetLegends() {
@@ -61,17 +71,6 @@ export default class ColorLegendLabelsConfigurator extends Vue {
 
   clearLegends() {
     this.emitLabels(new Array(this.labels?.length).fill(''));
-  }
-
-  get orderedItems(): string[] | null {
-    if (this.labels) {
-      return this.reversed ? this.labels.slice().reverse() : this.labels;
-    }
-
-    if (this.placeholders) {
-      return Array(this.placeholders.length).fill('');
-    }
-    return null;
   }
 
   orderedIndex(idx: number): number | null {

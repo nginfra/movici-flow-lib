@@ -1,46 +1,12 @@
 <template>
   <div>
     <div class="columns mb-0 layer-kind">
-      <div class="column is-two-thirds-desktop is-full-tablet show-when is-flex">
+      <div class="column is-two-thirds-desktop is-full-tablet show is-flex">
         <b-field class="show-popup">
           <b-checkbox v-model="showPopup" size="is-small">
             {{ $t('flow.visualization.popup.showPopup') }}
           </b-checkbox>
         </b-field>
-        <b-field
-          class="when ml-6"
-          v-if="showPopup"
-          :type="{ 'is-danger': errors['popup-when'] }"
-          :message="errors['popup-when']"
-        >
-          <b-radio
-            v-for="(when, idx) in whenRadio"
-            :key="when"
-            :value="currentClause.when"
-            @input="updateValue({ when })"
-            :class="{ 'mr-4': idx !== whenRadio.length - 1 }"
-            size="is-small"
-            :native-value="when"
-          >
-            {{ $t('flow.visualization.popup.' + when) }}</b-radio
-          >
-        </b-field>
-      </div>
-    </div>
-    <div class="columns mb-0" v-if="showPopup && currentClause.when === 'onClick'">
-      <div class="column is-two-thirds">
-        <label class="label"> {{ $t('flow.visualization.popup.position') }}</label>
-        <b-radio
-          v-for="(position, idx) in positionRadio"
-          :key="position"
-          :value="currentClause.position"
-          @input="updateValue({ position })"
-          :class="{ 'mr-4': idx !== position.length - 1 }"
-          size="is-small"
-          :native-value="position"
-        >
-          {{ $t('flow.visualization.popup.' + position) }}</b-radio
-        >
       </div>
     </div>
     <div class="columns mb-0" v-if="showPopup">
@@ -180,15 +146,11 @@ export default class PopupConfigurator extends Mixins(ValidationProvider, Dragga
   items: PopupItem[] = [];
   showPopup = false;
   dynamicTitle = false;
-  whenRadio = ['onHover', 'onClick'];
-  positionRadio = ['dynamic', 'static'];
   propertyString = propertyString;
 
   get defaults() {
     return {
       title: '',
-      when: 'onHover',
-      position: 'dynamic',
       items: [],
       show: false,
       dynamicTitle: false
@@ -269,11 +231,6 @@ export default class PopupConfigurator extends Mixins(ValidationProvider, Dragga
         'popup-items': () => {
           if (!this.items.length && this.showPopup) {
             return 'Select at least 1 property';
-          }
-        },
-        'popup-when': () => {
-          if (!this.currentClause.when && this.showPopup) {
-            return 'Choose one';
           }
         }
       },

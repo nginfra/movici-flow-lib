@@ -35,7 +35,7 @@ export default class MovTooltipInfo extends Mixins(FixedPosition) {
   @Prop({ type: Boolean, default: false }) readonly active!: boolean;
   @Prop({ type: Number, default: 0 }) readonly delay!: number;
   @Ref('anchorRef') declare readonly anchorRef: HTMLElement;
-  @Ref('popupRef') declare readonly popupRef: HTMLElement;
+  @Ref('popupRef') declare readonly popupRef_: Vue;
   adjust = {
     top: 30,
     left: -80

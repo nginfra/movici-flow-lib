@@ -6,13 +6,13 @@ import {
   PopupContent,
   TopologyLayerData,
   IVisualizer,
-  PopupContentItem
+  PopupContentItem,
+  DeckMouseEvent,
+  PickingHandler
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
 import { PickInfo } from '@deck.gl/core/lib/deck';
 import { VisualizerModule, VisualizerModuleParams } from '../visualizerModules/common';
-
-type PickingHandler<D> = (info: PickInfo<D>) => boolean;
 
 export default class PopupModule<
   Coord extends Coordinate,
@@ -32,22 +32,14 @@ export default class PopupModule<
   compose(params: LayerParams<LData, Coord>, visualizer: IVisualizer): LayerParams<LData, Coord> {
     const changed = this.updateSettings(this.info.settings?.popup || null),
       accessor = this.updateAccessor(changed, visualizer),
-      when = this.currentSettings?.when,
-      show = this.currentSettings?.show ?? true;
+      show = this.currentSettings?.show;
 
     params.props.pickable = false;
 
     if (show) {
-      if (when) {
-        params.props.pickable = true;
-        params.props[when] = accessor;
-      }
-      // to close popup while on hover
-      if (when === 'onHover') {
-        params.props.onClick = () => {
-          visualizer.onHover(null);
-        };
-      }
+      params.props.onHover = accessor;
+      params.props.onClick = accessor;
+      params.props.pickable = true;
     }
 
     return params;
@@ -85,12 +77,15 @@ export default class PopupModule<
 
     // TODO fix typing
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (info: any) => {
-      if (info && info.object) {
-        visualizer[clause.when](accessor.getValue(info.object.idx, info, this.enums));
+    return (info: PickInfo<any>, ev?: DeckMouseEvent) => {
+      const when = ev?.type === 'click' ? 'onClick' : 'onHover';
+
+      if (info?.object) {
+        visualizer[when](accessor.getValue(info.object.idx, info, this.enums), ev);
       } else {
-        visualizer[clause.when](null);
+        visualizer.onHover(null, ev);
       }
+
       return true;
     };
   }
@@ -115,14 +110,13 @@ export class PopupContentAccessor {
     pickInfo: PickInfo<unknown>,
     enums: Record<string, string[]>
   ): PopupContent {
-    const { title, dynamicTitle, when, position, items } = this.popup;
+    const { title, dynamicTitle, items } = this.popup;
 
     return {
+      index,
       title,
       pickInfo,
       dynamicTitle,
-      when,
-      position,
       items: items.map((item, idx) => {
         const rv: PopupContentItem = {
           name: item.name,
@@ -135,8 +129,7 @@ export class PopupContentAccessor {
         }
 
         return rv;
-      }),
-      index
+      })
     };
   }
 }

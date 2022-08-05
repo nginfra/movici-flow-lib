@@ -4,7 +4,7 @@ import { Project } from './project';
 import { ShortScenario } from './scenarios';
 import { Coordinate, TopologyLayerData } from './geometry';
 import { LayerProps } from '@deck.gl/core/lib/layer';
-import { PopupContent } from './flowVisualizers';
+import { DeckMouseEvent, PopupEventCallback } from './popup';
 import { LayerConstructor } from './general';
 import {
   DEFAULT_SPECIAL_COLOR_TRIPLE,
@@ -68,7 +68,7 @@ export interface FeatureDrawOption {
 }
 
 export type CursorCallback = (input: { isHovering: boolean; isDragging: boolean }) => null | string;
-export type MapOnClickCallback = (input: PickInfo<unknown>) => void;
+export type MapOnClickCallback = (input: PickInfo<unknown>, ev?: DeckMouseEvent) => void;
 
 export type NebulaMode =
   | DrawLineStringMode
@@ -171,8 +171,8 @@ export type VisualizableDataTypes = unknown;
 export interface IVisualizer {
   forceRender(): void;
   requestTapefile: (attribute: ComponentProperty, onLoad: (t: ITapefile<unknown>) => void) => void;
-  onClick: (content: PopupContent | null) => void;
-  onHover: (content: PopupContent | null) => void;
+  onClick: PopupEventCallback;
+  onHover: PopupEventCallback;
 }
 
 export type LayerParams<

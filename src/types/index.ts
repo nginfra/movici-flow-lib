@@ -8,6 +8,7 @@ export * from './flowLegend';
 export * from './general';
 export * from './geocode';
 export * from './geometry';
+export * from './popup';
 export * from './project';
 export * from './scenarios';
 export * from './schema';

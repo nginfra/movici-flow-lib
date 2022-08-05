@@ -1,126 +1,22 @@
 <template>
-  <div
-    tabindex="0"
-    @blur="visible = false"
-    class="dropdown dropdown-menu-animation is-mobile-modal"
-  >
-    <div
-      ref="anchorRef"
-      role="button"
-      aria-haspopup="true"
-      class="dropdown-trigger"
-      @click="toggle(!visible)"
-    >
-      <span class="ellipsis">
-        <b-icon size="is-small" pack="far" :icon="visible ? 'angle-right' : 'ellipsis-v'"></b-icon>
-      </span>
-    </div>
-    <div ref="popupRef" class="dropdown-menu" :style="style" v-show="visible">
-      <div class="dropdown-content">
-        <a
-          v-for="(item, index) in value"
-          :key="index"
-          :focusable="false"
-          :disabled="item.isDisabled"
-          :class="itemClass(item)"
-          @click="emitAndClose(item.event, $event)"
-          class="dropdown-item"
-        >
-          <b-icon :icon="item.icon" :pack="item.iconPack || 'far'" class="mr-2"></b-icon>
-          <span>
-            {{ item.label }}
-          </span>
-        </a>
-      </div>
+  <div class="dropdown-menu action-menu">
+    <div class="dropdown-content action-menu-content">
+      <slot />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Ref } from 'vue-property-decorator';
-import FixedPosition from '@movici-flow-common/mixins/FixedPosition';
-import { ActionMenuItem } from '@movici-flow-common/types';
+import { Component, Vue } from 'vue-property-decorator';
 
 @Component({ name: 'MovActionMenu' })
-export default class MovActionMenu extends Mixins(FixedPosition) {
-  @Prop({ type: Array, default: () => [] }) readonly value!: ActionMenuItem[];
-  @Ref('anchorRef') declare readonly anchorRef: HTMLElement;
-  @Ref('popupRef') declare readonly popupRef: HTMLElement;
-  adjust = {
-    top: -12,
-    left: 4
-  };
-
-  itemClass(item: ActionMenuItem) {
-    const rv = [];
-    if (item.colorScheme) rv.push(item.colorScheme);
-    if (item.isDisabled) rv.push('is-disabled');
-    return rv;
-  }
-
-  emitAndClose(event: string, value: unknown) {
-    this.$emit(event, value);
-    this.visible = false;
-  }
-}
+export default class MovActionMenu extends Vue {}
 </script>
 
 <style scoped lang="scss">
-.dropdown {
-  .dropdown-trigger {
-    border: 0;
-    background: transparent;
-    height: 24px;
-    .ellipsis {
-      width: 16px;
-      height: 20px;
-      font-size: 16px !important;
-      cursor: pointer;
-    }
-  }
-  .dropdown-content {
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
-  }
-
-  .dropdown-menu {
-    a.dropdown-item {
-      color: $black;
-      &.is-disabled {
-        color: $grey;
-        background-color: $white;
-        .icon {
-          color: $grey;
-        }
-      }
-      &:not(.is-disabled) {
-        &:hover {
-          color: $primary;
-          background-color: $primary-invert;
-          .icon {
-            color: $primary;
-          }
-        }
-        &.danger {
-          &:hover {
-            color: $danger;
-            background-color: $danger-invert;
-            .icon {
-              color: $danger;
-            }
-          }
-        }
-        &.info {
-          &:hover {
-            color: $info;
-            background-color: $info-invert;
-            .icon {
-              color: $info;
-            }
-          }
-        }
-      }
-    }
-  }
+.action-menu {
+  display: block;
+  position: unset;
+  padding: 0;
 }
 </style>

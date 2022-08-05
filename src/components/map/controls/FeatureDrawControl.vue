@@ -244,7 +244,8 @@ export default class FeatureDrawControl extends Vue {
   )[];
   @Prop({ type: String, default: 'geojson-layer' }) readonly layerId!: string;
   @Prop({ type: Function }) readonly setCursorCallback?: (cb: CursorCallback) => void;
-  @Prop({ type: Function }) readonly registerMapOnClick?: (
+  @Prop({ type: Function }) readonly registerMapOn?: (
+    event: string,
     callbacks: Record<string, MapOnClickCallback>
   ) => void;
   @Prop({ type: Array, default: () => [] }) readonly selectedFeatureIndexes!: number[];
@@ -322,7 +323,7 @@ export default class FeatureDrawControl extends Vue {
   }
 
   @Watch('setCursorCallback', { immediate: true })
-  _setCursorCallback() {
+  doSetCursorCallback() {
     if (this.setCursorCallback) {
       this.setCursorCallback(({ isHovering }) => {
         let cursor = null;
@@ -341,8 +342,8 @@ export default class FeatureDrawControl extends Vue {
   }
 
   @Watch('registerMapOnClick', { immediate: true })
-  _registerMapOnClick() {
-    this.registerMapOnClick?.({
+  doRegisterMapOnClick() {
+    this.registerMapOn?.('click', {
       selected: (e: PickInfo<unknown>) => {
         if (!e.layer && !this.isOptionActive('edit-feature')) {
           this.updateSelected([]);
@@ -439,7 +440,7 @@ export default class FeatureDrawControl extends Vue {
 
   mounted() {
     this.emitFeatureLayer();
-    this.$emit('registerMapOnClick');
+    this.$emit('registerMapOn');
   }
 }
 </script>

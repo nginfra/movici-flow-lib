@@ -25,7 +25,7 @@
           <label class="label mr-1 is-flex-grow-1">
             {{ $t('flow.visualization.sizeConfig.value') }}
           </label>
-          <MovActionMenu
+          <MovKebabMenu
             v-if="isMode('number') && !isEnum"
             :value="valueActions"
             @resetValues="$emit('resetValues')"

@@ -33,7 +33,7 @@
         </router-link>
       </span>
     </div>
-    <MovActionMenu v-if="actions.length" :value="actions" />
+    <MovKebabMenu v-if="actions.length" :value="actions" />
   </div>
 </template>
 

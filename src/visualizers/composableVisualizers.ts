@@ -89,11 +89,11 @@ abstract class ComposableVisualizer<
     try {
       this.attributes = {};
       const modules = this.ensureModules();
-      let props = this.getDefaultParams();
+      let params = this.getDefaultParams();
       for (const mod of modules) {
-        props = mod.compose(props, this);
+        params = mod.compose(params, this);
       }
-      return props;
+      return params;
     } catch (e) {
       this.info.setError('compose', isError(e) ? e.message : String(e));
       return null;

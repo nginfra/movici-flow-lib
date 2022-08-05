@@ -1,8 +1,8 @@
 import { Store } from 'vuex';
 import { getModule } from 'vuex-module-decorators';
-import FlowStore from '../store/FlowStore';
-import FlowUIStore from '../store/FlowUserInterfaceStore';
-import GeocodeStore from '../store/GeocodeStore';
+import FlowStore from './FlowStore';
+import FlowUIStore from './FlowUserInterfaceStore';
+import GeocodeStore from './GeocodeStore';
 import { Backend } from '../types/backend';
 import FlowVisualizationStore from './FlowVisualizationStore';
 

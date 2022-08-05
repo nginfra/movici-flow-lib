@@ -9,11 +9,16 @@
           {{ title }}
         </template>
       </label>
-      <span class="close is-clickable" @click="$emit('close')" v-if="value.when !== 'onHover'">
-        <b-icon pack="far" icon="times"></b-icon>
-      </span>
+      <template v-if="closable">
+        <span class="pin is-clickable" :title="pinTitle" @click="$emit('togglePosition')">
+          <b-icon :pack="pinIconClass" icon="thumbtack" />
+        </span>
+        <span class="close is-clickable" :title="$t('actions.close')" @click="$emit('close')">
+          <b-icon pack="far" icon="times" />
+        </span>
+      </template>
     </div>
-    <table class="attributes">
+    <table class="attributes" v-if="filteredItems.length">
       <tr class="is-size-7" v-for="(item, idx) in filteredItems" :key="idx">
         <td class="name">
           {{ item.name }}<span class="unit"> ({{ item.attribute.unit || '-' }})</span>:
@@ -42,6 +47,8 @@ interface DataViewItem {
 export default class DataViewContent extends Vue {
   @Prop({ type: Object, default: null }) readonly value!: PopupContent | null;
   @Prop({ type: Number, default: null }) readonly timestamp!: number | null;
+  @Prop({ type: Boolean, default: false }) readonly closable!: boolean;
+  @Prop({ type: Boolean, default: false }) readonly dynamic!: boolean;
 
   get title() {
     return this.value?.title;
@@ -50,7 +57,7 @@ export default class DataViewContent extends Vue {
   get dynamicTitle() {
     if (this.value?.dynamicTitle) {
       const { value, attribute } = this.items[0];
-      return this.formatValue({ value, attribute });
+      return String(this.formatValue({ value, attribute }));
     }
     return null;
   }
@@ -83,6 +90,16 @@ export default class DataViewContent extends Vue {
     return this.dynamicTitle ? this.items.filter((val, idx) => idx !== 0) : this.items;
   }
 
+  get pinTitle() {
+    return this.dynamic
+      ? this.$t('flow.visualization.popup.pinToRight')
+      : this.$t('flow.visualization.popup.pinToMap');
+  }
+
+  get pinIconClass() {
+    return this.dynamic ? 'far' : 'fas';
+  }
+
   formatValue(item: Omit<DataViewItem, 'name'>) {
     const { value, attribute, enum: enums } = item;
 
@@ -103,15 +120,17 @@ export default class DataViewContent extends Vue {
   max-width: 500px;
   min-width: max-content;
   width: 100%;
+
   .header {
     min-height: 1.5rem;
+    min-width: max-content;
     .label {
       margin: 0;
     }
   }
   .attributes {
-    color: $black;
     width: 100%;
+    color: $black;
     .name {
       text-align: left;
     }
@@ -123,8 +142,21 @@ export default class DataViewContent extends Vue {
       }
     }
   }
+  .close,
+  .pin {
+    width: 24px;
+    height: 24px;
+    &:hover {
+      background: $white-ter;
+    }
+  }
   .close {
-    margin: -0.25rem -0.25rem 0 0;
+    margin-right: -4px;
+  }
+  .pin {
+    .icon {
+      transform: rotate(45deg);
+    }
   }
 }
 </style>

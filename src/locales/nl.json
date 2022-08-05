@@ -27,7 +27,8 @@
     "selectAll": "Selecteer alles",
     "submit": "Verzenden",
     "upload": "Uploaden",
-    "clear": "Leegmaken"
+    "clear": "Leegmaken",
+    "close": "Sluiten"
   },
   "dataset": {
     "addNew": "@:(resources.dataset) @:(actions.add)",
@@ -206,7 +207,9 @@
         "title": "Popup titel",
         "titlePlaceholder": "Mijn Visualiser",
         "setAsDynamicTitle": "Als titel weergeven",
-        "suggestions": "Suggesties"
+        "suggestions": "Suggesties",
+        "pinToRight": "Vastzetten aan de rechterkant",
+        "pinToMap": "Vastzetten op de kaart"
       },
       "save": "Opslaan",
       "saveAndClose": "Opslaan en sluiten",

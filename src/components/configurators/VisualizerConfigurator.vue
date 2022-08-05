@@ -174,10 +174,8 @@ const FINALIZERS: Finalizers = {
       ? undefined
       : {
           title: val.title,
-          when: val.when,
           show: val.show,
           dynamicTitle: val.dynamicTitle,
-          position: val.when === 'onClick' ? val.position : 'dynamic',
           items: val.items.map(item => {
             return {
               name: item.name || propertyString(item.attribute),

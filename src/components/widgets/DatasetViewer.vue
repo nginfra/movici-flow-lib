@@ -1,5 +1,18 @@
 <template>
   <MapVis ref="mapVis" :layer-infos="layers" :view-state.sync="viewState" scale>
+    <template #control-zero="{ map, popup }">
+      <template v-if="popup.mapPopups.length">
+        <MapEntityPopup
+          v-for="(p, i) in popup.mapPopups"
+          :value="p"
+          :key="i"
+          :map="map"
+          :view-state="viewState"
+          @toggle="popup.togglePosition(p)"
+          @close="popup.remove(p)"
+        />
+      </template>
+    </template>
     <template #control-left="{ map, onViewstateChange, basemap, setBasemap }">
       <SearchBar
         v-if="hasGeocodeCapabilities"
@@ -14,11 +27,17 @@
       />
       <BaseMapControl :value="basemap" @input="setBasemap" />
     </template>
-    <template #control-right="{ popupContent, closePopup }">
+    <template #control-right="{ popup }">
       <EntitySelector :summary="summary" :currentDataset="value" @setLayerInfos="setLayerInfos" />
-      <WidgetContainer v-if="popupContent" :value="popupContent">
-        <DataViewContent @close="closePopup" :value="popupContent" :timestamp="0" />
-      </WidgetContainer>
+      <template v-if="popup.rightSidePopups.length">
+        <RightSidePopup
+          v-for="(p, i) in popup.rightSidePopups"
+          :value="p"
+          :key="i"
+          @toggle="popup.togglePosition(p)"
+          @close="popup.remove(p)"
+        />
+      </template>
     </template>
   </MapVis>
 </template>
@@ -27,18 +46,18 @@
 import { Component, Mixins, Prop, Ref, Watch } from 'vue-property-decorator';
 import isEqual from 'lodash/isEqual';
 import EntitySelector from './EntitySelector.vue';
-import SearchBar from '../map/controls/SearchBar.vue';
-import NavigationControl from '../map/controls/NavigationControl.vue';
-import BaseMapControl from '../map/controls/BaseMapControl.vue';
-import DataViewContent from '../map_widgets/DataViewContent.vue';
-import WidgetContainer from '../map_widgets/WidgetContainer.vue';
+import SearchBar from '@movici-flow-common/components/map/controls/SearchBar.vue';
+import NavigationControl from '@movici-flow-common/components/map/controls/NavigationControl.vue';
+import BaseMapControl from '@movici-flow-common/components/map/controls/BaseMapControl.vue';
 import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
-import MapVis from '../map/MapVis.vue';
+import MapVis from '@movici-flow-common/components/map/MapVis.vue';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { CameraOptions, Dataset, DatasetSummary, Nullable } from '@movici-flow-common/types';
-import defaults from '../map/defaults';
+import defaults from '@movici-flow-common/components/map/defaults';
 import { flowStore } from '@movici-flow-common/store/store-accessor';
 import { transformBBox } from '@movici-flow-common/crs';
+import MapEntityPopup from '@movici-flow-common/components/map_widgets/MapEntityPopup.vue';
+import RightSidePopup from '@movici-flow-common/components/map_widgets/RightSidePopup.vue';
 
 @Component({
   name: 'DatasetViewer',
@@ -48,8 +67,8 @@ import { transformBBox } from '@movici-flow-common/crs';
     SearchBar,
     NavigationControl,
     BaseMapControl,
-    DataViewContent,
-    WidgetContainer
+    MapEntityPopup,
+    RightSidePopup
   }
 })
 export default class DatasetViewer extends Mixins(SummaryListing) {

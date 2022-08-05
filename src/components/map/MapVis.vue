@@ -32,20 +32,11 @@
 </template>
 
 <script lang="ts">
-type SlotProps = {
-  basemap: string;
-  setBasemap: (basemap: string) => void;
-  popupContent: PopupContent | null;
-  updateTimestamp: (t: number) => void;
-  dynamicPopup: boolean;
-  closePopup: () => void;
-  maxTimeAvailable: number | null;
-};
-
 import { Component, Prop, Watch } from 'vue-property-decorator';
 import {
   Backend,
   CameraOptions,
+  DeckMouseEvent,
   PopupContent,
   TimeOrientedSimulationInfo
 } from '@movici-flow-common/types';
@@ -59,6 +50,7 @@ import { flowStore, flowUIStore } from '@movici-flow-common/store/store-accessor
 import DeckContainerMixin from './DeckContainerMixin';
 import { BoundingBox } from '@mapbox/geo-viewport';
 import { Layer } from '@deck.gl/core';
+import { PopupManager } from '../map_widgets/PopupManager';
 
 @Component({
   name: 'MovMapVis',
@@ -72,14 +64,22 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
   @Prop({ type: Boolean, default: false }) readonly buildings!: boolean;
   @Prop({ type: Boolean, default: false }) readonly scale!: boolean;
   visualizers: VisualizerManager | null = null;
-  popupContent: PopupContent | null = null;
-  activePopupId: string | null = null;
   isLoading = false;
   maxTimeAvailable: number | null = null;
 
   // Move this inside a store?
   get backend(): Backend | null {
     return flowStore.backend;
+  }
+
+  get slotProps() {
+    return {
+      basemap: this.basemap,
+      popup: this.popup,
+      setBasemap: this.setBasemap,
+      updateTimestamp: (t: number) => this.$emit('update:timestamp', t),
+      maxTimeAvailable: this.maxTimeAvailable
+    };
   }
 
   ensureVisualizers() {
@@ -94,11 +94,8 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
           this.isLoading = false;
         },
         onDelete: ({ info }) => {
-          if (info) {
-            if (info.id === this.activePopupId) {
-              this.activePopupId = null;
-              this.popupContent = null;
-            }
+          if (info?.id) {
+            this.popup?.removeByLayer(info.id);
           }
         },
         onData: ({ timestamp }) => {
@@ -111,18 +108,6 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
     }
 
     return this.visualizers;
-  }
-
-  get slotProps(): SlotProps {
-    return {
-      basemap: this.basemap,
-      setBasemap: this.setBasemap,
-      popupContent: this.popupContent,
-      updateTimestamp: (t: number) => this.$emit('update:timestamp', t),
-      dynamicPopup: this.popupContent?.position === 'dynamic',
-      closePopup: () => (this.popupContent = null),
-      maxTimeAvailable: this.maxTimeAvailable
-    };
   }
 
   @Watch('layerInfos', { immediate: true })
@@ -149,6 +134,7 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
   onTimestampChange() {
     this.updateLayers();
   }
+
   updateLayers() {
     if (flowUIStore.loading) {
       return;
@@ -159,23 +145,24 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
     const layers = (this.visualizers?.getVisualizers() ?? [])
       .sort((a, b) => b.order - a.order)
       .map(v => {
+        this.popup?.updatePopupVisibilityByLayer({ layerId: v.info.id, visible: v.info.visible });
+
         v.setCallbacks({
-          onClick: (content: PopupContent | null) => {
-            this.setPopup({ id: v.info.id, content });
+          onClick: (content: PopupContent | null, ev?: DeckMouseEvent) => {
+            if (ev?.leftButton && content) {
+              this.popup?.onClick(content, v.info.id);
+            }
           },
           onHover: (content: PopupContent | null) => {
-            this.setPopup({ id: v.info.id, content });
+            this.popup?.onHover(content, v.info.id);
           }
         });
+
         return v.getLayer(this.timestamp);
       })
       .filter(l => l !== null) as unknown as Layer<D>[];
-    this.setLayers(layers);
-  }
 
-  setPopup({ id, content }: { id: string; content: PopupContent | null }) {
-    this.activePopupId = id;
-    this.popupContent = content;
+    this.setLayers(layers);
   }
 
   updateViewState(viewState: CameraOptions) {
@@ -184,6 +171,10 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
 
   zoomToBBox(bounding_box: BoundingBox, ratio?: number) {
     this.deckEl.zoomToBBox(bounding_box, ratio);
+  }
+
+  mounted() {
+    this.popup = new PopupManager();
   }
 }
 </script>

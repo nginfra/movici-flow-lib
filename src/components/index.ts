@@ -6,8 +6,10 @@ import FlowProject from './FlowProject.vue';
 import FlowScenario from './FlowScenario.vue';
 import FlowVisualization from './FlowVisualization.vue';
 import MovAction from './global/Action.vue';
-import MovActionBar from './global/ActionBar.vue';
+import MovActionMenuItem from './global/ActionMenuItem.vue';
 import MovActionMenu from './global/ActionMenu.vue';
+import MovActionBar from './global/ActionBar.vue';
+import MovKebabMenu from './global/KebabMenu.vue';
 import MovDeck from './map/Deck.vue';
 import MovLanguagePicker from './global/LanguagePicker.vue';
 import MovMapVis from './map/MapVis.vue';
@@ -31,6 +33,8 @@ export {
   MovAction,
   MovActionBar,
   MovActionMenu,
+  MovActionMenuItem,
+  MovKebabMenu,
   MovDeck,
   MovLanguagePicker,
   MovMapVis,

@@ -1,14 +1,12 @@
 <template>
-  <div class="popup-fixed" :class="{ collapsed: collapsedComputed }">
-    <div class="data-viewer box">
-      <b-collapse v-if="collapsable" :open.sync="open" animation="none" aria-id="container">
-        <template #trigger>
-          <slot name="collapse-title" :collapsed="collapsedComputed"></slot>
-        </template>
-        <slot name="collapse-content" :collapsed="collapsedComputed"></slot>
-      </b-collapse>
-      <slot></slot>
-    </div>
+  <div class="data-viewer box popup-fixed" :class="{ collapsed }">
+    <b-collapse v-if="collapsable" :open.sync="open" animation="none" aria-id="container">
+      <template #trigger>
+        <slot name="collapse-title" :collapsed="collapsed"></slot>
+      </template>
+      <slot name="collapse-content" :collapsed="collapsed"></slot>
+    </b-collapse>
+    <slot></slot>
   </div>
 </template>
 
@@ -19,13 +17,14 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 export default class WidgetContainer extends Vue {
   @Prop({ type: Boolean, default: false }) readonly collapsable!: boolean;
   @Prop({ type: Boolean, default: false }) readonly startCollapsed!: boolean;
+  @Prop({ type: Boolean, default: null }) readonly focused!: boolean;
   collapsed_: null | boolean = null;
 
-  get collapsedComputed() {
+  get collapsed() {
     return this.collapsed_ ?? this.startCollapsed;
   }
   get open() {
-    return !this.collapsedComputed;
+    return !this.collapsed;
   }
 
   set open(val: boolean) {
@@ -36,15 +35,16 @@ export default class WidgetContainer extends Vue {
 
 <style scoped lang="scss">
 .popup-fixed {
-  .box {
+  &.box {
     min-width: 250px;
     max-width: 500px;
-    padding: 0.75rem;
+    padding: calc(0.75rem - 2px);
   }
+
   &.collapsed {
     max-width: 3rem;
     max-height: 3rem;
-    .box {
+    &.box {
       min-width: 0;
       padding: 0.5rem;
     }

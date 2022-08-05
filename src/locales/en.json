@@ -27,7 +27,8 @@
     "selectAll": "Select all",
     "submit": "Submit",
     "upload": "Upload",
-    "clear": "Clear"
+    "clear": "Clear",
+    "close": "Close"
   },
   "dataset": {
     "addNew": "@:(actions.addNew) @:(resources.dataset)",
@@ -206,7 +207,9 @@
         "title": "Popup title",
         "titlePlaceholder": "My visualiser",
         "setAsDynamicTitle": "Set as title",
-        "suggestions": "Suggestions"
+        "suggestions": "Suggestions",
+        "pinToRight": "Pin to the right-side",
+        "pinToMap": "Pin to the map"
       },
       "save": "Save",
       "saveAndClose": "Save and close",

@@ -25,7 +25,6 @@ export default class MovSaveCancel extends Vue {
   get buttons(): ButtonItem[] {
     return [
       {
-        colorScheme: '',
         label: '' + this.$t('actions.cancel'),
         icon: 'times',
         iconPack: 'fas',

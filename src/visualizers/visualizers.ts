@@ -1,5 +1,5 @@
 import { Layer } from '@deck.gl/core';
-import { Coordinate, EntityGroupData, PopupCallback, TopologyLayerData } from '../types';
+import { Coordinate, EntityGroupData, PopupEventCallback, TopologyLayerData } from '../types';
 import { TopologyGetter } from './geometry';
 import { DatasetDownloader } from '../utils/DatasetDownloader';
 import { ComposableVisualizerInfo } from './VisualizerInfo';
@@ -32,8 +32,8 @@ export abstract class BaseVisualizer<
   tapefileStore: TapefileStore;
   info: ComposableVisualizerInfo;
   order: number;
-  onClick: PopupCallback;
-  onHover: PopupCallback;
+  onClick: PopupEventCallback;
+  onHover: PopupEventCallback;
   protected topology?: TopologyLayerData<Coord>[];
   protected onLoad?: () => void;
   protected onError?: (err: Error) => void;
@@ -91,7 +91,7 @@ export abstract class BaseVisualizer<
     this.order = order;
   }
 
-  setCallbacks(callbacks: { onClick?: PopupCallback; onHover?: PopupCallback }) {
+  setCallbacks(callbacks: { onClick?: PopupEventCallback; onHover?: PopupEventCallback }) {
     this.onClick = callbacks.onClick || this.onClick;
     this.onHover = callbacks.onHover || this.onHover;
   }

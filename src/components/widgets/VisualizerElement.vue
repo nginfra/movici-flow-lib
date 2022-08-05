@@ -39,7 +39,7 @@
           ></b-icon>
         </span>
       </template>
-      <MovActionMenu
+      <MovKebabMenu
         v-if="showOnHeader('more')"
         :value="filteredActions"
         @edit="$emit('edit')"
@@ -91,7 +91,7 @@ export default class VisualizerElement extends Vue {
       iconPack: 'far',
       label: 'Delete',
       event: 'delete',
-      colorScheme: 'danger'
+      colorScheme: 'is-danger'
     }
   ];
 

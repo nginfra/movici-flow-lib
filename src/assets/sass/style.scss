@@ -125,111 +125,7 @@
         }
       }
     }
-  }
-
-  .popup {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    will-change: transform;
-    &.fixed {
-      position: unset;
-    }
-  }
-
-  .popup-anchor-top {
-    flex-direction: column;
-    .popup-tip {
-      margin-bottom: -1px;
-      align-self: center;
-      border-top: none;
-      border-bottom-color: $white;
-    }
-  }
-  .popup-anchor-top-left {
-    flex-direction: column;
-    .box {
-      border-top-left-radius: 0;
-    }
-    .popup-tip {
-      align-self: flex-start;
-      border-top: none;
-      border-left: none;
-      border-bottom-color: $white;
-    }
-  }
-  .popup-anchor-top-right {
-    flex-direction: column;
-    .box {
-      border-top-right-radius: 0;
-    }
-    .popup-tip {
-      align-self: flex-end;
-      border-top: none;
-      border-right: none;
-      border-bottom-color: $white;
-    }
-  }
-  .popup-anchor-bottom {
-    flex-direction: column-reverse;
-    .popup-tip {
-      margin-top: -1px;
-      align-self: center;
-      border-bottom: none;
-      border-top-color: $white;
-    }
-  }
-  .popup-anchor-bottom-left {
-    flex-direction: column-reverse;
-    .box {
-      border-bottom-left-radius: 0;
-    }
-    .popup-tip {
-      align-self: flex-start;
-      border-bottom: none;
-      border-left: none;
-      border-top-color: $white;
-    }
-  }
-  .popup-anchor-bottom-right {
-    flex-direction: column-reverse;
-    .box {
-      border-bottom-right-radius: 0;
-    }
-    .popup-tip {
-      align-self: flex-end;
-      border-bottom: none;
-      border-right: none;
-      border-top-color: $white;
-    }
-  }
-  .popup-anchor-left {
-    flex-direction: row;
-    .popup-tip {
-      margin-right: -1px;
-      align-self: center;
-      border-left: none;
-      border-right-color: $white;
-    }
-  }
-  .popup-anchor-right {
-    flex-direction: row-reverse;
-    .popup-tip {
-      margin-left: -1px;
-      align-self: center;
-      border-right: none;
-      border-left-color: $white;
-    }
-  }
-  .popup-tip {
-    width: 0;
-    height: 0;
-    border: 0.625rem solid transparent;
-    z-index: 1;
-  }
-
-  
+  } 
 
   // count class for whenever we must show totals
   span.count {
@@ -310,4 +206,107 @@
       }
     }
   }
+}
+
+.popup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  will-change: transform;
+  &.fixed {
+    position: unset;
+  }
+}
+
+.popup-anchor-top {
+  flex-direction: column;
+  .popup-tip {
+    margin-bottom: -1px;
+    align-self: center;
+    border-top: none;
+    border-bottom-color: $white;
+  }
+}
+.popup-anchor-top-left {
+  flex-direction: column;
+  .box {
+    border-top-left-radius: 0;
+  }
+  .popup-tip {
+    align-self: flex-start;
+    border-top: none;
+    border-left: none;
+    border-bottom-color: $white;
+  }
+}
+.popup-anchor-top-right {
+  flex-direction: column;
+  .box {
+    border-top-right-radius: 0;
+  }
+  .popup-tip {
+    align-self: flex-end;
+    border-top: none;
+    border-right: none;
+    border-bottom-color: $white;
+  }
+}
+.popup-anchor-bottom {
+  flex-direction: column-reverse;
+  .popup-tip {
+    margin-top: -1px;
+    align-self: center;
+    border-bottom: none;
+    border-top-color: $white;
+  }
+}
+.popup-anchor-bottom-left {
+  flex-direction: column-reverse;
+  .box {
+    border-bottom-left-radius: 0;
+  }
+  .popup-tip {
+    align-self: flex-start;
+    border-bottom: none;
+    border-left: none;
+    border-top-color: $white;
+  }
+}
+.popup-anchor-bottom-right {
+  flex-direction: column-reverse;
+  .box {
+    border-bottom-right-radius: 0;
+  }
+  .popup-tip {
+    align-self: flex-end;
+    border-bottom: none;
+    border-right: none;
+    border-top-color: $white;
+  }
+}
+.popup-anchor-left {
+  flex-direction: row;
+  .popup-tip {
+    margin-right: -1px;
+    align-self: center;
+    border-left: none;
+    border-right-color: $white;
+  }
+}
+.popup-anchor-right {
+  flex-direction: row-reverse;
+  .popup-tip {
+    margin-left: -1px;
+    align-self: center;
+    border-right: none;
+    border-left-color: $white;
+  }
+}
+
+.popup-tip {
+  width: 0;
+  height: 0;
+  border: 0.625rem solid transparent;
+  z-index: 1;
 }

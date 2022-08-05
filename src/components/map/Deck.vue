@@ -26,7 +26,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Deck as DeckGL, Layer } from '@deck.gl/core';
 import { DeckProps, PickInfo } from '@deck.gl/core/lib/deck';
-import { CameraOptions, CursorCallback, Nullable } from '@movici-flow-common/types';
+import { CameraOptions, CursorCallback, DeckMouseEvent, Nullable } from '@movici-flow-common/types';
 import { ControllerOptions } from '@deck.gl/core/controllers/controller';
 import defaults from './defaults';
 import { viewport, BoundingBox } from '@mapbox/geo-viewport';
@@ -60,6 +60,8 @@ function getCanvasDimensions(map: mapboxgl.Map): [number, number] {
 
 type DeckSlots = 'control-zero' | 'control-left' | 'control-right' | 'control-bottom';
 
+type eventCallback = (event: PickInfo<unknown>, ev?: DeckMouseEvent) => void;
+
 @Component({ name: 'Deck' })
 export default class Deck extends Vue {
   @Prop({ type: Object, default: null }) readonly value!: Nullable<CameraOptions>;
@@ -69,18 +71,29 @@ export default class Deck extends Vue {
   @Prop({ type: Array, default: () => [] }) readonly layers!: Layer<unknown>[];
   map: mapboxgl.Map | null = null;
   deck: DeckGL | null = null;
-  onClickListener = new Map<string, (event: PickInfo<unknown>) => void>();
+  eventListeners: Record<string, Map<string, eventCallback>> = {
+    click: new Map<string, eventCallback>(),
+    'drag-start': new Map<string, eventCallback>()
+  };
   loaded = false;
   getCursor: CursorCallback | null = null;
 
   get slotProps() {
     return {
       map: this.map,
-      registerMapOnClick: this.registerMapOnClick,
+      on: this.on,
       onViewstateChange: this.updateViewState,
       setCursorCallback: this.setCursorCallback,
       zoomToBBox: this.zoomToBBox
     };
+  }
+
+  get dragStartListeners() {
+    return this.eventListeners['drag-start'];
+  }
+
+  get clickListeners() {
+    return this.eventListeners.click;
   }
 
   /**
@@ -93,8 +106,10 @@ export default class Deck extends Vue {
     return !!this.$scopedSlots[control]?.({});
   }
 
-  registerMapOnClick(callbacks: Record<string, (event: PickInfo<unknown>) => void>) {
-    Object.entries(callbacks).forEach(([key, callback]) => this.onClickListener.set(key, callback));
+  on(event: string, callbacks: Record<string, eventCallback>) {
+    Object.entries(callbacks).forEach(([key, callback]) => {
+      this.eventListeners[event].set(key, callback);
+    });
   }
 
   setCursorCallback(cb: CursorCallback) {
@@ -149,8 +164,13 @@ export default class Deck extends Vue {
       width: '100%',
       height: '100%',
       initialViewState: val,
-      onClick: ($event: PickInfo<unknown>) => {
-        this.onClickListener.forEach(cb => cb($event));
+      onClick: (info: PickInfo<unknown>, ev?: DeckMouseEvent) => {
+        if (ev?.leftButton) {
+          this.clickListeners.forEach(cb => cb(info, ev));
+        }
+      },
+      onDragStart: (info: PickInfo<unknown>, ev?: DeckMouseEvent) => {
+        this.dragStartListeners.forEach(cb => cb(info, ev));
       },
       // @ts-expect-error
       getCursor: ({ isHovering, isDragging }) => {
@@ -245,7 +265,13 @@ export default class Deck extends Vue {
       position: absolute;
       top: 10px;
       right: 10px;
+      overflow: auto;
+      padding: 4px 8px 24px;
+      margin-right: -8px;
+      margin-left: -8px;
+      max-height: calc(100% - 20px - 140px);
       & > * {
+        width: 100%;
         margin-bottom: 8px;
         margin-left: auto;
         &:last-child {

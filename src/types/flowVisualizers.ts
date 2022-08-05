@@ -1,8 +1,8 @@
 import { RGBAColor } from './colors';
-import { PropertySummary, PropertyType } from './schema';
-import { CameraOptions, ITapefile } from './visualization';
-import { PickInfo } from '@deck.gl/core/lib/deck';
+import { PropertySummary } from './schema';
+import { CameraOptions } from './visualization';
 import { RenderOrderType } from '.';
+import { PopupItem } from './popup';
 
 export enum FlowVisualizerType {
   POINTS = 'points',
@@ -116,16 +116,9 @@ export interface ByValueSizeClause {
 
 export interface PopupClause {
   title: string;
-  when: 'onClick' | 'onHover';
   show?: boolean;
   dynamicTitle?: boolean;
-  position: 'dynamic' | 'static';
   items: PopupItem[];
-}
-
-export interface PopupItem {
-  name: string;
-  attribute: PropertyType;
 }
 
 export type VisibilityMapping = [boolean | number, boolean][];
@@ -141,23 +134,6 @@ export interface VisibilityClause {
 export interface Mapper<In, Out> {
   getValue(input: In): Out;
 }
-
-export interface PopupContent<D = unknown> {
-  title: string;
-  dynamicTitle?: boolean;
-  pickInfo: PickInfo<D>;
-  position: 'dynamic' | 'static';
-  when: 'onClick' | 'onHover';
-  index: number;
-  items: PopupContentItem[];
-}
-
-export interface PopupContentItem extends PopupItem {
-  tapefile: ITapefile<unknown>;
-  enum?: string[];
-}
-
-export type PopupCallback = (content: PopupContent | null) => void;
 
 export interface View {
   uuid?: string;

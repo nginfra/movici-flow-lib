@@ -52,16 +52,19 @@
         buildings
         scale
       >
-        <template #control-zero="{ map, dynamicPopup, popupContent, closePopup }">
-          <DynamicDataView
-            v-if="popupContent && dynamicPopup"
-            :value="popupContent"
-            :map="map"
-            :view-state="viewState"
-            :borderPadding="popupBorderPadding"
-          >
-            <DataViewContent @close="closePopup" :value="popupContent" :timestamp="timestamp" />
-          </DynamicDataView>
+        <template #control-zero="{ map, popup }">
+          <template v-if="popup.mapPopups.length">
+            <MapEntityPopup
+              v-for="(p, i) in popup.mapPopups"
+              :value="p"
+              :key="i"
+              :map="map"
+              :timestamp="timestamp"
+              :view-state="viewState"
+              @toggle="popup.togglePosition(p)"
+              @close="popup.remove(p)"
+            />
+          </template>
         </template>
         <template #control-left="{ map, onViewstateChange, basemap, setBasemap }">
           <SearchBar
@@ -77,11 +80,18 @@
           />
           <BaseMapControl :value="basemap" @input="setBasemap" />
         </template>
-        <template #control-right="{ popupContent, dynamicPopup, closePopup }">
+        <template #control-right="{ popup }">
           <FlowLegend v-if="visualizers.length" :value="visualizers" />
-          <WidgetContainer v-if="popupContent && !dynamicPopup">
-            <DataViewContent @close="closePopup" :value="popupContent" :timestamp="timestamp" />
-          </WidgetContainer>
+          <template v-if="popup.rightSidePopups.length">
+            <RightSidePopup
+              v-for="(p, i) in popup.rightSidePopups"
+              :value="p"
+              :key="i"
+              :timestamp="timestamp"
+              @toggle="popup.togglePosition(p)"
+              @close="popup.remove(p)"
+            />
+          </template>
         </template>
         <template #control-bottom="{ updateTimestamp, maxTimeAvailable }">
           <TimeSlider
@@ -112,9 +122,6 @@ import FlowContainer from './FlowContainer.vue';
 import defaults from './map/defaults';
 import { ComposableVisualizerInfo } from '../visualizers/VisualizerInfo';
 import FlowLayerPicker from './widgets/FlowLayerPicker.vue';
-import DynamicDataView from './map_widgets/DynamicDataView.vue';
-import DataViewContent from './map_widgets/DataViewContent.vue';
-import WidgetContainer from './map_widgets/WidgetContainer.vue';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
 import ViewInfoBox from './info_box/ViewInfoBox.vue';
@@ -131,6 +138,8 @@ import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-a
 import { MoviciError } from '@movici-flow-common/errors';
 import { transformBBox } from '@movici-flow-common/crs';
 import { isError } from 'lodash';
+import MapEntityPopup from './map_widgets/MapEntityPopup.vue';
+import RightSidePopup from './map_widgets/RightSidePopup.vue';
 
 @Component({
   name: 'FlowVisualization',
@@ -145,10 +154,9 @@ import { isError } from 'lodash';
     NavigationControl,
     BaseMapControl,
     TimeSlider,
-    DynamicDataView,
-    WidgetContainer,
-    DataViewContent,
-    FlowLegend
+    FlowLegend,
+    MapEntityPopup,
+    RightSidePopup
   },
   beforeRouteLeave(to: unknown, from: unknown, next: () => void) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -231,12 +239,6 @@ export default class FlowVisualization extends Vue {
 
   set timestamp(val: number) {
     flowVisualizationStore.setTimestamp(val);
-  }
-
-  get popupBorderPadding() {
-    return {
-      left: flowUIStore.collapse ? 0 : 300
-    };
   }
 
   get hasPendingChanges() {
@@ -570,7 +572,6 @@ export default class FlowVisualization extends Vue {
       flowUIStore.setLoading({ value: false });
       this.updateTabHeight();
     } catch (error: unknown) {
-      this.$t;
       flowUIStore.setLoading({ value: false });
       this.updateIsViewDirty(false);
       if (error instanceof MoviciError) {
