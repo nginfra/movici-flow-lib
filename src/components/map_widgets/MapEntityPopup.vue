@@ -5,19 +5,17 @@
     :view-state="viewState"
     :borderPadding="popupBorderPadding"
     tip
+    @click="$emit('click')"
   >
-    <template v-slot="{ focused }">
-      <DataViewContent
-        class="p-3"
-        :class="{ onClick: focused }"
-        :value="value.content"
-        :timestamp="timestamp"
-        @togglePosition="$emit('toggle')"
-        @close="$emit('close')"
-        :closable="value.type === 'onClick'"
-        dynamic
-      />
-    </template>
+    <DataViewContent
+      class="p-3"
+      :value="value.content"
+      :timestamp="timestamp"
+      @togglePosition="$emit('toggle')"
+      @close="$emit('close')"
+      :closable="value.type === 'onClick'"
+      dynamic
+    />
   </DynamicDataView>
 </template>
 

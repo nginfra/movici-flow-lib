@@ -63,6 +63,7 @@
               :view-state="viewState"
               @toggle="popup.togglePosition(p)"
               @close="popup.remove(p)"
+              @click="popup.moveToTop(p)"
             />
           </template>
         </template>

@@ -4,6 +4,10 @@ import { PickInfo } from 'deck.gl';
 const POPUP_DELAY = 250,
   POPUP_HIGHLIGHT_DURATION = 200;
 
+function popupMatches(a: PopupSettings, b: PopupSettings) {
+  return a.layerId == b.layerId && a.content.index == b.content.index;
+}
+
 export class PopupManager {
   popups: PopupSettings[] = [];
   lastHovered: [string, PopupContent] | null = null;
@@ -40,7 +44,7 @@ export class PopupManager {
   updatePopupInfo(settings: PopupSettings, pickInfo: PickInfo<unknown>) {
     this.setPopups(
       this.popups.map(p => {
-        if (settings.content.index === p.content.index) {
+        if (popupMatches(settings, p)) {
           return {
             ...p,
             content: {
@@ -62,7 +66,7 @@ export class PopupManager {
   }
 
   remove(settings: PopupSettings) {
-    this.setPopups(this.popups.filter(p => p.content.index !== settings.content.index));
+    this.splicePopup(settings);
   }
 
   removeByLayer(layerId: string) {
@@ -85,30 +89,33 @@ export class PopupManager {
     );
   }
 
+  splicePopup(popup: PopupSettings): PopupSettings {
+    const idx = this.popups.findIndex(p => popupMatches(popup, p));
+    if (idx < 0) {
+      throw new Error('Popup not found');
+    }
+    return this.popups.splice(idx, 1)[0];
+  }
+
   togglePosition(settings: PopupSettings, force?: PopupPosition) {
-    this.setPopups(
-      this.popups.map(p => {
-        const position = force ? force : p.position === 'map' ? 'right-side' : 'map';
-        return settings.content.index === p.content.index
-          ? { ...p, highlighted: null, position }
-          : p;
-      })
-    );
+    const popup = this.splicePopup(settings);
+    const position = force ? force : popup.position === 'map' ? 'right-side' : 'map';
+    this.popups.push({ ...popup, highlighted: null, position });
   }
 
   toggleType(settings: PopupSettings, force?: PopupType) {
-    this.setPopups(
-      this.popups.map(p => {
-        const type = force ? force : p.type === 'onClick' ? 'onHover' : 'onClick';
-        return settings.content.index === p.content.index ? { ...p, type } : p;
-      })
-    );
+    const popup = this.splicePopup(settings);
+    const type = force ? force : popup.type === 'onClick' ? 'onHover' : 'onClick';
+    this.popups.push({ ...popup, type });
   }
 
   setHighlight(settings: PopupSettings, val: PopupType | null) {
     this.setPopups(
       this.popups.map(p => {
-        return settings.content.index === p.content.index ? { ...p, highlighted: val } : p;
+        if (popupMatches(p, settings)) {
+          return { ...p, highlighted: val };
+        }
+        return p;
       })
     );
   }
@@ -123,6 +130,11 @@ export class PopupManager {
 
   getPopup(layerId: string, index: number) {
     return this.popups.find(p => p.content.index === index && p.layerId === layerId);
+  }
+
+  moveToTop(popup: PopupSettings) {
+    const found = this.splicePopup(popup);
+    this.popups.push(found);
   }
 
   onClick(content: PopupContent, layerId: string) {

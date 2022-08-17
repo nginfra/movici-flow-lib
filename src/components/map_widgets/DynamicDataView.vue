@@ -5,12 +5,11 @@
     tabindex="0"
     :class="computedClass"
     :style="containerStyle"
-    @click="focused = true"
-    @blur="focused = false"
+    @click="$emit('click')"
   >
     <div class="popup-tip" v-if="!!value && tip"></div>
     <div class="data-viewer box p-0" ref="content" v-show="!!value">
-      <slot v-bind="{ focused }" />
+      <slot/>
     </div>
   </div>
 </template>
@@ -46,12 +45,9 @@ export default class DynamicDataView extends Vue {
   };
   anchorType: ANCHOR_TYPE | null = null;
   containerStyle: Partial<CSSStyleDeclaration> = {};
-  focused = false;
 
   get computedClass() {
-    const rv: string[] = [`popup-anchor-${this.anchorType}`];
-    if (this.focused) rv.push('focused');
-    return rv;
+    return `popup-anchor-${this.anchorType}`;
   }
 
   getCoordinatesFunction(layerType = '') {
