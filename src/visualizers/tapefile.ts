@@ -26,16 +26,16 @@ export class TapefileWriter<T> {
     this.attribute = attribute;
   }
   initializeTapefile() {
+    if (this.tapefile.updates.length) throw new Error('Can only initialize empty tapefile');
+
     const length = this.tapefile.state.length;
-    this.tapefile.updates = [
-      {
-        length,
-        timestamp: 0,
-        version: 1,
-        indices: range(length),
-        data: getEmptyArray(length)
-      }
-    ];
+    this.tapefile.updates.push({
+      length,
+      timestamp: 0,
+      version: 0,
+      indices: range(length),
+      data: getEmptyArray(length)
+    });
   }
   /**
    * Add an update to the tapefile, assuming it comes after the last update in the tapefile
@@ -46,6 +46,10 @@ export class TapefileWriter<T> {
     let parsed = this.prepareUpdate(update);
     const updates = this.tapefile.updates;
     if (parsed === null) return;
+
+    if (!updates.length) {
+      this.initializeTapefile();
+    }
     const lastUpdate = updates[updates.length - 1];
     if (lastUpdate && update.timestamp < lastUpdate.timestamp) {
       throw new Error('Cannot append updates that have a lower timestamp than current latest');
@@ -452,7 +456,7 @@ export function createTapefileFromStateAndUpdates<T>(
     }),
     writer = new TapefileWriter(index, tapefile, componentProperty.name);
   writer.appendUpdate({
-    timestamp: -1,
+    timestamp: 0,
     data: initialState
   });
   tapefile.calculateNextRollback();

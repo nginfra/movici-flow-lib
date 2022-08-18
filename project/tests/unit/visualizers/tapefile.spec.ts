@@ -60,7 +60,7 @@ describe('tapefile.js/createTapefileFromStateAndUpdates', () => {
   it('has the right updates', () => {
     expect(filterVersion(tapefile.updates)).toStrictEqual([
       {
-        timestamp: -1,
+        timestamp: 0,
         length: 3,
         indices: [0, 1, 2],
         data: [0, 0, 0]
@@ -95,8 +95,8 @@ describe('tapefile.js/createTapefileFromStateAndUpdates', () => {
     const tapefile = createTapefileFromStateAndUpdates(
       { component: null, name: 'prop' },
       {
-        id: [1, 2, 3],
-        prop: [0, 0, 0]
+        id: [1, 2, 3, 4],
+        prop: [0, 0, 0, 0]
       },
       [
         {
@@ -119,18 +119,10 @@ describe('tapefile.js/createTapefileFromStateAndUpdates', () => {
     );
     expect(filterVersion(tapefile.updates)).toStrictEqual([
       {
-        timestamp: -1,
-        length: 3,
-        indices: [0, 1, 2],
-        data: [0, 0, 0]
-      },
-      {
         timestamp: 0,
-        length: 3,
-        indices: [0, 1, 2],
-        data: [1, 2, 2],
-        rollback: [0, 0, 0],
-        fullRollback: true
+        length: 4,
+        indices: [0, 1, 2, 3],
+        data: [1, 2, 2, 0],
       }
     ] as TapefileUpdate<unknown>[]);
   });

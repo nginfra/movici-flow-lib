@@ -327,7 +327,6 @@ export class StreamingTapefile<T> extends BaseTapefile<T> {
       length: index.length
     });
     this.writer = new TapefileWriter(index, this.inner, this.attribute);
-    this.writer.initializeTapefile();
     this.addUpdate(
       {
         timestamp: 0,

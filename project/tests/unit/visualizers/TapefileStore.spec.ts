@@ -50,7 +50,7 @@ describe('StreamingTapefile', () => {
     expect(tf.copyState()).toStrictEqual([11, 21]);
   });
   it('bumps update version on merge', () => {
-    const initialData = { id: [1, 2] };
+    const initialData = { id: [1, 2], attr: [0, 0] };
     tf.initialize({ index, initialData });
     expect(tf.inner?.updates[0].version).toStrictEqual(1);
     tf.addUpdate(
