@@ -37,11 +37,15 @@ function interpolateColor(a: RGBAColor, b: RGBAColor, step: number, nSteps: numb
     throw new Error('must have positive number of steps');
   }
   if (step < 0 || step >= nSteps) {
-    throw new Error('Step nog in between 0 and nSteps');
+    throw new Error('Step not in between 0 and nSteps');
   }
-  if (a.length != b.length) {
-    throw new Error('Incompatible colors');
+
+  if (a.length === 4) {
+    b = ensureOpacity(b);
+  } else if (b.length === 4) {
+    a = ensureOpacity(a);
   }
+
   const rv: RGBAColor = Array(a.length) as RGBAColor;
 
   for (let i = 0; i < a.length; i++) {
@@ -54,6 +58,13 @@ function interpolateColor(a: RGBAColor, b: RGBAColor, step: number, nSteps: numb
   }
 
   return rv;
+}
+
+function ensureOpacity(color: RGBAColor, defaultOpacity = 255) {
+  if (color[3] === undefined) {
+    color[3] = defaultOpacity;
+  }
+  return color;
 }
 
 export function getContrastingColor(color: RGBAColor) {

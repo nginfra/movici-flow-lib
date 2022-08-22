@@ -9,7 +9,7 @@
   >
     <div class="popup-tip" v-if="!!value && tip"></div>
     <div class="data-viewer box p-0" ref="content" v-show="!!value">
-      <slot/>
+      <slot />
     </div>
   </div>
 </template>
@@ -123,10 +123,7 @@ export default class DynamicDataView extends Vue {
 
 <style scoped lang="scss">
 .popup {
-  z-index: 2;
-  &.focused {
-    z-index: 3;
-  }
+  min-width: max-content;
   .data-viewer {
     padding: 0.75rem;
     min-width: 12rem;

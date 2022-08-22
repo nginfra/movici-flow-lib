@@ -21,6 +21,7 @@ import {
   DEFAULT_SPECIAL_COLOR_TRIPLE,
   DEFAULT_UNDEFINED_COLOR_TRIPLE
 } from '../../utils/colorUtils';
+import { isError } from 'lodash';
 type ColorAccessor<D> = ((d: D) => RGBAColor) | RGBAColor;
 export default class ColorModule<
   Coord extends Coordinate,
@@ -138,7 +139,16 @@ export default class ColorModule<
     const rv: [number, RGBAColor][] = [];
     for (let i = 0; i < colors.length - 1; i++) {
       rv.push(colors[i]);
-      rv.push(...interpolateColorMapping(colors[i], colors[i + 1], inBetween));
+      try {
+        rv.push(...interpolateColorMapping(colors[i], colors[i + 1], inBetween));
+      } catch (e) {
+        let msg = 'Could not interpolate between colors';
+
+        if (isError(e)) {
+          msg += ': ' + e.message;
+        }
+        throw new Error(msg);
+      }
     }
     rv.push(colors[colors.length - 1]);
     return rv;

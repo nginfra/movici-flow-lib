@@ -118,12 +118,10 @@ export default class DataViewContent extends Vue {
 <style scoped lang="scss">
 .data-content {
   max-width: 500px;
-  min-width: max-content;
   width: 100%;
 
   .header {
     min-height: 1.5rem;
-    min-width: max-content;
     .label {
       margin: 0;
     }
