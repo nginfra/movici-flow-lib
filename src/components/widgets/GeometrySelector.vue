@@ -11,7 +11,7 @@
       <div class="block mb-0">
         <template v-for="(c, idx) in choices">
           <b-tooltip
-            :label="c.geometry | upperFirst"
+            :label="$t('flow.visualization.type')[c.geometry]"
             :key="c.geometry"
             type="is-black"
             position="is-top"
@@ -42,7 +42,7 @@
           class="is-flex"
           size="is-small"
         >
-          {{ c.name }}
+          {{ $t('flow.visualization.type')[c.geometry] }}
         </b-radio>
       </template>
     </div>
@@ -52,7 +52,7 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { ComponentProperty, FlowVisualizerType } from '@movici-flow-common/types';
-import { isLines, isPoints, isPolygons } from '@movici-flow-common/visualizers/geometry';
+import { isLines, isPoints, isPolygons, isGrid } from '@movici-flow-common/visualizers/geometry';
 
 function validFlowVisualizerType(val: unknown): val is FlowVisualizerType {
   if (typeof val !== 'string') return false;
@@ -66,7 +66,6 @@ function validFlowVisualizerTypeOrNull(val: unknown): val is FlowVisualizerType 
 
 type GeometryChoicesProps = {
   enabled: boolean;
-  name: string;
   icon: string;
   iconPack: string;
   geometry: FlowVisualizerType;
@@ -94,33 +93,38 @@ export default class GeometrySelector extends Vue {
     const geometries: Record<FlowVisualizerType, Omit<GeometryChoicesProps, 'geometry'>> = {
       [FlowVisualizerType.POINTS]: {
         enabled: isPoints(this.properties),
-        name: 'Points',
         iconPack: 'fak',
         icon: 'fa-vis-info-' + FlowVisualizerType.POINTS
       },
       [FlowVisualizerType.LINES]: {
         enabled: isLines(this.properties),
-        name: 'Lines',
         iconPack: 'fak',
         icon: 'fa-vis-info-' + FlowVisualizerType.LINES
       },
       [FlowVisualizerType.POLYGONS]: {
         enabled: isPolygons(this.properties),
-        name: 'Polygons',
         iconPack: 'fak',
         icon: 'fa-vis-info-' + FlowVisualizerType.POLYGONS
       },
       [FlowVisualizerType.ARCS]: {
         enabled: isLines(this.properties) && this.showAs === 'button',
-        name: 'Arcs',
         iconPack: 'fak',
         icon: 'fa-vis-info-' + FlowVisualizerType.ARCS
       },
       [FlowVisualizerType.ICONS]: {
         enabled: isPoints(this.properties),
-        name: 'Icons',
         iconPack: 'far',
         icon: 'map-marker-alt'
+      },
+      [FlowVisualizerType.FLOODING_GRID]: {
+        enabled: isGrid(this.properties),
+        iconPack: 'fad',
+        icon: 'water'
+      },
+      [FlowVisualizerType.GRID]: {
+        enabled: isGrid(this.properties),
+        iconPack: 'far',
+        icon: 'game-board-alt'
       }
     };
 
@@ -170,8 +174,8 @@ export default class GeometrySelector extends Vue {
   .v-info-geometry {
     border: 0.125rem solid transparent;
     opacity: 1 !important;
-    background-color: #e8f8f2;
-    color: #1ab67e;
+    background-color: $green-light;
+    color: $primary;
     height: 2.25rem;
     width: 2.75rem;
     font-size: 1.25rem;

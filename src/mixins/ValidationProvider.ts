@@ -79,4 +79,8 @@ export default class ValidationProvider extends Vue {
     this.validator?.touch(key as string);
     this[key] = value as T[K];
   }
+
+  destroyValidator() {
+    this.validator?.reset();
+  }
 }

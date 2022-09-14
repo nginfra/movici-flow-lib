@@ -12,10 +12,21 @@ export class LegendItem {
   icon?: IconShapeLegendItem | null;
   color?: ColorLegendItem | null;
 
-  constructor({ title, icon, color }: LegendItem) {
+  constructor({ title, icon, color }: Pick<LegendItem, 'title' | 'icon' | 'color'>) {
     this.title = title;
     this.icon = icon;
     this.color = color;
+  }
+
+  isSimpleLegend() {
+    let found = 0;
+    const keys: (keyof this)[] = ['icon', 'color'];
+    for (const key of keys) {
+      if (this[key]) {
+        found++;
+      }
+    }
+    return found === 1;
   }
 }
 

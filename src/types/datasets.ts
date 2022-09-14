@@ -1,11 +1,16 @@
-import { Line3DCoordinate, LineCoordinate, PolygonCoordinate } from './geometry';
+import { GridCellPoints, Line3DCoordinate, LineCoordinate, PolygonCoordinate } from './geometry';
 import { UUID } from './general';
 
 export interface DatasetCollection {
   datasets: Dataset[];
 }
 
-export class Dataset {
+export interface ShortDataset {
+  name: string;
+  uuid: UUID;
+  type: string;
+}
+export class Dataset implements ShortDataset {
   name: string;
   display_name?: string | null;
   uuid: UUID;
@@ -105,3 +110,8 @@ interface PolygonGeometryProperties extends EntityGroupProperties<PolygonCoordin
   'geometry.polygon': PolygonCoordinate[];
 }
 export type PolygonGeometryData = BaseEntityGroup & PolygonGeometryProperties;
+
+interface GridCellProperties extends EntityGroupProperties<GridCellPoints> {
+  'grid.grid_points': GridCellPoints[];
+}
+export type GridCellGeometryData = BaseEntityGroup & GridCellProperties;

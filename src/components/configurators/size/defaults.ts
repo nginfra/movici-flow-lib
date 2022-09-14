@@ -42,6 +42,7 @@ export const STATIC_DEFAULT_CONFIG: StaticSizeClause = {
         case FlowVisualizerType.LINES:
         case FlowVisualizerType.POLYGONS:
         case FlowVisualizerType.ARCS:
+        case FlowVisualizerType.GRID:
         default:
           return STATIC_DEFAULT_CONFIG;
       }

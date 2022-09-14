@@ -38,6 +38,16 @@ export default class StatusTracker {
     this.streams = -1;
   }
 
+  addTasks(tasks: Record<string, number>, overwrite = false) {
+    for (const [task, weight] of Object.entries(tasks)) {
+      if (!overwrite && this.weights[task] != undefined) {
+        throw new Error(`Task '${task} is already defined`);
+      }
+      this.currentProgress[task] ??= {};
+      this.weights[task] = weight;
+    }
+  }
+
   register(tasks: string[]): number {
     const id = ++this.streams;
     for (const task of tasks) {

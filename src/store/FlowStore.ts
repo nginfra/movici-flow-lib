@@ -6,6 +6,7 @@ import {
   FlowStoreConfig,
   Project,
   Scenario,
+  ShortDataset,
   ShortScenario,
   SimulationMode,
   TimeOrientedSimulationInfo,
@@ -85,6 +86,12 @@ export default class FlowStore extends VuexModule {
     return null;
   }
 
+  get datasetsByName(): Record<string, ShortDataset> {
+    return (this.scenario?.datasets ?? []).reduce((agg, val) => {
+      agg[val.name] = val;
+      return agg;
+    }, {} as Record<string, ShortDataset>);
+  }
   @Mutation
   SET_PROJECTS(projects: Project[]) {
     this.projects = projects;

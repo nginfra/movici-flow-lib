@@ -289,5 +289,16 @@ export const DEFAULT_COLOR_PALETTES = addReversedColorPalettes({
         8: [0, 3, 4, 1, 5, 2, 6, 7]
       }
     })
+  ],
+  Flooding: [
+    new ColorPalette({
+      name: 'Default',
+      colors: ['#87d9ff', '#0092ff', '#0000ff', '#6e22e7'],
+      colorsForSize: {
+        2: [0, 2],
+        3: [0, 1, 2],
+        4: [0, 1, 2, 3]
+      }
+    })
   ]
 });

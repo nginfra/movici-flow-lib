@@ -90,8 +90,4 @@ export default class ByValueMixin<D> extends Mixins(ValidationProvider) {
       }
     };
   }
-
-  destroyValidator() {
-    this.validator?.reset();
-  }
 }

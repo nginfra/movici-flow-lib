@@ -93,7 +93,7 @@
               icon="exclamation-circle"
               type="is-danger"
               size="is-small"
-              v-if="tabHasErrors(conf.name)"
+              v-if="tabHasErrors(conf.id)"
             />
           </template>
           <component :is="conf.component" :name="conf.name" v-bind="conf.vBind" v-on="conf.vOn" />
@@ -141,6 +141,7 @@
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import { flowStore } from '@movici-flow-common/store/store-accessor';
 import {
+  Dataset,
   FlowVisualizerOptions,
   FlowVisualizerType,
   ScenarioDataset,
@@ -156,18 +157,30 @@ import SizeConfigurator from './size/SizeConfigurator.vue';
 import PopupConfigurator from './popup/PopupConfigurator.vue';
 import ShapeIconConfigurator from './icon/ShapeIconConfigurator.vue';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
+import FloodingGridConfigurator from './FloodingGridConfigurator.vue';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { propertyString, excludeKeys } from '@movici-flow-common/utils';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
+import { VueClass } from 'vue-class-component/lib/declarations';
+import GeometryConfigurator from './GeometryConfigurator.vue';
 
+interface FinalizerContext {
+  datasets: Record<string, ScenarioDataset | Dataset>;
+}
 type Finalizers = {
-  popup: (val: FlowVisualizerOptions['popup']) => FlowVisualizerOptions['popup'] | undefined;
-  size: (val: FlowVisualizerOptions['size']) => FlowVisualizerOptions['size'];
+  popup: (
+    val: FlowVisualizerOptions['popup'],
+    context: FinalizerContext
+  ) => FlowVisualizerOptions['popup'] | undefined;
+  size: (
+    val: FlowVisualizerOptions['size'],
+    context: FinalizerContext
+  ) => FlowVisualizerOptions['size'];
 };
 
 const FINALIZERS: Finalizers = {
-  popup: (val: FlowVisualizerOptions['popup']) => {
+  popup(val: FlowVisualizerOptions['popup']) {
     // if popup clause is provided but user doesn't set labels
     // for the attributes, we use its propertyString
     return !val
@@ -184,7 +197,7 @@ const FINALIZERS: Finalizers = {
           })
         };
   },
-  size: (val: FlowVisualizerOptions['size']) => {
+  size(val: FlowVisualizerOptions['size']) {
     return !val
       ? undefined
       : Object.entries(val).reduce((acc, obj) => {
@@ -200,7 +213,60 @@ const FINALIZERS: Finalizers = {
         }, {} as SizeClause);
   }
 };
-
+enum FlowConfigurator {
+  COLOR = 'color',
+  SIZE = 'size',
+  ICON_SHAPE = 'icon-shape',
+  VISIBILITY = 'visibility',
+  POPUP = 'popup',
+  FLOODING = 'flooding',
+  GEOMETRY = 'geometry'
+}
+const CONFIGURATORS_BY_TYPE: Record<FlowVisualizerType, FlowConfigurator[]> = {
+  [FlowVisualizerType.POINTS]: [
+    FlowConfigurator.COLOR,
+    FlowConfigurator.SIZE,
+    FlowConfigurator.VISIBILITY,
+    FlowConfigurator.POPUP
+  ],
+  [FlowVisualizerType.LINES]: [
+    FlowConfigurator.COLOR,
+    FlowConfigurator.SIZE,
+    FlowConfigurator.VISIBILITY,
+    FlowConfigurator.POPUP
+  ],
+  [FlowVisualizerType.POLYGONS]: [
+    FlowConfigurator.COLOR,
+    FlowConfigurator.SIZE,
+    FlowConfigurator.VISIBILITY,
+    FlowConfigurator.POPUP
+  ],
+  [FlowVisualizerType.ARCS]: [
+    FlowConfigurator.COLOR,
+    FlowConfigurator.SIZE,
+    FlowConfigurator.VISIBILITY,
+    FlowConfigurator.POPUP
+  ],
+  [FlowVisualizerType.ICONS]: [
+    FlowConfigurator.COLOR,
+    FlowConfigurator.ICON_SHAPE,
+    FlowConfigurator.SIZE,
+    FlowConfigurator.VISIBILITY,
+    FlowConfigurator.POPUP
+  ],
+  [FlowVisualizerType.GRID]: [
+    FlowConfigurator.GEOMETRY,
+    FlowConfigurator.COLOR,
+    FlowConfigurator.SIZE,
+    FlowConfigurator.VISIBILITY,
+    FlowConfigurator.POPUP
+  ],
+  [FlowVisualizerType.FLOODING_GRID]: [
+    FlowConfigurator.GEOMETRY,
+    FlowConfigurator.COLOR,
+    FlowConfigurator.FLOODING
+  ]
+};
 @Component({
   name: 'VisualizerConfigurator',
   components: {
@@ -221,6 +287,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   displayName = '';
   tab = 0;
   tabsWithErrors: Record<number, boolean> = {};
+  additionalEntityGroups: Record<string, string> | null = null;
 
   get composedVisualizer(): Partial<ComposableVisualizerInfo> {
     if (this.currentDataset && this.currentEntityName && this.settings) {
@@ -230,6 +297,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
         datasetName: this.currentDataset.name,
         datasetUUID: this.currentDataset.uuid,
         entityGroup: this.currentEntityName,
+        additionalEntityGroups: this.additionalEntityGroups ?? undefined,
         settings: this.settings,
         scenarioUUID: this.value?.scenarioUUID || this.scenarioUUID,
         mode: VisualizationMode.SCENARIO,
@@ -244,22 +312,19 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   }
 
   get filteredConfigurators() {
-    return this.configurators.filter(config => {
-      return !config.filterGeometry || config.filterGeometry.find(geom => geom === this.geometry);
-    });
+    if (!this.properties || !this.validator || !this.geometry) return [];
+    return CONFIGURATORS_BY_TYPE[this.geometry].map(c => this.configurators[c]);
   }
 
-  // TODO: Maybe move these to helpers, this component is too big.
-  get configurators() {
-    if (!this.properties || !this.validator || !this.geometry) return [];
-
+  get configurators(): Record<FlowConfigurator, ConfiguratorSettings> {
     const vBindDefaults = (key: string) => {
         return {
           entityProps: this.properties,
           validator: this.validator?.child(key),
           geometry: this.geometry,
           settings: this.settings,
-          summary: this.summary
+          summary: this.summary,
+          datasets: this.datasets
         };
       },
       vOnDefaults = <T extends keyof FlowVisualizerOptions>(clauseType: T) => {
@@ -269,19 +334,19 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
           }
         };
       };
-
-    return [
-      {
+    return {
+      [FlowConfigurator.COLOR]: {
+        id: 'color',
         name: '' + this.$t('flow.visualization.colorConfig.colors'),
         component: ColorConfigurator,
         vBind: { ...vBindDefaults('color'), value: this.settings?.color },
         vOn: { ...vOnDefaults('color') }
       },
-      {
+      [FlowConfigurator.ICON_SHAPE]: {
+        id: 'icon-shape',
         name: `${this.$t('flow.visualization.iconConfig.shape')} / ${this.$t(
           'flow.visualization.iconConfig.icon'
         )}`,
-        filterGeometry: [FlowVisualizerType.ICONS],
         component: ShapeIconConfigurator,
         vBind: {
           ...vBindDefaults('icon-shape'),
@@ -301,44 +366,58 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
           }
         }
       },
-      {
+      [FlowConfigurator.SIZE]: {
+        id: 'size',
         name: (() => {
           switch (this.geometry) {
             case FlowVisualizerType.POINTS:
               return '' + this.$t('flow.visualization.sizeConfig.radius');
-            case FlowVisualizerType.ICONS:
-              return '' + this.$t('flow.visualization.sizeConfig.size');
             case FlowVisualizerType.LINES:
             case FlowVisualizerType.POLYGONS:
             case FlowVisualizerType.ARCS:
               return '' + this.$t('flow.visualization.sizeConfig.thickness');
+            case FlowVisualizerType.ICONS:
+            default:
+              return '' + this.$t('flow.visualization.sizeConfig.size');
           }
         })(),
-        filterGeometry: [
-          FlowVisualizerType.POINTS,
-          FlowVisualizerType.ICONS,
-          FlowVisualizerType.LINES,
-          FlowVisualizerType.POLYGONS,
-          FlowVisualizerType.ARCS
-        ],
         component: SizeConfigurator,
         vBind: { ...vBindDefaults('size'), value: this.settings?.size },
         vOn: { ...vOnDefaults('size') }
       },
-
-      {
+      [FlowConfigurator.VISIBILITY]: {
+        id: 'visibility',
         name: '' + this.$t('flow.visualization.visibilityConfig.visibility'),
         component: VisibilityConfigurator,
         vBind: { ...vBindDefaults('visibility'), value: this.settings?.visibility },
         vOn: { ...vOnDefaults('visibility') }
       },
-      {
+      [FlowConfigurator.POPUP]: {
+        id: 'popup',
         name: '' + this.$t('flow.visualization.popup.popup'),
         component: PopupConfigurator,
         vBind: { ...vBindDefaults('popup'), value: this.settings?.popup },
         vOn: { ...vOnDefaults('popup') }
+      },
+      [FlowConfigurator.FLOODING]: {
+        id: 'floodingGrid',
+        name: '' + this.$t('flow.visualization.floodingConfig.floodingGrid'),
+        component: FloodingGridConfigurator,
+        vBind: { ...vBindDefaults('floodingGrid'), value: this.settings?.floodingGrid },
+        vOn: { ...vOnDefaults('floodingGrid') }
+      },
+      [FlowConfigurator.GEOMETRY]: {
+        id: 'geometry',
+        name: '' + this.$t('flow.visualization.geometryConfig.geometry'),
+        component: GeometryConfigurator,
+        vBind: { ...vBindDefaults('geometry'), value: this.additionalEntityGroups },
+        vOn: {
+          input: (val: null | Record<string, string>) => {
+            this.additionalEntityGroups = val;
+          }
+        }
       }
-    ];
+    };
   }
 
   get hasEmptySettings() {
@@ -362,7 +441,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   }
 
   tabHasErrors(name: string) {
-    return this.errors[name] ? !!Object.keys(this.errors[name]).length : false;
+    return Object.keys(this.errors).some(err => err.startsWith(name));
   }
 
   @Watch('currentEntityName')
@@ -401,7 +480,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   updateVisualizerMetadata(value: ComposableVisualizerInfo) {
     this.displayName = value.name;
     this.currentDataset = this.datasets.find(d => d.name === value.datasetName) || null;
-
+    this.additionalEntityGroups = value.additionalEntityGroups ?? null;
     if (this.currentDataset) {
       this.currentEntityName = value.entityGroup;
       if (value.settings) {
@@ -481,13 +560,15 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
     if (!this.composedVisualizer.settings) return null;
 
     let rv: FlowVisualizerOptions = Object.assign({}, this.composedVisualizer.settings);
-
+    let context: FinalizerContext = {
+      datasets: this.datasetsByName
+    };
     if (rv.popup) {
-      rv.popup = FINALIZERS.popup(rv.popup);
+      rv.popup = FINALIZERS.popup(rv.popup, context);
     }
 
     if (rv.size) {
-      rv.size = FINALIZERS.size(rv.size);
+      rv.size = FINALIZERS.size(rv.size, context);
     }
 
     return rv;
@@ -530,6 +611,15 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
 
     this.setupValidator();
   }
+}
+
+interface ConfiguratorSettings {
+  id: string;
+  name: string | (() => string);
+  component: VueClass<Vue>;
+  vBind: Record<string, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  vOn: Record<string, (val: any) => void>;
 }
 </script>
 

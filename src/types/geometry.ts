@@ -5,6 +5,7 @@ export type Coordinate3DArray = Point3DCoordinate[];
 export type LineCoordinate = CoordinateArray;
 export type Line3DCoordinate = CoordinateArray;
 export type PolygonCoordinate = CoordinateArray;
+export type GridCellPoints = number[];
 
 export type Coordinate = PointCoordinate | LineCoordinate | PolygonCoordinate;
 export interface TopologyLayerData<Coord extends Coordinate> {
@@ -16,5 +17,6 @@ export interface TopologyLayerData<Coord extends Coordinate> {
 export enum EntityGeometry {
   POINT = 'points',
   LINE = 'lines',
-  POLYGON = 'polygons'
+  POLYGON = 'polygons',
+  GRID = 'grid'
 }

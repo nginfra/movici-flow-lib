@@ -3,6 +3,8 @@ import {
   DatasetSummary,
   FlowVisualizerConfig,
   FlowVisualizerOptions,
+  ShortDataset,
+  UUID,
   VisualizationMode
 } from '../types';
 
@@ -12,6 +14,7 @@ abstract class BaseVisualizerInfo {
   datasetUUID: string | null;
   scenarioUUID: string | null;
   entityGroup: string;
+  additionalEntityGroups?: Record<string, string>;
   mode: VisualizationMode;
   visible: boolean;
   errors: Record<string, string>;
@@ -23,6 +26,7 @@ abstract class BaseVisualizerInfo {
     this.name = config?.name || this.datasetName;
     this.scenarioUUID = config?.scenarioUUID || null;
     this.entityGroup = config?.entityGroup ?? '';
+    this.additionalEntityGroups = config?.additionalEntityGroups;
     this.mode = config?.mode ?? VisualizationMode.GEOMETRY;
     this.visible = config?.visible ?? true;
 
@@ -51,6 +55,10 @@ abstract class BaseVisualizerInfo {
     delete this.errors[key];
     this.errors = Object.assign({}, this.errors);
   }
+
+  resolveDatasets(datasets: Record<string, ShortDataset>) {
+    this.datasetUUID = getDatasetUUIDOrThrow(this.datasetName, datasets);
+  }
 }
 
 export class ComposableVisualizerInfo extends BaseVisualizerInfo {
@@ -64,12 +72,23 @@ export class ComposableVisualizerInfo extends BaseVisualizerInfo {
     this.summary = config?.summary ?? null;
   }
 
+  resolveDatasets(datasets: Record<string, ShortDataset>) {
+    super.resolveDatasets(datasets);
+    if (this.settings?.floodingGrid) {
+      this.settings.floodingGrid.heightMapDatasetUUID = getDatasetUUIDOrThrow(
+        this.settings.floodingGrid.heightMapDataset,
+        datasets
+      );
+    }
+  }
+
   toVisualizerConfig(): FlowVisualizerConfig {
     if (!this.settings) throw new Error(`No settings defined for ${this.name}`);
     return {
       name: this.name,
       dataset_name: this.datasetName,
       entity_group: this.entityGroup,
+      additional_entity_groups: this.additionalEntityGroups,
       visible: this.visible,
       settings: this.settings
     };
@@ -78,4 +97,12 @@ export class ComposableVisualizerInfo extends BaseVisualizerInfo {
 
 function randomID(): string {
   return Math.random().toString(36);
+}
+
+function getDatasetUUIDOrThrow(datasetName: string, datasets: Record<string, ShortDataset>): UUID {
+  const dataset = datasets[datasetName];
+  if (!dataset) {
+    throw new Error(`Unknown dataset '${datasetName}`);
+  }
+  return dataset.uuid;
 }

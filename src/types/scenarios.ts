@@ -1,3 +1,4 @@
+import { ShortDataset } from './datasets';
 import { UUID } from './general';
 
 export type AnalysisTemplate = Record<string, unknown>;
@@ -46,10 +47,7 @@ export interface EventOrientedSimulationInfo {
 }
 export type SimulationInfo = TimeOrientedSimulationInfo | EventOrientedSimulationInfo;
 
-export interface ScenarioDataset {
-  name: string;
-  uuid: UUID;
-  type: string;
+export interface ScenarioDataset extends ShortDataset {
   display_name?: string;
 }
 export interface Simulation {

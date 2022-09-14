@@ -122,6 +122,15 @@
       "byValue": "Vanuit waardes",
       "viewUpToDate": "View is up to date!",
       "unsavedChanges": "Veranderingen opslaan",
+      "type": {
+        "points": "Punten",
+        "lines": "Lijnen",
+        "polygons": "Polygonen",
+        "arcs": "Bogen",
+        "icons": "Iconen",
+        "grid": "Grid",
+        "floodingGrid": "Overstroming"
+      },
       "colorConfig": {
         "buckets": "Kleurvakken",
         "color": "Kleur",
@@ -159,6 +168,16 @@
         "visibility": "Zichtbaarheid",
         "value": "Waarde",
         "visible": "Zichtbaar"
+      },
+      "geometryConfig": {
+        "geometry": "Geometrie",
+        "geometryLabel": "Extra entiteitgroepen",
+        "geometryInfo": "Om deze entiteitgroep weer te kunnen geven, zijn extra entiteitgroepen nodig. Selecteer deze hieronder",
+        "geometryError": "Selecteer extra entiteitgroepen"
+      },
+      "floodingConfig": {
+        "floodingGrid": "Overstroming",
+        "heightMap": "Selecteer een hoogtekaart"
       },
       "legendsConfig": {
         "reset": "Standaardwaardes invullen"

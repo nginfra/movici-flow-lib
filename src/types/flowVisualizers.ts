@@ -1,7 +1,7 @@
 import { RGBAColor } from './colors';
 import { PropertySummary } from './schema';
 import { CameraOptions } from './visualization';
-import { RenderOrderType } from '.';
+import { RenderOrderType, UUID } from '.';
 import { PopupItem } from './popup';
 
 export enum FlowVisualizerType {
@@ -9,7 +9,9 @@ export enum FlowVisualizerType {
   LINES = 'lines',
   POLYGONS = 'polygons',
   ARCS = 'arcs',
-  ICONS = 'icons'
+  ICONS = 'icons',
+  GRID = 'grid',
+  FLOODING_GRID = 'floodingGrid'
 }
 
 export interface CommonVisualizerOptions {
@@ -20,6 +22,7 @@ export interface CommonVisualizerOptions {
   visibility?: VisibilityClause;
   icon?: IconClause;
   shape?: IconClause;
+  floodingGrid?: FloodingGridClause;
 }
 
 export interface PointVisualizerOptions extends CommonVisualizerOptions {
@@ -41,13 +44,21 @@ export interface ArcVisualizerOptions extends CommonVisualizerOptions {
 export interface IconVisualizerOptions extends CommonVisualizerOptions {
   type: FlowVisualizerType.ICONS;
 }
+export interface GridVisualizerOptions extends CommonVisualizerOptions {
+  type: FlowVisualizerType.GRID;
+}
+export interface FloodingGridVisualizerOptions extends CommonVisualizerOptions {
+  type: FlowVisualizerType.FLOODING_GRID;
+}
 
 export type FlowVisualizerOptions =
   | PointVisualizerOptions
   | LineVisualizerOptions
   | PolygonVisualizerOptions
   | ArcVisualizerOptions
-  | IconVisualizerOptions;
+  | IconVisualizerOptions
+  | GridVisualizerOptions
+  | FloodingGridVisualizerOptions;
 
 export interface LegendOptions {
   title?: string;
@@ -121,6 +132,15 @@ export interface PopupClause {
   items: PopupItem[];
 }
 
+export interface GeometryClause {
+  attribute: PropertySummary | null;
+}
+
+export interface FloodingGridClause {
+  heightMapDataset: string; // filtered select with datasets
+  heightMapDatasetUUID?: UUID;
+}
+
 export type VisibilityMapping = [boolean | number, boolean][];
 
 export interface ByValueVisibilityClause {
@@ -153,6 +173,7 @@ export interface FlowVisualizerConfig {
   name: string;
   dataset_name: string;
   entity_group: string;
+  additional_entity_groups?: Record<string, string>;
   visible?: boolean;
   settings: FlowVisualizerOptions;
 }

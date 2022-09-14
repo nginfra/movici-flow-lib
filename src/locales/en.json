@@ -122,6 +122,15 @@
       "byValue": "By value",
       "viewUpToDate": "View is up to date!",
       "unsavedChanges": "You have unsaved changes!",
+      "type": {
+        "points": "Points",
+        "lines": "Lines",
+        "polygons": "Polygons",
+        "arcs": "Arcs",
+        "icons": "Icons",
+        "grid": "Grid",
+        "floodingGrid": "Flooding grid"
+      },
       "colorConfig": {
         "buckets": "Buckets",
         "color": "Colour",
@@ -155,10 +164,20 @@
         "far": "Regular",
         "fas": "Solid"
       },
-      "visibilityConfig" : {
+      "visibilityConfig": {
         "visibility": "Visibility",
         "value": "Value",
         "visible": "Visible"
+      },
+      "geometryConfig": {
+        "geometry": "Geometry",
+        "geometryLabel": "Additional entity groups",
+        "geometryInfo": "In order to properly visualize this entity group, please select the accompanying additional entity groups",
+        "geometryError": "Please select required additional entity groups"
+      },
+      "floodingConfig": {
+        "floodingGrid": "Flooding Grid",
+        "heightMap": "Please select a height map dataset"
       },
       "legendsConfig": {
         "reset": "Set as default"

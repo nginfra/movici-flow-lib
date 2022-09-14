@@ -3,7 +3,6 @@ import {
   ComponentProperty,
   Coordinate,
   EntityGroupData,
-  EntityGroupSummary,
   LineCoordinate,
   LineGeometryData,
   PointCoordinate,
@@ -11,10 +10,13 @@ import {
   PolygonCoordinate,
   PolygonGeometryData,
   TopologyLayerData,
-  EntityGeometry
+  GridCellGeometryData
 } from '../types';
 import { DatasetDownloader } from '../utils/DatasetDownloader';
 
+export interface ITopologyGetter<Coord extends Coordinate> {
+  getTopology(): Promise<TopologyLayerData<Coord>[]>;
+}
 /**
  * A `TopologyGetter` queries a DatasetStore for topology information of a certain entity group,
  * (ie. for point data, line data or polygon data) and converts that data into topology objects
@@ -22,8 +24,12 @@ import { DatasetDownloader } from '../utils/DatasetDownloader';
  * @param store: a `DatasetStore` configured for the required dataset
  * @param entity: an entity group name
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export abstract class TopologyGetter<Data extends EntityGroupData<any>, Coord extends Coordinate> {
+export abstract class SimpleTopologyGetter<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Data extends EntityGroupData<any>,
+  Coord extends Coordinate
+> implements ITopologyGetter<Coord>
+{
   protected store: DatasetDownloader;
   protected entity: string;
   abstract props: ComponentProperty[];
@@ -53,7 +59,18 @@ export abstract class TopologyGetter<Data extends EntityGroupData<any>, Coord ex
   }
 }
 
-export class PointTopologyGetter extends TopologyGetter<PointGeometryData, PointCoordinate> {
+const POINT_ATTRIBUTES: ComponentProperty[] = [
+  { component: null, name: 'geometry.x' },
+  { component: null, name: 'geometry.y' }
+];
+const LINE_ATTRIBUTES: ComponentProperty[] = [
+  { component: null, name: 'geometry.linestring_2d' },
+  { component: null, name: 'geometry.linestring_3d' }
+];
+const POLYGON_ATTRIBUTES: ComponentProperty[] = [{ component: null, name: 'geometry.polygon' }];
+const GRID_CELL_ATTRIBUTES: ComponentProperty[] = [{ component: null, name: 'grid.grid_points' }];
+
+export class PointTopologyGetter extends SimpleTopologyGetter<PointGeometryData, PointCoordinate> {
   props: ComponentProperty[] = [
     { component: null, name: 'geometry.x' },
     { component: null, name: 'geometry.y' }
@@ -61,7 +78,7 @@ export class PointTopologyGetter extends TopologyGetter<PointGeometryData, Point
   async getTopology() {
     const datasetData = await this.store.getDatasetState<PointGeometryData>({
       entityGroup: this.entity,
-      properties: this.props
+      properties: POINT_ATTRIBUTES
     });
     return this.getTopologyFromEntityData(datasetData);
   }
@@ -76,7 +93,7 @@ export class PointTopologyGetter extends TopologyGetter<PointGeometryData, Point
   }
 }
 
-export class LineTopologyGetter extends TopologyGetter<LineGeometryData, LineCoordinate> {
+export class LineTopologyGetter extends SimpleTopologyGetter<LineGeometryData, LineCoordinate> {
   props: ComponentProperty[] = [
     { component: null, name: 'geometry.linestring_2d' },
     { component: null, name: 'geometry.linestring_3d' }
@@ -84,7 +101,7 @@ export class LineTopologyGetter extends TopologyGetter<LineGeometryData, LineCoo
   async getTopology() {
     const datasetData = await this.store.getDatasetState<LineGeometryData>({
       entityGroup: this.entity,
-      properties: this.props
+      properties: LINE_ATTRIBUTES
     });
     return this.getTopologyFromEntityData(datasetData);
   }
@@ -100,12 +117,15 @@ export class LineTopologyGetter extends TopologyGetter<LineGeometryData, LineCoo
   }
 }
 
-export class PolygonTopologyGetter extends TopologyGetter<PolygonGeometryData, PolygonCoordinate> {
+export class PolygonTopologyGetter extends SimpleTopologyGetter<
+  PolygonGeometryData,
+  PolygonCoordinate
+> {
   props: ComponentProperty[] = [{ component: null, name: 'geometry.polygon' }];
   async getTopology() {
     const datasetData = await this.store.getDatasetState<PolygonGeometryData>({
       entityGroup: this.entity,
-      properties: this.props
+      properties: POLYGON_ATTRIBUTES
     });
     return this.getTopologyFromEntityData(datasetData);
   }
@@ -121,11 +141,89 @@ export class PolygonTopologyGetter extends TopologyGetter<PolygonGeometryData, P
   }
 }
 
-export function determineEntityGeometry(summary: EntityGroupSummary): EntityGeometry | null {
-  if (isPoints(summary.properties)) return EntityGeometry.POINT;
-  if (isLines(summary.properties)) return EntityGeometry.LINE;
-  if (isPolygons(summary.properties)) return EntityGeometry.POLYGON;
-  return null;
+type PointsByIdT = Record<number, PointCoordinate>;
+export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
+  cellEntityGroup: string;
+  pointEntityGroup: string;
+  store: DatasetDownloader;
+
+  constructor(store: DatasetDownloader, cellEntityGroup: string, pointEntityGroup: string) {
+    this.store = store;
+    this.cellEntityGroup = cellEntityGroup;
+    this.pointEntityGroup = pointEntityGroup;
+  }
+  async getTopology(): Promise<TopologyLayerData<PolygonCoordinate>[]> {
+    const [cellData, pointData] = await Promise.all([
+      this.store.getDatasetState<GridCellGeometryData>({
+        entityGroup: this.cellEntityGroup,
+        properties: GRID_CELL_ATTRIBUTES
+      }),
+      this.store.getDatasetState<PointGeometryData>({
+        entityGroup: this.pointEntityGroup,
+        properties: POINT_ATTRIBUTES
+      })
+    ]);
+    return this.getTopologyFromEntityData(cellData, this.getPointsByID(pointData));
+  }
+
+  private getTopologyFromEntityData(
+    data: GridCellGeometryData,
+    points: PointsByIdT
+  ): TopologyLayerData<PolygonCoordinate>[] {
+    const length = data.id.length;
+    const rv: TopologyLayerData<PolygonCoordinate>[] = [];
+    for (let i = 0; i < length; i++) {
+      const coord = this.getCellCoordinates(data, i, points);
+      if (!coord) {
+        continue;
+      }
+      rv.push({
+        id: data.id[i],
+        idx: i,
+        coordinates: coord
+      });
+    }
+    return rv;
+  }
+  private getCellCoordinates(
+    data: GridCellGeometryData,
+    i: number,
+    points: PointsByIdT
+  ): PolygonCoordinate | null {
+    const gridPoints = data['grid.grid_points'][i];
+    const rv: PolygonCoordinate = [];
+    for (let i = 0; i < gridPoints.length; i++) {
+      const point = points[gridPoints[i]];
+
+      if (!point) {
+        return null;
+      }
+      rv.push(point);
+    }
+    return rv;
+  }
+
+  getPointsByID(data: PointGeometryData): PointsByIdT {
+    const length = data.id.length;
+    const points: PointsByIdT = {};
+    for (let i = 0; i < length; i++) {
+      const coord = this.getPointCoordinate(data, i);
+      if (!coord) {
+        continue;
+      }
+      points[data.id[i]] = coord;
+    }
+    return points;
+  }
+  getPointCoordinate(data: PointGeometryData, i: number) {
+    if (!data?.['geometry.x'] || !data?.['geometry.y']) {
+      throw new Error('Point geometry not found in dataset');
+    }
+    if (data['geometry.x'][i] === null || data['geometry.y'][i] === null) {
+      return null;
+    }
+    return transform([data['geometry.x'][i], data['geometry.y'][i]]);
+  }
 }
 
 function containsAttributes(
@@ -144,3 +242,4 @@ function containsAttributes(
 export const isPoints = containsAttributes(['geometry.x', 'geometry.y'], 2);
 export const isLines = containsAttributes(['geometry.linestring_2d', 'geometry.linestring_3d'], 1);
 export const isPolygons = containsAttributes(['geometry.polygon'], 1);
+export const isGrid = containsAttributes(['grid.grid_points'], 1);

@@ -3,16 +3,12 @@ import { Layer } from '@deck.gl/core';
 import {
   ComponentProperty,
   Coordinate,
-  EntityGroupData,
   ITapefile,
   LayerConstructor,
   LayerParams,
   LineCoordinate,
-  LineGeometryData,
   PointCoordinate,
-  PointGeometryData,
   PolygonCoordinate,
-  PolygonGeometryData,
   TopologyLayerData,
   IVisualizer
 } from '../types';
@@ -20,7 +16,13 @@ import { parsePropertyString, propertyString } from '..//utils';
 import { ArcLayer, PathLayer, PolygonLayer, ScatterplotLayer } from '@deck.gl/layers';
 import ShapeIconLayer from './layers/ShapeIconLayer';
 import { BaseVisualizer, VisualizerContext } from './visualizers';
-import { LineTopologyGetter, PointTopologyGetter, PolygonTopologyGetter } from './geometry';
+import {
+  GridTopologyGetter,
+  ITopologyGetter,
+  LineTopologyGetter,
+  PointTopologyGetter,
+  PolygonTopologyGetter
+} from './geometry';
 import {
   ColorModule,
   PopupModule,
@@ -32,14 +34,16 @@ import {
   RenderOrderModule
 } from './visualizerModules';
 import { isError } from 'lodash';
+import GridLayer from './layers/GridLayer';
+import FloodingGridModule from './visualizerModules/FloodingGridModule';
+import GridColorModule from './visualizerModules/GridColorModule';
 
 abstract class ComposableVisualizer<
-    EntityData extends EntityGroupData<Coordinate | number>,
     Coord extends Coordinate,
     LData extends TopologyLayerData<Coord>,
     Layer_ extends Layer<LData>
   >
-  extends BaseVisualizer<EntityData, Coordinate, LData, Layer_>
+  extends BaseVisualizer<Coordinate, LData, Layer_>
   implements IVisualizer
 {
   attributes: Record<string, ((t: ITapefile<unknown>) => void)[]>;
@@ -83,7 +87,7 @@ abstract class ComposableVisualizer<
     }
   }
 
-  private compose(): LayerParams<LData, Coord> | null {
+  protected compose(): LayerParams<LData, Coord> | null {
     this.info.unsetError('compose');
 
     try {
@@ -246,7 +250,6 @@ abstract class ComposableVisualizer<
 }
 
 export class ComposablePointVisualizer extends ComposableVisualizer<
-  PointGeometryData,
   PointCoordinate,
   TopologyLayerData<PointCoordinate>,
   ScatterplotLayer<TopologyLayerData<PointCoordinate>>
@@ -280,7 +283,6 @@ export class ComposablePointVisualizer extends ComposableVisualizer<
 }
 
 export class ComposableIconVisualizer extends ComposableVisualizer<
-  PointGeometryData,
   PointCoordinate,
   TopologyLayerData<PointCoordinate>,
   ShapeIconLayer<TopologyLayerData<PointCoordinate>>
@@ -313,7 +315,6 @@ export class ComposableIconVisualizer extends ComposableVisualizer<
 }
 
 export class ComposableLineVisualizer extends ComposableVisualizer<
-  LineGeometryData,
   LineCoordinate,
   TopologyLayerData<LineCoordinate>,
   PathLayer<TopologyLayerData<LineCoordinate>>
@@ -347,12 +348,11 @@ export class ComposableLineVisualizer extends ComposableVisualizer<
 }
 
 export class ComposablePolygonVisualizer extends ComposableVisualizer<
-  PolygonGeometryData,
   PolygonCoordinate,
   TopologyLayerData<PolygonCoordinate>,
   PolygonLayer<TopologyLayerData<PolygonCoordinate>>
 > {
-  get topologyGetter(): PolygonTopologyGetter {
+  get topologyGetter(): ITopologyGetter<PolygonCoordinate> {
     return new PolygonTopologyGetter(this.datasetStore, this.info.entityGroup);
   }
 
@@ -393,6 +393,62 @@ export class ComposableArcVisualizer extends ComposableLineVisualizer {
         getTargetPosition: (d: TopologyLayerData<LineCoordinate>) => {
           return d.coordinates[d.coordinates.length - 1];
         },
+        parameters: {
+          depthTest: false
+        },
+        updateTriggers: {}
+      }
+    };
+  }
+}
+
+export class ComposableGridVisualizer extends ComposablePolygonVisualizer {
+  get topologyGetter(): ITopologyGetter<PolygonCoordinate> {
+    const points = this.info.additionalEntityGroups?.['points'];
+    if (!points) {
+      throw new Error("Grid topology requires additional 'point' entities");
+    }
+    return new GridTopologyGetter(this.datasetStore, this.info.entityGroup, points);
+  }
+}
+
+export class ComposableFloodingGridVisualizer extends ComposableVisualizer<
+  PolygonCoordinate,
+  TopologyLayerData<PolygonCoordinate>,
+  // Due to an a incompatibility between @deck.gl/layers/typed and @danmarshall/deckgl-typings we
+  // need to use 'any' here. Can be fixed when we either: use deck.gl/typed all over the code base
+  // or when deck.gl 9.0 is released (which supports typescript by default)
+
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  any
+> {
+  get topologyGetter(): ITopologyGetter<PolygonCoordinate> {
+    const points = this.info.additionalEntityGroups?.['points'];
+    if (!points) {
+      throw new Error("Grid topology requires additional 'point' entities");
+    }
+    return new GridTopologyGetter(this.datasetStore, this.info.entityGroup, points);
+  }
+
+  getModules() {
+    const info = this.info;
+    if (!(info instanceof ComposableVisualizerInfo)) {
+      return [];
+    }
+    return [
+      new GridColorModule<PolygonCoordinate, TopologyLayerData<PolygonCoordinate>>({ info }),
+      new FloodingGridModule<PolygonCoordinate, TopologyLayerData<PolygonCoordinate>>({ info })
+    ];
+  }
+
+  getDefaultParams() {
+    return {
+      type: GridLayer as unknown as LayerConstructor<TopologyLayerData<PolygonCoordinate>>,
+      props: {
+        id: this.orderedId,
+        data: this.topology,
+        visible: this.info.visible,
+        getPolygon: (d: TopologyLayerData<PolygonCoordinate>) => d.coordinates,
         parameters: {
           depthTest: false
         },

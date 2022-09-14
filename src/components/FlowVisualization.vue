@@ -312,6 +312,7 @@ export default class FlowVisualization extends Vue {
         datasetUUID: datasets[conf.dataset_name],
         scenarioUUID: this.currentScenario?.uuid,
         entityGroup: conf.entity_group,
+        additionalEntityGroups: conf.additional_entity_groups,
         visible: conf.visible,
         settings: conf.settings,
         mode: VisualizationMode.SCENARIO
@@ -527,6 +528,19 @@ export default class FlowVisualization extends Vue {
     this.view = this.serializeCurrentView();
   }
 
+  @Watch('visualizers')
+  resolveDatasets() {
+    for (const vis of this.visualizers) {
+      vis.unsetError('resolve');
+      try {
+        vis.resolveDatasets(flowStore.datasetsByName);
+      } catch (error) {
+        if (isError(error)) {
+          vis.setError('resolve', error.message);
+        }
+      }
+    }
+  }
   /**
    * Checks whether there are props for project and scenario.
    * If there is a project, we set in the component, which triggers the watcher

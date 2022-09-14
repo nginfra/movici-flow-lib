@@ -164,6 +164,8 @@ export default class Deck extends Vue {
       width: '100%',
       height: '100%',
       initialViewState: val,
+      // TODO: Do error handling with callbacks
+      // onError: (error: Error) => {},
       onClick: (info: PickInfo<unknown>, ev?: DeckMouseEvent) => {
         if (ev?.leftButton) {
           this.clickListeners.forEach(cb => cb(info, ev));

@@ -30,7 +30,11 @@
         <div class="legend-content">
           <IconLegend :value="legendItem.icon" v-if="legendItem.icon" />
           <template v-if="legendItem.color">
-            <ColorBucketLegend :value="legendItem.color" v-if="isBuckets(legendItem.color)" />
+            <ColorBucketLegend
+              :value="legendItem.color"
+              :isSimple="legendItem.isSimpleLegend()"
+              v-if="isBuckets(legendItem.color)"
+            />
             <ColorGradientLegend :value="legendItem.color" v-if="isGradient(legendItem.color)" />
           </template>
         </div>
@@ -41,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import {
   ColorByValueLegendItem,
   FlowVisualizerType,
@@ -65,7 +69,6 @@ import WidgetContainer from '../WidgetContainer.vue';
 })
 export default class FlowLegend extends Vue {
   @Prop({ type: Array, default: () => [] }) readonly value!: ComposableVisualizerInfo[];
-  legendList: LegendItem[] = [];
 
   isBuckets(colorLegendItem: ColorLegendItem) {
     return colorLegendItem.colorType === 'buckets';
@@ -75,10 +78,9 @@ export default class FlowLegend extends Vue {
     return colorLegendItem.colorType === 'gradient';
   }
 
-  @Watch('value', { immediate: true })
-  visualizerToLegend(value: ComposableVisualizerInfo[]) {
-    const legendList: LegendItem[] = [];
-    for (const { settings, name, visible } of value) {
+  get legendList(): LegendItem[] {
+    const rv: LegendItem[] = [];
+    for (const { settings, name, visible } of this.value) {
       let color: ColorLegendItem | null = null,
         icon: { shape?: IconLegendItem; icon?: IconLegendItem } | null = null;
 
@@ -98,12 +100,11 @@ export default class FlowLegend extends Vue {
             icon
           });
 
-          legendList.push(legendItem);
+          rv.push(legendItem);
         }
       }
     }
-
-    this.legendList = legendList;
+    return rv;
   }
 
   private createIconLegendItem(shapeClause: IconClause | null, iconClause: IconClause | null) {

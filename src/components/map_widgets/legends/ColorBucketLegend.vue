@@ -15,7 +15,11 @@
           />
           <span class="ml-2 legend-value" v-if="!isStatic">{{ colorLegend[0] }}</span>
         </span>
-        <label class="label is-size-7 mb-1" :class="{ 'ml-2': isStatic }" v-if="idx < 1">
+        <label
+          class="label is-size-7 mb-1"
+          :class="{ 'ml-2': isStatic }"
+          v-if="!isSimple && idx == 0"
+        >
           {{ $t('flow.visualization.colorConfig.color') }}
         </label>
       </div>
@@ -31,6 +35,7 @@ import { colorTripleToHex } from '@movici-flow-common/visualizers/maps/colorMaps
 @Component({ name: 'ColorBucketLegend' })
 export default class ColorBucketLegend extends Vue {
   @Prop({ type: Object }) readonly value!: ColorLegendItem;
+  @Prop({ type: Boolean, default: false }) readonly isSimple!: boolean;
 
   get reversedColors() {
     const colors = [...this.value.colorLegends];

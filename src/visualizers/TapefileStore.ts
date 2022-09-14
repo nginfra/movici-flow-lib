@@ -297,10 +297,11 @@ export class StreamingTapefile<T> extends BaseTapefile<T> {
   private writer?: TapefileWriter<T>;
   private worker?: IdleWorker;
   private timestampCallbacks: ((timestamp: number) => void)[];
-
-  constructor(attribute: string) {
+  private workOnIdle: boolean;
+  constructor(attribute: string, workOnIdle = false) {
     super({});
     this.attribute = attribute;
+    this.workOnIdle = workOnIdle;
     this.pending = [];
 
     this.nextUpdateSequence = -1; // -1 means waiting for init data
@@ -364,7 +365,9 @@ export class StreamingTapefile<T> extends BaseTapefile<T> {
     );
   }
   calculateRollbacksOnIdle() {
-    this.worker = new IdleWorker(this.calculateNextRollback.bind(this), this.IDLE_MS);
+    if (this.workOnIdle) {
+      this.worker = new IdleWorker(this.calculateNextRollback.bind(this), this.IDLE_MS);
+    }
   }
   calculateNextRollback(): boolean {
     // this function can be given as a task for the IdleWorker. It returns a boolean that indicates

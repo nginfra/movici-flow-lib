@@ -23,6 +23,7 @@ import {
   MeasureAngleMode
 } from '@nebula.gl/edit-modes';
 import { PickInfo } from 'deck.gl';
+import { FetchRequestOptions } from './backend';
 
 export interface ViewConfig {
   project_name: string;
@@ -173,6 +174,10 @@ export interface IVisualizer {
   requestTapefile: (attribute: ComponentProperty, onLoad: (t: ITapefile<unknown>) => void) => void;
   onClick: PopupEventCallback;
   onHover: PopupEventCallback;
+  getFetchRequest<T extends keyof FetchRequestOptions>(
+    request: T,
+    options: FetchRequestOptions[T]
+  ): { url: string; options: RequestInit };
 }
 
 export type LayerParams<

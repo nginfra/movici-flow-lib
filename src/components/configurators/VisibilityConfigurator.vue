@@ -37,7 +37,7 @@
                 native-class="has-text-centered"
                 size="is-small"
                 disabled
-              ></b-input>
+              />
             </span>
           </div>
         </b-field>

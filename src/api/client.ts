@@ -1,8 +1,9 @@
-import axios, { AxiosError, AxiosInstance } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 import { BaseRequest } from './requests';
 import { ConcurrencyManager } from './concurrency';
 import { failMessage } from '@movici-flow-common/utils/snackbar';
 import upperFirst from 'lodash/upperFirst';
+import { hasOwnProperty } from '@movici-flow-common/utils';
 
 const API_CONCURRENCY = 10;
 
@@ -78,6 +79,23 @@ export default class Client {
     }
     throw e;
   }
+  /**
+   * Convert a BaseRequest to a fetch request (uri and options), also injects any required
+   * headers
+   */
+  asFetchRequest(request: BaseRequest<unknown>): { url: string; options: RequestInit } {
+    const axiosConfig: Required<AxiosRequestConfig> = request.generateConfig(
+      this
+    ) as Required<AxiosRequestConfig>;
+    return {
+      url: axios.getUri(axiosConfig),
+      options: {
+        method: axiosConfig.method,
+        headers: axiosConfig.headers as Record<string, string>,
+        body: axiosConfig.data ? JSON.stringify(axiosConfig.data) : undefined // assume json body
+      }
+    };
+  }
 }
 
 export function defaultClient(settings?: {
@@ -113,7 +131,10 @@ function parseHTTPError(err: AxiosError): HTTPErrorPayload {
 
   if (err.response) {
     status = err.response.status;
-    const errMessages: string | Record<string, string> = err.response.data.message ?? '';
+    let errMessages: string | Record<string, string> = '';
+    if (hasOwnProperty(err.response.data, 'message')) {
+      errMessages = err.response.data.message as string | Record<string, string>;
+    }
 
     if (typeof errMessages !== 'string') {
       message = Object.entries(errMessages)

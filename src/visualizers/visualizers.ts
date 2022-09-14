@@ -1,6 +1,6 @@
 import { Layer } from '@deck.gl/core';
-import { Coordinate, EntityGroupData, PopupEventCallback, TopologyLayerData } from '../types';
-import { TopologyGetter } from './geometry';
+import { Coordinate, FetchRequestOptions, PopupEventCallback, TopologyLayerData } from '../types';
+import { ITopologyGetter } from './geometry';
 import { DatasetDownloader } from '../utils/DatasetDownloader';
 import { ComposableVisualizerInfo } from './VisualizerInfo';
 import { TapefileStore } from './TapefileStore';
@@ -23,7 +23,6 @@ export const DIMENSIONS = {
 };
 
 export abstract class BaseVisualizer<
-  EntityData extends EntityGroupData<Coordinate | number>,
   Coord extends Coordinate,
   LData extends TopologyLayerData<Coord>,
   Layer_ extends Layer<LData>
@@ -56,6 +55,13 @@ export abstract class BaseVisualizer<
 
   get orderedId(): string {
     return `${this.info.id}-${this.order}`;
+  }
+
+  getFetchRequest<T extends keyof FetchRequestOptions>(
+    request: T,
+    options: FetchRequestOptions[T]
+  ): { url: string; options: RequestInit } {
+    return this.datasetStore.backend.fetch.getRequest(request, options);
   }
 
   async load(callbacks?: {
@@ -112,6 +118,6 @@ export abstract class BaseVisualizer<
   }
 
   abstract doLoad(onProgress?: (p: number) => void): Promise<void>;
-  abstract get topologyGetter(): TopologyGetter<EntityData, Coord>;
+  abstract get topologyGetter(): ITopologyGetter<Coord>;
   abstract getLayer(timestamp?: number): Layer_ | null;
 }

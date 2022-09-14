@@ -79,6 +79,17 @@ export interface UserService {
   get(): Promise<User | null>;
 }
 
+export interface FetchRequestOptions {
+  datasetDataBlob: { datasetUUID: string };
+  scenario: { scenarioUUID: string };
+}
+export interface FetchRequestService {
+  getRequest<T extends keyof FetchRequestOptions>(
+    request: T,
+    options: FetchRequestOptions[T]
+  ): { url: string; options: RequestInit };
+}
+
 export interface Backend {
   getCapabilities(): string[];
   dataset: DatasetService;
@@ -89,4 +100,5 @@ export interface Backend {
   updates: UpdatesService;
   user: UserService;
   view: ViewService;
+  fetch: FetchRequestService;
 }

@@ -21,6 +21,7 @@ import MovPicker from './global/Picker.vue';
 import MovButtons from './global/Buttons.vue';
 import MovResourceList from './global/list/ResourceList.vue';
 import MovResourceSearch from './global/list/ResourceSearch.vue';
+import FilteredSelect from './global/FilteredSelect.vue';
 
 export {
   FlowContainer,
@@ -45,5 +46,6 @@ export {
   MovPicker,
   MovButtons,
   MovResourceList,
-  MovResourceSearch
+  MovResourceSearch,
+  FilteredSelect
 };

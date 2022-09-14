@@ -7,7 +7,7 @@ import {
   PopupClause,
   SizeClause
 } from '../types';
-import { isLines, isPoints, isPolygons } from './geometry';
+import { isGrid, isLines, isPoints, isPolygons } from './geometry';
 import { propertyString } from '../utils';
 import { ComposableVisualizerInfo } from './VisualizerInfo';
 
@@ -20,9 +20,14 @@ export function visualizerSettingsValidator(summary: EntityGroupSummary) {
       [FlowVisualizerType.LINES]: isLines,
       [FlowVisualizerType.ARCS]: isLines,
       [FlowVisualizerType.POLYGONS]: isPolygons,
-      [FlowVisualizerType.ICONS]: isPoints
+      [FlowVisualizerType.ICONS]: isPoints,
+      [FlowVisualizerType.GRID]: isGrid,
+      [FlowVisualizerType.FLOODING_GRID]: isGrid
     }[settings.type];
 
+    if (!validator) {
+      throw new Error(`Invalid visualizion type '${settings.type}'`);
+    }
     if (!validator(summary.properties)) {
       throw new Error(`Cannot visualize ${summary.name} as '${settings.type}'`);
     }

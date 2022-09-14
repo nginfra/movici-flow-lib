@@ -4,7 +4,7 @@
       :value="value"
       v-bind="draggableOptions"
       v-on="draggableEvents"
-      class="draggable"
+      class="draggable overflow-hover"
       :class="{ dashed: drag }"
       @change="updateDraggable"
     >
