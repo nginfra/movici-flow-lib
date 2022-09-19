@@ -102,7 +102,7 @@ export default class DatasetViewer extends Mixins(SummaryListing) {
   @Watch('summary')
   zoomToSummaryBBox(summary: DatasetSummary) {
     if (summary.bounding_box) {
-      this.mapVisEl.zoomToBBox(transformBBox(summary.bounding_box));
+      this.mapVisEl.zoomToBBox(transformBBox(summary.bounding_box, summary.epsg_code));
       this.centerCamera = this.viewState;
     }
   }

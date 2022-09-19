@@ -4,7 +4,8 @@ import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
 function newFakeStore(datasetData: unknown): DatasetDownloader {
   return {
     getInitialData: jest.fn(() => datasetData),
-    getDatasetState: jest.fn(() => datasetData)
+    getDatasetState: jest.fn(() => datasetData),
+    getMetaData: jest.fn(() => new Object())
   } as unknown as DatasetDownloader;
 }
 describe('PointTopologyGetter', () => {

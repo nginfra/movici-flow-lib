@@ -81,7 +81,7 @@ import {
   VisualizationMode,
   IMPORTANT_ATTRIBUTES
 } from '@movici-flow-common/types';
-import { isLines, isPoints, isPolygons } from '@movici-flow-common/visualizers/geometry';
+import { isGrid, isLines, isPoints, isPolygons } from '@movici-flow-common/visualizers/geometry';
 import GeometrySelector from './GeometrySelector.vue';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import WidgetContainer from '@movici-flow-common/components/map_widgets/WidgetContainer.vue';
@@ -97,6 +97,7 @@ type GetVisualizationProps = {
   datasetName: string;
   datasetUUID: string;
   entityGroup: string;
+  additionalEntityGroups: Record<string, string>;
   type: FlowVisualizerType;
   items: PropertySummary[];
   color: RGBAColor;
@@ -119,7 +120,8 @@ export default class EntitySelector extends Mixins(DraggableMixin) {
   allowedGeometries = [
     FlowVisualizerType.POINTS,
     FlowVisualizerType.LINES,
-    FlowVisualizerType.POLYGONS
+    FlowVisualizerType.POLYGONS,
+    FlowVisualizerType.GRID
   ];
   colors = [
     MoviciColors.GREEN,
@@ -169,7 +171,10 @@ export default class EntitySelector extends Mixins(DraggableMixin) {
   getEntityGroupsFiltered() {
     this.entityGroupsFiltered = this.entityGroups.filter(group => {
       return (
-        isLines(group.properties) || isPoints(group.properties) || isPolygons(group.properties)
+        isLines(group.properties) ||
+        isPoints(group.properties) ||
+        isPolygons(group.properties) ||
+        isGrid(group.properties)
       );
     });
   }
@@ -188,6 +193,7 @@ export default class EntitySelector extends Mixins(DraggableMixin) {
           this.getDefaultVisualizer({
             datasetName: this.currentDataset.name,
             datasetUUID: this.currentDataset.uuid,
+            additionalEntityGroups: this.getAdditionalEntityGroups(group),
             entityGroup: group.name,
             type: group.type,
             items,
@@ -199,10 +205,21 @@ export default class EntitySelector extends Mixins(DraggableMixin) {
     }, [] as ComposableVisualizerInfo[]);
   }
 
+  getAdditionalEntityGroups(group: TypedEntityGroupSummary): Record<string, string> {
+    if (!(group?.type === FlowVisualizerType.GRID)) {
+      return {};
+    }
+    const firstPointEntityGroup = this.entityGroups.filter(group => isPoints(group.properties))[0]
+      .name;
+    return {
+      points: firstPointEntityGroup
+    };
+  }
   getDefaultVisualizer({
     datasetName,
     datasetUUID,
     entityGroup,
+    additionalEntityGroups,
     type,
     items,
     color
@@ -231,6 +248,7 @@ export default class EntitySelector extends Mixins(DraggableMixin) {
       datasetName,
       datasetUUID,
       entityGroup,
+      additionalEntityGroups,
       visible: true,
       mode: VisualizationMode.GEOMETRY,
       settings

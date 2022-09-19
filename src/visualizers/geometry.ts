@@ -37,15 +37,31 @@ export abstract class SimpleTopologyGetter<
     this.store = store;
     this.entity = entity;
   }
-  abstract getTopology(): Promise<TopologyLayerData<Coord>[]>;
-  protected abstract getCoordinate(data: Data, i: number): Coord | null;
+  async getTopology(): Promise<TopologyLayerData<Coord>[]> {
+    const [datasetData, metaData] = await Promise.all([
+      this.getDatasetData(),
+      this.store.getMetaData()
+    ]);
+    const crs = metaData?.epsg_code;
+    return this.getTopologyFromEntityData(datasetData, crs);
+  }
 
-  protected getTopologyFromEntityData(data: Data): TopologyLayerData<Coord>[] {
+  protected abstract getDatasetData(): Promise<Data>;
+  protected abstract getCoordinate(
+    data: Data,
+    i: number,
+    crs?: string | number | null
+  ): Coord | null;
+
+  protected getTopologyFromEntityData(
+    data: Data,
+    crs?: string | number | null
+  ): TopologyLayerData<Coord>[] {
     const length = data.id.length;
     const rv: TopologyLayerData<Coord>[] = [];
     for (let i = 0; i < length; i++) {
       // todo test this
-      const coord = this.getCoordinate(data, i);
+      const coord = this.getCoordinate(data, i, crs);
       if (!coord) {
         continue;
       }
@@ -75,21 +91,21 @@ export class PointTopologyGetter extends SimpleTopologyGetter<PointGeometryData,
     { component: null, name: 'geometry.x' },
     { component: null, name: 'geometry.y' }
   ];
-  async getTopology() {
-    const datasetData = await this.store.getDatasetState<PointGeometryData>({
+  protected getDatasetData(): Promise<PointGeometryData> {
+    return this.store.getDatasetState<PointGeometryData>({
       entityGroup: this.entity,
       properties: POINT_ATTRIBUTES
     });
-    return this.getTopologyFromEntityData(datasetData);
   }
-  getCoordinate(data: PointGeometryData, i: number) {
+
+  getCoordinate(data: PointGeometryData, i: number, crs?: string | number | null) {
     if (!data?.['geometry.x'] || !data?.['geometry.y']) {
       throw new Error('Point geometry not found in dataset');
     }
     if (data['geometry.x'][i] === null || data['geometry.y'][i] === null) {
       return null;
     }
-    return transform([data['geometry.x'][i], data['geometry.y'][i]]);
+    return transform([data['geometry.x'][i], data['geometry.y'][i]], crs);
   }
 }
 
@@ -98,14 +114,14 @@ export class LineTopologyGetter extends SimpleTopologyGetter<LineGeometryData, L
     { component: null, name: 'geometry.linestring_2d' },
     { component: null, name: 'geometry.linestring_3d' }
   ];
-  async getTopology() {
-    const datasetData = await this.store.getDatasetState<LineGeometryData>({
+  protected getDatasetData(): Promise<LineGeometryData> {
+    return this.store.getDatasetState<LineGeometryData>({
       entityGroup: this.entity,
       properties: LINE_ATTRIBUTES
     });
-    return this.getTopologyFromEntityData(datasetData);
   }
-  getCoordinate(data: LineGeometryData, i: number) {
+
+  getCoordinate(data: LineGeometryData, i: number, crs?: string | number | null) {
     const arr = data?.['geometry.linestring_3d'] ?? data['geometry.linestring_2d'];
     if (!arr) {
       throw new Error('Line geometry not found in dataset');
@@ -113,7 +129,7 @@ export class LineTopologyGetter extends SimpleTopologyGetter<LineGeometryData, L
     if (arr[i] === null) {
       return null;
     }
-    return transformArray(arr[i]);
+    return transformArray(arr[i], crs);
   }
 }
 
@@ -122,14 +138,14 @@ export class PolygonTopologyGetter extends SimpleTopologyGetter<
   PolygonCoordinate
 > {
   props: ComponentProperty[] = [{ component: null, name: 'geometry.polygon' }];
-  async getTopology() {
-    const datasetData = await this.store.getDatasetState<PolygonGeometryData>({
+  protected getDatasetData(): Promise<PolygonGeometryData> {
+    return this.store.getDatasetState<PolygonGeometryData>({
       entityGroup: this.entity,
       properties: POLYGON_ATTRIBUTES
     });
-    return this.getTopologyFromEntityData(datasetData);
   }
-  getCoordinate(data: PolygonGeometryData, i: number) {
+
+  getCoordinate(data: PolygonGeometryData, i: number, crs?: string | number | null) {
     const arr = data['geometry.polygon'];
     if (!arr) {
       throw new Error('Polygon geometry not found in dataset');
@@ -137,7 +153,7 @@ export class PolygonTopologyGetter extends SimpleTopologyGetter<
     if (arr[i] === null) {
       return null;
     }
-    return transformArray(arr[i]);
+    return transformArray(arr[i], crs);
   }
 }
 
@@ -153,7 +169,7 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
     this.pointEntityGroup = pointEntityGroup;
   }
   async getTopology(): Promise<TopologyLayerData<PolygonCoordinate>[]> {
-    const [cellData, pointData] = await Promise.all([
+    const [cellData, pointData, metaData] = await Promise.all([
       this.store.getDatasetState<GridCellGeometryData>({
         entityGroup: this.cellEntityGroup,
         properties: GRID_CELL_ATTRIBUTES
@@ -161,9 +177,12 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
       this.store.getDatasetState<PointGeometryData>({
         entityGroup: this.pointEntityGroup,
         properties: POINT_ATTRIBUTES
-      })
+      }),
+      this.store.getMetaData()
     ]);
-    return this.getTopologyFromEntityData(cellData, this.getPointsByID(pointData));
+    const crs = metaData?.epsg_code;
+
+    return this.getTopologyFromEntityData(cellData, this.getPointsByID(pointData, crs));
   }
 
   private getTopologyFromEntityData(
@@ -203,11 +222,11 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
     return rv;
   }
 
-  getPointsByID(data: PointGeometryData): PointsByIdT {
+  getPointsByID(data: PointGeometryData, crs?: string | number | null): PointsByIdT {
     const length = data.id.length;
     const points: PointsByIdT = {};
     for (let i = 0; i < length; i++) {
-      const coord = this.getPointCoordinate(data, i);
+      const coord = this.getPointCoordinate(data, i, crs);
       if (!coord) {
         continue;
       }
@@ -215,14 +234,14 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
     }
     return points;
   }
-  getPointCoordinate(data: PointGeometryData, i: number) {
+  getPointCoordinate(data: PointGeometryData, i: number, crs?: string | number | null) {
     if (!data?.['geometry.x'] || !data?.['geometry.y']) {
       throw new Error('Point geometry not found in dataset');
     }
     if (data['geometry.x'][i] === null || data['geometry.y'][i] === null) {
       return null;
     }
-    return transform([data['geometry.x'][i], data['geometry.y'][i]]);
+    return transform([data['geometry.x'][i], data['geometry.y'][i]], crs);
   }
 }
 

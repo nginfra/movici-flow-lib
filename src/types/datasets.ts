@@ -17,7 +17,8 @@ export class Dataset implements ShortDataset {
   type: string;
   has_data: boolean;
   status: string;
-  created_on?: number;
+  epsg_code?: number;
+  created_on?: number | null;
   last_modified?: number;
   general?: GeneralSection;
   constructor(config?: Partial<Dataset>) {
@@ -27,6 +28,7 @@ export class Dataset implements ShortDataset {
     this.type = config?.type ?? 'unknown';
     this.has_data = config?.has_data ?? false;
     this.status = this.has_data ? 'Done' : 'Empty';
+    this.epsg_code = config?.epsg_code;
     this.created_on = config?.created_on;
     this.last_modified = config?.last_modified;
     this.general = config?.general;

@@ -578,7 +578,9 @@ export default class FlowVisualization extends Vue {
         });
 
         if (this.currentScenario?.bounding_box) {
-          this.mapVisEl.zoomToBBox(transformBBox(this.currentScenario.bounding_box));
+          this.mapVisEl.zoomToBBox(
+            transformBBox(this.currentScenario.bounding_box, this.currentScenario.epsg_code)
+          );
         }
 
         await this.resetView();

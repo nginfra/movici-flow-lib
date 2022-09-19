@@ -8,7 +8,8 @@ export const IMPORTANT_ATTRIBUTES = ['id', 'reference', 'display_name', 'name'];
 export interface DatasetSummary {
   count: number;
   entity_groups: EntityGroupSummary[];
-  bounding_box: BoundingBox;
+  bounding_box?: BoundingBox;
+  epsg_code?: number;
   general?: {
     enum?: Record<string, string[]>;
   };

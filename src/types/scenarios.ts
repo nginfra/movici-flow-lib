@@ -19,6 +19,7 @@ export interface Scenario extends ShortScenario {
   simulation_info: SimulationInfo;
   has_timeline?: boolean;
   models?: ScenarioModel[];
+  epsg_code?: number;
   bounding_box?: [number, number, number, number];
 }
 

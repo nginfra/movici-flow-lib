@@ -53,7 +53,7 @@ export interface TimelineFilter {
   limit?: number;
 }
 
-export interface ApplicationSettings {
+export interface RemoteApplicationSettings {
   ApiAddress: string;
   features?: string[];
   Language: string;

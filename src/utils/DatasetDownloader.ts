@@ -87,8 +87,13 @@ export class DatasetDownloader {
 
     return data;
   }
+
+  async getMetaData() {
+    return await this.backend.dataset.getMetaData?.(this.datasetUUID);
+  }
+
   async getSpecialValues<T>(entityGroup: string): Promise<EntityGroupSpecialValues<T>> {
-    const general = (await this.backend.dataset.getMetaData?.(this.datasetUUID))?.general;
+    const general = (await this.getMetaData())?.general;
     return (specialValues(general ?? {})?.[entityGroup] ?? {}) as EntityGroupSpecialValues<T>;
   }
 }
