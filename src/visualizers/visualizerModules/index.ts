@@ -1,7 +1,6 @@
 import ColorModule from './ColorModule';
 import PopupModule from './PopupModule';
-import ShapeModule from './ShapeModule';
-import IconModule from './IconModule';
+import { IconModule, ShapeModule } from './ShapeIconModule';
 import SizeModule from './SizeModule';
 import VisibilityModule from './VisibilityModule';
 import RenderOrderModule from './RenderOrderModule';
@@ -12,8 +11,8 @@ export {
   PopupModule,
   VisualizerModule,
   SizeModule,
-  ShapeModule,
   IconModule,
+  ShapeModule,
   VisibilityModule,
   RenderOrderModule
 };

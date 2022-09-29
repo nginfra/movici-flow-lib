@@ -1,12 +1,13 @@
-import { hexToColorTriple, NumberColorMap } from '@movici-flow-common/visualizers/maps/colorMaps';
+import { hexToColorTriple } from '@movici-flow-common/visualizers/maps/colorMaps';
+import NumberMapper from '@movici-flow-common/visualizers/maps/NumberMapper';
 
-const mapping = new NumberColorMap({
-  colors: [
+const mapping = new NumberMapper({
+  mapping: [
     [0, [0, 0, 0]],
     [1, [255, 255, 255]]
   ],
-  specialColor: [255, 0, 0],
-  undefinedColor: [0, 255, 0]
+  specialResult: [255, 0, 0],
+  undefinedResult: [0, 255, 0]
 });
 
 describe('colorMaps.ts/NumberColorMap', () => {
@@ -23,10 +24,10 @@ describe('colorMaps.ts/NumberColorMap', () => {
     expect(mapping.getValue(null)).toStrictEqual([0, 255, 0]);
   });
   it('returns a color for custom special value', () => {
-    const colorMap = new NumberColorMap({
-      colors: [],
-      specialColor: [255, 0, 0],
-      undefinedColor: [0, 255, 0]
+    const colorMap = new NumberMapper({
+      mapping: [],
+      specialResult: [255, 0, 0],
+      undefinedResult: [0, 255, 0]
     });
     colorMap.setSpecialValue(-1);
     expect(colorMap.getValue(-1)).toStrictEqual([255, 0, 0]);

@@ -102,7 +102,7 @@ export interface StaticIconClause {
 }
 export interface ByValueIconClause {
   attribute: PropertySummary | null;
-  icons: [string, string][];
+  icons: [number, string][];
 }
 
 export interface SizeClause {

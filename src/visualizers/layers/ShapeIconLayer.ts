@@ -13,6 +13,17 @@ const FALLBACK_ICON = 'question',
     }
   };
 
+function getValue<D, T extends number | boolean | string>(
+  d: D,
+  accessor?: ((_: D) => T) | T
+): T | null {
+  if (!accessor) return null;
+  if (typeof accessor === 'function') {
+    return accessor(d);
+  }
+  return accessor;
+}
+
 export default class ShapeIconLayer<D> extends CompositeLayer<
   D,
   CompositeLayerProps<D> & ShapeIconProps<D>
@@ -49,7 +60,7 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
     const hasIconAndShape = hasIcon && hasShape,
       getPixelOffset = hasIconAndShape
         ? (d: D) => {
-            const shape = getShape?.(d) ?? FALLBACK_ICON,
+            const shape = getValue(d, getShape) ?? FALLBACK_ICON,
               iconCenter = shapeMapping?.[shape]?.iconCenter ?? [0, 0],
               size = typeof getSize === 'function' ? getSize(d) : getSize;
             return iconCenter.map(i => i * size);
@@ -62,13 +73,12 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
         : getColor,
       getIconSize = hasIconAndShape
         ? (d: D) => {
-            const icon = getIcon?.(d) ?? FALLBACK_ICON,
+            const icon = getValue(d, getIcon) ?? FALLBACK_ICON,
               sizeScale = iconMapping?.[icon]?.inShapeSize ?? 0.5,
               size = typeof getSize === 'function' ? getSize(d) : getSize;
             return size * sizeScale;
           }
         : getSize;
-
     return new IconLayer(
       this.getSubLayerProps({
         id: 'icon',
@@ -151,7 +161,6 @@ ShapeIconLayer.defaultProps = {
   getIcon: { type: 'accessor', value: FALLBACK_ICON },
   hasShape: false,
   getShape: { type: 'accessor', value: FALLBACK_SHAPE },
-  shapeAtlas: '/static/icons/shapes.png',
   getColor: { type: 'accessor', value: [0, 0, 0, 255] },
   getSize: { type: 'accessor', value: 25 },
   getPosition: {
@@ -163,15 +172,17 @@ ShapeIconLayer.defaultProps = {
 interface ShapeIconProps<D> {
   hasIcon: boolean;
   hasShape: boolean;
-  getIcon?: (_: D) => string | string;
-  iconPack?: IconPackName;
-  iconAtlas?: string;
+  // Ideally, getIcon and getShape would accept string values instead of only accessor function
+  // however, deck.gl IconLayer only supports accessor functions for getIcon
+  getIcon?: (_: D) => string;
+  getShape?: (_: D) => string;
   iconMapping?: IconMapping;
-  getShape?: (_: D) => string | string;
-  shapeAtlas?: string;
   shapeMapping?: IconMapping;
-  getColor: (_: D) => RGBAColor | RGBAColor;
-  getSize: (_: D) => number | number;
+  iconAtlas?: string;
+  shapeAtlas?: string;
+  iconPack?: IconPackName;
+  getColor: ((_: D) => RGBAColor) | RGBAColor;
+  getSize: ((_: D) => number) | number;
   getPosition: (_: D) => PointCoordinate;
   sizeMinPixels?: number;
   sizeMaxPixels?: number;

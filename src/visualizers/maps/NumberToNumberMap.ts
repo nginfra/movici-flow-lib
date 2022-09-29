@@ -1,6 +1,6 @@
 import { Mapper } from '@movici-flow-common/types';
 
-export default class NumberMap implements Mapper<number | null, number> {
+export default class NumberToNumberMap implements Mapper<number | null, number> {
   special: number;
 
   constructor() {

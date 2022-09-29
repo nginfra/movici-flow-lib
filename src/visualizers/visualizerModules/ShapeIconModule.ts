@@ -1,0 +1,134 @@
+import {
+  ByValueIconClause,
+  Coordinate,
+  IconClause,
+  ITapefile,
+  IVisualizer,
+  LayerParams,
+  StaticIconClause,
+  TopologyLayerData
+} from '@movici-flow-common/types';
+import isEqual from 'lodash/isEqual';
+import NumberMapper from '../maps/NumberMapper';
+import { TapefileAccessor, VisualizerModule, VisualizerModuleParams } from './common';
+import { MAPPED_ICONS } from './iconCommon';
+
+type IconAccessor<D> = ((d: D) => string) | string;
+
+const DEFAULT_SPECIAL_UNDEFINED_ICON = 'question';
+const DEFAULT_SPECIAL_UNDEFINED_SHAPE = 'map-marker';
+
+abstract class ShapeIconModule<
+  Coord extends Coordinate,
+  LData extends TopologyLayerData<Coord>
+> extends VisualizerModule<Coord, LData> {
+  accessor?: IconAccessor<LData> | null;
+  currentSettings?: { static?: StaticIconClause; byValue?: ByValueIconClause };
+  abstract fallbackIcon: string;
+  constructor(params: VisualizerModuleParams) {
+    super(params);
+  }
+
+  compose(params: LayerParams<LData, Coord>, visualizer: IVisualizer) {
+    const settings = this.getSettings(),
+      changed = this.updateSettings(settings);
+
+    if (!params.props.updateTriggers) {
+      params.props.updateTriggers = {};
+    }
+    const accessor = this.updateAccessor(changed, visualizer);
+    let updateTriggers: string[] = [];
+
+    switch (params.type.layerName) {
+      case 'ShapeIconLayer':
+        updateTriggers = this.updateParams(params, accessor);
+        break;
+    }
+    for (const trigger of updateTriggers) {
+      params.props.updateTriggers[trigger] = [this.currentSettings];
+    }
+    return params;
+  }
+
+  private updateSettings(settings: {
+    static?: StaticIconClause;
+    byValue?: ByValueIconClause;
+  }): boolean {
+    const changed = !isEqual(settings, this.currentSettings);
+    if (changed) {
+      this.currentSettings = settings;
+    }
+    return changed;
+  }
+
+  private updateAccessor(changed: boolean, visualizer: IVisualizer): IconAccessor<LData> | null {
+    if (!changed && this.accessor) {
+      return this.accessor;
+    }
+
+    return this.getAccessor(this.currentSettings, visualizer);
+  }
+
+  private getAccessor(clause: IconClause | undefined, visualizer: IVisualizer) {
+    if (clause?.byValue?.attribute) {
+      const iconMap = new NumberMapper<string>({
+        mapping: clause.byValue.icons,
+        specialResult: this.fallbackIcon,
+        undefinedResult: this.fallbackIcon
+      });
+
+      const accessor = new TapefileAccessor(iconMap);
+      visualizer.requestTapefile(clause.byValue.attribute, t => {
+        accessor.setTapefile(t as ITapefile<number | null>);
+        iconMap.setSpecialValue((t as ITapefile<number>).specialValue);
+        t.onSpecialValue(val => iconMap.setSpecialValue(val as number));
+      });
+      return (d: LData) => accessor.getValue(d.idx);
+    }
+    if (clause?.static) {
+      const icon = clause.static.icon;
+      return () => icon;
+    }
+    return null;
+  }
+  abstract getSettings(): IconClause;
+
+  abstract updateParams(
+    params: LayerParams<LData, Coord>,
+    accessor: IconAccessor<LData> | null
+  ): string[];
+}
+
+export class IconModule<
+  Coord extends Coordinate,
+  LData extends TopologyLayerData<Coord>
+> extends ShapeIconModule<Coord, LData> {
+  fallbackIcon = DEFAULT_SPECIAL_UNDEFINED_ICON;
+  getSettings() {
+    return this.info.settings?.icon ?? {};
+  }
+  updateParams(params: LayerParams<LData, Coord>, accessor: IconAccessor<LData> | null): string[] {
+    params.props.hasIcon = !!accessor;
+    params.props.getIcon = accessor;
+    params.props.iconAtlas = `/static/icons/icons.png`;
+    params.props.iconMapping = MAPPED_ICONS.icons;
+    return ['getIcon', 'hasIcon'];
+  }
+}
+
+export class ShapeModule<
+  Coord extends Coordinate,
+  LData extends TopologyLayerData<Coord>
+> extends ShapeIconModule<Coord, LData> {
+  fallbackIcon = DEFAULT_SPECIAL_UNDEFINED_SHAPE;
+  getSettings() {
+    return this.info.settings?.shape ?? {};
+  }
+  updateParams(params: LayerParams<LData, Coord>, accessor: IconAccessor<LData> | null): string[] {
+    params.props.hasShape = !!accessor;
+    params.props.getShape = accessor;
+    params.props.shapeAtlas = `/static/icons/shapes.png`;
+    params.props.shapeMapping = MAPPED_ICONS.shapes;
+    return ['hasShape', 'getShape'];
+  }
+}

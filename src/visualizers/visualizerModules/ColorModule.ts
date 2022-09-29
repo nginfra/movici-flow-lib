@@ -10,7 +10,7 @@ import {
   ITapefile
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
-import { NumberColorMap } from '../maps/colorMaps';
+import NumberMapper from '../maps/NumberMapper';
 import { interpolateColorMapping } from '@movici-flow-common/utils/colorUtils';
 import {
   TapefileAccessor,
@@ -93,10 +93,10 @@ export default class ColorModule<
     visualizer: IVisualizer
   ): ColorAccessor<LData> {
     if (clause?.byValue?.attribute) {
-      const colorMap = new NumberColorMap({
-        colors: this.prepareColors(clause.byValue),
-        specialColor: clause.advanced?.specialColor ?? DEFAULT_SPECIAL_COLOR_TRIPLE,
-        undefinedColor: clause.advanced?.undefinedColor ?? DEFAULT_UNDEFINED_COLOR_TRIPLE
+      const colorMap = new NumberMapper<RGBAColor>({
+        mapping: this.prepareColors(clause.byValue),
+        specialResult: clause.advanced?.specialColor ?? DEFAULT_SPECIAL_COLOR_TRIPLE,
+        undefinedResult: clause.advanced?.undefinedColor ?? DEFAULT_UNDEFINED_COLOR_TRIPLE
       });
 
       const accessor = new TapefileAccessor(colorMap);

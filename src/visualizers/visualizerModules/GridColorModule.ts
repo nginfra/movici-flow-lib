@@ -10,7 +10,7 @@ import {
 import isEqual from 'lodash/isEqual';
 import { TapefileAccessor, VisualizerModule, VisualizerModuleParams } from './common';
 
-import NumberMap from '../maps/NumberMap';
+import NumberToNumberMap from '../maps/NumberToNumberMap';
 import { RGBAColor } from 'deck.gl';
 import { interpolateColorMapping } from '@movici-flow-common/utils/colorUtils';
 import { isError } from 'lodash';
@@ -67,7 +67,7 @@ export default class GridColorModule<
     visualizer: IVisualizer
   ): NumberAccessor<LData> {
     if (clause?.byValue?.attribute) {
-      const mapper = new NumberMap();
+      const mapper = new NumberToNumberMap();
 
       const accessor = new TapefileAccessor(mapper);
       visualizer.requestTapefile(clause.byValue.attribute, t => {
