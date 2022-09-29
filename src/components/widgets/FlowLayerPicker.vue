@@ -13,11 +13,12 @@
         :key="layer.id"
         :value="layer"
         :header-buttons="['grip', 'label', 'visibility', 'more', 'errors']"
-        :action-buttons="['edit', 'delete', 'export']"
+        :action-buttons="['edit', 'delete', 'export', 'reload']"
         @input="updateItem(idx, $event)"
         @delete="deleteItem(idx)"
         @edit="startEditingItem(idx)"
         @export="exportItem(layer)"
+        @reload="reloadItem(idx)"
         @close-editor="close"
         tooltipActive
       />
@@ -117,6 +118,13 @@ export default class FlowLayerPicker extends Mixins(DraggableMixin) {
     );
   }
 
+  reloadItem(idx: number) {
+    const item = this.value[idx];
+    if (item) {
+      this.updateItem(idx, item.forceReset());
+    }
+  }
+
   updateCurrentItem(val: ComposableVisualizerInfo | null) {
     if (val) {
       if (this.scenario && !val.scenarioUUID) {
@@ -156,12 +164,12 @@ export default class FlowLayerPicker extends Mixins(DraggableMixin) {
     });
   }
 
-  appendScenarioUUID(cvi: ComposableVisualizerInfo) {
+  appendScenarioUUID(info: ComposableVisualizerInfo) {
     // appending the scenario to the CVI, maybe place this somewhere else?
-    if (this.scenario && !cvi.scenarioUUID) {
-      cvi.scenarioUUID = this.scenario.uuid;
+    if (this.scenario && !info.scenarioUUID) {
+      info.scenarioUUID = this.scenario.uuid;
     }
-    return cvi;
+    return info;
   }
 }
 </script>

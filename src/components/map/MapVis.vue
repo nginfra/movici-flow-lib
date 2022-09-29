@@ -17,6 +17,7 @@
       <Scale v-if="scale" :map="map" />
     </template>
     <template #control-zero="deckProps">
+      <DeckErrorHandling :on="deckProps.on" :layerInfos="layerInfos" />
       <slot name="control-zero" v-bind="{ ...slotProps, ...deckProps }" />
     </template>
     <template #control-left="deckProps">
@@ -43,6 +44,7 @@ import {
 import Deck from './Deck.vue';
 import Buildings from './mapLayers/Buildings.vue';
 import Scale from './controls/Scale.vue';
+import DeckErrorHandling from './DeckErrorHandling';
 import defaults from './defaults';
 import VisualizerManager from '@movici-flow-common/visualizers/VisualizerManager';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
@@ -54,7 +56,7 @@ import { PopupManager } from '../map_widgets/PopupManager';
 
 @Component({
   name: 'MovMapVis',
-  components: { Deck, Buildings, Scale }
+  components: { Deck, Buildings, Scale, DeckErrorHandling }
 })
 export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
   @Prop({ type: Array, default: () => [] }) readonly layerInfos!: ComposableVisualizerInfo[];

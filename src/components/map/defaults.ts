@@ -1,8 +1,6 @@
 import {
   CameraOptions,
   Project,
-  VisualizationMode,
-  VisualizationSettings
 } from '@movici-flow-common/types';
 
 function defaultProject(): Project {
@@ -24,13 +22,6 @@ export default {
     };
   },
 
-  visualisationSettings(project?: Project): VisualizationSettings {
-    return {
-      mode: VisualizationMode.GEOMETRY,
-      project: project || defaultProject(),
-      scenario: null
-    };
-  },
 
   project: defaultProject
 };

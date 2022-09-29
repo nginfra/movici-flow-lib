@@ -45,6 +45,7 @@
         @edit="$emit('edit')"
         @export="$emit('export')"
         @delete="handleEvent('delete')"
+        @reload="$emit('reload')"
       />
     </div>
     <VisualizerSummary v-if="value" :value="value" :progress="progress" :show="isOpen" />
@@ -92,6 +93,13 @@ export default class VisualizerElement extends Vue {
       label: 'Delete',
       event: 'delete',
       colorScheme: 'is-danger'
+    },
+    {
+      icon: 'redo',
+      iconPack: 'fas',
+      label: 'Reload',
+      event: 'reload',
+      colorScheme: 'is-danger'
     }
   ];
 
@@ -102,7 +110,7 @@ export default class VisualizerElement extends Vue {
   }
 
   get showLoader() {
-    return typeof this.progress === 'number';
+    return !this.errors.length && typeof this.progress === 'number';
   }
 
   get errors() {
@@ -140,14 +148,17 @@ export default class VisualizerElement extends Vue {
   @Watch('value', { immediate: true })
   setupTracking() {
     if (this.value) {
-      const tracker = new StatusTracker({
-        tasks: {
-          initData: 20,
-          updates: 80
-        },
-        onProgress: val => (this.progress = val)
-      });
-      this.value.status ??= tracker;
+      if (this.value.status) {
+        this.value.status.onProgress = val => (this.progress = val);
+      } else {
+        this.value.status = new StatusTracker({
+          tasks: {
+            initData: 20,
+            updates: 80
+          },
+          onProgress: val => (this.progress = val)
+        });
+      }
     }
   }
 }

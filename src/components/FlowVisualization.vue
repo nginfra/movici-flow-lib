@@ -37,7 +37,7 @@
             v-model="visualizers"
             :scenario="currentScenario"
             :timestamp="timestamp"
-          ></FlowLayerPicker>
+          />
         </b-tab-item>
         <b-tab-item disabled :label="$t('flow.visualization.tabs.kpi')"></b-tab-item>
       </b-tabs>
@@ -46,7 +46,7 @@
       <MapVis
         ref="mapVis"
         v-if="viewState"
-        :layer-infos="visualizers"
+        :layer-infos="validVisualizers"
         :view-state.sync="viewState"
         :timestamp.sync="timestamp"
         buildings
@@ -112,6 +112,7 @@
 import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator';
 import {
   CameraOptions,
+  DatasetSummary,
   Nullable,
   TimeOrientedSimulationInfo,
   UUID,
@@ -130,7 +131,7 @@ import SearchBar from './map/controls/SearchBar.vue';
 import NavigationControl from './map/controls/NavigationControl.vue';
 import BaseMapControl from './map/controls/BaseMapControl.vue';
 import TimeSlider from './map_widgets/TimeSlider.vue';
-import { simplifiedCamera, visualizerSettingsValidator } from '../visualizers/viewHelpers';
+import { simplifiedCamera, validateForContentErrors } from '../visualizers/viewHelpers';
 import { buildFlowUrl } from '../utils';
 import isEqual from 'lodash/isEqual';
 import FlowLegend from './map_widgets/legends/FlowLegend.vue';
@@ -138,7 +139,7 @@ import { successMessage } from '../utils/snackbar';
 import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
 import { MoviciError } from '@movici-flow-common/errors';
 import { transformBBox } from '@movici-flow-common/crs';
-import { isError } from 'lodash';
+import { isEmpty, isError } from 'lodash';
 import MapEntityPopup from './map_widgets/MapEntityPopup.vue';
 import RightSidePopup from './map_widgets/RightSidePopup.vue';
 
@@ -160,7 +161,6 @@ import RightSidePopup from './map_widgets/RightSidePopup.vue';
     RightSidePopup
   },
   beforeRouteLeave(to: unknown, from: unknown, next: () => void) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((this as FlowVisualization).isCurrentViewDirty) {
       this.$buefy.dialog.confirm({
         message: '' + this.$t('flow.visualization.dialogs.unsavedView'),
@@ -196,6 +196,7 @@ export default class FlowVisualization extends Vue {
   isCurrentViewDirty = false;
   viewName = 'Untitled';
   viewState: Nullable<CameraOptions> = defaults.viewState();
+  validVisualizers: ComposableVisualizerInfo[] = [];
 
   get views(): View[] {
     return flowVisualizationStore.views;
@@ -318,17 +319,7 @@ export default class FlowVisualization extends Vue {
         mode: VisualizationMode.SCENARIO
       });
     });
-    await Promise.all(
-      visualizers.map(async info => {
-        info.unsetError('content');
 
-        try {
-          await this.validateForContentErrors(info);
-        } catch (e) {
-          info.setError('content', isError(e) ? e.message : String(e));
-        }
-      })
-    );
     this.viewName = view.name;
     this.visualizers = visualizers;
 
@@ -458,24 +449,6 @@ export default class FlowVisualization extends Vue {
     this.isCurrentViewDirty = newValue;
   }
 
-  async validateForContentErrors(info: ComposableVisualizerInfo) {
-    info.unsetError('content');
-
-    if (!info.datasetUUID) {
-      // might add errors here
-      // or should the datasetUUID be mandatory on ComposableVisualizerInfo
-      throw new Error('No dataset UUID specified');
-    }
-
-    const summary = await flowStore.getDatasetSummary({
-        datasetUUID: info.datasetUUID,
-        scenarioUUID: info.scenarioUUID
-      }),
-      entitySummary = await flowStore.getEntitySummary({ info, summary });
-
-    visualizerSettingsValidator(entitySummary)(info);
-  }
-
   serializeCurrentView(exportCamera = true): View {
     const rv: View = {
       name: this.viewName,
@@ -529,6 +502,29 @@ export default class FlowVisualization extends Vue {
   }
 
   @Watch('visualizers')
+  handleVisualizers() {
+    this.resolveDatasets();
+    Promise.all(
+      this.visualizers.map(async info => {
+        info.unsetError('content');
+
+        try {
+          const summary = info.datasetUUID
+            ? await flowStore.getDatasetSummary({
+                datasetUUID: info.datasetUUID,
+                scenarioUUID: info.scenarioUUID
+              })
+            : null;
+          validateForContentErrors(info, summary);
+        } catch (e) {
+          info.setError('content', isError(e) ? e.message : String(e));
+        }
+      })
+    ).then(() => {
+      this.validVisualizers = this.visualizers.filter(i => !isEmpty(i));
+    });
+  }
+
   resolveDatasets() {
     for (const vis of this.visualizers) {
       vis.unsetError('resolve');

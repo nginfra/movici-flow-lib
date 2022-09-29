@@ -1,17 +1,11 @@
 import { PickInfo } from 'deck.gl';
+import { DeckMouseEvent } from './deck';
 import { PropertyType } from './schema';
 import { ITapefile } from './visualization';
 
 export type PopupType = 'onClick' | 'onHover';
 
 export type PopupPosition = 'map' | 'right-side';
-
-export type DeckMouseEvent = {
-  leftButton: boolean;
-  centerButton: boolean;
-  rightButton: boolean;
-  type: string;
-};
 
 export interface PopupItem {
   name: string;

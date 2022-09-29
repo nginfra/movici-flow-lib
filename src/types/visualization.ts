@@ -1,15 +1,9 @@
 import { RGBAColor } from './colors';
-import { ComponentProperty, PropertyType } from './schema';
-import { Project } from './project';
-import { ShortScenario } from './scenarios';
+import { ComponentProperty } from './schema';
 import { Coordinate, TopologyLayerData } from './geometry';
 import { LayerProps } from '@deck.gl/core/lib/layer';
-import { DeckMouseEvent, PopupEventCallback } from './popup';
+import { PopupEventCallback } from './popup';
 import { LayerConstructor } from './general';
-import {
-  DEFAULT_SPECIAL_COLOR_TRIPLE,
-  DEFAULT_UNDEFINED_COLOR_TRIPLE
-} from '@movici-flow-common/utils/colorUtils';
 import {
   ViewMode,
   DrawPolygonMode,
@@ -24,24 +18,7 @@ import {
 } from '@nebula.gl/edit-modes';
 import { PickInfo } from 'deck.gl';
 import { FetchRequestOptions } from './backend';
-
-export interface ViewConfig {
-  project_name: string;
-  scenario_name: string;
-  data_layers: VisualizerViewConfig[];
-  camera: CameraOptions;
-  timestamp?: number;
-}
-
-export interface VisualizerViewConfig {
-  name?: string;
-  geometry?: string;
-  dataset_name: string;
-  entity_group: string;
-  mode?: VisualizationMode;
-  visible?: boolean;
-  settings: VisualizerConfigurationSettings;
-}
+import { DeckMouseEvent } from './deck';
 
 export interface CameraOptions {
   longitude: number;
@@ -97,77 +74,8 @@ export enum LayerKind {
   UNKNOWN = 'unknown'
 }
 
-export class StaticColorLayerSettings {
-  kind: LayerKind.STATIC_COLOR;
-  color: RGBAColor;
-  constructor(config: Partial<StaticColorLayerSettings>) {
-    this.kind = LayerKind.STATIC_COLOR;
-    this.color = config?.color || DEFAULT_UNDEFINED_COLOR_TRIPLE;
-  }
-}
-
-export class HeatmapLayerSettings {
-  kind: LayerKind.HEAT_MAP;
-  constructor() {
-    this.kind = LayerKind.HEAT_MAP;
-  }
-}
-
 export type ColorMapping = [number, RGBAColor][];
 export type AdvColorMapping = [string | number, RGBAColor][];
-
-export class ColorMapLayerSettings {
-  kind: LayerKind.COLOR_MAP;
-  property?: PropertyType;
-  colors: ColorMapping;
-  undefinedColor: RGBAColor;
-  specialColor: RGBAColor;
-  baseColorOverride: RGBAColor | null;
-  constructor(config: Partial<ColorMapLayerSettings>) {
-    this.kind = LayerKind.COLOR_MAP;
-    this.property = config?.property;
-    this.colors = config?.colors || [];
-    this.undefinedColor = config?.undefinedColor || DEFAULT_UNDEFINED_COLOR_TRIPLE;
-    this.specialColor = config?.specialColor || DEFAULT_SPECIAL_COLOR_TRIPLE;
-    this.baseColorOverride = config?.baseColorOverride || null;
-  }
-}
-
-export class ActiveEntityLayerSettings {
-  kind: LayerKind.ACTIVE_ENTITY;
-  color: RGBAColor;
-  inverted: boolean;
-  property?: PropertyType;
-  onHover?: ComponentProperty;
-  constructor(config: Partial<ActiveEntityLayerSettings>) {
-    this.kind = LayerKind.ACTIVE_ENTITY;
-    this.color = config?.color || DEFAULT_UNDEFINED_COLOR_TRIPLE;
-    this.inverted = config?.inverted || false;
-    this.property = config?.property;
-    this.onHover = config?.onHover;
-  }
-}
-
-export class UnknownLayerSettings {
-  kind: LayerKind.UNKNOWN;
-  constructor() {
-    this.kind = LayerKind.UNKNOWN;
-  }
-}
-
-export type VisualizerConfigurationSettings =
-  | StaticColorLayerSettings
-  | HeatmapLayerSettings
-  | UnknownLayerSettings
-  | ColorMapLayerSettings
-  | ActiveEntityLayerSettings;
-
-export interface VisualizationSettings {
-  mode: VisualizationMode;
-  project: Project;
-  scenario: ShortScenario | null;
-}
-export type VisualizableDataTypes = unknown;
 
 export interface IVisualizer {
   forceRender(): void;

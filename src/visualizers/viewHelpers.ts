@@ -2,6 +2,7 @@ import {
   CameraOptions,
   ColorClause,
   ComponentProperty,
+  DatasetSummary,
   EntityGroupSummary,
   FlowVisualizerType,
   PopupClause,
@@ -84,4 +85,35 @@ export function simplifiedCamera(camera: CameraOptions): CameraOptions {
     pitch: camera.pitch,
     bearing: camera.bearing
   };
+}
+
+export function validateForContentErrors(
+  info: ComposableVisualizerInfo,
+  summary?: DatasetSummary | null
+) {
+  if (!info.datasetUUID) {
+    // might add errors here
+    // or should the datasetUUID be mandatory on ComposableVisualizerInfo
+    throw new Error('No dataset UUID specified');
+  }
+  if (!summary) {
+    return;
+  }
+  const entitySummary = getEntitySummary({ info, summary });
+
+  visualizerSettingsValidator(entitySummary)(info);
+}
+
+export function getEntitySummary(props: {
+  info: ComposableVisualizerInfo;
+  summary: DatasetSummary;
+}) {
+  const { info, summary } = props,
+    index = summary.entity_groups.map(e => e.name).indexOf(info.entityGroup);
+
+  if (index === -1) {
+    throw new Error(`Invalid entity group '${info.entityGroup}`);
+  }
+
+  return summary.entity_groups[index];
 }

@@ -4,7 +4,6 @@ import {
   ProjectNameNotProvided,
   ScenarioInvalid,
   ScenarioNameNotProvided,
-  SummaryEntityGroupNotFound,
   SummaryNotFound,
   UserNotFound,
   ViewHasNoScenario,
@@ -13,6 +12,7 @@ import {
   ViewNotInScenario
 } from '@movici-flow-common/errors';
 import defaultStore from '@movici-flow-common/store';
+
 import {
   initFlowStores,
   flowStore,
@@ -26,7 +26,6 @@ import {
   UUID,
   View
 } from '@movici-flow-common/types';
-import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 
 // eslint-disable-next-line
 const dummy_projects = require('../data/dummy_projects.json') as Project[],
@@ -165,21 +164,5 @@ describe('Setup errors of Flow Store', () => {
     await expect(
       flowStore.getDatasetSummary({ datasetUUID: 'invalid_dataset', scenarioUUID: null })
     ).rejects.toThrow(SummaryNotFound);
-  });
-
-  it('SummaryEntityGroupNotFound', async () => {
-    const info = {
-        datasetUUID: 'valid_dataset',
-        entityGroup: 'invalid_entity',
-        datasetName: 'valid_dataset'
-      } as ComposableVisualizerInfo & { datasetUUID: string },
-      summary = await flowStore.getDatasetSummary({
-        datasetUUID: info.datasetUUID,
-        scenarioUUID: null
-      });
-
-    await expect(flowStore.getEntitySummary({ info, summary })).rejects.toThrow(
-      SummaryEntityGroupNotFound
-    );
   });
 });

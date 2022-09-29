@@ -1,8 +1,9 @@
+import upperFirst from 'lodash/upperFirst';
 import VueRouter from 'vue-router';
+import VueI18n from 'vue-i18n';
+
 import { buildFlowUrl } from './utils';
 import { failMessage } from './utils/snackbar';
-import upperFirst from 'lodash/upperFirst';
-import VueI18n from 'vue-i18n';
 
 type ErrorProps = {
   $t: typeof VueI18n.prototype.t;
@@ -122,7 +123,3 @@ export class SummaryNotFound extends FlowErrorSetup {
   redirect = 'FlowScenario';
 }
 
-export class SummaryEntityGroupNotFound extends FlowErrorSetup {
-  id = 'summaryEntityGroupNotFound';
-  redirect = 'FlowScenario';
-}

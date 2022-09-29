@@ -2,6 +2,7 @@ export * from './api';
 export * from './backend';
 export * from './colors';
 export * from './datasets';
+export * from './deck';
 export * from './flow';
 export * from './flowVisualizers';
 export * from './flowLegend';

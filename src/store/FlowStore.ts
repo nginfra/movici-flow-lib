@@ -26,11 +26,10 @@ import {
   ViewNotInScenario,
   ViewNotInProject,
   SummaryNotFound,
-  SummaryEntityGroupNotFound
 } from '@movici-flow-common/errors';
-import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { sortByKeys } from '@movici-flow-common/utils';
 import { flowVisualizationStore } from './store-accessor';
+import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 
 @Module({
   name: 'flow',
@@ -258,21 +257,6 @@ export default class FlowStore extends VuexModule {
     });
 
     return summary;
-  }
-
-  @Action({ rawError: true })
-  async getEntitySummary(props: { info: ComposableVisualizerInfo; summary: DatasetSummary }) {
-    const { info, summary } = props,
-      index = summary.entity_groups.map(e => e.name).indexOf(info.entityGroup);
-
-    if (index === -1) {
-      throw new SummaryEntityGroupNotFound(undefined, {
-        entityGroup: info.entityGroup,
-        datasetName: info.datasetName
-      });
-    }
-
-    return summary.entity_groups[index];
   }
 
   @Action({ rawError: true })

@@ -15,7 +15,7 @@
       <slot name="control-bottom" v-bind="{ ...slotProps }" />
     </div>
     <template v-if="loaded">
-      <slot name="map" :map="map" :deck="deck" :view-state="value" />
+      <slot name="map" :map="map" :view-state="value" />
     </template>
   </div>
 </template>
@@ -26,7 +26,15 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Deck as DeckGL, Layer } from '@deck.gl/core';
 import { DeckProps, PickInfo } from '@deck.gl/core/lib/deck';
-import { CameraOptions, CursorCallback, DeckMouseEvent, Nullable } from '@movici-flow-common/types';
+import {
+  CameraOptions,
+  CursorCallback,
+  DeckMouseEvent,
+  Nullable,
+  DeckEvent,
+  DeckEventCallback,
+  DeckEventPayload
+} from '@movici-flow-common/types';
 import { ControllerOptions } from '@deck.gl/core/controllers/controller';
 import defaults from './defaults';
 import { viewport, BoundingBox } from '@mapbox/geo-viewport';
@@ -60,8 +68,6 @@ function getCanvasDimensions(map: mapboxgl.Map): [number, number] {
 
 type DeckSlots = 'control-zero' | 'control-left' | 'control-right' | 'control-bottom';
 
-type eventCallback = (event: PickInfo<unknown>, ev?: DeckMouseEvent) => void;
-
 @Component({ name: 'Deck' })
 export default class Deck extends Vue {
   @Prop({ type: Object, default: null }) readonly value!: Nullable<CameraOptions>;
@@ -71,9 +77,10 @@ export default class Deck extends Vue {
   @Prop({ type: Array, default: () => [] }) readonly layers!: Layer<unknown>[];
   map: mapboxgl.Map | null = null;
   deck: DeckGL | null = null;
-  eventListeners: Record<string, Map<string, eventCallback>> = {
-    click: new Map<string, eventCallback>(),
-    'drag-start': new Map<string, eventCallback>()
+  eventListeners: Record<DeckEvent, Map<string, DeckEventCallback>> = {
+    click: new Map<string, DeckEventCallback>(),
+
+    error: new Map<string, DeckEventCallback>()
   };
   loaded = false;
   getCursor: CursorCallback | null = null;
@@ -88,14 +95,6 @@ export default class Deck extends Vue {
     };
   }
 
-  get dragStartListeners() {
-    return this.eventListeners['drag-start'];
-  }
-
-  get clickListeners() {
-    return this.eventListeners.click;
-  }
-
   /**
    * If there are children elements inside the scopedSlots this returns true.
    *
@@ -106,10 +105,16 @@ export default class Deck extends Vue {
     return !!this.$scopedSlots[control]?.({});
   }
 
-  on(event: string, callbacks: Record<string, eventCallback>) {
+  on(event: DeckEvent, callbacks: Record<string, DeckEventCallback>) {
     Object.entries(callbacks).forEach(([key, callback]) => {
       this.eventListeners[event].set(key, callback);
     });
+  }
+
+  invokeCallbacks(event: DeckEvent, payload: DeckEventPayload) {
+    for (const cb of this.eventListeners[event].values() ?? []) {
+      cb(payload);
+    }
   }
 
   setCursorCallback(cb: CursorCallback) {
@@ -164,18 +169,17 @@ export default class Deck extends Vue {
       width: '100%',
       height: '100%',
       initialViewState: val,
-      // TODO: Do error handling with callbacks
-      // onError: (error: Error) => {},
+
       onClick: (info: PickInfo<unknown>, ev?: DeckMouseEvent) => {
         if (ev?.leftButton) {
-          this.clickListeners.forEach(cb => cb(info, ev));
+          this.invokeCallbacks('click', { pickInfo: info, ev });
         }
       },
-      onDragStart: (info: PickInfo<unknown>, ev?: DeckMouseEvent) => {
-        this.dragStartListeners.forEach(cb => cb(info, ev));
+      onError: (error: Error, layer?: Layer<unknown>) => {
+        console.error(error);
+        this.invokeCallbacks('error', { error, layer });
       },
-      // @ts-expect-error
-      getCursor: ({ isHovering, isDragging }) => {
+      getCursor: ({ isHovering, isDragging }: { isHovering: boolean; isDragging: boolean }) => {
         const cursorOverride = this.getCursor?.({ isHovering, isDragging });
         if (cursorOverride) return cursorOverride;
         if (isHovering) return 'pointer';

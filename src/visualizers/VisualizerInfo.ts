@@ -9,6 +9,7 @@ import {
 } from '../types';
 
 abstract class BaseVisualizerInfo {
+  id: string;
   name: string;
   datasetName: string;
   datasetUUID: string | null;
@@ -21,6 +22,7 @@ abstract class BaseVisualizerInfo {
   status?: StatusTracker;
 
   protected constructor(config?: Partial<BaseVisualizerInfo>) {
+    this.id = config?.id ?? randomID();
     this.datasetName = config?.datasetName ?? '';
     this.datasetUUID = config?.datasetUUID ?? null;
     this.name = config?.name || this.datasetName;
@@ -59,16 +61,24 @@ abstract class BaseVisualizerInfo {
   resolveDatasets(datasets: Record<string, ShortDataset>) {
     this.datasetUUID = getDatasetUUIDOrThrow(this.datasetName, datasets);
   }
+
+  forceReset() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return new (this.constructor as any)({
+      ...this,
+      status: undefined,
+      errors: {},
+      id: randomID()
+    }) as typeof this;
+  }
 }
 
 export class ComposableVisualizerInfo extends BaseVisualizerInfo {
   settings?: FlowVisualizerOptions;
   summary: DatasetSummary | null;
-  id: string;
   constructor(config?: Partial<ComposableVisualizerInfo>) {
     super(config);
     this.settings = config?.settings;
-    this.id = config?.id ?? randomID();
     this.summary = config?.summary ?? null;
   }
 
