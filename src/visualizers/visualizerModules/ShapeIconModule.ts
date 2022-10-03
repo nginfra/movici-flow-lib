@@ -3,10 +3,10 @@ import {
   Coordinate,
   IconClause,
   ITapefile,
-  IVisualizer,
   LayerParams,
   StaticIconClause,
-  TopologyLayerData
+  TopologyLayerData,
+  IMapVisualizer
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
 import NumberMapper from '../maps/NumberMapper';
@@ -29,7 +29,7 @@ abstract class ShapeIconModule<
     super(params);
   }
 
-  compose(params: LayerParams<LData, Coord>, visualizer: IVisualizer) {
+  compose(params: LayerParams<LData, Coord>, visualizer: IMapVisualizer<Coord>) {
     const settings = this.getSettings(),
       changed = this.updateSettings(settings);
 
@@ -61,7 +61,10 @@ abstract class ShapeIconModule<
     return changed;
   }
 
-  private updateAccessor(changed: boolean, visualizer: IVisualizer): IconAccessor<LData> | null {
+  private updateAccessor(
+    changed: boolean,
+    visualizer: IMapVisualizer<Coord>
+  ): IconAccessor<LData> | null {
     if (!changed && this.accessor) {
       return this.accessor;
     }
@@ -69,7 +72,7 @@ abstract class ShapeIconModule<
     return this.getAccessor(this.currentSettings, visualizer);
   }
 
-  private getAccessor(clause: IconClause | undefined, visualizer: IVisualizer) {
+  private getAccessor(clause: IconClause | undefined, visualizer: IMapVisualizer<Coord>) {
     if (clause?.byValue?.attribute) {
       const iconMap = new NumberMapper<string>({
         mapping: clause.byValue.icons,

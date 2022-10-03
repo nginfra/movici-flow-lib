@@ -34,13 +34,7 @@
 
 <script lang="ts">
 import { Component, Prop, Watch } from 'vue-property-decorator';
-import {
-  Backend,
-  CameraOptions,
-  DeckMouseEvent,
-  PopupContent,
-  TimeOrientedSimulationInfo
-} from '@movici-flow-common/types';
+import { Backend, CameraOptions, DeckMouseEvent, PopupContent } from '@movici-flow-common/types';
 import Deck from './Deck.vue';
 import Buildings from './mapLayers/Buildings.vue';
 import Scale from './controls/Scale.vue';
@@ -53,6 +47,9 @@ import DeckContainerMixin from './DeckContainerMixin';
 import { BoundingBox } from '@mapbox/geo-viewport';
 import { Layer } from '@deck.gl/core';
 import { PopupManager } from '../map_widgets/PopupManager';
+import { TapefileStoreCollection } from '@movici-flow-common/visualizers/TapefileStore';
+import { getVisualizer, Visualizer } from '@movici-flow-common/visualizers';
+import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
 
 @Component({
   name: 'MovMapVis',
@@ -60,16 +57,15 @@ import { PopupManager } from '../map_widgets/PopupManager';
 })
 export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
   @Prop({ type: Array, default: () => [] }) readonly layerInfos!: ComposableVisualizerInfo[];
-  @Prop({ type: Object, default: null }) readonly timelineInfo!: TimeOrientedSimulationInfo | null;
   @Prop({ type: Object, default: () => defaults.viewState() }) readonly viewState!: CameraOptions;
   @Prop({ type: Number, default: 0 }) readonly timestamp!: number;
   @Prop({ type: Boolean, default: false }) readonly buildings!: boolean;
   @Prop({ type: Boolean, default: false }) readonly scale!: boolean;
-  visualizers: VisualizerManager | null = null;
+  tapefileStores: TapefileStoreCollection = new TapefileStoreCollection();
+  visualizers: VisualizerManager<ComposableVisualizerInfo, Visualizer> | null = null;
   isLoading = false;
   maxTimeAvailable: number | null = null;
 
-  // Move this inside a store?
   get backend(): Backend | null {
     return flowStore.backend;
   }
@@ -78,6 +74,8 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
     return {
       basemap: this.basemap,
       popup: this.popup,
+      tapefileStores: this.tapefileStores,
+      visualizers: this.visualizers,
       setBasemap: this.setBasemap,
       updateTimestamp: (t: number) => this.$emit('update:timestamp', t),
       maxTimeAvailable: this.maxTimeAvailable
@@ -86,8 +84,10 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
 
   ensureVisualizers() {
     if (!this.visualizers && this.backend) {
-      this.visualizers = new VisualizerManager({
+      this.visualizers = new VisualizerManager<ComposableVisualizerInfo, Visualizer>({
         backend: this.backend,
+        tapefileStores: this.tapefileStores,
+        visualizerFactory: createComposableVisualizer,
         onSuccess: () => {
           this.isLoading = false;
           this.updateLayers();
@@ -113,7 +113,7 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
   }
 
   @Watch('layerInfos', { immediate: true })
-  handleNewLayerInfos() {
+  handleLayerInfos() {
     this.isLoading = true;
     const visualizers = this.ensureVisualizers();
     if (visualizers) {
@@ -142,10 +142,8 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
       return;
     }
 
-    // We sort the visualizers from high to low b-a sorts from high to low so that
-    // the visualizers with the lower order are rendered last, and on top of other visualizers
     const layers = (this.visualizers?.getVisualizers() ?? [])
-      .sort((a, b) => b.order - a.order)
+      .reverse() // Reverse the array so that layers are rendered correctly on top of each other
       .map(v => {
         this.popup?.updatePopupVisibilityByLayer({ layerId: v.info.id, visible: v.info.visible });
 
@@ -175,9 +173,30 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
     this.deckEl.zoomToBBox(bounding_box, ratio);
   }
 
-  mounted() {
+  created() {
     this.popup = new PopupManager();
+    this.handleLayerInfos();
   }
+}
+
+function createComposableVisualizer(
+  layerInfo: ComposableVisualizerInfo,
+  manager: VisualizerManager<ComposableVisualizerInfo, Visualizer>
+): Visualizer {
+  if (!layerInfo.datasetUUID) {
+    throw new Error(`Invalid dataset ${layerInfo.datasetName} for layer ${layerInfo.id}: no UUID`);
+  }
+  const datasetStore = new DatasetDownloader({
+    backend: manager.backend,
+    datasetUUID: layerInfo.datasetUUID,
+    scenarioUUID: layerInfo.scenarioUUID || undefined
+  });
+  const scenarioUUID = layerInfo.scenarioUUID ?? '';
+  return getVisualizer({
+    datasetStore,
+    tapefileStore: manager.tapefileStores.ensure(scenarioUUID),
+    info: layerInfo
+  });
 }
 </script>
 

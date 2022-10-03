@@ -122,4 +122,3 @@ export class SummaryNotFound extends FlowErrorSetup {
   id = 'summaryNotFound';
   redirect = 'FlowScenario';
 }
-

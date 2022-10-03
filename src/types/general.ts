@@ -10,3 +10,11 @@ export type LayerConstructor<T, P = unknown> = {
   layerName: string;
   defaultProps?: Partial<P>;
 };
+
+export type ArrayValues<
+  T extends Record<K, V>,
+  K extends string | number | symbol = keyof T,
+  V = T[K]
+> = {
+  [k in K]: V[];
+};

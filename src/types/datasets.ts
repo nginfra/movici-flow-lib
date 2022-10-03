@@ -1,5 +1,13 @@
-import { GridCellPoints, Line3DCoordinate, LineCoordinate, PolygonCoordinate } from './geometry';
-import { UUID } from './general';
+import {
+  Coordinate,
+  GridCellPoints,
+  Line3DCoordinate,
+  LineCoordinate,
+  PolygonCoordinate,
+  TopologyLayerData
+} from './geometry';
+import { ArrayValues, UUID } from './general';
+import { ImportantAttribute } from './schema';
 
 export interface DatasetCollection {
   datasets: Dataset[];
@@ -83,7 +91,7 @@ export interface DatasetData<T> {
   [entityGroup: string]: EntityGroupData<T>;
 }
 
-interface BaseEntityGroup {
+export interface BaseEntityGroup {
   id: number[];
 }
 
@@ -117,3 +125,12 @@ interface GridCellProperties extends EntityGroupProperties<GridCellPoints> {
   'grid.grid_points': GridCellPoints[];
 }
 export type GridCellGeometryData = BaseEntityGroup & GridCellProperties;
+
+export type ImportantAttributeData = Record<ImportantAttribute, string>;
+
+export type EntityGroupImportantAttributesData = Partial<ArrayValues<ImportantAttributeData>>;
+
+export type DeckEntityObject<Coord extends Coordinate | unknown> = TopologyLayerData<
+  Coord | unknown
+> &
+  Partial<ImportantAttributeData>;

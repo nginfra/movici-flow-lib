@@ -182,6 +182,16 @@
       "legendsConfig": {
         "reset": "Standaardwaardes invullen"
       },
+      "graph": {
+        "title": "Grafiekenconfigurator",
+        "graphDisplayName": "Grafiek weergavenaam",
+        "showCharts": "Grafieken weergeven",
+        "lines": "Lijnen",
+        "showEntityDetails": "Details weergeven",
+        "hideEntityDetails": "Details verbergen",
+        "chooseAttribute": "Kies een attribuut",
+        "attributeInfo": "Kies een attribuut van de de geselecteerde entiteit om weer te geven in een grafiek"
+      },
       "dialogs": {
         "closeConfigurator": "Huidige configurator sluiten?",
         "confirmDeleteView": "Weet je zeker dat je View <b>{name}</b> wilt verwijderen voor iedereen?",
@@ -200,7 +210,8 @@
         "leaveView": "Weet je zeker dat je de Visualisatie wilt verlaten?? <br>Je zult de View opnieuw moeten laden.",
         "viewCreateSuccess": "View succesvol opgeslagen",
         "viewDeleteSuccess": "View succesvol verwijderd",
-        "viewUpdateSuccess": "View succesvol ge-updatet"
+        "viewUpdateSuccess": "View succesvol ge-updatet",
+        "deleteChart":  "Weet je zeker dat je Grafiek <b>{name}</b> wilt verwijderen?"
       },
       "resetValues": "Waarden terugzetten",
       "interpolateMinMax": "Stap-waarden herberekenen",
@@ -244,7 +255,8 @@
       "static": "Statisch",
       "tabs": {
         "kpi": "KPI",
-        "visualizers": "Visualisers"
+        "visualizers": "Visualisers",
+        "charts": "Grafieken"
       },
       "visualiserDisplayName": "Visualiser weergavenaam"
     },
@@ -305,7 +317,8 @@
     "dataset_type": "Dataset Type",
     "dataset_types": "@:(resources.dataset_type)s",
     "datasets": "@:(resources.dataset)s",
-    "entity_type": "Entity Type",
+    "entity": "Entiteit",
+    "entity_type": "Entiteitstype",
     "entity_types": "@:(resources.entity_type)s",
     "entityGroup": "Entiteitsgroep",
     "impactIndicator": "Impact indicator",

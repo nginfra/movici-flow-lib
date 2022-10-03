@@ -194,6 +194,7 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
   get minMaxPixelErrors() {
     return pick(this.errors, 'minPixels', 'maxPixels', 'minMaxPixels');
   }
+
   updateAttribute(val: PropertySummary | null) {
     if (val) {
       this.ensureProp(val);

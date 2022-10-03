@@ -62,6 +62,7 @@ class GeocodeStore extends VuexModule {
       (await this.backend?.geocode.getSuggestions(prepareQuery(query, this.upstreamEPSG))) || []
     );
   }
+
   @Action({ rawError: true })
   setApiClient(backend: Backend) {
     this.SET_BACKEND(backend);

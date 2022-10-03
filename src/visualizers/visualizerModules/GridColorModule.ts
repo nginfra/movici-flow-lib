@@ -3,9 +3,9 @@ import {
   Coordinate,
   LayerParams,
   TopologyLayerData,
-  IVisualizer,
   ITapefile,
-  ByValueColorClause
+  ByValueColorClause,
+  IMapVisualizer
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
 import { TapefileAccessor, VisualizerModule, VisualizerModuleParams } from './common';
@@ -25,7 +25,7 @@ export default class GridColorModule<
   constructor(params: VisualizerModuleParams) {
     super(params);
   }
-  compose(params: LayerParams<LData, Coord>, visualizer: IVisualizer) {
+  compose(params: LayerParams<LData, Coord>, visualizer: IMapVisualizer<Coord>) {
     if (params.type.layerName !== 'GridLayer') {
       return params;
     }
@@ -54,7 +54,10 @@ export default class GridColorModule<
     return changed;
   }
 
-  private updateAccessor(changed: boolean, visualizer: IVisualizer): NumberAccessor<LData> {
+  private updateAccessor(
+    changed: boolean,
+    visualizer: IMapVisualizer<Coord>
+  ): NumberAccessor<LData> {
     if (!changed && this.accessor) {
       return this.accessor;
     }
@@ -64,7 +67,7 @@ export default class GridColorModule<
 
   private getAccessor(
     clause: ColorClause | undefined,
-    visualizer: IVisualizer
+    visualizer: IMapVisualizer<Coord>
   ): NumberAccessor<LData> {
     if (clause?.byValue?.attribute) {
       const mapper = new NumberToNumberMap();

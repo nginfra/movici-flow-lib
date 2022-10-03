@@ -4,7 +4,7 @@ import {
   Mapper,
   VisibilityClause,
   TopologyLayerData,
-  IVisualizer,
+  IMapVisualizer,
   ITapefile
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
@@ -28,7 +28,7 @@ export default class VisibilityModule<
     super(params);
     this.count = 0;
   }
-  compose(params: LayerParams<LData, Coord>, visualizer: IVisualizer) {
+  compose(params: LayerParams<LData, Coord>, visualizer: IMapVisualizer<Coord>) {
     const changed = this.updateSettings(this.info.settings?.visibility);
     if (!params.props.updateTriggers) {
       params.props.updateTriggers = {};
@@ -69,7 +69,7 @@ export default class VisibilityModule<
 
   private updateAccessor(
     changed: boolean,
-    visualizer: IVisualizer
+    visualizer: IMapVisualizer<Coord>
   ): null | VisibilityAccessor<LData> {
     if (!changed && this.accessor) {
       return this.accessor;
@@ -80,7 +80,7 @@ export default class VisibilityModule<
 
   private getAccessor(
     clause: VisibilityClause | undefined,
-    visualizer: IVisualizer
+    visualizer: IMapVisualizer<Coord>
   ): VisibilityAccessor<LData> | null {
     if (clause?.byValue.attribute) {
       const visibilityMapper = new VisiblityMapper(

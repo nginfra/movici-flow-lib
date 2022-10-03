@@ -1,5 +1,5 @@
 <template>
-  <div class="has-background-white p-4">
+  <div class="box has-background-white p-4">
     <div class="is-flex is-flex is-align-items-center mb-3">
       <h1 class="is-size-6 has-text-black text-ellipsis">
         {{ $t('flow.export.modalTitle') }} {{ currentScenario.display_name }}

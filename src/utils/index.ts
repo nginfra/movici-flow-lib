@@ -35,7 +35,8 @@ export function excludeKey<T>(k: keyof T, { [k]: _, ...o }: T) {
   return o;
 }
 
-export function propertyString(property: ComponentProperty): string {
+export function propertyString(property: ComponentProperty | string): string {
+  if (typeof property === 'string') return property;
   const base = property.component ? property.component + '/' : '';
   return base + property.name;
 }

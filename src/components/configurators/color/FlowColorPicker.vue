@@ -49,6 +49,9 @@ export default class FlowColorPicker extends Vue {
       },
       right: {
         transform: `translateY(-35%) translateY(${this.translateY}px) translateX(20%) translateX(${this.translateX}px)`
+      },
+      'top-right': {
+        transform: `translateY(1%) translateY(${this.translateY}px) translateX(20%) translateX(${this.translateX}px)`
       }
     }[this.position];
   }
@@ -94,7 +97,7 @@ function colorTripleToRGBA(color: RGBAColor): RGBAObject {
 .color-picker-container {
   outline: none;
   position: absolute !important;
-  z-index: 10;
+  z-index: 5;
   &::after {
     content: '';
     position: absolute;
@@ -116,6 +119,15 @@ function colorTripleToRGBA(color: RGBAColor): RGBAObject {
   &.right {
     &::after {
       bottom: 50%;
+      left: 0;
+      border-color: transparent transparent $white $white;
+      transform: rotate(45deg);
+      box-shadow: -3px 3px 3px 0 rgba(0, 0, 0, 0.1) !important;
+    }
+  }
+  &.top-right {
+    &::after {
+      top: 10%;
       left: 0;
       border-color: transparent transparent $white $white;
       transform: rotate(45deg);

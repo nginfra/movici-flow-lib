@@ -1,20 +1,20 @@
-import { getVisualizer, Visualizer } from './index';
 import isEqual from 'lodash/isEqual';
 import isError from 'lodash/isError';
 
 import { determineChanges } from '../components/map/mapVisHelpers';
-import { DatasetDownloader } from '../utils/DatasetDownloader';
-import { ComposableVisualizerInfo } from './VisualizerInfo';
+import { BaseVisualizerInfo } from './VisualizerInfo';
 import { Backend } from '../types/backend';
-import { TapefileStore } from './TapefileStore';
-import { UUID } from '@movici-flow-common/types';
+import { TapefileStoreCollection } from './TapefileStore';
+import { IVisualizer } from '@movici-flow-common/types';
 
-type VMCallback = (params: CallbackPayload) => void;
+type VMCallback<I extends BaseVisualizerInfo, V extends IVisualizer> = (
+  params: CallbackPayload<I, V>
+) => void;
 
-interface CallbackPayload {
-  manager: VisualizerManager;
-  visualizer?: Visualizer;
-  info?: ComposableVisualizerInfo;
+interface CallbackPayload<I extends BaseVisualizerInfo, V extends IVisualizer> {
+  manager: VisualizerManager<I, V>;
+  visualizer?: V;
+  info?: I;
   error?: Error | unknown;
   timestamp?: number | null;
 }
@@ -32,29 +32,34 @@ type CallbackEvent = 'success' | 'create' | 'delete' | 'error' | 'data';
  *     updating the visualizers, and these errors are instead stored in the `ComposableVisualizerInfo.errors`
  *     dictionary. In these cases, the `onFailure` callbacks are not invoked
  */
-export default class VisualizerManager {
-  protected backend: Backend;
-  protected visualizers: Record<string, Visualizer>;
-  private desiredInfos: ComposableVisualizerInfo[];
-  private currentInfos: ComposableVisualizerInfo[];
-  protected callbacks: Record<CallbackEvent, VMCallback[]>;
+export default class VisualizerManager<I extends BaseVisualizerInfo, V extends IVisualizer> {
+  backend: Backend;
+  tapefileStores: TapefileStoreCollection;
+  protected visualizers: Record<string, V>;
+  private desiredInfos: I[];
+  private currentInfos: I[];
+  protected callbacks: Record<CallbackEvent, VMCallback<I, V>[]>;
   private loading: boolean;
-  private tapefileStores: Record<UUID, TapefileStore>;
+  private createVisualizer: (info: I, manager: VisualizerManager<I, V>) => V;
 
   constructor(config: {
     backend: Backend;
-    onSuccess?: VMCallback | VMCallback[];
-    onError?: VMCallback | VMCallback[];
-    onCreate?: VMCallback | VMCallback[];
-    onDelete?: VMCallback | VMCallback[];
-    onData?: VMCallback | VMCallback[];
+    tapefileStores: TapefileStoreCollection;
+    visualizerFactory: (info: I, manager: VisualizerManager<I, V>) => V;
+    onSuccess?: VMCallback<I, V> | VMCallback<I, V>[];
+    onError?: VMCallback<I, V> | VMCallback<I, V>[];
+    onCreate?: VMCallback<I, V> | VMCallback<I, V>[];
+    onDelete?: VMCallback<I, V> | VMCallback<I, V>[];
+    onData?: VMCallback<I, V> | VMCallback<I, V>[];
   }) {
     this.backend = config.backend;
     this.visualizers = {};
     this.desiredInfos = [];
     this.currentInfos = [];
     this.loading = false;
-    this.tapefileStores = {};
+    this.tapefileStores = config.tapefileStores;
+    this.configureTapefileStoreCallbacks(this.tapefileStores);
+    this.createVisualizer = config.visualizerFactory;
     this.callbacks = {
       create: [],
       delete: [],
@@ -69,17 +74,28 @@ export default class VisualizerManager {
     if (config.onData) this.on('data', config.onData);
   }
 
-  getVisualizers(): Visualizer[] {
-    return Object.values(this.visualizers);
+  private configureTapefileStoreCallbacks(store: TapefileStoreCollection) {
+    const cb = (ts: number) => {
+      this.invokeCallbacks('data', {
+        manager: this,
+        timestamp: ts
+      });
+    };
+    store.on('data', cb);
+    store.on('ready', cb);
   }
 
-  on(event: CallbackEvent, callbacks: VMCallback | VMCallback[]) {
+  getVisualizers(): V[] {
+    return Object.values(this.visualizers).sort((a, b) => a.order - b.order);
+  }
+
+  on(event: CallbackEvent, callbacks: VMCallback<I, V> | VMCallback<I, V>[]) {
     callbacks = Array.isArray(callbacks) ? callbacks : [callbacks];
     this.callbacks[event].push(...callbacks);
   }
 
-  async updateVisualizers(layerInfos: ComposableVisualizerInfo[]): Promise<void> {
-    this.desiredInfos = layerInfos;
+  async updateVisualizers(infos: I[]): Promise<void> {
+    this.desiredInfos = infos;
     if (this.loading) {
       return;
     }
@@ -107,32 +123,32 @@ export default class VisualizerManager {
     this.finalize();
   }
 
-  private async doUpdateVisualizers(layerInfos: ComposableVisualizerInfo[]): Promise<void> {
-    const [layersToAdd, layersToRemove] = determineChanges(layerInfos, this.currentInfos);
+  private async doUpdateVisualizers(infos: I[]): Promise<void> {
+    const [layersToAdd, layersToRemove] = determineChanges(infos, this.currentInfos);
     this.removeVisualizers(layersToRemove);
     this.createVisualizers(layersToAdd);
-    layerInfos.forEach((info, idx) => {
+    infos.forEach((info, idx) => {
       this.visualizers?.[info.id].setInfo(info);
-      this.visualizers?.[info.id].setLayerOrder(idx);
+      this.visualizers?.[info.id].setOrder(idx);
     });
 
     await this.reloadVisualizers();
-    this.currentInfos = layerInfos;
+    this.currentInfos = infos;
   }
 
-  private removeVisualizers(layers: ComposableVisualizerInfo[]): void {
+  private removeVisualizers(layers: I[]): void {
     layers.forEach(info => {
       delete this.visualizers[info.id];
       this.invokeCallbacks('delete', { manager: this, info });
     });
   }
 
-  private createVisualizers(layers: ComposableVisualizerInfo[]) {
-    layers.forEach(info => {
+  private createVisualizers(infos: I[]) {
+    infos.forEach(info => {
       info.unsetError('create');
-      let visualizer: Visualizer;
+      let visualizer: V;
       try {
-        visualizer = this.createVisualizer(info);
+        visualizer = this.createVisualizer(info, this);
       } catch (e) {
         if (isError(e)) {
           info.setError('create', e.message);
@@ -147,42 +163,10 @@ export default class VisualizerManager {
     });
   }
 
-  private createVisualizer(layerInfo: ComposableVisualizerInfo): Visualizer {
-    if (!layerInfo.datasetUUID) {
-      throw new Error(
-        `Invalid dataset ${layerInfo.datasetName} for layer ${layerInfo.id}: no UUID`
-      );
-    }
-    const datasetStore = new DatasetDownloader({
-      backend: this.backend,
-      datasetUUID: layerInfo.datasetUUID,
-      scenarioUUID: layerInfo.scenarioUUID || undefined
-    });
-    const scenarioUUID = layerInfo.scenarioUUID ?? '';
-    this.tapefileStores[scenarioUUID] ??= new TapefileStore({
-      onData: (ts: number) => {
-        this.invokeCallbacks('data', {
-          manager: this,
-          timestamp: ts
-        });
-      },
-      onReady: () => {
-        this.invokeCallbacks('data', {
-          manager: this,
-          timestamp: Number.MAX_SAFE_INTEGER
-        });
-      }
-    });
-    return getVisualizer({
-      datasetStore,
-      tapefileStore: this.tapefileStores[scenarioUUID],
-      info: layerInfo
-    });
-  }
-
   private async reloadVisualizers(): Promise<void[]> {
     return await Promise.all(Object.values(this.visualizers).map(viz => viz.load()));
   }
+
   private finalize(error?: unknown) {
     if (error) {
       this.invokeCallbacks('error', { manager: this, error });
@@ -192,7 +176,7 @@ export default class VisualizerManager {
     this.loading = false;
   }
 
-  private invokeCallbacks(event: CallbackEvent, payload: CallbackPayload) {
+  private invokeCallbacks(event: CallbackEvent, payload: CallbackPayload<I, V>) {
     for (const callback of this.callbacks[event]) {
       try {
         callback(payload);

@@ -8,7 +8,7 @@ export type PolygonCoordinate = CoordinateArray;
 export type GridCellPoints = number[];
 
 export type Coordinate = PointCoordinate | LineCoordinate | PolygonCoordinate;
-export interface TopologyLayerData<Coord extends Coordinate> {
+export interface TopologyLayerData<Coord extends Coordinate | unknown> {
   id: number;
   idx: number;
   coordinates: Coord;

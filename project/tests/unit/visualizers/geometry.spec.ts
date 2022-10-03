@@ -1,5 +1,6 @@
 import { LineTopologyGetter, PointTopologyGetter } from '@movici-flow-common/visualizers/geometry';
 import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
+import { ImportantAttribute } from '@movici-flow-common/types';
 
 function newFakeStore(datasetData: unknown): DatasetDownloader {
   return {
@@ -8,6 +9,14 @@ function newFakeStore(datasetData: unknown): DatasetDownloader {
     getMetaData: jest.fn(() => new Object())
   } as unknown as DatasetDownloader;
 }
+
+const IMPORTANT_ATTRIBUTES = Object.values(ImportantAttribute).map((a: string) => {
+  return {
+    component: '',
+    name: a
+  };
+});
+
 describe('PointTopologyGetter', () => {
   it('asks for point geometry', async () => {
     const store: DatasetDownloader = newFakeStore({
@@ -21,7 +30,8 @@ describe('PointTopologyGetter', () => {
       entityGroup: 'some_entities',
       properties: [
         { component: null, name: 'geometry.x' },
-        { component: null, name: 'geometry.y' }
+        { component: null, name: 'geometry.y' },
+        ...IMPORTANT_ATTRIBUTES
       ]
     });
   });
@@ -44,7 +54,8 @@ describe('LineTopologyGetter', () => {
       entityGroup: 'some_entities',
       properties: [
         { component: null, name: 'geometry.linestring_2d' },
-        { component: null, name: 'geometry.linestring_3d' }
+        { component: null, name: 'geometry.linestring_3d' },
+        ...IMPORTANT_ATTRIBUTES
       ]
     });
   });

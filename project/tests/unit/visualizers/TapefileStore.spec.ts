@@ -1,5 +1,5 @@
 import { Index } from '@movici-flow-common/visualizers/tapefile';
-import { StreamingTapefile } from '@movici-flow-common/visualizers/TapefileStore';
+import { StreamingTapefile } from '@movici-flow-common/visualizers/tapefile';
 
 describe('StreamingTapefile', () => {
   let tf: StreamingTapefile<number>;

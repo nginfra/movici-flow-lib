@@ -145,8 +145,7 @@ import {
   FlowVisualizerOptions,
   FlowVisualizerType,
   ScenarioDataset,
-  SizeClause,
-  VisualizationMode
+  SizeClause
 } from '@movici-flow-common/types';
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
@@ -280,7 +279,6 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   @Prop({ type: Number, default: -1 }) readonly vGroupIndex!: number;
   @Prop({ type: Boolean, default: false }) readonly noGroups!: boolean;
   datasets: ScenarioDataset[] = [];
-  currentDataset: ScenarioDataset | null = null;
   geometry: FlowVisualizerType | null = null;
   settings: FlowVisualizerOptions | null = null;
   isDirty = false;
@@ -300,7 +298,6 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
         additionalEntityGroups: this.additionalEntityGroups ?? undefined,
         settings: this.settings,
         scenarioUUID: this.value?.scenarioUUID || this.scenarioUUID,
-        mode: VisualizationMode.SCENARIO,
         visible: this.value?.visible ?? true
       });
     }
@@ -642,7 +639,7 @@ interface ConfiguratorSettings {
     background-color: var(--visualizer-editor-bg-color);
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 5;
   }
   .editor-content {
     ::v-deep {

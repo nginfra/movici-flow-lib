@@ -125,8 +125,8 @@ export default class DynamicDataView extends Vue {
 .popup {
   min-width: max-content;
   .data-viewer {
+    min-width: max-content;
     padding: 0.75rem;
-    min-width: 12rem;
     color: $grey-dark !important;
     &.focused {
       color: $black !important;

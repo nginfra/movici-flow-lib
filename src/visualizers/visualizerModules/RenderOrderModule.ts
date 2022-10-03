@@ -3,7 +3,7 @@ import {
   Coordinate,
   LayerParams,
   TopologyLayerData,
-  IVisualizer,
+  IMapVisualizer,
   RenderOrderType
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
@@ -31,7 +31,7 @@ export default class RenderOrderModule<
     this.count = 0;
     this.currentActive = false;
   }
-  compose(params: LayerParams<LData, Coord>, visualizer: IVisualizer) {
+  compose(params: LayerParams<LData, Coord>, visualizer: IMapVisualizer<Coord>) {
     const changed = this.updateSettings(this.info.settings?.color ?? {});
     if (!params.props.updateTriggers) {
       params.props.updateTriggers = {};
@@ -70,7 +70,7 @@ export default class RenderOrderModule<
 
   private updateAccessor(
     changed: boolean,
-    visualizer: IVisualizer
+    visualizer: IMapVisualizer<Coord>
   ): RawValueAccessor<LData> | undefined {
     if (!changed && this.accessor) {
       return this.accessor;
@@ -81,7 +81,7 @@ export default class RenderOrderModule<
 
   private getAccessor(
     clause: ColorClause | undefined,
-    visualizer: IVisualizer
+    visualizer: IMapVisualizer<Coord>
   ): RawValueAccessor<LData> | undefined {
     if (clause?.byValue?.attribute && clause?.byValue.type === 'buckets') {
       const accessor = new TapefileAccessor({

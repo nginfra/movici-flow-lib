@@ -16,6 +16,7 @@ function initFlowStores(store: Store<unknown>): void {
   flowUIStore = getModule(FlowUIStore, store);
   flowVisualizationStore = getModule(FlowVisualizationStore, store);
   geocodeStore = getModule(GeocodeStore, store);
+
   flowStore.setUIStore(flowUIStore);
 }
 

@@ -1,10 +1,10 @@
 <template>
-  <div class="layer-picker-container is-flex is-flex-direction-column">
+  <div class="overflow layer-picker-container is-flex is-flex-direction-column">
     <Draggable
       :value="value"
       v-bind="draggableOptions"
       v-on="draggableEvents"
-      class="draggable overflow-hover"
+      class="draggable"
       :class="{ dashed: drag }"
       @change="updateDraggable"
     >
@@ -28,12 +28,12 @@
       icon-left="plus-circle"
       icon-pack="far"
       size="is-small"
-      @click="startEditingItem(null)"
+      @click="startEditingItem(-1)"
     >
       {{ $t('flow.visualization.newVisualizer') }}
     </b-button>
     <VisualizerConfigurator
-      v-if="vConfigOpen"
+      v-if="open > -2"
       :vGroups="[]"
       :value="currentItem"
       :scenarioUUID="scenarioUUID"
@@ -61,12 +61,15 @@ export default class FlowLayerPicker extends Mixins(DraggableMixin) {
   @Prop({ type: Array, default: () => [] }) readonly value!: ComposableVisualizerInfo[];
   @Prop({ type: Object, default: null }) readonly scenario!: Scenario | null;
   @Prop({ type: Number, default: null }) readonly timestamp!: number | null;
-  currentIndex: number | null = null;
-  vConfigOpen = false;
+  // Variable this.open indicates the index of the open Visualizer
+  // Special values are
+  // -1: Creates a new Visualizer
+  // -2: The configurator is closed
+  @Prop({ type: Number, default: -2 }) readonly open!: number;
   group = 'visualizers';
 
   get currentItem(): ComposableVisualizerInfo | undefined {
-    return this.currentIndex === null ? undefined : this.value[this.currentIndex];
+    return this.open < 0 ? undefined : this.value[this.open];
   }
 
   get scenarioUUID(): string | null {
@@ -78,7 +81,7 @@ export default class FlowLayerPicker extends Mixins(DraggableMixin) {
   }
 
   close() {
-    this.vConfigOpen = false;
+    this.$emit('update:open', -2);
   }
 
   updateDraggable(event: { moved: { oldIndex: number; newIndex: number } }) {
@@ -87,22 +90,20 @@ export default class FlowLayerPicker extends Mixins(DraggableMixin) {
 
   // wip
   // needs to detect unchanged saves in the VisConfig
-  startEditingItem(index: number | null) {
-    if (!this.vConfigOpen) {
-      this.currentIndex = index;
-      this.vConfigOpen = true;
-    } else if (this.currentIndex !== index) {
+  startEditingItem(index: number) {
+    if (this.open === -2) {
+      this.$emit('update:open', index);
+    } else if (this.open !== index) {
       this.$buefy.dialog.confirm({
         message: '' + this.$t('flow.visualization.dialogs.closeConfigurator'),
         cancelText: '' + this.$t('actions.cancel'),
         confirmText: '' + this.$t('misc.yes'),
         type: 'is-primary',
         onConfirm: () => {
-          this.vConfigOpen = false;
+          this.$emit('update:open', -2);
           // this makes sure a fresh componenent is built without leftovers from previous values
           this.$nextTick(() => {
-            this.currentIndex = index;
-            this.vConfigOpen = true;
+            this.$emit('update:open', index);
           });
         }
       });
@@ -130,11 +131,11 @@ export default class FlowLayerPicker extends Mixins(DraggableMixin) {
       if (this.scenario && !val.scenarioUUID) {
         val = this.appendScenarioUUID(val);
       }
-      if (this.currentIndex === null) {
-        this.currentIndex = this.value.length;
+      if (this.open === -1) {
+        this.$emit('update:open', this.value.length);
         this.$emit('input', [...this.value, val]);
       } else {
-        this.updateItem(this.currentIndex, val);
+        this.updateItem(this.open, val);
       }
     }
   }
@@ -152,7 +153,9 @@ export default class FlowLayerPicker extends Mixins(DraggableMixin) {
           this.value.filter((val, arrayIdx) => idx !== arrayIdx)
         );
         // if we delete what is open, we close the window
-        this.vConfigOpen = this.currentIndex === idx ? false : this.vConfigOpen;
+        if (this.open === idx) {
+          this.$emit('update:open', -2);
+        }
       }
     });
   }
@@ -175,9 +178,13 @@ export default class FlowLayerPicker extends Mixins(DraggableMixin) {
 </script>
 
 <style scoped lang="scss">
+.draggable {
+  margin: 0;
+}
 .layer-picker-container {
   height: 100%;
-  padding: 0.5rem 0;
+  margin: 0.5rem -0.25rem 0.5rem 0;
+  padding-right: 0.25rem;
 }
 ::v-deep {
   .label {

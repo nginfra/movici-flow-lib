@@ -1,3 +1,5 @@
+import { Vue } from 'vue-property-decorator';
+
 export enum MovActionType {
   ADD = 'add',
   VIEW = 'view',
@@ -20,6 +22,7 @@ export interface ActionItem {
   event: string;
   colorScheme?: string;
   isDisabled?: boolean;
+  component?: typeof Vue;
 }
 
 export type ButtonItem = ActionItem;

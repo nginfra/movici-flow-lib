@@ -3,6 +3,7 @@ import { PropertySummary } from './schema';
 import { CameraOptions } from './visualization';
 import { RenderOrderType, UUID } from '.';
 import { PopupItem } from './popup';
+import { FlowChartConfig } from './charts';
 
 export enum FlowVisualizerType {
   POINTS = 'points',
@@ -165,6 +166,7 @@ export interface View {
 export interface FlowViewConfig {
   version: number;
   visualizers: FlowVisualizerConfig[];
+  charts?: FlowChartConfig[];
   camera?: CameraOptions;
   timestamp?: number;
 }

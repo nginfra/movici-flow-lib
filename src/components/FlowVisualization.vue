@@ -28,18 +28,29 @@
         </template>
       </ViewInfoBox>
       <b-tabs
+        :value="visualizerTabOpen"
+        @input="
+          changeVisualizer({
+            tab: $event,
+            index: -2
+          })
+        "
         ref="tabs"
         class="flow-tabs uppercase field is-flex-grow-0 is-flex-shrink-2"
         :style="tabHeight"
       >
         <b-tab-item :label="$t('flow.visualization.tabs.visualizers')">
           <FlowLayerPicker
+            ref="layerPicker"
             v-model="visualizers"
+            :open.sync="visualizerOpen"
             :scenario="currentScenario"
             :timestamp="timestamp"
           />
         </b-tab-item>
-        <b-tab-item disabled :label="$t('flow.visualization.tabs.kpi')"></b-tab-item>
+        <b-tab-item :label="$t('flow.visualization.tabs.charts')">
+          <FlowChartPicker v-model="charts" :open.sync="visualizerOpen" />
+        </b-tab-item>
       </b-tabs>
     </template>
     <template #mainView>
@@ -52,7 +63,18 @@
         buildings
         scale
       >
-        <template #control-zero="{ map, popup }">
+        <template
+          #control-zero="{ map, popup, contextPickInfo, resetContextPickInfo, visualizers }"
+        >
+          <MapContextMenu
+            v-if="getContextMenuActions(contextPickInfo).length"
+            :value="contextPickInfo"
+            :map="map"
+            :view-state="viewState"
+            :actions="getContextMenuActions(contextPickInfo)"
+            @chartAttributePicker="openChart(contextPickInfo, visualizers)"
+            @close="resetContextPickInfo"
+          />
           <template v-if="popup.mapPopups.length">
             <MapEntityPopup
               v-for="(p, i) in popup.mapPopups"
@@ -94,14 +116,26 @@
             />
           </template>
         </template>
-        <template #control-bottom="{ updateTimestamp, maxTimeAvailable }">
-          <TimeSlider
-            :value="timestamp"
-            @input="updateTimestamp($event)"
-            :customTimeFormat="customTimeFormat"
-            :type="timestamp < maxTimeAvailable ? 'is-primary' : 'is-dark'"
-            :timeline-info="timelineInfo"
-          />
+        <template #control-bottom="{ updateTimestamp, maxTimeAvailable, tapefileStores }">
+          <div class="box box-width-100">
+            <ChartVis
+              v-model="charts"
+              :currentChartId.sync="chartVisOpen"
+              :expanded.sync="chartVisExpanded"
+              :tapefileStores="tapefileStores"
+              :timelineInfo="timelineInfo"
+              :timestamp="timestamp"
+              :customTimeFormat="customTimeFormat"
+              @openConfig="chartConfigOpen = $event"
+            />
+            <TimeSlider
+              :value="timestamp"
+              @input="updateTimestamp($event)"
+              :customTimeFormat="customTimeFormat"
+              :type="timestamp < maxTimeAvailable ? 'is-primary' : 'is-dark'"
+              :timeline-info="timelineInfo"
+            />
+          </div>
         </template>
       </MapVis>
     </template>
@@ -111,18 +145,24 @@
 <script lang="ts">
 import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator';
 import {
+  ActionMenuItem,
   CameraOptions,
-  DatasetSummary,
+  DeckEntityObject,
   Nullable,
   TimeOrientedSimulationInfo,
   UUID,
-  View,
-  VisualizationMode
+  View
 } from '../types';
 import MapVis from './map/MapVis.vue';
 import FlowContainer from './FlowContainer.vue';
+import ChartVis from './charts/ChartVis.vue';
 import defaults from './map/defaults';
-import { ComposableVisualizerInfo } from '../visualizers/VisualizerInfo';
+import {
+  BaseVisualizerInfo,
+  ChartVisualizerInfo,
+  ChartVisualizerItem,
+  ComposableVisualizerInfo
+} from '../visualizers/VisualizerInfo';
 import FlowLayerPicker from './widgets/FlowLayerPicker.vue';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
@@ -130,6 +170,7 @@ import ViewInfoBox from './info_box/ViewInfoBox.vue';
 import SearchBar from './map/controls/SearchBar.vue';
 import NavigationControl from './map/controls/NavigationControl.vue';
 import BaseMapControl from './map/controls/BaseMapControl.vue';
+import MapContextMenu from './map_widgets/MapContextMenu.vue';
 import TimeSlider from './map_widgets/TimeSlider.vue';
 import { simplifiedCamera, validateForContentErrors } from '../visualizers/viewHelpers';
 import { buildFlowUrl } from '../utils';
@@ -139,9 +180,15 @@ import { successMessage } from '../utils/snackbar';
 import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
 import { MoviciError } from '@movici-flow-common/errors';
 import { transformBBox } from '@movici-flow-common/crs';
-import { isEmpty, isError } from 'lodash';
+import isError from 'lodash/isError';
 import MapEntityPopup from './map_widgets/MapEntityPopup.vue';
 import RightSidePopup from './map_widgets/RightSidePopup.vue';
+import { PickInfo } from '@deck.gl/core/lib/deck';
+import FlowChartPicker from './charts/FlowChartPicker.vue';
+import VisualizerManager from '@movici-flow-common/visualizers/VisualizerManager';
+import { Visualizer } from '@movici-flow-common/visualizers';
+import { isEmpty } from 'lodash';
+import ChartAttributePicker from './charts/ChartAttributePicker.vue';
 
 @Component({
   name: 'FlowVisualization',
@@ -156,9 +203,12 @@ import RightSidePopup from './map_widgets/RightSidePopup.vue';
     NavigationControl,
     BaseMapControl,
     TimeSlider,
+    MapContextMenu,
     FlowLegend,
     MapEntityPopup,
-    RightSidePopup
+    RightSidePopup,
+    FlowChartPicker,
+    ChartVis
   },
   beforeRouteLeave(to: unknown, from: unknown, next: () => void) {
     if ((this as FlowVisualization).isCurrentViewDirty) {
@@ -192,11 +242,18 @@ export default class FlowVisualization extends Vue {
   @Prop({ type: String }) readonly currentViewUUID?: UUID;
   @Ref('tabs') readonly tabs?: Vue;
   @Ref('mapVis') readonly mapVisEl!: MapVis;
+  @Ref('layerPicker') readonly layerPickerEl!: FlowLayerPicker;
   tabHeight: Partial<CSSStyleDeclaration> = {};
   isCurrentViewDirty = false;
   viewName = 'Untitled';
   viewState: Nullable<CameraOptions> = defaults.viewState();
+  visualizerTabOpen = 0;
+  visualizerOpen = -2;
+
   validVisualizers: ComposableVisualizerInfo[] = [];
+  charts: ChartVisualizerInfo[] = [];
+  chartVisOpen = '';
+  chartVisExpanded = false;
 
   get views(): View[] {
     return flowVisualizationStore.views;
@@ -250,10 +307,12 @@ export default class FlowVisualization extends Vue {
     return !isEqual(
       {
         visualizers: currentView.config?.visualizers,
+        charts: currentView.config?.charts,
         name: currentView.name
       },
       {
         visualizers: serializedView.config?.visualizers,
+        charts: serializedView.config?.charts,
         name: serializedView.name
       }
     );
@@ -281,11 +340,96 @@ export default class FlowVisualization extends Vue {
         view: viewUUID
       })
     );
+
     if (reload) {
       this.$router.go(0);
     }
   }
 
+  @Watch('chartConfigOpen')
+  afterSetGraphConfig() {
+    this.visualizerTabOpen = 1;
+  }
+
+  getContextMenuActions(info: PickInfo<unknown> | undefined): ActionMenuItem[] {
+    return info?.layer
+      ? [
+          {
+            label: 'Add attribute to a chart',
+            event: 'chartAttributePicker',
+            icon: 'chart-line'
+          }
+        ]
+      : [];
+  }
+
+  openChart(
+    pickInfo: PickInfo<DeckEntityObject<unknown>>,
+    visualizers: VisualizerManager<ComposableVisualizerInfo, Visualizer>
+  ) {
+    const layerId = pickInfo.layer.id.split('-')[0],
+      currentVisualizer = visualizers.getVisualizers().find(v => v.baseID === layerId);
+
+    if (currentVisualizer) {
+      const entityGroup = currentVisualizer.info.entityGroup,
+        datasetName = currentVisualizer.info.datasetName,
+        datasetUUID = currentVisualizer.info.datasetUUID;
+      this.openChartAttributePicker({
+        info: pickInfo,
+        entityGroup,
+        datasetName,
+        datasetUUID,
+        scenarioUUID: this.currentScenario?.uuid
+      });
+    }
+  }
+
+  async openChartAttributePicker({
+    info,
+    entityGroup,
+    datasetName,
+    datasetUUID,
+    scenarioUUID
+  }: {
+    info: PickInfo<DeckEntityObject<unknown>>;
+    entityGroup: string;
+    datasetName: string;
+    datasetUUID?: string | null;
+    scenarioUUID?: string;
+  }) {
+    this.$buefy.modal.open({
+      component: ChartAttributePicker,
+      parent: this,
+      width: 300,
+      canCancel: ['x', 'escape'],
+      customClass: 'overflow-visible',
+      props: {
+        value: this.charts,
+        object: info.object,
+        datasetName,
+        scenarioUUID,
+        datasetUUID,
+        entityGroup
+      },
+      events: {
+        openConfig: (index: number) => {
+          this.changeVisualizer({ tab: 1, index });
+        },
+        openChart: (id: string) => {
+          this.chartVisOpen = id;
+          this.chartVisExpanded = true;
+        },
+        input: (charts: ChartVisualizerInfo[]) => {
+          this.charts = charts;
+        }
+      }
+    });
+  }
+
+  changeVisualizer({ tab, index }: { tab: number; index: number }) {
+    this.visualizerTabOpen = tab;
+    this.visualizerOpen = index;
+  }
   /**
    * set the state of the visualization (visualizers, camera, etc) from a `FlowViewConfig` object
    * Visualizer config errors (such as invalid dataset or entity group) are logged and the
@@ -306,22 +450,30 @@ export default class FlowVisualization extends Vue {
         return obj;
       }, {} as Record<string, UUID>) ?? {};
 
-    const visualizers: ComposableVisualizerInfo[] = view.config.visualizers.map(conf => {
-      return new ComposableVisualizerInfo({
-        name: conf.name,
-        datasetName: conf.dataset_name,
-        datasetUUID: datasets[conf.dataset_name],
+    const visualizers: ComposableVisualizerInfo[] = view.config.visualizers.map(config => {
+      return ComposableVisualizerInfo.fromVisualizerConfig({
+        config,
+        datasets,
+        scenario: this.currentScenario
+      });
+    });
+
+    // When we can configure from view
+    const charts: ChartVisualizerInfo[] = (view.config.charts ?? []).map(conf => {
+      return new ChartVisualizerInfo({
+        title: conf.title,
+        attribute: conf.attribute,
         scenarioUUID: this.currentScenario?.uuid,
-        entityGroup: conf.entity_group,
-        additionalEntityGroups: conf.additional_entity_groups,
-        visible: conf.visible,
         settings: conf.settings,
-        mode: VisualizationMode.SCENARIO
+        items: conf.items.map(item => {
+          return new ChartVisualizerItem(item);
+        })
       });
     });
 
     this.viewName = view.name;
     this.visualizers = visualizers;
+    this.charts = charts;
 
     if (view.config.camera) {
       this.viewState = { ...view.config.camera, transitionDuration: 300 };
@@ -441,6 +593,7 @@ export default class FlowVisualization extends Vue {
 
   @Watch('viewName')
   @Watch('visualizers')
+  @Watch('charts')
   onUpdateView() {
     this.updateIsViewDirty(this.hasPendingChanges);
   }
@@ -455,7 +608,8 @@ export default class FlowVisualization extends Vue {
       config: {
         version: 1,
         timestamp: this.timestamp,
-        visualizers: this.visualizers.map(info => info.toVisualizerConfig())
+        visualizers: this.visualizers.map(info => info.toVisualizerConfig()),
+        charts: this.charts.map(info => info.toVisualizerConfig())
       }
     };
 
@@ -501,9 +655,18 @@ export default class FlowVisualization extends Vue {
     this.view = this.serializeCurrentView();
   }
 
+  @Watch('visualizers', { immediate: true })
+  resolveMapVisualizersDataset() {
+    this.doResolveDatasets(this.visualizers);
+  }
+
+  @Watch('charts', { immediate: true })
+  resolveChartVisualizersDataset() {
+    this.doResolveDatasets(this.charts);
+  }
+
   @Watch('visualizers')
   handleVisualizers() {
-    this.resolveDatasets();
     Promise.all(
       this.visualizers.map(async info => {
         info.unsetError('content');
@@ -525,8 +688,8 @@ export default class FlowVisualization extends Vue {
     });
   }
 
-  resolveDatasets() {
-    for (const vis of this.visualizers) {
+  doResolveDatasets(infos: BaseVisualizerInfo[]) {
+    for (const vis of infos) {
       vis.unsetError('resolve');
       try {
         vis.resolveDatasets(flowStore.datasetsByName);
@@ -537,6 +700,7 @@ export default class FlowVisualization extends Vue {
       }
     }
   }
+
   /**
    * Checks whether there are props for project and scenario.
    * If there is a project, we set in the component, which triggers the watcher
@@ -600,6 +764,7 @@ export default class FlowVisualization extends Vue {
       }
     }
   }
+
   get customTimeFormat(): (val: number) => string {
     // Time format is customized in such a way that we have at least 20 distinct displayed moments
     // so starting from a total duration 20 years, we display only the year, from a duration of 2
@@ -662,5 +827,8 @@ function formatDate(d: Date, levelOfDetail: number): string {
   .quick-save {
     color: $primary;
   }
+}
+.box-width-100 {
+  width: 100%;
 }
 </style>

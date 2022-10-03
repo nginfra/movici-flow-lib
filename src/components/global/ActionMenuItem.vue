@@ -1,16 +1,20 @@
 <template>
-  <a
-    :focusable="false"
-    :disabled="value.isDisabled"
-    :class="itemClass(value)"
-    @click="emit(value.event, $event)"
-    class="dropdown-item action-menu-item"
-  >
-    <b-icon :icon="value.icon" :pack="value.iconPack || 'far'" class="mr-2"></b-icon>
-    <span>
-      {{ value.label }}
-    </span>
-  </a>
+  <div class="item">
+    <a
+      v-if="!value.component"
+      :focusable="false"
+      :disabled="value.isDisabled"
+      :class="itemClass(value)"
+      @click="emit(value.event, $event)"
+      class="dropdown-item action-menu-item"
+    >
+      <b-icon :icon="value.icon" :pack="value.iconPack || 'far'" class="mr-2"></b-icon>
+      <span>
+        {{ value.label }}
+      </span>
+    </a>
+    <component v-else :is="value.component" />
+  </div>
 </template>
 
 <script lang="ts">

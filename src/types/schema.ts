@@ -3,7 +3,13 @@ import { Dataset } from './datasets';
 import { Scenario, ScenarioDataset, ShortScenario } from './scenarios';
 import { BoundingBox } from '@mapbox/geo-viewport';
 
-export const IMPORTANT_ATTRIBUTES = ['id', 'reference', 'display_name', 'name'];
+export enum ImportantAttribute {
+  DIPLAY_NAME = 'display_name',
+  NAME = 'name',
+  REFERENCE = 'reference'
+}
+
+export const IMPORTANT_ATTRIBUTES = Object.values(ImportantAttribute);
 
 export interface DatasetSummary {
   count: number;

@@ -4,8 +4,8 @@ import {
   LayerParams,
   Mapper,
   TopologyLayerData,
-  IVisualizer,
-  ITapefile
+  ITapefile,
+  IMapVisualizer
 } from '@movici-flow-common/types';
 import { ComposableVisualizerInfo } from '../VisualizerInfo';
 
@@ -34,7 +34,7 @@ export abstract class VisualizerModule<
    */
   abstract compose(
     params: LayerParams<LData, Coord>,
-    visualizer: IVisualizer
+    visualizer: IMapVisualizer<Coord>
   ): LayerParams<LData, Coord>;
 
   setInfo(info: ComposableVisualizerInfo) {

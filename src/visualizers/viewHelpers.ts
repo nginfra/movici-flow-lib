@@ -10,7 +10,7 @@ import {
 } from '../types';
 import { isGrid, isLines, isPoints, isPolygons } from './geometry';
 import { propertyString } from '../utils';
-import { ComposableVisualizerInfo } from './VisualizerInfo';
+import { ChartVisualizerInfo, ComposableVisualizerInfo } from './VisualizerInfo';
 
 export function visualizerSettingsValidator(summary: EntityGroupSummary) {
   return ({ settings }: ComposableVisualizerInfo) => {
@@ -59,18 +59,25 @@ function validatePopupClause(summary: EntityGroupSummary, clause: PopupClause) {
   }
 }
 
+export function chartVisualizerValidator(summary: EntityGroupSummary) {
+  return (info: ChartVisualizerInfo) => {
+    validateAttribute(summary, info.attribute);
+  };
+}
+
 export function validateAttribute(
   summary: EntityGroupSummary,
-  attribute?: ComponentProperty | null
+  attribute?: ComponentProperty | string | null
 ) {
   if (!attribute) {
     throw new Error(`No attribute defined`);
   }
+
+  const attrName = typeof attribute === 'string' ? attribute : attribute.name,
+    attrComponent = typeof attribute === 'string' ? null : attribute.component;
+
   for (const attr of summary.properties) {
-    if (
-      attribute.name === attr.name &&
-      (!attribute.component || attribute.component === attr.component)
-    ) {
+    if (attrName === attr.name && (!attrComponent || attrComponent === attr.component)) {
       return attr;
     }
   }

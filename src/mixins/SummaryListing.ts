@@ -11,6 +11,7 @@ import { flowStore } from '../store/store-accessor';
 @Component
 export default class SummaryListing extends Vue {
   summary: DatasetSummary | null = null;
+  currentDataset: Dataset | ScenarioDataset | null = null;
   currentDatasetName: string | null = null;
   currentDatasetUUID: string | null = null;
   currentEntityName: string | null = null;

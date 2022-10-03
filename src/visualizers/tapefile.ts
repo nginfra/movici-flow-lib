@@ -1,3 +1,5 @@
+import IdleWorker from '@movici-flow-common/utils/IdleWorker';
+import { heapPop, heapPush } from '@movici-flow-common/utils/queue';
 import { range } from 'lodash';
 import {
   ComponentProperty,
@@ -362,6 +364,108 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
     this.trimmedUntil = this.updates.length - 1;
   }
 }
+
+export class StreamingTapefile<T> extends BaseTapefile<T> {
+  attribute: string;
+  IDLE_MS = 3000;
+  inner?: SinglePropertyTapefile<T>;
+  private pending: [number, EntityUpdate<T>][];
+  private nextUpdateSequence: number;
+  private writer?: TapefileWriter<T>;
+  private worker?: IdleWorker;
+  private timestampCallbacks: ((timestamp: number) => void)[];
+  private workOnIdle: boolean;
+  constructor(attribute: string, workOnIdle = false) {
+    super({});
+    this.attribute = attribute;
+    this.workOnIdle = workOnIdle;
+    this.pending = [];
+
+    this.nextUpdateSequence = -1; // -1 means waiting for init data
+    this.timestampCallbacks = [];
+  }
+  get initialized() {
+    return this.nextUpdateSequence >= 0;
+  }
+  get data() {
+    return this.inner?.data ?? [];
+  }
+
+  moveTo(time: number) {
+    this.worker?.notIdle();
+    return this.inner?.moveTo(time);
+  }
+  copyState(): T[] {
+    return this.inner?.copyState() ?? [];
+  }
+  initialize({ index, initialData }: { index?: Index; initialData: EntityGroupData<T> }) {
+    if (this.initialized) throw new Error(`Tapefile for ${this.attribute} Already initialized`);
+    if (!index) {
+      index = new Index(initialData.id);
+    }
+    this.inner = new SinglePropertyTapefile({
+      componentProperty: { name: this.attribute, component: null },
+      length: index.length
+    });
+    this.writer = new TapefileWriter(index, this.inner, this.attribute);
+    this.addUpdate(
+      {
+        timestamp: 0,
+        iteration: -1,
+        data: initialData
+      },
+      -1
+    );
+  }
+  addUpdate(update: EntityUpdate<T>, sequenceNumber: number) {
+    this.pendUpdate(update, sequenceNumber);
+    if (!this.writer) {
+      return;
+    }
+    let newDataTimestamp: number | null = null;
+    while (this.pending.length && this.pending[0][0] === this.nextUpdateSequence) {
+      const nextUpdate = (
+        heapPop(this.pending, (a, b) => a[0] - b[0]) as [number, EntityUpdate<T>]
+      )[1];
+      this.writer.appendUpdate(nextUpdate);
+      this.nextUpdateSequence++;
+      newDataTimestamp = nextUpdate.timestamp;
+    }
+    if (newDataTimestamp !== null) {
+      for (const cb of this.timestampCallbacks) {
+        cb(newDataTimestamp);
+      }
+    }
+  }
+  private pendUpdate(update: EntityUpdate<T>, sequenceNumber: number) {
+    heapPush(
+      this.pending,
+      [sequenceNumber, update] as [number, EntityUpdate<T>],
+      (a, b) => a[0] - b[0]
+    );
+  }
+  calculateRollbacksOnIdle() {
+    if (this.workOnIdle) {
+      this.worker = new IdleWorker(this.calculateNextRollback.bind(this), this.IDLE_MS);
+    }
+  }
+  calculateNextRollback(): boolean {
+    // this function can be given as a task for the IdleWorker. It returns a boolean that indicates
+    // whether this task must be run again directly after completion
+    if (!this.inner) return false;
+    return this.inner.calculateNextRollback();
+  }
+
+  onData(cb: (timestamp: number) => void) {
+    this.timestampCallbacks.push(cb);
+  }
+
+  setSpecialValue(val: T): void {
+    this.inner?.setSpecialValue(val);
+    super.setSpecialValue(val);
+  }
+}
+
 function hasFullRollback<T>(
   upd: TapefileUpdate<T>
 ): upd is TapefileUpdate<T> & { hasFullRollback: true; rollback: T[] } {

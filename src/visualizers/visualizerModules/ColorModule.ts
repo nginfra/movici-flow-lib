@@ -6,7 +6,7 @@ import {
   RGBAColor,
   StaticColorClause,
   TopologyLayerData,
-  IVisualizer,
+  IMapVisualizer,
   ITapefile
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
@@ -32,7 +32,7 @@ export default class ColorModule<
   constructor(params: VisualizerModuleParams) {
     super(params);
   }
-  compose(params: LayerParams<LData, Coord>, visualizer: IVisualizer) {
+  compose(params: LayerParams<LData, Coord>, visualizer: IMapVisualizer<Coord>) {
     const changed = this.updateSettings(this.info.settings?.color ?? {});
     if (!params.props.updateTriggers) {
       params.props.updateTriggers = {};
@@ -80,7 +80,10 @@ export default class ColorModule<
     return changed;
   }
 
-  private updateAccessor(changed: boolean, visualizer: IVisualizer): ColorAccessor<LData> {
+  private updateAccessor(
+    changed: boolean,
+    visualizer: IMapVisualizer<Coord>
+  ): ColorAccessor<LData> {
     if (!changed && this.accessor) {
       return this.accessor;
     }
@@ -90,7 +93,7 @@ export default class ColorModule<
 
   private getAccessor(
     clause: ColorClause | undefined,
-    visualizer: IVisualizer
+    visualizer: IMapVisualizer<Coord>
   ): ColorAccessor<LData> {
     if (clause?.byValue?.attribute) {
       const colorMap = new NumberMapper<RGBAColor>({

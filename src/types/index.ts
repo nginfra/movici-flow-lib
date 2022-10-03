@@ -1,5 +1,6 @@
 export * from './api';
 export * from './backend';
+export * from './charts';
 export * from './colors';
 export * from './datasets';
 export * from './deck';

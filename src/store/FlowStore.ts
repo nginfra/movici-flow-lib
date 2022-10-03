@@ -25,11 +25,10 @@ import {
   ViewHasNoScenario,
   ViewNotInScenario,
   ViewNotInProject,
-  SummaryNotFound,
+  SummaryNotFound
 } from '@movici-flow-common/errors';
 import { sortByKeys } from '@movici-flow-common/utils';
 import { flowVisualizationStore } from './store-accessor';
-import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 
 @Module({
   name: 'flow',

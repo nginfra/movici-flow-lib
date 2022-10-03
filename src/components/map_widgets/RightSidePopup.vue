@@ -2,8 +2,8 @@
   <WidgetContainer class="p-0">
     <DataViewContent
       :value="value.content"
-      :class="{ [value.highlighted]: !!value.highlighted }"
       :timestamp="timestamp"
+      :class="{ [value.highlighted]: !!value.highlighted }"
       class="p-3"
       @togglePosition="$emit('toggle')"
       @close="$emit('close')"

@@ -5,7 +5,7 @@ import {
   PopupClause,
   PopupContent,
   TopologyLayerData,
-  IVisualizer,
+  IMapVisualizer,
   PopupContentItem,
   DeckMouseEvent,
   PickingHandler
@@ -29,21 +29,22 @@ export default class PopupModule<
     this.enums = this.info.summary?.general?.enum ?? {};
   }
 
-  compose(params: LayerParams<LData, Coord>, visualizer: IVisualizer): LayerParams<LData, Coord> {
+  compose(
+    params: LayerParams<LData, Coord>,
+    visualizer: IMapVisualizer<Coord>
+  ): LayerParams<LData, Coord> {
     const changed = this.updateSettings(this.info.settings?.popup || null),
       accessor = this.updateAccessor(changed, visualizer),
       show = this.currentSettings?.show;
 
-    params.props.pickable = false;
-
     if (show) {
       params.props.onHover = accessor;
       params.props.onClick = accessor;
-      params.props.pickable = true;
     }
 
     return params;
   }
+
   private updateSettings(settings: PopupClause | null): boolean {
     const changed = !isEqual(settings, this.currentSettings);
     if (changed) {
@@ -52,7 +53,10 @@ export default class PopupModule<
     return changed;
   }
 
-  private updateAccessor(changed: boolean, visualizer: IVisualizer): PickingHandler<LData> | null {
+  private updateAccessor(
+    changed: boolean,
+    visualizer: IMapVisualizer<Coord>
+  ): PickingHandler<LData> | null {
     if (!changed && this.accessor) {
       return this.accessor;
     }
@@ -62,7 +66,7 @@ export default class PopupModule<
 
   private getAccessor(
     clause: PopupClause | null,
-    visualizer: IVisualizer
+    visualizer: IMapVisualizer<Coord>
   ): PickingHandler<LData> | null {
     if (!clause || !(clause.show ?? true)) {
       return null;
@@ -86,7 +90,7 @@ export default class PopupModule<
         visualizer.onHover(null, ev);
       }
 
-      return true;
+      return false;
     };
   }
 }
@@ -94,10 +98,12 @@ export default class PopupModule<
 export class PopupContentAccessor {
   private readonly tapefiles: ITapefile<unknown>[];
   private popup: PopupClause;
+
   constructor(popup: PopupClause) {
     this.tapefiles = new Array(popup.items.length);
     this.popup = popup;
   }
+
   setTapefile(tapefile: ITapefile<unknown>, index: number) {
     if (index >= this.tapefiles.length) {
       throw new Error('Tapefile assignment out of bounds');

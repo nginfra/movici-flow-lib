@@ -2,7 +2,11 @@
   <b-collapse v-model="isOpen">
     <template #trigger="{ open }">
       <span class="is-flex is-align-items-center mb-2">
-        <b-icon size="is-small" :icon="open ? 'angle-up' : 'angle-down'"></b-icon>
+        <b-button
+          class="mr-2 is-transparent is-borderless"
+          size="is-small"
+          :icon-left="open ? 'angle-down' : 'angle-up'"
+        />
         <label class="is-size-6-half ml-1">
           {{ $t('flow.visualization.colorConfig.advanced.title') }}
         </label>

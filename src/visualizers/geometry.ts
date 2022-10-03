@@ -10,7 +10,11 @@ import {
   PolygonCoordinate,
   PolygonGeometryData,
   TopologyLayerData,
-  GridCellGeometryData
+  GridCellGeometryData,
+  EntityGroupImportantAttributesData,
+  ImportantAttributeData,
+  ImportantAttribute,
+  BaseEntityGroup
 } from '../types';
 import { DatasetDownloader } from '../utils/DatasetDownloader';
 
@@ -60,16 +64,11 @@ export abstract class SimpleTopologyGetter<
     const length = data.id.length;
     const rv: TopologyLayerData<Coord>[] = [];
     for (let i = 0; i < length; i++) {
-      // todo test this
       const coord = this.getCoordinate(data, i, crs);
       if (!coord) {
         continue;
       }
-      rv.push({
-        id: data.id[i],
-        idx: i,
-        coordinates: coord
-      });
+      rv.push(createDataObject(data, coord, i));
     }
     return rv;
   }
@@ -91,10 +90,10 @@ export class PointTopologyGetter extends SimpleTopologyGetter<PointGeometryData,
     { component: null, name: 'geometry.x' },
     { component: null, name: 'geometry.y' }
   ];
-  protected getDatasetData(): Promise<PointGeometryData> {
-    return this.store.getDatasetState<PointGeometryData>({
+  protected getDatasetData(): Promise<PointGeometryData & EntityGroupImportantAttributesData> {
+    return this.store.getDatasetState<PointGeometryData & EntityGroupImportantAttributesData>({
       entityGroup: this.entity,
-      properties: POINT_ATTRIBUTES
+      properties: withImportantAttributes(POINT_ATTRIBUTES)
     });
   }
 
@@ -114,10 +113,10 @@ export class LineTopologyGetter extends SimpleTopologyGetter<LineGeometryData, L
     { component: null, name: 'geometry.linestring_2d' },
     { component: null, name: 'geometry.linestring_3d' }
   ];
-  protected getDatasetData(): Promise<LineGeometryData> {
-    return this.store.getDatasetState<LineGeometryData>({
+  protected getDatasetData(): Promise<LineGeometryData & EntityGroupImportantAttributesData> {
+    return this.store.getDatasetState<LineGeometryData & EntityGroupImportantAttributesData>({
       entityGroup: this.entity,
-      properties: LINE_ATTRIBUTES
+      properties: withImportantAttributes(LINE_ATTRIBUTES)
     });
   }
 
@@ -138,10 +137,10 @@ export class PolygonTopologyGetter extends SimpleTopologyGetter<
   PolygonCoordinate
 > {
   props: ComponentProperty[] = [{ component: null, name: 'geometry.polygon' }];
-  protected getDatasetData(): Promise<PolygonGeometryData> {
-    return this.store.getDatasetState<PolygonGeometryData>({
+  protected getDatasetData(): Promise<PolygonGeometryData & EntityGroupImportantAttributesData> {
+    return this.store.getDatasetState<PolygonGeometryData & EntityGroupImportantAttributesData>({
       entityGroup: this.entity,
-      properties: POLYGON_ATTRIBUTES
+      properties: withImportantAttributes(POLYGON_ATTRIBUTES)
     });
   }
 
@@ -168,11 +167,13 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
     this.cellEntityGroup = cellEntityGroup;
     this.pointEntityGroup = pointEntityGroup;
   }
-  async getTopology(): Promise<TopologyLayerData<PolygonCoordinate>[]> {
+  async getTopology(): Promise<
+    TopologyLayerData<PolygonCoordinate & EntityGroupImportantAttributesData>[]
+  > {
     const [cellData, pointData, metaData] = await Promise.all([
-      this.store.getDatasetState<GridCellGeometryData>({
+      this.store.getDatasetState<GridCellGeometryData & EntityGroupImportantAttributesData>({
         entityGroup: this.cellEntityGroup,
-        properties: GRID_CELL_ATTRIBUTES
+        properties: withImportantAttributes(GRID_CELL_ATTRIBUTES)
       }),
       this.store.getDatasetState<PointGeometryData>({
         entityGroup: this.pointEntityGroup,
@@ -186,21 +187,17 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
   }
 
   private getTopologyFromEntityData(
-    data: GridCellGeometryData,
+    data: GridCellGeometryData & EntityGroupImportantAttributesData,
     points: PointsByIdT
-  ): TopologyLayerData<PolygonCoordinate>[] {
+  ): TopologyLayerData<PolygonCoordinate & EntityGroupImportantAttributesData>[] {
     const length = data.id.length;
-    const rv: TopologyLayerData<PolygonCoordinate>[] = [];
+    const rv: (TopologyLayerData<PolygonCoordinate> & Partial<ImportantAttributeData>)[] = [];
     for (let i = 0; i < length; i++) {
       const coord = this.getCellCoordinates(data, i, points);
       if (!coord) {
         continue;
       }
-      rv.push({
-        id: data.id[i],
-        idx: i,
-        coordinates: coord
-      });
+      rv.push(createDataObject(data, coord, i));
     }
     return rv;
   }
@@ -245,6 +242,18 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
   }
 }
 
+function withImportantAttributes(attrs: ComponentProperty[]): ComponentProperty[] {
+  return [
+    ...attrs,
+    ...Object.values(ImportantAttribute).map((a: string) => {
+      return {
+        component: '',
+        name: a
+      };
+    })
+  ];
+}
+
 function containsAttributes(
   attributeNames: string[],
   minFound: number
@@ -256,6 +265,30 @@ function containsAttributes(
       }).length >= minFound
     );
   };
+}
+
+function createDataObject<
+  Data extends BaseEntityGroup & EntityGroupImportantAttributesData,
+  Coord extends Coordinate
+>(
+  data: Data,
+  coord: Coord,
+  idx: number
+): TopologyLayerData<Coord> & Partial<ImportantAttributeData> {
+  // Typing this correctly using ImportantAttribute is a bitch so fallback to any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rv: any = {
+    idx,
+    id: data.id[idx],
+    coordinates: coord
+  };
+  for (const attr of Object.values(ImportantAttribute)) {
+    const attrData = data[attr] as string[];
+    if (data[attr]) {
+      rv[attr] = attrData[idx];
+    }
+  }
+  return rv;
 }
 
 export const isPoints = containsAttributes(['geometry.x', 'geometry.y'], 2);

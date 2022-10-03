@@ -17,7 +17,10 @@ import {
   MeasureAngleMode
 } from '@nebula.gl/edit-modes';
 import { PickInfo } from 'deck.gl';
+import { BaseVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { FetchRequestOptions } from './backend';
+import { ITopologyGetter } from '@movici-flow-common/visualizers/geometry';
+
 import { DeckMouseEvent } from './deck';
 
 export interface CameraOptions {
@@ -61,11 +64,6 @@ export type NebulaMode =
   | MeasureAreaMode
   | MeasureAngleMode;
 
-export enum VisualizationMode {
-  GEOMETRY = 'geometry',
-  SCENARIO = 'scenario'
-}
-
 export enum LayerKind {
   STATIC_COLOR = 'static_color',
   HEAT_MAP = 'heat_map',
@@ -78,6 +76,15 @@ export type ColorMapping = [number, RGBAColor][];
 export type AdvColorMapping = [string | number, RGBAColor][];
 
 export interface IVisualizer {
+  setInfo(info: BaseVisualizerInfo): void;
+  setOrder(ord: number): void;
+  baseID: string;
+  order: number;
+  load(): Promise<void>;
+}
+
+export interface IMapVisualizer<Coord extends Coordinate> {
+  topologyGetter: ITopologyGetter<Coord>;
   forceRender(): void;
   requestTapefile: (attribute: ComponentProperty, onLoad: (t: ITapefile<unknown>) => void) => void;
   onClick: PopupEventCallback;

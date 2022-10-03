@@ -182,6 +182,16 @@
       "legendsConfig": {
         "reset": "Set as default"
       },
+      "graph": {
+        "title": "Attribute Chart Configurator",
+        "graphDisplayName": "Chart display name",
+        "showCharts": "Show Charts",
+        "lines": "Lines",
+        "showEntityDetails": "Show details",
+        "hideEntityDetails": "Hide details",
+        "chooseAttribute": "Choose an attribute",
+        "attributeInfo": "Choose an attribute from selected entity to be displayed in a chart"
+      },
       "dialogs": {
         "closeConfigurator": "Close current configurator?",
         "confirmDeleteView": "Are you sure you want to delete View <b>{name}</b> for everyone?",
@@ -200,7 +210,8 @@
         "leaveView": "Do you want to leave the Visualisation? <br>You will need to reload the view.",
         "viewCreateSuccess": "View successfully saved",
         "viewDeleteSuccess": "View successfully deleted",
-        "viewUpdateSuccess": "View successfully updated"
+        "viewUpdateSuccess": "View successfully updated",
+        "deleteChart": "Do you really want to delete <b>{name}</b> Chart?"
       },
       "resetValues": "Reset values to default",
       "interpolateMinMax": "Recalculate step values",
@@ -244,6 +255,7 @@
       "static": "Static",
       "tabs": {
         "kpi": "KPI",
+        "charts": "Charts",
         "visualizers": "Visualisers"
       },
       "visualiserDisplayName": "Visualiser display name"
@@ -305,6 +317,7 @@
     "dataset_type": "Dataset Type",
     "dataset_types": "@:(resources.dataset_type)s",
     "datasets": "@:(resources.dataset)s",
+    "entity": "Entity",
     "entity_type": "Entity Type",
     "entity_types": "@:(resources.entity_type)s",
     "entityGroup": "Entity group",

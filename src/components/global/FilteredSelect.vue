@@ -5,6 +5,7 @@
     :placeholder="warning ? warning : $t('actions.select')"
     size="is-small"
     expanded
+    :disabled="disabled"
   >
     <option
       v-for="(val, index) in options"
@@ -30,6 +31,7 @@ export default class FilteredSelect<T> extends Vue {
   @Prop({ type: Function }) readonly displayName?: (val: T) => string;
   @Prop({ type: Function }) readonly getTitle?: (val: T) => string;
   @Prop({ type: String }) readonly warningMessage?: string;
+  @Prop({ type: Boolean }) readonly disabled!: boolean;
 
   input(val: T) {
     this.$emit('input', val);

@@ -1,7 +1,4 @@
-import {
-  CameraOptions,
-  Project,
-} from '@movici-flow-common/types';
+import { CameraOptions, Project } from '@movici-flow-common/types';
 
 function defaultProject(): Project {
   return {
@@ -21,7 +18,6 @@ export default {
       pitch: 0
     };
   },
-
 
   project: defaultProject
 };

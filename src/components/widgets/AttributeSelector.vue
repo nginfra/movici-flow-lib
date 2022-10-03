@@ -6,6 +6,7 @@
     :getTitle="getTitle"
     :displayName="displayName"
     :filterVal="filterProp"
+    :disabled="disabled"
   />
 </template>
 
@@ -19,6 +20,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 export default class AttributeSelector extends Vue {
   @Prop({ type: Object, default: null }) readonly value!: PropertySummary | null;
   @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
+  @Prop({ type: Boolean }) readonly disabled!: boolean;
   @Prop({ type: Function, default: () => () => true }) readonly filterProp!: (
     prop: PropertySummary
   ) => boolean;

@@ -10,7 +10,9 @@ import {
   PointCoordinate,
   PolygonCoordinate,
   TopologyLayerData,
-  IVisualizer
+  IMapVisualizer,
+  PopupEventCallback,
+  FetchRequestOptions
 } from '../types';
 import { parsePropertyString, propertyString } from '..//utils';
 import { ArcLayer, PathLayer, PolygonLayer, ScatterplotLayer } from '@deck.gl/layers';
@@ -37,31 +39,46 @@ import { isError } from 'lodash';
 import GridLayer from './layers/GridLayer';
 import FloodingGridModule from './visualizerModules/FloodingGridModule';
 import GridColorModule from './visualizerModules/GridColorModule';
+import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
+
+export interface ComposableVisualizerContext extends VisualizerContext<ComposableVisualizerInfo> {
+  datasetStore: DatasetDownloader;
+}
 
 abstract class ComposableVisualizer<
     Coord extends Coordinate,
     LData extends TopologyLayerData<Coord>,
     Layer_ extends Layer<LData>
   >
-  extends BaseVisualizer<Coordinate, LData, Layer_>
-  implements IVisualizer
+  extends BaseVisualizer<ComposableVisualizerInfo>
+  implements IMapVisualizer<Coord>
 {
+  datasetStore: DatasetDownloader;
   attributes: Record<string, ((t: ITapefile<unknown>) => void)[]>;
   tapefiles: Record<string, ITapefile<unknown>>;
-  declare topology?: LData[];
+  topology?: LData[];
   modules: VisualizerModule<Coord, LData>[] | null;
   layerParams: LayerParams<LData, Coord> | null = null;
   forceRenderCounter: number;
   forceUpdateTriggerCounter: number;
   timestamp?: number;
-  constructor(config: VisualizerContext) {
+  onClick: PopupEventCallback;
+  onHover: PopupEventCallback;
+
+  constructor(config: ComposableVisualizerContext) {
     super(config);
+    this.datasetStore = config.datasetStore;
+
     this.attributes = {};
     this.tapefiles = {};
     this.modules = null;
     this.forceRenderCounter = 0;
     this.forceUpdateTriggerCounter = 0;
+    this.onClick = () => {};
+    this.onHover = () => {};
   }
+
+  abstract topologyGetter: ITopologyGetter<Coord>;
 
   abstract getModules(): VisualizerModule<Coord, LData>[];
 
@@ -80,7 +97,7 @@ abstract class ComposableVisualizer<
     if (this.info.visible) {
       this.topology ??= (await this.topologyGetter.getTopology()) as LData[];
       this.layerParams = this.compose();
-      await this.ensureTapefiles();
+      this.ensureTapefiles();
       this.distributeTapefiles();
     } else if (this.layerParams !== null) {
       this.layerParams = this.compose();
@@ -130,10 +147,10 @@ abstract class ComposableVisualizer<
     this.attributes[key].push(onLoad);
   }
 
-  async ensureTapefiles() {
+  ensureTapefiles() {
     const toDownload = Object.keys(this.attributes).filter(attr => !this.tapefiles[attr]);
     if (toDownload.length) {
-      const tapefiles = await this.tapefileStore.getTapefiles<unknown>({
+      const tapefiles = this.tapefileStore.getTapefiles<unknown>({
         store: this.datasetStore,
         entityGroup: this.info.entityGroup,
         attributes: toDownload.map(s => parsePropertyString(s)),
@@ -160,6 +177,11 @@ abstract class ComposableVisualizer<
         callback(this.tapefiles[key]);
       }
     }
+  }
+
+  setCallbacks(callbacks: { onClick?: PopupEventCallback; onHover?: PopupEventCallback }) {
+    this.onClick = callbacks.onClick || this.onClick;
+    this.onHover = callbacks.onHover || this.onHover;
   }
 
   updateTimestamp(timestamp: number) {
@@ -247,6 +269,12 @@ abstract class ComposableVisualizer<
     }
     return params;
   }
+  getFetchRequest<T extends keyof FetchRequestOptions>(
+    request: T,
+    options: FetchRequestOptions[T]
+  ): { url: string; options: RequestInit } {
+    return this.datasetStore.backend.fetch.getRequest(request, options);
+  }
 }
 
 export class ComposablePointVisualizer extends ComposableVisualizer<
@@ -273,6 +301,7 @@ export class ComposablePointVisualizer extends ComposableVisualizer<
         visible: this.info.visible,
         opacity: 0.9,
         getPosition: (d: TopologyLayerData<PointCoordinate>) => d.coordinates,
+        pickable: true,
         parameters: {
           depthTest: false
         },
@@ -305,6 +334,7 @@ export class ComposableIconVisualizer extends ComposableVisualizer<
         data: this.topology ?? [],
         visible: this.info.visible,
         getPosition: (d: TopologyLayerData<PointCoordinate>) => d.coordinates,
+        pickable: true,
         parameters: {
           depthTest: false
         },
@@ -338,6 +368,7 @@ export class ComposableLineVisualizer extends ComposableVisualizer<
         rounded: true,
         visible: this.info.visible,
         getPath: (d: TopologyLayerData<LineCoordinate>) => d.coordinates,
+        pickable: true,
         parameters: {
           depthTest: false
         },
@@ -371,6 +402,7 @@ export class ComposablePolygonVisualizer extends ComposableVisualizer<
         lineJointRounded: true,
         visible: this.info.visible,
         getPolygon: (d: TopologyLayerData<PolygonCoordinate>) => d.coordinates,
+        pickable: true,
         parameters: {
           depthTest: false
         },
@@ -393,6 +425,7 @@ export class ComposableArcVisualizer extends ComposableLineVisualizer {
         getTargetPosition: (d: TopologyLayerData<LineCoordinate>) => {
           return d.coordinates[d.coordinates.length - 1];
         },
+        pickable: true,
         parameters: {
           depthTest: false
         },

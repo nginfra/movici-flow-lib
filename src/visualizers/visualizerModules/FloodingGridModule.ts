@@ -1,7 +1,7 @@
 import {
   Coordinate,
   FloodingGridClause,
-  IVisualizer,
+  IMapVisualizer,
   LayerParams,
   TopologyLayerData
 } from '@movici-flow-common/types';
@@ -21,7 +21,7 @@ export default class FloodingGridModule<
   currentSettings?: FloodingGridClause;
   workerID?: number;
 
-  compose(params: LayerParams<LData, Coord>, visualizer: IVisualizer) {
+  compose(params: LayerParams<LData, Coord>, visualizer: IMapVisualizer<Coord>) {
     if (params.type.layerName !== 'GridLayer') {
       return params;
     }

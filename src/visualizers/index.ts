@@ -1,6 +1,5 @@
-import { VisualizerContext } from './visualizers';
 import { FlowVisualizerType, Nullable } from '../types';
-import { ComposableVisualizerInfo } from './VisualizerInfo';
+import { BaseVisualizerInfo, ComposableVisualizerInfo } from './VisualizerInfo';
 import {
   ComposableArcVisualizer,
   ComposableFloodingGridVisualizer,
@@ -8,7 +7,8 @@ import {
   ComposableIconVisualizer,
   ComposableLineVisualizer,
   ComposablePointVisualizer,
-  ComposablePolygonVisualizer
+  ComposablePolygonVisualizer,
+  ComposableVisualizerContext
 } from './composableVisualizers';
 
 export type Visualizer =
@@ -20,10 +20,10 @@ export type Visualizer =
   | ComposableFloodingGridVisualizer;
 
 export interface VisualizerConstructor {
-  new (config: VisualizerContext): Visualizer;
+  new (config: ComposableVisualizerContext): Visualizer;
 }
 
-export function getVisualizer(config: VisualizerContext): Visualizer {
+export function getVisualizer(config: ComposableVisualizerContext): Visualizer {
   const visClass = getVisualizerType(config.info);
   if (!visClass) {
     throw new Error(`Cannot visualize ${config.info.id}`);
@@ -32,7 +32,10 @@ export function getVisualizer(config: VisualizerContext): Visualizer {
   return new visClass(config);
 }
 
-export function getVisualizerType(info: ComposableVisualizerInfo): Nullable<VisualizerConstructor> {
+export function getVisualizerType(info: BaseVisualizerInfo): Nullable<VisualizerConstructor> {
+  if (!(info instanceof ComposableVisualizerInfo)) {
+    return null;
+  }
   switch (info.settings?.type) {
     case FlowVisualizerType.POINTS:
       return ComposablePointVisualizer;

@@ -2,16 +2,20 @@ import {
   ComponentProperty,
   EntityGroupData,
   EntityGroupSpecialValues,
-  EntityUpdate,
   Update,
   UpdateWithData,
   UUID
 } from '@movici-flow-common/types';
 import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
-import { heapPop, heapPush, PriorityQueue } from '@movici-flow-common/utils/queue';
+import EventHandler from '@movici-flow-common/utils/EventHandler';
+import { PriorityQueue } from '@movici-flow-common/utils/queue';
 import StatusTracker from '@movici-flow-common/utils/StatusTracker';
-import { BaseTapefile, Index, SinglePropertyTapefile, TapefileWriter } from './tapefile';
+import { Index, StreamingTapefile } from './tapefile';
 import { PrioritizedTask, BatchedTaskDispatcher, ITaskDispatcher, Task } from './tasks';
+interface TapefileStoreConfig {
+  onData?: (ts: number) => void;
+  onReady?: () => void;
+}
 
 export class TapefileStore {
   // keys in TapefileStore.tapefiles are `datasetUUID:entityGroup:attribute`. See also
@@ -21,7 +25,7 @@ export class TapefileStore {
   private currentProgress: Map<StreamingTapefile<unknown>, Record<string, number>>;
   private onDataCallback?: (timestamp: number) => void;
   private tasks: ITaskDispatcher<Task<unknown>>;
-  constructor(config?: { onData?: (ts: number) => void; onReady?(): void }) {
+  constructor(config?: TapefileStoreConfig) {
     this.tapefiles = {};
     this.tasks = new BatchedTaskDispatcher({
       BATCH_SIZE: 20,
@@ -55,7 +59,14 @@ export class TapefileStore {
     }
     return [this.tapefiles[key] as StreamingTapefile<T>, mustCreate];
   }
-
+  getTapefile<T>(params: {
+    entityGroup: string;
+    attributes: ComponentProperty[];
+    store: DatasetDownloader;
+    status?: StatusTracker;
+  }): StreamingTapefile<T> {
+    return this.getTapefiles<T>(params)[0];
+  }
   getTapefiles<T>({
     entityGroup,
     attributes,
@@ -288,156 +299,22 @@ function getUpdateDataTask({
     priority: update.timestamp
   };
 }
-export class StreamingTapefile<T> extends BaseTapefile<T> {
-  attribute: string;
-  IDLE_MS = 3000;
-  inner?: SinglePropertyTapefile<T>;
-  private pending: [number, EntityUpdate<T>][];
-  private nextUpdateSequence: number;
-  private writer?: TapefileWriter<T>;
-  private worker?: IdleWorker;
-  private timestampCallbacks: ((timestamp: number) => void)[];
-  private workOnIdle: boolean;
-  constructor(attribute: string, workOnIdle = false) {
-    super({});
-    this.attribute = attribute;
-    this.workOnIdle = workOnIdle;
-    this.pending = [];
 
-    this.nextUpdateSequence = -1; // -1 means waiting for init data
-    this.timestampCallbacks = [];
+export class TapefileStoreCollection extends EventHandler<'data' | 'ready', number> {
+  private tapefileStores: Record<UUID, TapefileStore>;
+  constructor() {
+    super();
+    this.tapefileStores = {};
   }
-  get initialized() {
-    return this.nextUpdateSequence >= 0;
-  }
-  get data() {
-    return this.inner?.data ?? [];
-  }
-
-  moveTo(time: number) {
-    this.worker?.notIdle();
-    return this.inner?.moveTo(time);
-  }
-  copyState(): T[] {
-    return this.inner?.copyState() ?? [];
-  }
-  initialize({ index, initialData }: { index: Index; initialData: EntityGroupData<T> }) {
-    if (this.initialized) throw new Error(`Tapefile for ${this.attribute} Already initialized`);
-    this.inner = new SinglePropertyTapefile({
-      componentProperty: { name: this.attribute, component: null },
-      length: index.length
+  ensure(scenarioUUID?: UUID | null): TapefileStore {
+    scenarioUUID = scenarioUUID ?? '';
+    this.tapefileStores[scenarioUUID] ??= new TapefileStore({
+      onData: (ts: number) => this.invokeCallbacks('data', ts),
+      onReady: () => this.invokeCallbacks('ready', Number.MAX_SAFE_INTEGER)
     });
-    this.writer = new TapefileWriter(index, this.inner, this.attribute);
-    this.addUpdate(
-      {
-        timestamp: 0,
-        iteration: -1,
-        data: initialData
-      },
-      -1
-    );
+    return this.tapefileStores[scenarioUUID];
   }
-  addUpdate(update: EntityUpdate<T>, sequenceNumber: number) {
-    this.pendUpdate(update, sequenceNumber);
-    if (!this.writer) {
-      return;
-    }
-    let newDataTimestamp: number | null = null;
-    while (this.pending.length && this.pending[0][0] === this.nextUpdateSequence) {
-      const nextUpdate = (
-        heapPop(this.pending, (a, b) => a[0] - b[0]) as [number, EntityUpdate<T>]
-      )[1];
-      this.writer.appendUpdate(nextUpdate);
-      this.nextUpdateSequence++;
-      newDataTimestamp = nextUpdate.timestamp;
-    }
-    if (newDataTimestamp !== null) {
-      for (const cb of this.timestampCallbacks) {
-        cb(newDataTimestamp);
-      }
-    }
-  }
-  private pendUpdate(update: EntityUpdate<T>, sequenceNumber: number) {
-    heapPush(
-      this.pending,
-      [sequenceNumber, update] as [number, EntityUpdate<T>],
-      (a, b) => a[0] - b[0]
-    );
-  }
-  calculateRollbacksOnIdle() {
-    if (this.workOnIdle) {
-      this.worker = new IdleWorker(this.calculateNextRollback.bind(this), this.IDLE_MS);
-    }
-  }
-  calculateNextRollback(): boolean {
-    // this function can be given as a task for the IdleWorker. It returns a boolean that indicates
-    // whether this task must be run again directly after completion
-    if (!this.inner) return false;
-    return this.inner.calculateNextRollback();
-  }
-
-  onData(cb: (timestamp: number) => void) {
-    this.timestampCallbacks.push(cb);
-  }
-
-  setSpecialValue(val: T): void {
-    this.inner?.setSpecialValue(val);
-    super.setSpecialValue(val);
-  }
-}
-
-/**
- * Idea for deferring some calculation until we're idle. Can be used to lazily evaluate reverse
- * updates in StreamingTapefile
- */
-
-class IdleWorker {
-  private task: () => boolean;
-  private idleSince: number;
-  readonly minIdleMiliseconds: number;
-  private running: boolean;
-  constructor(task: () => boolean, minIdleMiliseconds: number) {
-    this.task = task;
-    this.minIdleMiliseconds = minIdleMiliseconds;
-    this.idleSince = Date.now();
-    this.schedule(this.minIdleMiliseconds);
-    this.running = true;
-  }
-  get currentIdleTime() {
-    return Date.now() - this.idleSince;
-  }
-
-  /**
-   * Schedule a task to run at the first moment when we're idle. If the task indicates
-   * (by return value) that there are more tasks pending, we wait until the next tick and try to
-   * run the next task. If we're not idle when we try to run the task, we wait until we've reached
-   * our predicted minimum idle time and try again
-   *
-   * waitFor: wait for at least this amount of ms before checking idleness
-   */
-  private schedule(waitFor: number) {
-    setTimeout(
-      () => {
-        if (!this.running) return;
-        if (this.currentIdleTime >= this.minIdleMiliseconds) {
-          const doNext = this.task();
-          if (doNext) {
-            this.schedule(0);
-          } else {
-            this.schedule(this.minIdleMiliseconds);
-          }
-        } else {
-          this.schedule(this.minIdleMiliseconds - this.currentIdleTime);
-        }
-      },
-      waitFor < 0 ? 0 : waitFor
-    );
-  }
-
-  notIdle() {
-    this.idleSince = Date.now();
-  }
-  stop() {
-    this.running = false;
+  get(scenarioUUID: UUID): TapefileStore | null {
+    return this.tapefileStores[scenarioUUID] ?? null;
   }
 }

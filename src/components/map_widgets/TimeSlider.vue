@@ -1,5 +1,5 @@
 <template>
-  <div class="box timeslider" v-if="timelineInfo">
+  <div class="timeslider" v-if="timelineInfo">
     <b-field>
       <b-slider
         :value="value"
@@ -11,7 +11,7 @@
         :tooltip="tooltip"
         :type="type"
         rounded
-      ></b-slider>
+      />
     </b-field>
     <div class="time-ticks" v-if="timelineInfo">
       <strong>{{ toFormattedDateTime(timelineInfo.start_time) }}</strong>

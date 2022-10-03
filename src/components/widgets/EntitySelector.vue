@@ -78,7 +78,6 @@ import {
   FlowVisualizerType,
   PropertySummary,
   ScenarioDataset,
-  VisualizationMode,
   IMPORTANT_ATTRIBUTES
 } from '@movici-flow-common/types';
 import { isGrid, isLines, isPoints, isPolygons } from '@movici-flow-common/visualizers/geometry';
@@ -186,7 +185,7 @@ export default class EntitySelector extends Mixins(DraggableMixin) {
     return this.entityGroupsFiltered.reduce((arr, group, idx) => {
       if (this.currentDataset && this.activeEntityGroups?.[idx] && group.type) {
         const items = group.properties.sort(a =>
-          IMPORTANT_ATTRIBUTES.some(attr => a.name === attr) ? -1 : 1
+          ['id', ...IMPORTANT_ATTRIBUTES].some(attr => a.name === attr) ? -1 : 1
         );
 
         arr.push(
@@ -250,7 +249,6 @@ export default class EntitySelector extends Mixins(DraggableMixin) {
       entityGroup,
       additionalEntityGroups,
       visible: true,
-      mode: VisualizationMode.GEOMETRY,
       settings
     });
   }

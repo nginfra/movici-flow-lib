@@ -1,7 +1,7 @@
 <template>
   <div id="mapbox-container">
     <div id="map" />
-    <canvas id="deckgl-overlay" />
+    <canvas id="deckgl-overlay" @contextmenu="$event.preventDefault()" />
     <div class="map-control-zero" v-if="loaded && hasMapControl('control-zero')">
       <slot name="control-zero" v-bind="{ ...slotProps }" />
     </div>
@@ -32,8 +32,8 @@ import {
   DeckMouseEvent,
   Nullable,
   DeckEvent,
-  DeckEventCallback,
-  DeckEventPayload
+  DeckEventPayload,
+  DeckEventCallback
 } from '@movici-flow-common/types';
 import { ControllerOptions } from '@deck.gl/core/controllers/controller';
 import defaults from './defaults';
@@ -83,12 +83,15 @@ export default class Deck extends Vue {
     error: new Map<string, DeckEventCallback>()
   };
   loaded = false;
+  contextPickInfo: PickInfo<unknown> | null = null;
   getCursor: CursorCallback | null = null;
 
   get slotProps() {
     return {
       map: this.map,
       on: this.on,
+      contextPickInfo: this.contextPickInfo,
+      resetContextPickInfo: this.resetContextPickInfo,
       onViewstateChange: this.updateViewState,
       setCursorCallback: this.setCursorCallback,
       zoomToBBox: this.zoomToBBox
@@ -163,6 +166,10 @@ export default class Deck extends Vue {
     this.$emit('input', viewState);
   }
 
+  resetContextPickInfo() {
+    this.contextPickInfo = null;
+  }
+
   initDeck(val: CameraOptions) {
     return new DeckGL({
       canvas: 'deckgl-overlay',
@@ -171,9 +178,14 @@ export default class Deck extends Vue {
       initialViewState: val,
 
       onClick: (info: PickInfo<unknown>, ev?: DeckMouseEvent) => {
+        this.resetContextPickInfo();
+
         if (ev?.leftButton) {
           this.invokeCallbacks('click', { pickInfo: info, ev });
+        } else if (ev?.rightButton) {
+          this.contextPickInfo = info;
         }
+        this.invokeCallbacks('click', { pickInfo: info, ev });
       },
       onError: (error: Error, layer?: Layer<unknown>) => {
         console.error(error);
@@ -290,7 +302,6 @@ export default class Deck extends Vue {
       $left-menu-size: 300px;
       position: fixed;
       bottom: 24px;
-      height: 100px;
       z-index: 1;
       left: 0;
       right: 0;

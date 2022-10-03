@@ -5,7 +5,7 @@ import { specialValues } from './datasetUtils';
 export interface DatasetStoreConfig {
   backend: Backend;
   datasetUUID: string;
-  scenarioUUID?: string;
+  scenarioUUID?: string | null;
 }
 
 export class DatasetDownloader {

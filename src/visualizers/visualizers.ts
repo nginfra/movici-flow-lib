@@ -1,16 +1,12 @@
-import { Layer } from '@deck.gl/core';
-import { Coordinate, FetchRequestOptions, PopupEventCallback, TopologyLayerData } from '../types';
-import { ITopologyGetter } from './geometry';
-import { DatasetDownloader } from '../utils/DatasetDownloader';
-import { ComposableVisualizerInfo } from './VisualizerInfo';
+import { IVisualizer } from '../types';
 import { TapefileStore } from './TapefileStore';
+import { BaseVisualizerInfo } from './VisualizerInfo';
 
-export interface VisualizerContext {
-  datasetStore: DatasetDownloader;
+export interface VisualizerContext<I extends BaseVisualizerInfo> {
+  info: I;
   tapefileStore: TapefileStore;
   onLoad?: () => void;
   onError?: (err: Error) => void;
-  info: ComposableVisualizerInfo;
 }
 
 export const DIMENSIONS = {
@@ -22,31 +18,21 @@ export const DIMENSIONS = {
   ICON_SIZE_MAX_PIXELS: 20
 };
 
-export abstract class BaseVisualizer<
-  Coord extends Coordinate,
-  LData extends TopologyLayerData<Coord>,
-  Layer_ extends Layer<LData>
-> {
-  datasetStore: DatasetDownloader;
+export abstract class BaseVisualizer<I extends BaseVisualizerInfo> implements IVisualizer {
   tapefileStore: TapefileStore;
-  info: ComposableVisualizerInfo;
+  info: I;
   order: number;
-  onClick: PopupEventCallback;
-  onHover: PopupEventCallback;
-  protected topology?: TopologyLayerData<Coord>[];
+
   protected onLoad?: () => void;
   protected onError?: (err: Error) => void;
   protected loaded: boolean;
-  constructor(config: VisualizerContext) {
-    this.datasetStore = config.datasetStore;
+  constructor(config: VisualizerContext<I>) {
     this.info = config.info;
+    this.tapefileStore = config.tapefileStore;
     this.onLoad = config.onLoad;
     this.onError = config.onError;
-    this.tapefileStore = config.tapefileStore;
     this.order = 0;
     this.loaded = false;
-    this.onClick = () => {};
-    this.onHover = () => {};
   }
 
   get baseID(): string {
@@ -57,31 +43,20 @@ export abstract class BaseVisualizer<
     return `${this.info.id}-${this.order}`;
   }
 
-  getFetchRequest<T extends keyof FetchRequestOptions>(
-    request: T,
-    options: FetchRequestOptions[T]
-  ): { url: string; options: RequestInit } {
-    return this.datasetStore.backend.fetch.getRequest(request, options);
-  }
-
-  async load(callbacks?: {
-    onSuccess?: () => void;
-    onError?: (e: Error | unknown) => void;
-    onProgress?: (p: number) => void;
-  }): Promise<void> {
+  async load(): Promise<void> {
     if (this.mustReload()) {
       this.info.unsetError('load');
       try {
-        await this.doLoad(callbacks?.onProgress);
+        await this.doLoad();
       } catch (err: unknown) {
         const error = new Error(String(err));
         console.error(error);
 
-        return this.handleError(error, callbacks?.onError);
+        return this.handleError(error);
       } finally {
         this.loaded = true;
       }
-      this.handleSuccess(callbacks?.onSuccess);
+      this.handleSuccess();
     }
   }
 
@@ -89,17 +64,12 @@ export abstract class BaseVisualizer<
     return !this.loaded;
   }
 
-  setInfo(info: ComposableVisualizerInfo) {
+  setInfo(info: I) {
     this.info = info;
   }
 
-  setLayerOrder(order: number) {
+  setOrder(order: number) {
     this.order = order;
-  }
-
-  setCallbacks(callbacks: { onClick?: PopupEventCallback; onHover?: PopupEventCallback }) {
-    this.onClick = callbacks.onClick || this.onClick;
-    this.onHover = callbacks.onHover || this.onHover;
   }
 
   private handleSuccess(callback?: () => void) {
@@ -117,7 +87,5 @@ export abstract class BaseVisualizer<
     }
   }
 
-  abstract doLoad(onProgress?: (p: number) => void): Promise<void>;
-  abstract get topologyGetter(): ITopologyGetter<Coord>;
-  abstract getLayer(timestamp?: number): Layer_ | null;
+  abstract doLoad(): Promise<void>;
 }
