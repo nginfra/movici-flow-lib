@@ -37,6 +37,7 @@ check_version_upgrade:
     changes:
       - public/**/*
       - src/**/*
+      - icon_generation/**/*
   except:
     refs:
       - /^dependabot\/.*$/
