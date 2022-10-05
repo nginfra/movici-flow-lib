@@ -82,7 +82,11 @@ const LINE_ATTRIBUTES: ComponentProperty[] = [
   { component: null, name: 'geometry.linestring_2d' },
   { component: null, name: 'geometry.linestring_3d' }
 ];
-const POLYGON_ATTRIBUTES: ComponentProperty[] = [{ component: null, name: 'geometry.polygon' }];
+const POLYGON_ATTRIBUTES: ComponentProperty[] = [
+  { component: null, name: 'geometry.polygon_3d' },
+  { component: null, name: 'geometry.polygon_2d' },
+  { component: null, name: 'geometry.polygon' }
+];
 const GRID_CELL_ATTRIBUTES: ComponentProperty[] = [{ component: null, name: 'grid.grid_points' }];
 
 export class PointTopologyGetter extends SimpleTopologyGetter<PointGeometryData, PointCoordinate> {
