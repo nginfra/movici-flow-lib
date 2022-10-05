@@ -15,7 +15,13 @@ import {
   FetchRequestOptions
 } from '../types';
 import { parsePropertyString, propertyString } from '..//utils';
-import { ArcLayer, PathLayer, PolygonLayer, ScatterplotLayer } from '@deck.gl/layers';
+import {
+  ArcLayer,
+  PathLayer,
+  PolygonLayer,
+  ScatterplotLayer,
+  SolidPolygonLayer
+} from '@deck.gl/layers';
 import ShapeIconLayer from './layers/ShapeIconLayer';
 import { BaseVisualizer, VisualizerContext } from './visualizers';
 import {
@@ -318,7 +324,19 @@ export class ComposableIconVisualizer extends ComposableVisualizer<
 > {
   getModules() {
     return this.info instanceof ComposableVisualizerInfo
-      ? getCommonModules<PointCoordinate, TopologyLayerData<PointCoordinate>>(this.info)
+      ? [
+          new ColorModule<PointCoordinate, TopologyLayerData<PointCoordinate>>({ info: this.info }),
+          new PopupModule<PointCoordinate, TopologyLayerData<PointCoordinate>>({ info: this.info }),
+          new SizeModule<PointCoordinate, TopologyLayerData<PointCoordinate>>({ info: this.info }),
+          new VisibilityModule<PointCoordinate, TopologyLayerData<PointCoordinate>>({
+            info: this.info
+          }),
+          new IconModule<PointCoordinate, TopologyLayerData<PointCoordinate>>({ info: this.info }),
+          new ShapeModule<PointCoordinate, TopologyLayerData<PointCoordinate>>({ info: this.info }),
+          new RenderOrderModule<PointCoordinate, TopologyLayerData<PointCoordinate>>({
+            info: this.info
+          })
+        ]
       : [];
   }
 
@@ -393,7 +411,7 @@ export class ComposablePolygonVisualizer extends ComposableVisualizer<
       : [];
   }
 
-  getDefaultParams() {
+  getDefaultParams(): LayerParams<TopologyLayerData<PolygonCoordinate>, PolygonCoordinate> {
     return {
       type: PolygonLayer as LayerConstructor<TopologyLayerData<PolygonCoordinate>>,
       props: {
@@ -442,6 +460,22 @@ export class ComposableGridVisualizer extends ComposablePolygonVisualizer {
       throw new Error("Grid topology requires additional 'point' entities");
     }
     return new GridTopologyGetter(this.datasetStore, this.info.entityGroup, points);
+  }
+  getDefaultParams(): LayerParams<TopologyLayerData<PolygonCoordinate>, PolygonCoordinate> {
+    return {
+      type: SolidPolygonLayer as LayerConstructor<TopologyLayerData<PolygonCoordinate>>,
+      props: {
+        id: this.orderedId,
+        data: this.topology,
+        visible: this.info.visible,
+        getPolygon: (d: TopologyLayerData<PolygonCoordinate>) => d.coordinates,
+        pickable: true,
+        parameters: {
+          depthTest: false
+        },
+        updateTriggers: {}
+      }
+    };
   }
 }
 
@@ -499,8 +533,6 @@ function getCommonModules<Coord extends Coordinate, LData extends TopologyLayerD
     new PopupModule<Coord, LData>({ info }),
     new SizeModule<Coord, LData>({ info }),
     new VisibilityModule<Coord, LData>({ info }),
-    new IconModule<Coord, LData>({ info }),
-    new ShapeModule<Coord, LData>({ info }),
     new RenderOrderModule<Coord, LData>({ info })
   ];
 }

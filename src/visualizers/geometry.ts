@@ -145,7 +145,9 @@ export class PolygonTopologyGetter extends SimpleTopologyGetter<
   }
 
   getCoordinate(data: PolygonGeometryData, i: number, crs?: string | number | null) {
-    const arr = data['geometry.polygon'];
+    const arr =
+      data?.['geometry.polygon_3d'] ?? data['geometry.polygon_2d'] ?? data['geometry.polygon'];
+
     if (!arr) {
       throw new Error('Polygon geometry not found in dataset');
     }
@@ -293,5 +295,8 @@ function createDataObject<
 
 export const isPoints = containsAttributes(['geometry.x', 'geometry.y'], 2);
 export const isLines = containsAttributes(['geometry.linestring_2d', 'geometry.linestring_3d'], 1);
-export const isPolygons = containsAttributes(['geometry.polygon'], 1);
+export const isPolygons = containsAttributes(
+  ['geometry.polygon', 'geometry.polygon_2d', 'geometry.polygon_3d'],
+  1
+);
 export const isGrid = containsAttributes(['grid.grid_points'], 1);

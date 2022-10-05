@@ -117,6 +117,8 @@ interface LineGeometryProperties extends EntityGroupProperties<LineCoordinate | 
 export type LineGeometryData = BaseEntityGroup & LineGeometryProperties;
 
 interface PolygonGeometryProperties extends EntityGroupProperties<PolygonCoordinate> {
+  'geometry.polygon_3d': PolygonCoordinate[];
+  'geometry.polygon_2d': PolygonCoordinate[];
   'geometry.polygon': PolygonCoordinate[];
 }
 export type PolygonGeometryData = BaseEntityGroup & PolygonGeometryProperties;

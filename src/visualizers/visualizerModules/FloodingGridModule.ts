@@ -41,6 +41,7 @@ export default class FloodingGridModule<
       });
       params.props.loaders ??= [];
       params.props.loaders.push(this.getLoader(changed));
+      params.props.opacity = 0.8
     }
 
     return params;

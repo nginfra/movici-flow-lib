@@ -49,6 +49,10 @@ export default class ColorModule<
         params.props.getFillColor = this.setOpacity(accessor, 80);
         updateTriggers = ['getLineColor', 'getFillColor'];
         break;
+      case 'SolidPolygonLayer':
+        params.props.getFillColor = this.setOpacity(accessor, 80);
+        updateTriggers = ['getFillColor'];
+        break;
       case 'ArcLayer':
         params.props.getSourceColor = accessor;
         params.props.getTargetColor = accessor;

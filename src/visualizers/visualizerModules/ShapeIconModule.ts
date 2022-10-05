@@ -69,7 +69,8 @@ abstract class ShapeIconModule<
       return this.accessor;
     }
 
-    return this.getAccessor(this.currentSettings, visualizer);
+    this.accessor = this.getAccessor(this.currentSettings, visualizer);
+    return this.accessor;
   }
 
   private getAccessor(clause: IconClause | undefined, visualizer: IMapVisualizer<Coord>) {

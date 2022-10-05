@@ -216,7 +216,7 @@ export class ChartVisualizerItem {
 function getDatasetUUIDOrThrow(datasetName: string, datasets: Record<string, ShortDataset>): UUID {
   const dataset = datasets[datasetName];
   if (!dataset) {
-    throw new Error(`Unknown dataset '${datasetName}`);
+    throw new Error(`Unknown dataset '${datasetName}'`);
   }
   return dataset.uuid;
 }

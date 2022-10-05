@@ -66,6 +66,9 @@ export default class GridLayer<D> extends SolidPolygonLayer<D, GridLayerProps<D>
       this.setState(this._getModels(this.context.gl));
       attributeManager!.invalidateAll();
     }
+    this.state.topModel?.setUniforms({
+      opacity: this.props.opacity
+    });
   }
   _getModels(gl: WebGLRenderingContext) {
     if (!isWebGL2Context(gl)) {
@@ -124,7 +127,7 @@ export default class GridLayer<D> extends SolidPolygonLayer<D, GridLayerProps<D>
                   uniform float minColorValue;
                   uniform float maxColorValue;
                   uniform sampler2D colorMap;
-
+                  uniform float opacity;
                   varying vec2 texturePosition;
                   varying float wh;
               `,
@@ -149,7 +152,7 @@ export default class GridLayer<D> extends SolidPolygonLayer<D, GridLayerProps<D>
                   }
                   
                   float colorTexturePosX = (waterDepth - minColorValue) / (maxColorValue - minColorValue);
-                  color = vec4(texture2D(colorMap, vec2(colorTexturePosX, 0.5)).rgb, 0.8);
+                  color = vec4(texture2D(colorMap, vec2(colorTexturePosX, 0.5)).rgb, opacity);
               `
       }
     });
