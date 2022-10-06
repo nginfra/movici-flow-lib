@@ -28,6 +28,7 @@
             <span class="is-small icon user-initials">
               {{ userInitials }}
             </span>
+            <span class="pt-1">{{ flowVersion }}</span>
           </template>
         </b-menu-item>
       </b-menu-list>
@@ -57,6 +58,7 @@ import { FlowSection, FlowSectionItem, User } from '../types';
 import FlowExport from './FlowExport.vue';
 import { flowStore, flowUIStore } from '../store/store-accessor'; // create getters for other store it interacts with?
 import { buildFlowUrl } from '@movici-flow-common/utils';
+import VERSION from '@movici-flow-common/version';
 
 @Component({ name: 'FlowMain' })
 export default class FlowMain extends Vue {
@@ -88,6 +90,10 @@ export default class FlowMain extends Vue {
 
   get homeRoute() {
     return this.$flow.settings?.homeRoute ?? '';
+  }
+
+  get flowVersion() {
+    return VERSION;
   }
 
   click(section: FlowSection) {

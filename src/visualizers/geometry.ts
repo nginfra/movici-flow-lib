@@ -36,7 +36,6 @@ export abstract class SimpleTopologyGetter<
 {
   protected store: DatasetDownloader;
   protected entity: string;
-  abstract props: ComponentProperty[];
   constructor(store: DatasetDownloader, entity: string) {
     this.store = store;
     this.entity = entity;
@@ -90,10 +89,6 @@ const POLYGON_ATTRIBUTES: ComponentProperty[] = [
 const GRID_CELL_ATTRIBUTES: ComponentProperty[] = [{ component: null, name: 'grid.grid_points' }];
 
 export class PointTopologyGetter extends SimpleTopologyGetter<PointGeometryData, PointCoordinate> {
-  props: ComponentProperty[] = [
-    { component: null, name: 'geometry.x' },
-    { component: null, name: 'geometry.y' }
-  ];
   protected getDatasetData(): Promise<PointGeometryData & EntityGroupImportantAttributesData> {
     return this.store.getDatasetState<PointGeometryData & EntityGroupImportantAttributesData>({
       entityGroup: this.entity,
@@ -113,10 +108,6 @@ export class PointTopologyGetter extends SimpleTopologyGetter<PointGeometryData,
 }
 
 export class LineTopologyGetter extends SimpleTopologyGetter<LineGeometryData, LineCoordinate> {
-  props: ComponentProperty[] = [
-    { component: null, name: 'geometry.linestring_2d' },
-    { component: null, name: 'geometry.linestring_3d' }
-  ];
   protected getDatasetData(): Promise<LineGeometryData & EntityGroupImportantAttributesData> {
     return this.store.getDatasetState<LineGeometryData & EntityGroupImportantAttributesData>({
       entityGroup: this.entity,
@@ -140,7 +131,6 @@ export class PolygonTopologyGetter extends SimpleTopologyGetter<
   PolygonGeometryData,
   PolygonCoordinate
 > {
-  props: ComponentProperty[] = [{ component: null, name: 'geometry.polygon' }];
   protected getDatasetData(): Promise<PolygonGeometryData & EntityGroupImportantAttributesData> {
     return this.store.getDatasetState<PolygonGeometryData & EntityGroupImportantAttributesData>({
       entityGroup: this.entity,
