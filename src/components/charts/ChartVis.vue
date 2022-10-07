@@ -1,7 +1,7 @@
 <template>
   <div class="chart-vis" v-if="charts.length && !isLoading">
     <div class="is-flex is-flex-direction-row-reverse" :disabled="charts.length">
-      <span @click="toggleExpand">
+      <span @click="toggleExpand" :class="{ expanded }">
         <b-icon
           :title="$t('flow.visualization.graph.showCharts')"
           class="collapsed-icon"
@@ -13,7 +13,7 @@
     <div class="chart-holder" v-if="expanded">
       <b-tabs
         v-if="charts.length"
-        class="flow-tabs"
+        class="flow-tabs mr-5"
         :value="currentChartId"
         @input="$emit('update:currentChartId', $event)"
         :animated="false"
@@ -310,5 +310,10 @@ function createChartVisualizer(
       background: $white-ter;
     }
   }
+}
+.expanded {
+  position: absolute;
+  right: 16px;
+  top: 16px;
 }
 </style>

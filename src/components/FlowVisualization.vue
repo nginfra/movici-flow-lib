@@ -117,7 +117,7 @@
           </template>
         </template>
         <template #control-bottom="{ updateTimestamp, maxTimeAvailable, tapefileStores }">
-          <div class="box box-width-100">
+          <div class="box box-width-100" :class="{ 'pt-2': chartVisExpanded }">
             <ChartVis
               v-model="charts"
               :currentChartId.sync="chartVisOpen"
@@ -400,7 +400,7 @@ export default class FlowVisualization extends Vue {
     this.$buefy.modal.open({
       component: ChartAttributePicker,
       parent: this,
-      width: 300,
+      width: 'max-content',
       canCancel: ['x', 'escape'],
       customClass: 'overflow-visible',
       props: {
@@ -831,4 +831,5 @@ function formatDate(d: Date, levelOfDetail: number): string {
 .box-width-100 {
   width: 100%;
 }
+
 </style>

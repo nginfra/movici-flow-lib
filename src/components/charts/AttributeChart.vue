@@ -6,8 +6,6 @@
     :chart-id="id"
     :css-classes="cssClasses"
     :styles="styles"
-    :width="width"
-    :height="height"
   />
 </template>
 
@@ -54,26 +52,36 @@ function defaultCustomTimeFormat(val: number) {
   }
 })
 export default class AttributeChart extends Vue {
-  @Prop({ type: Object, required: true }) protected chartData!: ChartData;
-  @Prop({ type: Object, required: true }) protected chartOptions!: ChartConfig;
-  @Prop({ default: '', type: String }) id!: string;
-  @Prop({ type: Number, default: 0 }) timestamp!: number;
-  @Prop({ type: String, default: '' }) cssClasses!: string;
-  @Prop({ type: String, default: 'DOUBLE' }) dataType!: string | null;
-  @Prop({ type: Array, default: null }) enums!: string[] | null;
+  @Prop({ type: Object, required: true }) readonly chartData!: ChartData;
+  @Prop({ type: Object, required: true }) readonly chartOptions!: ChartConfig;
+  @Prop({ default: '', type: String }) readonly id!: string;
+  @Prop({ type: Number, default: 0 }) readonly timestamp!: number;
+  @Prop({ type: String, default: '' }) readonly cssClasses!: string;
+  @Prop({ type: String, default: 'DOUBLE' }) readonly dataType!: string | null;
+  @Prop({ type: Array, default: null }) readonly enums!: string[] | null;
   @Prop({ type: Function, default: defaultCustomTimeFormat })
   readonly customTimeFormat!: (val: number) => string;
 
-  width = 800;
-  height = 400;
-  styles = {};
+  windowHeight: number = 0;
+
+  get styles() {
+    const verticalOverhead = 175, // px
+      boxFillHeight = 2 / 5,
+      chartHeight = Math.max(Math.floor(this.windowHeight * boxFillHeight - verticalOverhead), 150);
+
+    return {
+      height: chartHeight + 'px',
+      position: 'relative'
+    };
+  }
 
   get options(): ChartOptions {
     const rv: ChartOptions = {
       ...this.chartOptions,
+      responsive: true,
       interaction: {
-        intersect: false,
-        mode: 'index'
+        intersect: true,
+        mode: 'nearest'
       },
       plugins: {
         annotation: {
@@ -121,6 +129,21 @@ export default class AttributeChart extends Vue {
       borderWidth: 2,
       value: 100
     };
+  }
+
+  setWindowHeight() {
+    this.windowHeight = window.innerHeight;
+  }
+
+  mounted() {
+    this.setWindowHeight();
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.setWindowHeight);
+    });
+  }
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.setWindowHeight);
   }
 }
 </script>
