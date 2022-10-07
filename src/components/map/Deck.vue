@@ -1,7 +1,11 @@
 <template>
   <div id="mapbox-container">
-    <div id="map" />
-    <canvas id="deckgl-overlay" @contextmenu="$event.preventDefault()" />
+    <div id="map" :class="{ 'is-hidden': !showMap }" />
+    <canvas
+      id="deckgl-overlay"
+      :style="backgroundColorStyle"
+      @contextmenu="$event.preventDefault()"
+    />
     <div class="map-control-zero" v-if="loaded && hasMapControl('control-zero')">
       <slot name="control-zero" v-bind="{ ...slotProps }" />
     </div>
@@ -86,6 +90,14 @@ export default class Deck extends Vue {
   contextPickInfo: PickInfo<unknown> | null = null;
   getCursor: CursorCallback | null = null;
 
+  get showMap() {
+    return this.basemap.startsWith('mapbox://');
+  }
+  get backgroundColorStyle() {
+    return this.basemap.startsWith('color://')
+      ? { 'background-color': this.basemap.split('//')[1] }
+      : {};
+  }
   get slotProps() {
     return {
       map: this.map,

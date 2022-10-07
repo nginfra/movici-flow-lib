@@ -23,13 +23,39 @@
       <div class="is-flex is-flex-wrap-nowrap is-justify-content-space-between">
         <div
           class="item is-clickable"
-          v-for="(val, name) in basemapsDefs"
+          v-for="item in basemapsDefs"
+          :key="item.name"
+          @click="value_ = item.value"
+        >
+          <b-image
+            v-if="item.type === 'image'"
+            class=thumbnail
+            :class="{ active: item.value === value_ }"
+            :src="'/static/basemaps/' + item.name + '.png'"
+          />
+          <div
+            v-else-if="item.type === 'solid'"
+            class="thumbnail solid-background-thumbnail"
+            :style="{ 'background-color': item.name }"
+            :class="{ active: item.value === value_ }"
+          />
+          <span class="is-size-7" :class="{ 'has-text-weight-bold': item.value === value_ }">
+            {{ $t('flow.basemap')[item.name] | upperFirst }}
+          </span>
+        </div>
+        <div
+          v-for="(val, name) in colors"
           :key="name"
+          class="item is-clickable"
           @click="value_ = val"
         >
-          <b-image :class="{ active: val === value_ }" :src="'/static/basemaps/' + name + '.png'" />
-          <span class="is-size-7" :class="{ 'has-text-weight-bold': val === value_ }"
-            >{{ name | upperFirst }}
+          <div
+            class="thumbnail solid-background-thumbnail"
+            :style="{ 'background-color': name }"
+            :class="{ active: val === value_ }"
+          />
+          <span class="is-size-7" :class="{ 'has-text-weight-bold': val === value_ }">
+            {{ $t('flow.basemap')[name] | upperFirst }}
           </span>
         </div>
       </div>
@@ -47,12 +73,14 @@ export default class BaseMapControl extends Vue {
   value!: string;
   value_ = '';
   toggle = false;
-  basemapsDefs = {
-    light: 'mapbox://styles/mapbox/light-v10',
-    dark: 'mapbox://styles/mapbox/dark-v10',
-    streets: 'mapbox://styles/mapbox/streets-v11',
-    satellite: 'mapbox://styles/mapbox/satellite-v9'
-  };
+  basemapsDefs = [
+    { type: 'image', name: 'light', value: 'mapbox://styles/mapbox/light-v10' },
+    { type: 'image', name: 'dark', value: 'mapbox://styles/mapbox/dark-v10' },
+    { type: 'image', name: 'streets', value: 'mapbox://styles/mapbox/streets-v11' },
+    { type: 'image', name: 'satellite', value: 'mapbox://styles/mapbox/satellite-v9' },
+    { type: 'solid', name: 'black', value: 'color://black' },
+    { type: 'solid', name: 'white', value: 'color://white' }
+  ];
 
   @Watch('value_')
   emitBaseMap(value: string) {
@@ -77,7 +105,7 @@ export default class BaseMapControl extends Vue {
     }
   }
   .basemap-selector {
-    width: 300px;
+    width: max-content;
     position: relative;
     left: 40px;
     top: -30px;
@@ -89,14 +117,17 @@ export default class BaseMapControl extends Vue {
       span {
         color: $black;
       }
-      .image {
-        border: solid 2px transparent;
+      .thumbnail {
+        border: solid 2px white;
         width: 60px;
         height: 51px;
         @include border-radius;
         &.active {
           border: solid 2px $primary;
         }
+      }
+      .solid-background-thumbnail {
+        border: solid 2px lightgray;
       }
     }
   }

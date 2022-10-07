@@ -262,6 +262,14 @@
     },
     "visualizerGroup": {
       "select": "Select an @:(resources.visualizerGroup)"
+    },
+    "basemap": {
+      "light": "light",
+      "dark": "dark",
+      "streets": "streets",
+      "satellite": "satellite",
+      "black": "black",
+      "white": "white"
     }
   },
   "misc": {

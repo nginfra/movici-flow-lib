@@ -262,6 +262,14 @@
     },
     "visualizerGroup": {
       "select": "Selecteer een @:(resources.visualizerGroup)"
+    },
+    "basemap": {
+      "light": "licht",
+      "dark": "donker",
+      "streets": "straten",
+      "satellite": "satelliet",
+      "black": "zwart",
+      "white": "wit"
     }
   },
   "misc": {
