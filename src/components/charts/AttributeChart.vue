@@ -62,7 +62,7 @@ export default class AttributeChart extends Vue {
   @Prop({ type: Function, default: defaultCustomTimeFormat })
   readonly customTimeFormat!: (val: number) => string;
 
-  windowHeight: number = 0;
+  windowHeight = 0;
 
   get styles() {
     const verticalOverhead = 175, // px

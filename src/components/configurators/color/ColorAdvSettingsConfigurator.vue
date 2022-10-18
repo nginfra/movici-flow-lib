@@ -57,7 +57,8 @@ import RenderOrder from './RenderOrder.vue';
 import AdvColorList from './AdvColorList.vue';
 import {
   DEFAULT_SPECIAL_COLOR_TRIPLE,
-  DEFAULT_UNDEFINED_COLOR_TRIPLE
+  DEFAULT_UNDEFINED_COLOR_TRIPLE,
+  DEFAULT_POLYGON_FILL_OPACITY
 } from '@movici-flow-common/utils/colorUtils';
 import { MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
 
@@ -74,7 +75,7 @@ export default class ColorAdvSettingsConfigurator extends Vue {
   readonly geometry!: FlowVisualizerType;
   @Prop({ type: String, default: 'buckets' }) readonly fillType!: 'buckets' | 'gradient';
   @Prop({ type: String, default: null }) readonly clauseType!: 'static' | 'byValue' | null;
-  fillOpacity = 100;
+  fillOpacity = DEFAULT_POLYGON_FILL_OPACITY;
   renderOrder: RenderOrderType = RenderOrderType.DISABLED;
   isOpen = false;
   colorPickerPresets = Object.values(MoviciColors);
@@ -122,6 +123,7 @@ export default class ColorAdvSettingsConfigurator extends Vue {
   @Watch('value', { immediate: true })
   onValueChange(value: AdvancedColorSettings | null) {
     this.renderOrder = value?.renderOrder ?? RenderOrderType.DISABLED;
+    this.fillOpacity = value?.fillOpacity ?? DEFAULT_POLYGON_FILL_OPACITY;
   }
 
   mounted() {

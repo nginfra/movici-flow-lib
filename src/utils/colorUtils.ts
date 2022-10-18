@@ -3,7 +3,7 @@ import { MoviciColors, hexToColorTriple } from '@movici-flow-common/visualizers/
 
 export const DEFAULT_SPECIAL_COLOR_TRIPLE = hexToColorTriple(MoviciColors.VERY_DARK_GREY);
 export const DEFAULT_UNDEFINED_COLOR_TRIPLE = hexToColorTriple(MoviciColors.VERY_DARK_GREY);
-
+export const DEFAULT_POLYGON_FILL_OPACITY = 33;
 /**
  * Given two subsequent entries in a color mapping, calculate intermediate colors. It linearly
  * interpolates between the two entries, and outputs the intermediate entries in an array. The

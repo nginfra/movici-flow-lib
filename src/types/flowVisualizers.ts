@@ -75,6 +75,7 @@ export interface ByValueColorClause {
   colors: [number, RGBAColor][];
   minValue?: number;
   maxValue?: number;
+  semiTransparent?: boolean;
 }
 
 export interface AdvancedColorSettings {

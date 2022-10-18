@@ -11,7 +11,10 @@ import {
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
 import NumberMapper from '../maps/NumberMapper';
-import { interpolateColorMapping } from '@movici-flow-common/utils/colorUtils';
+import {
+  DEFAULT_POLYGON_FILL_OPACITY,
+  interpolateColorMapping
+} from '@movici-flow-common/utils/colorUtils';
 import {
   TapefileAccessor,
   VisualizerModule,
@@ -38,34 +41,6 @@ export default class ColorModule<
       params.props.updateTriggers = {};
     }
     const accessor = this.updateAccessor(changed, visualizer);
-    let updateTriggers: string[];
-    switch (params.type.layerName) {
-      case 'ScatterplotLayer':
-        params.props.getFillColor = accessor;
-        updateTriggers = ['getFillColor'];
-        break;
-      case 'PolygonLayer':
-        params.props.getLineColor = accessor;
-        params.props.getFillColor = this.setOpacity(accessor, 80);
-        updateTriggers = ['getLineColor', 'getFillColor'];
-        break;
-      case 'SolidPolygonLayer':
-        params.props.getFillColor = this.setOpacity(accessor, 80);
-        updateTriggers = ['getFillColor'];
-        break;
-      case 'ArcLayer':
-        params.props.getSourceColor = accessor;
-        params.props.getTargetColor = accessor;
-        updateTriggers = ['getSourceColor', 'getTargetColor'];
-        break;
-      case 'ShapeIconLayer':
-      default:
-        params.props.getColor = accessor;
-        updateTriggers = ['getColor'];
-    }
-    for (const trigger of updateTriggers) {
-      params.props.updateTriggers[trigger] = [this.currentSettings];
-    }
     return this.assignAccessor(params, accessor);
   }
 
@@ -120,15 +95,6 @@ export default class ColorModule<
 
     return DEFAULT_UNDEFINED_COLOR_TRIPLE;
   }
-  private setOpacity(accessor: ColorAccessor<LData>, opacity: number): ColorAccessor<LData> {
-    if (Array.isArray(accessor)) {
-      const rv: RGBAColor = [...accessor];
-      rv[3] = opacity;
-      return rv;
-    }
-    return (d: LData) =>
-      [...(accessor(d).slice(0, 3) as [number, number, number]), opacity] as RGBAColor;
-  }
 
   prepareColors(colorClause: ByValueColorClause): [number, RGBAColor][] {
     const colors = colorClause.colors;
@@ -168,15 +134,20 @@ export default class ColorModule<
         updateTriggers = ['getFillColor'];
         break;
       case 'PolygonLayer':
-        params.props.getLineColor = accessor;
-        params.props.getFillColor = this.setOpacity(accessor, 80);
+        params.props.getLineColor = this.asLineColor(accessor);
+        params.props.getFillColor = this.asFillColor(accessor);
         updateTriggers = ['getLineColor', 'getFillColor'];
+        break;
+      case 'SolidPolygonLayer':
+        params.props.getFillColor = this.asFillColor(accessor);
+        updateTriggers = ['getFillColor'];
         break;
       case 'ArcLayer':
         params.props.getSourceColor = accessor;
         params.props.getTargetColor = accessor;
         updateTriggers = ['getSourceColor', 'getTargetColor'];
         break;
+      case 'ShapeIconLayer':
       default:
         params.props.getColor = accessor;
         updateTriggers = ['getColor'];
@@ -186,4 +157,44 @@ export default class ColorModule<
     }
     return params;
   }
+  private asFillColor(accessor: ColorAccessor<LData>): ColorAccessor<LData> {
+    const relativeOpacity =
+      (this.currentSettings?.advanced?.fillOpacity ?? DEFAULT_POLYGON_FILL_OPACITY) / 100;
+    if (relativeOpacity === 1) {
+      return accessor;
+    }
+
+    if (Array.isArray(accessor)) {
+      return getFillOpacity(accessor, relativeOpacity);
+    }
+    return (d: LData) => getFillOpacity(accessor(d), relativeOpacity);
+  }
+
+  private asLineColor(accessor: ColorAccessor<LData>): ColorAccessor<LData> {
+    const rawOpacity = this.currentSettings?.advanced?.fillOpacity ?? DEFAULT_POLYGON_FILL_OPACITY,
+      // start darkening lines from 50% opacity upwards
+      relativeOpacity = Math.max(rawOpacity - 50, 0) / 50;
+
+    if (relativeOpacity >= 1) {
+      return [0, 0, 0];
+    }
+
+    if (Array.isArray(accessor)) {
+      return darken(accessor, relativeOpacity);
+    }
+    return (d: LData) => {
+      const result = accessor(d).slice(0, 3);
+      return darken(result as RGBAColor, relativeOpacity);
+    };
+  }
+}
+
+function getFillOpacity(color: RGBAColor, fillOpacity: number): RGBAColor {
+  return [color[0], color[1], color[2], (color[3] ?? 255) * fillOpacity];
+}
+
+function darken(color: RGBAColor, fillOpacity: number): RGBAColor {
+  return (color.slice(0, 3) as [number, number, number]).map(
+    c => (1 - fillOpacity) * c
+  ) as RGBAColor;
 }

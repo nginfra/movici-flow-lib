@@ -29,7 +29,7 @@
         >
           <b-image
             v-if="item.type === 'image'"
-            class=thumbnail
+            class="thumbnail"
             :class="{ active: item.value === value_ }"
             :src="'/static/basemaps/' + item.name + '.png'"
           />
