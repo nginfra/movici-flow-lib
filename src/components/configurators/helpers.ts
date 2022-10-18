@@ -10,6 +10,7 @@ export interface RecalculateMappingValueParams {
 }
 export interface RecalculateMappingParams<T> extends RecalculateMappingValueParams {
   output: T[];
+  interpolateOutput?: boolean;
 }
 
 export function getLegendPlaceholders(
@@ -45,7 +46,22 @@ export function recalculateMapping<T>(
   return recalculateMappingValues(params).map((val, idx) => [val, output[idx]]);
 }
 
-function recalculateOutput<T>(params: { output: T[]; nSteps: number }, getDefault: () => T): T[] {
+function recalculateOutput<T>(
+  params: { output: T[]; nSteps: number; interpolateOutput?: boolean },
+  getDefault: () => T
+): T[] {
+  if (!params.output.length) {
+    return [];
+  }
+  if (params.interpolateOutput) {
+    if (typeof params.output[0] !== 'number') {
+      throw new Error('Can only interpolate number output');
+    }
+    const first = params.output[0] ?? getDefault();
+    const last = (params.output[params.output.length - 1] ?? getDefault()) as unknown as number;
+    return interpolateMinMax(first, last, params.nSteps, true) as unknown as T[];
+  }
+
   const rv = Array(params.nSteps).fill(getDefault());
   params.output.forEach((c, idx) => (rv[idx] = c));
   return rv;
@@ -61,20 +77,51 @@ export function recalculateMappingValues(params: RecalculateMappingValueParams):
   }
 
   const min = params.minValue ?? params.values[0];
-  const rv = [];
   let max = params.values[params.values.length - 1];
-  let nSteps = params.nSteps - 1;
 
+  let maxValueAsLastValue = true;
   if (params.maxValue !== undefined) {
     max = params.maxValue;
-    if (!params.maxValueAsLastValue) {
-      nSteps++;
-    }
+    maxValueAsLastValue = params.maxValueAsLastValue ?? false;
   }
-  const stepSize = (max - min) / nSteps;
-  for (let index = 0; index < params.nSteps; index++) {
+
+  return interpolateMinMax(min, max, params.nSteps, maxValueAsLastValue);
+}
+
+export function interpolateMinMax(
+  min: number,
+  max: number,
+  nSteps: number,
+  maxValueAsLastValue = false
+) {
+  const stepSize = (max - min) / (maxValueAsLastValue ? nSteps - 1 : nSteps),
+    rv: number[] = [];
+
+  for (let index = 0; index < nSteps; index++) {
     const val = min + stepSize * index;
     rv.push(parseFloat(val.toFixed(3)));
   }
+
   return rv;
+}
+
+export function attributeValidator(
+  configurator: {
+    $t: Vue['$t'];
+    selectedEntityProp: unknown;
+    filteredEntityProps?: unknown[];
+  },
+  doValidate: () => boolean
+) {
+  return () => {
+    if (doValidate()) {
+      if (!configurator.filteredEntityProps?.length) {
+        return '' + configurator.$t('flow.visualization.noCompatibleAttributes');
+      }
+
+      if (!configurator.selectedEntityProp) {
+        return 'Please select an attribute for the configurator to be based on';
+      }
+    }
+  };
 }

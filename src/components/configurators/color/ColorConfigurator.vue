@@ -27,26 +27,45 @@
         @input="updateSettings"
         size="is-small"
       />
-      <ColorByValueConfigurator
-        v-else-if="clauseType === 'byValue'"
-        :value="currentClause"
-        :validator="validator"
-        :entityProps="entityProps"
-        :summary="summary"
-        @input="updateSettings"
-      >
-        <template #legend-labels="{ entityEnums }">
-          <ColorLegendLabelsConfigurator
-            v-if="showLegend"
-            :value="legend"
-            @input="updateLegend($event)"
-            :placeholders="legendPlaceholders"
-            :nItems="nSteps"
-            :entityEnums="entityEnums"
-            reversed
-          />
-        </template>
-      </ColorByValueConfigurator>
+      <template v-else-if="clauseType === 'byValue'">
+        <div class="columns mb-0 is-multiline">
+          <div class="column is-two-thirds-desktop is-full-tablet">
+            <b-field
+              required
+              :label="$t('flow.visualization.basedOn')"
+              :message="errors['selectedEntityProp']"
+              :type="{ 'is-danger': errors['selectedEntityProp'] }"
+            >
+              <AttributeSelector
+                :value="selectedEntityProp"
+                :entity-props="entityProps"
+                :filter-prop="filterProp"
+                @input="updateAttribute"
+              />
+            </b-field>
+          </div>
+        </div>
+        <ColorByValueConfigurator
+          :value="currentClause"
+          :validator="validator"
+          :entityProps="entityProps"
+          :selectedEntityProp="selectedEntityProp"
+          :summary="summary"
+          @input="updateSettings"
+        >
+          <template #legend-labels="{ entityEnums }">
+            <ColorLegendLabelsConfigurator
+              v-if="showLegend"
+              :value="legend"
+              @input="updateLegend($event)"
+              :placeholders="legendPlaceholders"
+              :nItems="nSteps"
+              :entityEnums="entityEnums"
+              reversed
+            />
+          </template>
+        </ColorByValueConfigurator>
+      </template>
       <hr />
       <ColorAdvSettingsConfigurator
         :value="advancedSettings"
@@ -72,38 +91,35 @@ import {
   ByValueColorClause,
   AdvancedColorSettings,
   ColorClause,
-  FlowVisualizerType,
   LegendOptions,
   PropertySummary,
-  StaticColorClause,
-  DatasetSummary
+  StaticColorClause
 } from '@movici-flow-common/types';
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import ColorStaticConfigurator from './ColorStaticConfigurator.vue';
 import ColorByValueConfigurator from './ColorByValueConfigurator.vue';
 import ColorLegendLabelsConfigurator from './ColorLegendLabelsConfigurator.vue';
 import ColorAdvSettingsConfigurator from './ColorAdvSettingsConfigurator.vue';
-import { getLegendPlaceholders, PlaceholderType } from '../helpers';
+import { attributeValidator, getLegendPlaceholders, PlaceholderType } from '../helpers';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
-import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
+import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
 import isEqual from 'lodash/isEqual';
+import AttributeMixin from '../AttributeMixin';
 
 @Component({
   name: 'ColorConfigurator',
   components: {
+    AttributeSelector,
     ColorLegendLabelsConfigurator,
     ColorStaticConfigurator,
     ColorByValueConfigurator,
     ColorAdvSettingsConfigurator
   }
 })
-export default class ColorConfigurator extends Mixins(ValidationProvider) {
+export default class ColorConfigurator extends Mixins(AttributeMixin) {
   @Prop({ type: Object }) readonly value?: ColorClause;
-  @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
-  @Prop({ type: String, default: FlowVisualizerType.POINTS })
-  readonly geometry!: FlowVisualizerType;
   @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
-  @Prop({ type: Object, default: null }) readonly summary!: DatasetSummary | null;
+  allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
   currentClause: ColorClause = {};
   clauseType: 'static' | 'byValue' | null = null;
   advancedSettings: AdvancedColorSettings | null = null;
@@ -165,6 +181,12 @@ export default class ColorConfigurator extends Mixins(ValidationProvider) {
     this.emitClause();
   }
 
+  updateAttribute(val: PropertySummary | null) {
+    if (val) {
+      this.ensureProp(val);
+    }
+  }
+
   emitClause() {
     const toEmit: ColorClause = {};
 
@@ -199,6 +221,7 @@ export default class ColorConfigurator extends Mixins(ValidationProvider) {
   kindUpdated() {
     if (!this.clauseType) return;
     this.updateSettings({ [this.clauseType]: this.currentClause[this.clauseType] ?? {} });
+    this.validator.touch('selectedEntityProp');
   }
 
   @Watch('value', { immediate: true })
@@ -213,6 +236,24 @@ export default class ColorConfigurator extends Mixins(ValidationProvider) {
       this.advancedSettings = value.advanced ?? null;
     } else {
       this.clauseType = 'static';
+    }
+  }
+
+  setupAttributeValidator() {
+    this.validator?.configure({
+      validators: {
+        selectedEntityProp: attributeValidator(this, () => this.clauseType === 'byValue')
+      },
+      onValidate: e => {
+        this.errors = e;
+      }
+    });
+  }
+
+  mounted() {
+    this.setupAttributeValidator();
+    if (this.value?.byValue?.attribute) {
+      this.pickSelectedEntityProp(this.value.byValue.attribute);
     }
   }
 }

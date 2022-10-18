@@ -177,6 +177,7 @@
       },
       "floodingConfig": {
         "floodingGrid": "Overstroming",
+        "waterHeightAttr": "Waterhoogte attribuut",
         "heightMap": "Selecteer een hoogtekaart"
       },
       "legendsConfig": {
@@ -216,7 +217,7 @@
       "resetValues": "Waarden terugzetten",
       "interpolateMinMax": "Stap-waarden herberekenen",
       "displayAs": "Weergeven in",
-      "errorDisplayAs": "Geen compatibele attributen gevonden voor deze configurator",
+      "noCompatibleAttributes": "Geen compatibele attributen gevonden voor deze configurator",
       "editVisualizer": "Bewerk Visualizer",
       "infoLabel": "View",
       "label": "Visualisatie",

@@ -61,7 +61,6 @@ export default class AttributeChart extends Vue {
   @Prop({ type: Array, default: null }) readonly enums!: string[] | null;
   @Prop({ type: Function, default: defaultCustomTimeFormat })
   readonly customTimeFormat!: (val: number) => string;
-
   windowHeight = 0;
 
   get styles() {

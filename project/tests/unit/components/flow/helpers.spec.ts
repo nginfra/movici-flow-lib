@@ -1,6 +1,7 @@
 import {
   RecalculateMappingValueParams,
-  recalculateMappingValues
+  recalculateMappingValues,
+  interpolateMinMax
 } from '@movici-flow-common/components/configurators/helpers';
 
 describe('recalculateMappingValues', () => {
@@ -100,5 +101,14 @@ describe('recalculateMappingValues', () => {
     ]
   ])('%s', (_: string, params: RecalculateMappingValueParams, expected: number[]) => {
     expect(recalculateMappingValues(params)).toStrictEqual(expected);
+  });
+});
+
+describe('interpolateMinMax', () => {
+  it('interpolates without maxValueAsLastValue', () => {
+    expect(interpolateMinMax(0, 2, 2)).toStrictEqual([0, 1]);
+  });
+  it('interpolates with maxValueAsLastValue', () => {
+    expect(interpolateMinMax(0, 2, 3, true)).toStrictEqual([0, 1, 2]);
   });
 });

@@ -9,6 +9,7 @@
               icon: isIcon(value.visualizerType),
               line: isLine(value.visualizerType),
               point: isPoint(value.visualizerType),
+              grid: isGrid(value.visualizerType),
               polygon: isPolygon(value.visualizerType)
             }"
             :style="bucketColorStyle(colorLegend[1], isPolygon(value.visualizerType))"
@@ -71,6 +72,10 @@ export default class ColorBucketLegend extends Vue {
   isIcon(type: FlowVisualizerType) {
     return type === FlowVisualizerType.ICONS;
   }
+
+  isGrid(type: FlowVisualizerType) {
+    return type === FlowVisualizerType.FLOODING_GRID || type === FlowVisualizerType.GRID;
+  }
 }
 </script>
 
@@ -103,7 +108,8 @@ ul.buckets-container {
           height: 1rem;
           border-radius: 100%;
         }
-        &.polygon {
+        &.polygon,
+        &.grid {
           border: 2px solid;
           min-width: 1rem;
           height: 1rem;

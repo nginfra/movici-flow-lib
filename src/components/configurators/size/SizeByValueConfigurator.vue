@@ -1,22 +1,5 @@
 <template>
   <div>
-    <div class="columns mb-0 is-multiline">
-      <div class="column is-two-thirds-desktop is-full-tablet">
-        <b-field
-          required
-          :label="$t('flow.visualization.basedOn')"
-          :message="errors['selectedEntityProp']"
-          :type="{ 'is-danger': errors['selectedEntityProp'] }"
-        >
-          <AttributeSelector
-            :value="selectedEntityProp"
-            :entity-props="entityProps"
-            :filter-prop="filterProp"
-            @input="updateAttribute"
-          />
-        </b-field>
-      </div>
-    </div>
     <div v-if="selectedEntityProp" class="columns mb-0 is-multiline">
       <div class="column is-two-thirds-desktop is-full-tablet">
         <div class="is-flex" v-if="selectedDataType !== 'BOOLEAN'">
@@ -113,13 +96,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Watch } from 'vue-property-decorator';
+import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import { ByValueSizeClause, PropertySummary, SizeClause } from '@movici-flow-common/types';
 import ByValueMixin from '../ByValueMixin';
 import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
 import { BY_VALUE_DEFAULT_SIZES } from './defaults';
 import ByValueSizeList from './ByValueSizeList.vue';
-import { recalculateMapping, RecalculateMappingParams } from '../helpers';
+import { recalculateMapping } from '../helpers';
 import { MoviciError } from '@movici-flow-common/errors';
 import { isPositive } from '@movici-flow-common/utils/FormValidator';
 import { pick } from 'lodash';
@@ -134,15 +117,21 @@ import { pick } from 'lodash';
 export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeClause>>(
   ByValueMixin
 ) {
-  // overrides ByValueMixin
-  allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
-  // custom variables
+  @Prop({ type: Object, default: null }) declare selectedEntityProp: PropertySummary | null;
   sizes: [number, number][] = [];
   units: 'pixels' | 'meters' = 'pixels';
   minPixels: number | null = null;
   maxPixels: number | null = null;
   nSteps = 2;
   stepArray: number[] = [2, 3, 4, 5, 6, 7, 8];
+
+  get mappingValues(): number[] {
+    return this.sizes.map(val => val[0]);
+  }
+
+  get sizeValues(): number[] {
+    return this.sizes.map(val => val[1]);
+  }
 
   get defaultDataTypeSteps() {
     return 2;
@@ -195,9 +184,24 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
     return pick(this.errors, 'minPixels', 'maxPixels', 'minMaxPixels');
   }
 
-  updateAttribute(val: PropertySummary | null) {
+  interpolateMinMax() {
+    this.sizes = recalculateMapping(
+      {
+        values: this.mappingValues,
+        output: this.sizeValues,
+        nSteps: this.nSteps,
+        minValue: this.currentMinValue,
+        maxValue: this.currentMaxValue,
+        maxValueAsLastValue: true,
+        forceRecalculateValues: true
+      },
+      () => 0
+    );
+  }
+
+  @Watch('selectedEntityProp')
+  afterSelectedEntityProp(val: PropertySummary | null) {
     if (val) {
-      this.ensureProp(val);
       this.resetByDataType(val.data_type);
     }
   }
@@ -214,16 +218,17 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
       throw new MoviciError('Invalid steps for boolean');
     }
 
-    this.nSteps = nSteps;
-    this.recalculateSizeMapping({ nSteps });
+    this.processStepCount({ nSteps });
   }
 
-  recalculateSizeMapping(params?: Partial<RecalculateMappingParams<number>>) {
+  processStepCount(params?: { nSteps?: number; forceRecalculateValues?: boolean }) {
+    const newSteps = params?.nSteps ?? this.nSteps;
     this.sizes = recalculateMapping(
       {
-        values: params?.values ? params.values : this.sizes.map(size => size[0]),
-        output: params?.output ? params.output : this.sizes.map(size => size[1]),
-        nSteps: params?.nSteps ?? this.nSteps,
+        values: this.mappingValues,
+        output: this.sizeValues,
+        interpolateOutput: newSteps !== this.nSteps,
+        nSteps: newSteps,
         minValue: params?.forceRecalculateValues ? this.minValue : this.currentMinValue,
         maxValue: params?.forceRecalculateValues ? this.maxValue : this.currentMaxValue,
         maxValueAsLastValue: true,
@@ -231,37 +236,19 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
       },
       () => 0
     );
-  }
-
-  interpolateMinMax() {
-    this.sizes = recalculateMapping(
-      {
-        values: this.sizes.map(size => size[0]),
-        output: this.sizes.map(size => size[1]),
-        nSteps: this.nSteps,
-        minValue: this.currentMinValue,
-        maxValue: this.currentMaxValue,
-        maxValueAsLastValue: true,
-        forceRecalculateValues: true
-      },
-      () => 0
-    );
+    this.nSteps = newSteps;
   }
 
   resetByDataType(dataType: string) {
-    this.nSteps = this.defaultDataTypeSteps;
-
     if (this.isEnum) dataType = 'ENUM'; // overriding ENUMS
 
     switch (dataType) {
       case 'BOOLEAN':
-        this.recalculateSizeMapping({ nSteps: 2, forceRecalculateValues: true });
+        this.processStepCount({ nSteps: 2, forceRecalculateValues: true });
         break;
       case 'ENUM':
-        this.nSteps = this.entityEnums?.length ?? 0;
-        this.recalculateSizeMapping({
-          output: Array(this.nSteps).fill(4),
-          nSteps: this.nSteps,
+        this.processStepCount({
+          nSteps: this.entityEnums?.length ?? 2,
           forceRecalculateValues: true
         });
         break;
@@ -274,7 +261,7 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
   }
 
   resetValues() {
-    this.recalculateSizeMapping({ forceRecalculateValues: true });
+    this.processStepCount({ forceRecalculateValues: true });
   }
 
   // TODO: create validator according to color length
@@ -284,7 +271,6 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
   setupValidator() {
     this.validator?.configure({
       validators: {
-        ...this.getAttributeValidator(),
         minPixels: () => {
           if (this.units === 'pixels') return;
           return isPositive(this.minPixels, 'Min size');
@@ -321,8 +307,6 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
     this.units = localValue.units;
     this.minPixels = localValue.minPixels ?? null;
     this.maxPixels = localValue.maxPixels ?? null;
-
-    this.pickSelectedEntityProp(localValue.attribute);
   }
 
   beforeDestroy() {

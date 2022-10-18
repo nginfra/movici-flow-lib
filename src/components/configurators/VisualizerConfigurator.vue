@@ -141,6 +141,7 @@
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import { flowStore } from '@movici-flow-common/store/store-accessor';
 import {
+  ColorClause,
   Dataset,
   FlowVisualizerOptions,
   FlowVisualizerType,
@@ -156,7 +157,7 @@ import SizeConfigurator from './size/SizeConfigurator.vue';
 import PopupConfigurator from './popup/PopupConfigurator.vue';
 import ShapeIconConfigurator from './icon/ShapeIconConfigurator.vue';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
-import FloodingGridConfigurator from './FloodingGridConfigurator.vue';
+import FloodingGridConfigurator from './flooding/FloodingGridConfigurator.vue';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { propertyString, excludeKeys } from '@movici-flow-common/utils';
 import cloneDeep from 'lodash/cloneDeep';
@@ -260,11 +261,7 @@ const CONFIGURATORS_BY_TYPE: Record<FlowVisualizerType, FlowConfigurator[]> = {
     FlowConfigurator.VISIBILITY,
     FlowConfigurator.POPUP
   ],
-  [FlowVisualizerType.FLOODING_GRID]: [
-    FlowConfigurator.GEOMETRY,
-    FlowConfigurator.COLOR,
-    FlowConfigurator.FLOODING
-  ]
+  [FlowVisualizerType.FLOODING_GRID]: [FlowConfigurator.GEOMETRY, FlowConfigurator.FLOODING]
 };
 @Component({
   name: 'VisualizerConfigurator',
@@ -331,6 +328,7 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
           }
         };
       };
+
     return {
       [FlowConfigurator.COLOR]: {
         id: 'color',
@@ -400,8 +398,17 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
         id: 'floodingGrid',
         name: '' + this.$t('flow.visualization.floodingConfig.floodingGrid'),
         component: FloodingGridConfigurator,
-        vBind: { ...vBindDefaults('floodingGrid'), value: this.settings?.floodingGrid },
-        vOn: { ...vOnDefaults('floodingGrid') }
+        vBind: {
+          ...vBindDefaults('floodingGrid'),
+          value: this.settings?.floodingGrid,
+          color: this.settings?.color
+        },
+        vOn: {
+          ...vOnDefaults('floodingGrid'),
+          setColor: (clause: ColorClause | null) => {
+            this.updateSettings(clause, 'color');
+          }
+        }
       },
       [FlowConfigurator.GEOMETRY]: {
         id: 'geometry',

@@ -1,26 +1,6 @@
 <template>
-  <div>
+  <div v-if="selectedEntityProp">
     <div class="columns mb-0 is-multiline">
-      <div class="column is-two-thirds-desktop is-full-tablet">
-        <b-field
-          required
-          :label="$t('flow.visualization.basedOn')"
-          :message="errors['selectedEntityProp']"
-          :type="{ 'is-danger': errors['selectedEntityProp'] }"
-        >
-          <AttributeSelector
-            :value="selectedEntityProp"
-            :entity-props="entityProps"
-            :filter-prop="filterProp"
-            @input="updateAttribute"
-          />
-        </b-field>
-      </div>
-      <div class="column is-one-third-desktop is-full-tablet">
-        <slot name="legend-title" />
-      </div>
-    </div>
-    <div v-if="selectedEntityProp" class="columns mb-0 is-multiline">
       <div class="column is-full">
         <div>
           <b-field class="fill-type">
@@ -42,7 +22,7 @@
               {{ $t('flow.visualization.colorConfig.gradient') }}
             </b-radio>
           </b-field>
-          <div class="steps mt-3 is-flex is-flex-direction-row">
+          <div class="steps is-flex is-flex-direction-row">
             <b-field class="is-flex-shrink-1" :label="$t('flow.visualization.colorConfig.steps')">
               <b-select
                 :value="colorMapping.length"
@@ -51,11 +31,18 @@
                 expanded
                 :disabled="isBooleanOrEnum"
               >
-                <option v-for="index in stepArray" :key="index" :value="index">{{ index }}</option>
+                <option v-for="index in stepArray" :key="index" :value="index">
+                  {{ index }}
+                </option>
               </b-select>
             </b-field>
             <b-field class="is-flex-grow-1 ml-2" :label="$t('flow.visualization.colorConfig.type')">
-              <b-select v-model="selectedColorType" size="is-small" expanded>
+              <b-select
+                :value="selectedColorType"
+                @input="selectColorType"
+                size="is-small"
+                expanded
+              >
                 <option v-for="(type, index) in colorTypes" :key="index" :value="type">
                   {{ type }}
                 </option>
@@ -72,7 +59,7 @@
         </div>
       </div>
     </div>
-    <div v-if="selectedEntityProp" class="columns mb-0 is-multiline">
+    <div class="columns mb-0 is-multiline">
       <div class="column py-0 is-two-thirds-desktop">
         <ByValueColorList
           v-if="colorMapping.length"
@@ -96,7 +83,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Watch } from 'vue-property-decorator';
+import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import { hexToColorTriple, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
 import {
   ByValueColorClause,
@@ -109,40 +96,43 @@ import ByValueColorList from './ByValueColorList.vue';
 import { recalculateMapping, RecalculateMappingParams } from '../../configurators/helpers';
 import ColorPaletteSelector from './ColorPaletteSelector.vue';
 import ColorPalettes, { DEFAULT_COLOR_PALETTES } from './colorPalettes';
-import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
 import ByValueMixin from '../ByValueMixin';
 import { MoviciError } from '@movici-flow-common/errors';
 import range from 'lodash/range';
+
+interface InitialOptions {
+  allowedPropertyTypes: string[];
+  selectedColorType: keyof typeof DEFAULT_COLOR_PALETTES;
+  nSteps: number;
+}
 
 @Component({
   name: 'ColorByValueConfigurator',
   components: {
     ByValueColorList,
-    AttributeSelector,
     ColorPaletteSelector
   }
 })
 export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorClause>>(
   ByValueMixin
 ) {
-  // overrides ByValueMixin
-  allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
-  // custom variables
+  @Prop({ type: Object }) readonly initialOpts?: InitialOptions;
+  @Prop({ type: Object }) declare selectedEntityProp: PropertySummary | null;
+  selectedColorType: keyof typeof DEFAULT_COLOR_PALETTES = 'Sequential';
   colorMapping: ColorMapping = [];
   colorPickerPresets = Object.values(MoviciColors);
   fillType: 'buckets' | 'gradient' = 'buckets';
   colorTypes: string[] = Object.keys(DEFAULT_COLOR_PALETTES);
-  selectedColorType: keyof typeof DEFAULT_COLOR_PALETTES = 'Sequential';
   selectedColorPaletteIndex = 0;
   currentMaxValue = 1;
   nSteps = 4;
 
-  get mappingValues(): number[] {
-    return this.colorMapping.map(val => val[0]);
-  }
-
   get stepArray() {
     return range(2, this.selectedColorPaletteLength + 2);
+  }
+
+  get mappingValues(): number[] {
+    return this.colorMapping.map(val => val[0]);
   }
 
   get colors(): RGBAColor[] {
@@ -223,7 +213,8 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
     });
   }
 
-  updateAttribute(val: PropertySummary | null) {
+  @Watch('selectedEntityProp')
+  afterSelectedEntityProp(val: PropertySummary | null) {
     /**
      * STATE: TOUCHED DEFINED RESET VALID CLAUSE
      * When the user selects and attribute, this function is fired.
@@ -234,9 +225,7 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
      * UNTOUCHED DEFINED VALID CLAUSE. After that it only may become
      * TOUCHED INVALID CLAUSE if the user inputs invalid data.
      */
-
     if (val) {
-      this.ensureProp(val);
       this.resetByDataType(val.data_type);
 
       if (this.currentMaxValue !== this.maxValue) {
@@ -251,7 +240,6 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
   }
 
   resetColorMapping(nSteps: number) {
-    this.selectedColorType = 'Sequential';
     this.nSteps = nSteps;
     // resets to the first of the sequential palettes with nSteps
     this.selectColorPalette(0);
@@ -299,8 +287,8 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
     }
   }
 
-  @Watch('selectedColorType')
-  afterSelectedColorType() {
+  selectColorType(val: string) {
+    this.selectedColorType = val;
     this.selectColorPalette(0);
   }
 
@@ -348,23 +336,13 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
     }
   }
 
-  // TODO: create validator according to color length
-  setupValidator() {
-    this.validator?.configure({
-      validators: {
-        ...this.getAttributeValidator()
-      },
-      onValidate: e => {
-        // IF 'e.length > 0'
-        // STATE: TOUCHED DEFINED SET INVALID CLAUSE
-        this.errors = e;
-      }
-    });
-  }
-
   mounted() {
+    if (this.initialOpts) {
+      const { selectedColorType, nSteps } = this.initialOpts;
+      this.selectedColorType = selectedColorType ?? this.selectedColorType;
+      this.nSteps = nSteps ?? this.nSteps;
+    }
     // STATE: READY
-    this.setupValidator();
 
     const localValue: ByValueColorClause = Object.assign({}, this.defaults, this.value?.byValue);
     /**
@@ -386,7 +364,6 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
 
     this.currentMaxValue = localValue.maxValue ?? this.maxValue;
     this.fillType = localValue.type;
-    this.pickSelectedEntityProp(localValue.attribute);
 
     if (localValue.colors.length) {
       this.nSteps = localValue.colors.length;

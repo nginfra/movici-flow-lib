@@ -177,6 +177,7 @@
       },
       "floodingConfig": {
         "floodingGrid": "Flooding Grid",
+        "waterHeightAttr": "Water height attribute",
         "heightMap": "Please select a height map dataset"
       },
       "legendsConfig": {
@@ -216,7 +217,7 @@
       "resetValues": "Reset values to default",
       "interpolateMinMax": "Recalculate step values",
       "displayAs": "Display as",
-      "errorDisplayAs": "No compatible attributes found for this configurator",
+      "noCompatibleAttributes": "No compatible attributes found for this configurator",
       "editVisualizer": "Edit visualiser",
       "infoLabel": "View",
       "label": "Visualisation",

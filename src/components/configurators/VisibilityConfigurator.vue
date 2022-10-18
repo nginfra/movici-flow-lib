@@ -63,10 +63,13 @@ import {
   VisibilityClause,
   VisibilityMapping
 } from '@movici-flow-common/types';
-import { Component, Mixins, Watch } from 'vue-property-decorator';
+import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import ByValueMixin from './ByValueMixin';
 import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
 import isEqual from 'lodash/isEqual';
+import AttributeMixin from './AttributeMixin';
+import { attributeValidator } from './helpers';
+import FormValidator from '@movici-flow-common/utils/FormValidator';
 
 const DEFAULT_BOOLEAN_MAPPING = [
   [true, true],
@@ -79,9 +82,11 @@ const DEFAULT_BOOLEAN_MAPPING = [
     AttributeSelector
   }
 })
-export default class VisibilityConfigurator extends Mixins<ByValueMixin<VisibilityClause | null>>(
-  ByValueMixin
-) {
+export default class VisibilityConfigurator extends Mixins<
+  AttributeMixin,
+  ByValueMixin<VisibilityClause | null>
+>(AttributeMixin, ByValueMixin) {
+  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
   // overrides ByValueMixin
   allowedPropertyTypes = ['BOOLEAN'];
   showVisiblity = false;
@@ -144,15 +149,12 @@ export default class VisibilityConfigurator extends Mixins<ByValueMixin<Visibili
    * @param value new value of showVisiblity
    */
   toggleVisiblity(value: boolean) {
-    if (!value) {
-      this.destroyValidator();
-    } else {
+    if (value) {
       this.pickSelectedEntityProp(
         this.currentClause?.attribute ?? this.filteredEntityProps[0] ?? null
       );
-
-      this.setupValidator();
     }
+    this.validator.touch('selectedEntityProp');
     this.prepareEmitClause(this.currentClause);
     this.showVisiblity = value;
   }
@@ -173,12 +175,14 @@ export default class VisibilityConfigurator extends Mixins<ByValueMixin<Visibili
     }
   }
 
-  setupValidator() {
+  setupAttributeValidator() {
     this.validator.configure({
       validators: {
-        ...this.getAttributeValidator()
+        selectedEntityProp: attributeValidator(this, () => this.showVisiblity)
       },
-      onValidate: e => (this.errors = e)
+      onValidate: e => {
+        this.errors = e;
+      }
     });
   }
 
@@ -192,6 +196,7 @@ export default class VisibilityConfigurator extends Mixins<ByValueMixin<Visibili
     this.mapping = localValue.mapping;
     this.toggleVisiblity(!!localValue.attribute);
     this.pickSelectedEntityProp(localValue.attribute);
+    this.setupAttributeValidator();
   }
 
   beforeDestroy() {

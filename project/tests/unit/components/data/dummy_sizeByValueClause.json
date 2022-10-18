@@ -1,0 +1,28 @@
+{
+  "attribute": {
+    "name": "urban.households",
+    "unit": "",
+    "max_val": 1000,
+    "min_val": 0,
+    "component": "",
+    "data_type": "INT",
+    "description": "Number of households aggregated per substation"
+  },
+  "sizes": [
+    [
+      0,
+      15
+    ],
+    [
+      500,
+      20
+    ],
+    [
+      1000,
+      25
+    ]
+  ],
+  "units": "pixels",
+  "minPixels": 5,
+  "maxPixels": 25
+}

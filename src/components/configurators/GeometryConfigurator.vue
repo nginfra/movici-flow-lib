@@ -11,6 +11,7 @@
           {{ $t('flow.visualization.geometryConfig.geometryLabel') }}
           <b-icon
             size="is-small"
+            type="is-info"
             icon-pack="far"
             icon="info-circle"
             :title="$t('flow.visualization.geometryConfig.geometryInfo')"
@@ -21,7 +22,7 @@
           v-for="(key, val) in requiredAdditionalEntityGroups"
           :key="key"
         >
-          <span class="mr-4 is-size-6-half"> {{ key | upperFirst }}: </span>
+          <span class="mr-4 is-size-7 label"> {{ key | upperFirst }}: </span>
           <FilteredSelect
             class="is-flex-grow-1"
             :value="localValue[key]"
