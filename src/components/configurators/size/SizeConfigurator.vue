@@ -38,6 +38,7 @@
           </div>
         </div>
         <SizeByValueConfigurator
+          v-if="selectedEntityProp"
           :value="currentClause"
           :validator="byValueValidator"
           :entityProps="entityProps"
@@ -81,14 +82,6 @@ export default class SizeConfigurator extends Mixins(AttributeMixin) {
   allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
   currentClause: SizeClause = {};
   clauseType: 'static' | 'byValue' | null = null;
-
-  get staticSettings(): Partial<StaticSizeClause> {
-    return this.currentClause.static ?? {};
-  }
-
-  get byValueSettings(): Partial<ByValueSizeClause> {
-    return this.currentClause.byValue ?? {};
-  }
 
   get staticValidator() {
     return this.validator.child('static');
@@ -166,6 +159,9 @@ export default class SizeConfigurator extends Mixins(AttributeMixin) {
 
   mounted() {
     this.setupAttributeValidator();
+    if (this.value?.byValue?.attribute) {
+      this.pickSelectedEntityProp(this.value.byValue.attribute);
+    }
   }
 }
 </script>

@@ -46,6 +46,7 @@
           </div>
         </div>
         <ColorByValueConfigurator
+          v-if="selectedEntityProp"
           :value="currentClause"
           :validator="validator"
           :entityProps="entityProps"

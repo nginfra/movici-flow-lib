@@ -84,7 +84,7 @@ export default class FixedPosition extends Vue {
     // if the element has the class we are looking for, we return it,
     // else, if it has a parent, we recursively call gerOverflowParent to check for it's parent
     // else reached the end of DOM no parent has overflow class.
-    if ($el?.classList.contains(cssClass)) {
+    if ($el?.classList?.contains(cssClass)) {
       return vue_;
     } else if ($parent) {
       return this.getOverflowVueParent(cssClass, $parent);

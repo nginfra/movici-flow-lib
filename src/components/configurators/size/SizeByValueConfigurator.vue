@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="selectedEntityProp" class="columns mb-0 is-multiline">
+    <div v-if="selectedEntityProp && sizes" class="columns mb-0 is-multiline">
       <div class="column is-two-thirds-desktop is-full-tablet">
         <div class="is-flex" v-if="selectedDataType !== 'BOOLEAN'">
           <b-field
@@ -105,7 +105,7 @@ import ByValueSizeList from './ByValueSizeList.vue';
 import { recalculateMapping } from '../helpers';
 import { MoviciError } from '@movici-flow-common/errors';
 import { isPositive } from '@movici-flow-common/utils/FormValidator';
-import { pick } from 'lodash';
+import { isEmpty, pick } from 'lodash';
 
 @Component({
   name: 'SizeByValueConfigurator',
@@ -300,13 +300,24 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
 
   mounted() {
     this.setupValidator();
+    this.initializeValue(this.value?.byValue);
+  }
+  initializeValue(val?: ByValueSizeClause) {
+    if (!val || isEmpty(val)) {
+      this.setClause(BY_VALUE_DEFAULT_SIZES[this.geometry]);
+      if (this.selectedEntityProp) {
+        this.resetByDataType(this.selectedEntityProp?.data_type);
+      }
+    } else {
+      this.setClause(val);
+    }
+  }
 
-    const localValue: ByValueSizeClause = Object.assign({}, this.defaults, this.value?.byValue);
-
-    this.sizes = localValue.sizes;
-    this.units = localValue.units;
-    this.minPixels = localValue.minPixels ?? null;
-    this.maxPixels = localValue.maxPixels ?? null;
+  setClause(val: ByValueSizeClause) {
+    this.sizes = val.sizes;
+    this.units = val.units;
+    this.minPixels = val.minPixels ?? null;
+    this.maxPixels = val.maxPixels ?? null;
   }
 
   beforeDestroy() {

@@ -20,7 +20,6 @@
     <ColorByValueConfigurator
       :value="currentClause"
       :validator="validator"
-      :entityProps="entityProps"
       :selectedEntityProp="selectedEntityProp"
       :summary="summary"
       @input="updateSettings"
