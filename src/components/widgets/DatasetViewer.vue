@@ -55,7 +55,7 @@ import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/Visual
 import { CameraOptions, Dataset, DatasetSummary, Nullable } from '@movici-flow-common/types';
 import defaults from '@movici-flow-common/components/map/defaults';
 import { flowStore } from '@movici-flow-common/store/store-accessor';
-import { transformBBox } from '@movici-flow-common/crs';
+import { ensureProjection, transformBBox } from '@movici-flow-common/crs';
 import MapEntityPopup from '@movici-flow-common/components/map_widgets/MapEntityPopup.vue';
 import RightSidePopup from '@movici-flow-common/components/map_widgets/RightSidePopup.vue';
 
@@ -102,8 +102,11 @@ export default class DatasetViewer extends Mixins(SummaryListing) {
   @Watch('summary')
   zoomToSummaryBBox(summary: DatasetSummary) {
     if (summary.bounding_box) {
-      this.mapVisEl.zoomToBBox(transformBBox(summary.bounding_box, summary.epsg_code));
-      this.centerCamera = this.viewState;
+      let bounding_box = summary.bounding_box;
+      ensureProjection(summary.epsg_code).then(() => {
+        this.mapVisEl.zoomToBBox(transformBBox(bounding_box, summary.epsg_code));
+        this.centerCamera = this.viewState;
+      });
     }
   }
 }

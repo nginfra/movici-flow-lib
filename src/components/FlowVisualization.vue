@@ -179,7 +179,7 @@ import FlowLegend from './map_widgets/legends/FlowLegend.vue';
 import { successMessage } from '../utils/snackbar';
 import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
 import { MoviciError } from '@movici-flow-common/errors';
-import { transformBBox } from '@movici-flow-common/crs';
+import { ensureProjection, transformBBox } from '@movici-flow-common/crs';
 import isError from 'lodash/isError';
 import MapEntityPopup from './map_widgets/MapEntityPopup.vue';
 import RightSidePopup from './map_widgets/RightSidePopup.vue';
@@ -738,6 +738,7 @@ export default class FlowVisualization extends Vue {
         });
 
         if (this.currentScenario?.bounding_box) {
+          await ensureProjection(this.currentScenario.epsg_code);
           this.mapVisEl.zoomToBBox(
             transformBBox(this.currentScenario.bounding_box, this.currentScenario.epsg_code)
           );

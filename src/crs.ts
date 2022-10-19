@@ -1,6 +1,8 @@
 import { BoundingBox } from '@mapbox/geo-viewport';
 import proj4 from 'proj4';
 import { reproject } from 'reproject';
+import { Client } from './api';
+import { GetEPSGProjection } from './api/requests/espg.io';
 import { ValidationError } from './errors';
 import { Coordinate3DArray, CoordinateArray, Point3DCoordinate, PointCoordinate } from './types';
 
@@ -79,8 +81,8 @@ function extractCRSName(geojson: GeoJSON) {
   } else if (crsInfo.type === 'EPSG') {
     crsName = 'EPSG:' + crsInfo?.properties?.code;
   }
-  // @ts-expect-error
-  if (!proj4.defs[crsName]) {
+
+  if (!proj4.defs(crsName)) {
     throw new ValidationError('Unsupported CRS: ' + JSON.stringify(crsInfo));
   }
   return crsName;
@@ -93,6 +95,24 @@ export function transformGeoJsonToCRS(geojson: GeoJSON, targetCRS = 'EPSG:28992'
   const result = reproject(geojson, crs, targetCRS, proj4.defs);
   result.crs = { properties: { name: targetCRS }, type: 'name' };
   return result;
+}
+
+let api: Client | null = null;
+
+export function setClient(client: Client) {
+  api = client;
+}
+
+export async function ensureProjection(crs?: string | number | null) {
+  crs = determineCRS(crs);
+  if (proj4.defs(crs)) return;
+  const proj = await api?.request(new GetEPSGProjection(crs));
+  if (!proj) {
+    throw new Error(`Could not determine projection for CRS ${crs}`);
+  }
+  setProjections({
+    [crs]: proj
+  });
 }
 
 setProjections({

@@ -1,4 +1,4 @@
-import { transform, transformArray } from '../crs';
+import { ensureProjection, transform, transformArray } from '../crs';
 import {
   ComponentProperty,
   Coordinate,
@@ -46,6 +46,7 @@ export abstract class SimpleTopologyGetter<
       this.store.getMetaData()
     ]);
     const crs = metaData?.epsg_code;
+    await ensureProjection(crs);
     return this.getTopologyFromEntityData(datasetData, crs);
   }
 
@@ -178,6 +179,7 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
       this.store.getMetaData()
     ]);
     const crs = metaData?.epsg_code;
+    await ensureProjection(crs);
 
     return this.getTopologyFromEntityData(cellData, this.getPointsByID(pointData, crs));
   }
