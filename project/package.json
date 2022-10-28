@@ -8,7 +8,6 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build:js": "rollup -c",
-    "build:lib": "vue-cli-service build --target lib --name FlowCommon ./src/main.ts",
     "lint": "vue-cli-service lint",
     "dev": "vue-cli-service serve",
     "test:e2e": "vue-cli-service test:e2e",

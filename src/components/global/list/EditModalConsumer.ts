@@ -1,4 +1,4 @@
-import { Field } from '@/types';
+import { Field } from '@movici-flow-common/types';
 import { upperFirst } from 'lodash';
 import { Component, Vue } from 'vue-property-decorator';
 import { successMessage } from '@movici-flow-common/utils/snackbar';

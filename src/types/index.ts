@@ -7,6 +7,7 @@ export * from './deck';
 export * from './flow';
 export * from './flowVisualizers';
 export * from './flowLegend';
+export * from './forms';
 export * from './general';
 export * from './geocode';
 export * from './geometry';

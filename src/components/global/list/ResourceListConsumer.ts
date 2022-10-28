@@ -1,5 +1,4 @@
 import { Component, Vue } from 'vue-property-decorator';
-import { generalStore } from '@/store/store-accessor';
 import { MovActionType } from '@movici-flow-common/types';
 import { upperFirst } from 'lodash';
 
@@ -75,6 +74,9 @@ export default class ResourceListConsumer<T> extends Vue {
     });
   }
 
+  // eslint-disable-next-line
+  setLoading({ value, msg }: { value: boolean; msg?: string }) {}
+
   async resetList() {
     this.checkedRows = [];
     this.items = await this.getAll();
@@ -82,9 +84,9 @@ export default class ResourceListConsumer<T> extends Vue {
 
   async mounted() {
     const term = this.resourceTerm || 'resource';
-    generalStore.setLoading({ value: true, msg: `Loading ${term}s...` });
+    this.setLoading({ value: true, msg: `Loading ${term}s...` });
     await this.resetList();
-    generalStore.setLoading({ value: false });
+    this.setLoading({ value: false });
     this.afterMounted();
   }
 

@@ -40,8 +40,7 @@
 <script lang="ts">
 import upperFirst from 'lodash/upperFirst';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { Field } from '@/types';
-import { ButtonItem } from '@movici-flow-common/types';
+import { ButtonItem, Field } from '@movici-flow-common/types';
 
 @Component({ name: 'EditModal' })
 export default class EditModal<T> extends Vue {
