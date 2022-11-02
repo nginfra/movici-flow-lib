@@ -251,7 +251,9 @@
         "radius": "Radius",
         "size": "Size",
         "thickness": "Thickness",
-        "value": "Value"
+        "value": "Value",
+        "miscellaneous": "Miscellaneous",
+        "dashed": "Dashed"
       },
       "static": "Static",
       "tabs": {

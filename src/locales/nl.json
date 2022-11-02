@@ -149,8 +149,8 @@
           "title": "Geavanceerd",
           "fillOpacity": "Fill opacity",
           "renderOrder": "Kleurprioriteit",
-            "renderOrderInfo": "Prioritieer de weergave van kleuren dusdanig zodat als twee kleuren overlappen in de visualisatie, de hogere kleurvakken altijd zichtbaar zijn boven de lagere kleurvakken (of omgekeerd)",
-            "disabled": "Uitgeschakeld (betere prestaties)",
+          "renderOrderInfo": "Prioritieer de weergave van kleuren dusdanig zodat als twee kleuren overlappen in de visualisatie, de hogere kleurvakken altijd zichtbaar zijn boven de lagere kleurvakken (of omgekeerd)",
+          "disabled": "Uitgeschakeld (betere prestaties)",
           "normal": "Normaal",
           "reversed": "Omgekeerd",
           "advColours": "Geavanceerde kleuren"
@@ -164,7 +164,7 @@
         "far": "Normaal",
         "fas": "Gevuld"
       },
-      "visibilityConfig" : {
+      "visibilityConfig": {
         "visibility": "Zichtbaarheid",
         "value": "Waarde",
         "visible": "Zichtbaar"
@@ -212,7 +212,7 @@
         "viewCreateSuccess": "View succesvol opgeslagen",
         "viewDeleteSuccess": "View succesvol verwijderd",
         "viewUpdateSuccess": "View succesvol ge-updatet",
-        "deleteChart":  "Weet je zeker dat je Grafiek <b>{name}</b> wilt verwijderen?"
+        "deleteChart": "Weet je zeker dat je Grafiek <b>{name}</b> wilt verwijderen?"
       },
       "resetValues": "Waarden terugzetten",
       "interpolateMinMax": "Stap-waarden herberekenen",
@@ -249,9 +249,11 @@
         "maxPixels": "Max grootte",
         "minPixels": "Min grootte",
         "radius": "Radius",
-        "sizes": "Grootte",
+        "size": "Grootte",
         "thickness": "Dikte",
-        "value": "Waarde"
+        "value": "Waarde",
+        "miscellaneous": "Overig",
+        "dashed": "Gestreept"
       },
       "static": "Statisch",
       "tabs": {

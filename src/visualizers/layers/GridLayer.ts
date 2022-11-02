@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Accessor, UpdateParameters } from '@deck.gl/core/typed';
-import { RGBColor } from '@deck.gl/core/utils/color';
 import { SolidPolygonLayer, SolidPolygonLayerProps } from '@deck.gl/layers/typed';
 
 import { Texture2D, Model } from '@luma.gl/core';
+import { RGBAColor } from '@movici-flow-common/types';
+import { ensureRGBAColorMap } from '@movici-flow-common/utils/colorUtils';
 import { isEqual } from 'lodash';
 
 interface TextureInfo {
@@ -29,7 +30,7 @@ type _GridLayerProps<DataT> = {
   /** color map for rendering colors
    * @default null
    */
-  colorMap?: [number, RGBColor][];
+  colorMap?: [number, RGBAColor][];
 };
 
 export type GridLayerProps<DataT> = _GridLayerProps<DataT> & SolidPolygonLayerProps<DataT>;
@@ -152,7 +153,9 @@ export default class GridLayer<D> extends SolidPolygonLayer<D, GridLayerProps<D>
                   }
                   
                   float colorTexturePosX = (waterDepth - minColorValue) / (maxColorValue - minColorValue);
-                  color = vec4(texture2D(colorMap, vec2(colorTexturePosX, 0.5)).rgb, opacity);
+                  vec4 mappedColor = texture2D(colorMap, vec2(colorTexturePosX, 0.5));
+                  
+                  color = vec4(mappedColor.rgb, opacity * mappedColor.a);
               `
       }
     });
@@ -188,7 +191,7 @@ function createTexture({ height, width, data }: TextureInfo, gl: WebGL2Rendering
   });
 }
 
-export function expandColorMap(colormap: [number, RGBColor][], nSteps = 50) {
+export function expandColorMap(colormap: [number, RGBAColor][], nSteps = 50, ensureRGBA = false) {
   /**
    * expands and linearizes a colormap so the step sizes are uniform, expands to nSteps number of
    * steps
@@ -198,13 +201,15 @@ export function expandColorMap(colormap: [number, RGBColor][], nSteps = 50) {
     const step = colormap[i + 1][0] - colormap[i][0];
     if (step <= 0) throw new Error('Color map must be monotonically increasing');
   }
-
+  if (ensureRGBA) {
+    colormap = ensureRGBAColorMap(colormap);
+  }
   const minVal = colormap[0][0],
     maxVal = colormap[colormap.length - 1][0],
     stepSize = (maxVal - minVal) / (nSteps - 1);
   let currentMapIndex = 0;
   let currentColor = colormap[currentMapIndex][1];
-  const result: [number, RGBColor][] = [];
+  const result: [number, RGBAColor][] = [];
   let val;
   for (val = minVal; val < maxVal; val += stepSize) {
     while (currentMapIndex < colormap.length - 1 && val >= colormap[currentMapIndex + 1][0]) {
@@ -218,11 +223,11 @@ export function expandColorMap(colormap: [number, RGBColor][], nSteps = 50) {
 }
 
 function createColorMapTexture(
-  colormap: [number, RGBColor][],
+  colormap: [number, RGBAColor][],
   gl: WebGLRenderingContext,
   nPixels = 50
 ) {
-  const linearized = expandColorMap(colormap, nPixels);
+  const linearized = expandColorMap(colormap, nPixels, true);
   const minVal = linearized[0][0],
     maxVal = linearized[linearized.length - 1][0],
     stepSize = linearized[1][0] - minVal;
@@ -232,8 +237,8 @@ function createColorMapTexture(
     texture: new Texture2D(gl, {
       width: linearized.length,
       height: 1,
-      format: gl.RGB,
-      data: new Uint8Array(linearized.map(r => r[1]).flat()),
+      format: gl.RGBA,
+      data: new Uint8Array(linearized.map(r => r[1] as [number, number, number, number]).flat()),
       mipmaps: false,
       parameters: {
         [gl.TEXTURE_MIN_FILTER]: gl.NEAREST,

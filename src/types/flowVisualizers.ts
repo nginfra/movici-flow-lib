@@ -110,6 +110,8 @@ export interface ByValueIconClause {
 export interface SizeClause {
   static?: StaticSizeClause;
   byValue?: ByValueSizeClause;
+  dashed?: boolean;
+
 }
 
 type SizeUnits = 'pixels' | 'meters';

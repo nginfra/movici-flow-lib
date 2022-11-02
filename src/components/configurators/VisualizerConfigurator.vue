@@ -207,7 +207,7 @@ const FINALIZERS: Finalizers = {
             delete value.maxPixels;
           }
 
-          acc[key as 'byValue' | 'static'] = value;
+          acc[key as 'byValue' | 'static' | 'dashed'] = value;
 
           return acc;
         }, {} as SizeClause);

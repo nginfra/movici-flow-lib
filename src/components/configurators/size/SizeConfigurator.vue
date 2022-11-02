@@ -48,17 +48,41 @@
           @input="updateSettings($event)"
         />
       </template>
+      <hr />
+
+      <b-collapse v-model="miscIsOpen">
+        <template #trigger="{ open }">
+          <span class="is-flex is-align-items-center mb-2">
+            <b-button
+              class="mr-2 is-transparent is-borderless"
+              size="is-small"
+              :icon-left="open ? 'angle-down' : 'angle-up'"
+            />
+            <label class="is-size-6-half ml-1">
+              {{ $t('flow.visualization.sizeConfig.miscellaneous') }}
+            </label>
+          </span>
+        </template>
+        <div class="columns mt-4 pl-1 is-multiline">
+          <div class="column py-0 is-two-thirds-desktop">
+            <b-field>
+              <b-checkbox
+                size="is-small"
+                :value="dashed"
+                @input="updateSettings({ dashed: $event })"
+              >
+                {{ $t('flow.visualization.sizeConfig.dashed') }}
+              </b-checkbox>
+            </b-field>
+          </div>
+        </div>
+      </b-collapse>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  ByValueSizeClause,
-  SizeClause,
-  StaticSizeClause,
-  PropertySummary
-} from '@movici-flow-common/types';
+import { SizeClause, PropertySummary } from '@movici-flow-common/types';
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import SizeStaticConfigurator from './SizeStaticConfigurator.vue';
 import SizeByValueConfigurator from './SizeByValueConfigurator.vue';
@@ -82,6 +106,7 @@ export default class SizeConfigurator extends Mixins(AttributeMixin) {
   allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
   currentClause: SizeClause = {};
   clauseType: 'static' | 'byValue' | null = null;
+  miscIsOpen = false;
 
   get staticValidator() {
     return this.validator.child('static');
@@ -90,7 +115,11 @@ export default class SizeConfigurator extends Mixins(AttributeMixin) {
     return this.validator.child('byValue');
   }
 
-  updateSettings(updatedClause: { static?: StaticSizeClause; byValue?: ByValueSizeClause }) {
+  get dashed() {
+    return this.value.dashed;
+  }
+
+  updateSettings(updatedClause: Partial<SizeClause>) {
     this.currentClause = Object.assign({}, this.currentClause, updatedClause);
     this.emitClause();
   }
@@ -102,7 +131,9 @@ export default class SizeConfigurator extends Mixins(AttributeMixin) {
   }
 
   emitClause() {
-    const toEmit: SizeClause = {};
+    const toEmit: SizeClause = this.currentClause.dashed
+      ? { dashed: this.currentClause.dashed }
+      : {};
 
     if (this.clauseType === 'static') {
       toEmit.static = this.currentClause.static;
@@ -159,8 +190,12 @@ export default class SizeConfigurator extends Mixins(AttributeMixin) {
 
   mounted() {
     this.setupAttributeValidator();
-    if (this.value?.byValue?.attribute) {
+    if (this.value.byValue?.attribute) {
       this.pickSelectedEntityProp(this.value.byValue.attribute);
+    }
+
+    if (this.dashed != undefined) {
+      this.miscIsOpen = true;
     }
   }
 }

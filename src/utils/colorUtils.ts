@@ -41,9 +41,9 @@ function interpolateColor(a: RGBAColor, b: RGBAColor, step: number, nSteps: numb
   }
 
   if (a.length === 4) {
-    b = ensureOpacity(b);
+    b = ensureRGBAColor(b);
   } else if (b.length === 4) {
-    a = ensureOpacity(a);
+    a = ensureRGBAColor(a);
   }
 
   const rv: RGBAColor = Array(a.length) as RGBAColor;
@@ -59,8 +59,16 @@ function interpolateColor(a: RGBAColor, b: RGBAColor, step: number, nSteps: numb
 
   return rv;
 }
+export function ensureRGBAColorMap(
+  colormap: [number, RGBAColor][],
+  defaultOpacity = 255
+): [number, RGBAColor][] {
+  return colormap.map(([value, color]) => {
+    return [value, ensureRGBAColor(color, defaultOpacity)];
+  });
+}
 
-function ensureOpacity(color: RGBAColor, defaultOpacity = 255) {
+function ensureRGBAColor(color: RGBAColor, defaultOpacity = 255) {
   if (color[3] === undefined) {
     color[3] = defaultOpacity;
   }

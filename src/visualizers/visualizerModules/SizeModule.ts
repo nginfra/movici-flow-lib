@@ -1,3 +1,4 @@
+import { PathStyleExtension } from '@deck.gl/extensions';
 import {
   ByValueSizeClause,
   Coordinate,
@@ -21,8 +22,10 @@ export default class SizeModule<
 > extends VisualizerModule<Coord, LData> {
   accessor?: SizeAccessor<LData>;
   currentSettings?: { static?: StaticSizeClause; byValue?: ByValueSizeClause };
+  currentDashed: boolean;
   constructor(params: VisualizerModuleParams) {
     super(params);
+    this.currentDashed = false;
   }
   compose(params: LayerParams<LData, Coord>, visualizer: IMapVisualizer<Coord>) {
     const changed = this.updateSettings(this.info.settings?.size ?? {});
@@ -84,6 +87,8 @@ export default class SizeModule<
         updateTriggers = ['getWidth'];
     }
 
+    this.setDashed(params, this.info.settings?.size?.dashed ?? false, visualizer);
+
     for (const trigger of updateTriggers) {
       params.props.updateTriggers[trigger] = [this.currentSettings];
     }
@@ -141,5 +146,32 @@ export default class SizeModule<
       return clause.static.size;
     }
     return DIMENSIONS.SIZE;
+  }
+
+  private setDashed(
+    params: LayerParams<LData, Coord>,
+    dashed: boolean,
+    visualizer: IMapVisualizer<Coord>
+  ) {
+    // If we change from dashed to non-dashed, we need to tell deck.gl to fully
+    // re-render the layer.
+    if (dashed !== this.currentDashed) {
+      visualizer.forceRender();
+      this.currentDashed = dashed;
+    }
+    if (dashed) {
+      switch (params.type.layerName) {
+        case 'PathLayer':
+        case 'PolygonLayer':
+          params.props.extensions ??= [];
+          params.props.extensions.push(
+            new PathStyleExtension({ dash: true, highPrecisionDash: true })
+          );
+          params.props.getDashArray = [3, 6];
+          break;
+        default:
+          break;
+      }
+    }
   }
 }

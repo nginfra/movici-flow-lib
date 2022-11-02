@@ -383,7 +383,8 @@ export class ComposableLineVisualizer extends ComposableVisualizer<
       props: {
         id: this.orderedId,
         data: this.topology,
-        rounded: true,
+        capRounded: true,
+        jointRounded: true,
         visible: this.info.visible,
         getPath: (d: TopologyLayerData<LineCoordinate>) => d.coordinates,
         pickable: true,
