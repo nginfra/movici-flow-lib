@@ -7,6 +7,14 @@
             {{ $t('flow.visualization.popup.showPopup') }}
           </b-checkbox>
         </b-field>
+        <b-field class="when ml-6">
+          <b-radio class="mr-4" size="is-small" v-model="onHover" :native-value="false">
+            {{ $t('flow.visualization.popup.onClickOnly') }}
+          </b-radio>
+          <b-radio size="is-small" v-model="onHover" :native-value="true">
+            {{ $t('flow.visualization.popup.onClickAndHover') }}
+          </b-radio>
+        </b-field>
       </div>
     </div>
     <div class="columns mb-0" v-if="showPopup">
@@ -92,7 +100,8 @@
               </label>
               <b-input
                 :placeholder="propertyString(item.attribute)"
-                v-model="item.name"
+                :value="item.name"
+                @input="updateName(idx, $event)"
                 :disabled="idx === 0 && dynamicTitle"
                 size="is-small"
               ></b-input>
@@ -146,6 +155,8 @@ export default class PopupConfigurator extends Mixins(ValidationProvider, Dragga
   items: PopupItem[] = [];
   showPopup = false;
   dynamicTitle = false;
+  onHover = false;
+
   propertyString = propertyString;
 
   get defaults() {
@@ -153,6 +164,7 @@ export default class PopupConfigurator extends Mixins(ValidationProvider, Dragga
       title: '',
       items: [],
       show: false,
+      onHover: false,
       dynamicTitle: false
     };
   }
@@ -197,6 +209,11 @@ export default class PopupConfigurator extends Mixins(ValidationProvider, Dragga
     this.updateValue(Object.assign(this.currentClause, { show: showPopup }));
   }
 
+  @Watch('onHover')
+  updateOnHover(onHover: boolean) {
+    this.updateValue(Object.assign(this.currentClause, { onHover }));
+  }
+
   addItem(prop: PropertySummary) {
     this.items = this.items.concat({ name: '', attribute: prop });
     this.updateValue({ items: this.items });
@@ -229,8 +246,8 @@ export default class PopupConfigurator extends Mixins(ValidationProvider, Dragga
     this.validator.configure({
       validators: {
         'popup-items': () => {
-          if (!this.items.length && this.showPopup) {
-            return 'Select at least 1 property';
+          if (this.showPopup && !this.items.length && !this.currentClause.title) {
+            return 'Select at least 1 property or title';
           }
         }
       },
@@ -241,6 +258,7 @@ export default class PopupConfigurator extends Mixins(ValidationProvider, Dragga
   mounted() {
     this.items = this.currentClause?.items ?? [];
     this.showPopup = this.currentClause ? this.currentClause.show ?? true : false;
+    this.onHover = this.currentClause.onHover ?? false;
     this.dynamicTitle = !!this.currentClause.dynamicTitle;
     this.setupValidator();
   }

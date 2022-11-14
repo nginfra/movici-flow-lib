@@ -232,6 +232,8 @@
         "dynamic": "Dynamisch",
         "onClick": "Bij klikken",
         "onHover": "Bij bewegen",
+        "onClickOnly": "Alleen bij klikken",
+        "onClickAndHover": "Bij klikken & bewegen",
         "position": "Positie",
         "showPopup": "Popup weergeven",
         "static": "Statisch",

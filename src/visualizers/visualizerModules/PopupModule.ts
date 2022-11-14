@@ -41,6 +41,7 @@ export default class PopupModule<
       params.props.onHover = accessor;
       params.props.onClick = accessor;
     }
+    this.setUpdateTriggers(params, ['onHover', 'onClick'], this.currentSettings);
 
     return params;
   }
@@ -78,14 +79,17 @@ export default class PopupModule<
         accessor.setTapefile(t as ITapefile<unknown>, idx);
       });
     }
+    const onHover = clause.onHover;
 
-    // TODO fix typing
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (info: PickInfo<any>, ev?: DeckMouseEvent) => {
+    return (info: PickInfo<LData>, ev?: DeckMouseEvent) => {
       const when = ev?.type === 'click' ? 'onClick' : 'onHover';
 
+      if (when === 'onHover' && !onHover) {
+        return false;
+      }
+
       if (info?.object) {
-        visualizer[when](accessor.getValue(info.object.idx, info, this.enums), ev);
+        visualizer[when](accessor.getValue(info.object.idx, info, this.enums) as PopupContent, ev);
       } else {
         visualizer.onHover(null, ev);
       }
@@ -111,11 +115,11 @@ export class PopupContentAccessor {
     this.tapefiles[index] = tapefile;
   }
 
-  getValue(
+  getValue<D>(
     index: number,
-    pickInfo: PickInfo<unknown>,
+    pickInfo: PickInfo<D>,
     enums: Record<string, string[]>
-  ): PopupContent {
+  ): PopupContent<D> {
     const { title, dynamicTitle, items } = this.popup;
 
     return {

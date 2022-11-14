@@ -27,10 +27,6 @@ export default class FloodingGridModule<
     }
     const changed = this.updateSettings(this.info.settings?.floodingGrid);
 
-    if (!params.props.updateTriggers) {
-      params.props.updateTriggers = {};
-    }
-
     if (this.currentSettings) {
       const datasetUUID = this.currentSettings.heightMapDatasetUUID;
       if (!datasetUUID) throw new Error('Invalid heightmap dataset');

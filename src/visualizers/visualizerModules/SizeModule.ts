@@ -31,9 +31,6 @@ export default class SizeModule<
     const changed = this.updateSettings(this.info.settings?.size ?? {});
     const sizeClause = this.getClause();
 
-    if (!params.props.updateTriggers) {
-      params.props.updateTriggers = {};
-    }
     const accessor = this.updateAccessor(changed, visualizer);
     let updateTriggers: string[];
 
@@ -88,10 +85,8 @@ export default class SizeModule<
     }
 
     this.setDashed(params, this.info.settings?.size?.dashed ?? false, visualizer);
+    this.setUpdateTriggers(params, updateTriggers, this.currentSettings);
 
-    for (const trigger of updateTriggers) {
-      params.props.updateTriggers[trigger] = [this.currentSettings];
-    }
     return params;
   }
 

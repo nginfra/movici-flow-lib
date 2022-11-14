@@ -40,6 +40,23 @@ export abstract class VisualizerModule<
   setInfo(info: ComposableVisualizerInfo) {
     this.info = info;
   }
+  setUpdateTriggers(
+    params: LayerParams<LData, Coord>,
+    triggers: string | string[],
+    value: unknown
+  ) {
+    if (!Array.isArray(triggers)) {
+      triggers = [triggers];
+    }
+    if (!triggers.length) {
+      return;
+    }
+    params.props.updateTriggers ??= {};
+    for (const key of triggers) {
+      params.props.updateTriggers[key] ??= [];
+      params.props.updateTriggers[key].push(value);
+    }
+  }
 }
 
 export class TapefileAccessor<In, Out> {

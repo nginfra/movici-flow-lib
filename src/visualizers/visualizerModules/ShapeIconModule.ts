@@ -33,20 +33,12 @@ abstract class ShapeIconModule<
     const settings = this.getSettings(),
       changed = this.updateSettings(settings);
 
-    if (!params.props.updateTriggers) {
-      params.props.updateTriggers = {};
-    }
     const accessor = this.updateAccessor(changed, visualizer);
-    let updateTriggers: string[] = [];
 
-    switch (params.type.layerName) {
-      case 'ShapeIconLayer':
-        updateTriggers = this.updateParams(params, accessor);
-        break;
+    if (params.type.layerName === 'ShapeIconLayer') {
+      this.updateParams(params, accessor);
     }
-    for (const trigger of updateTriggers) {
-      params.props.updateTriggers[trigger] = [this.currentSettings];
-    }
+
     return params;
   }
 
@@ -100,7 +92,7 @@ abstract class ShapeIconModule<
   abstract updateParams(
     params: LayerParams<LData, Coord>,
     accessor: IconAccessor<LData> | null
-  ): string[];
+  ): void;
 }
 
 export class IconModule<
@@ -111,12 +103,12 @@ export class IconModule<
   getSettings() {
     return this.info.settings?.icon ?? {};
   }
-  updateParams(params: LayerParams<LData, Coord>, accessor: IconAccessor<LData> | null): string[] {
+  updateParams(params: LayerParams<LData, Coord>, accessor: IconAccessor<LData> | null) {
     params.props.hasIcon = !!accessor;
     params.props.getIcon = accessor;
     params.props.iconAtlas = `/static/icons/icons.png`;
     params.props.iconMapping = MAPPED_ICONS.icons;
-    return ['getIcon', 'hasIcon'];
+    this.setUpdateTriggers(params, ['hasIcon', 'getIcon'], this.currentSettings);
   }
 }
 
@@ -128,11 +120,11 @@ export class ShapeModule<
   getSettings() {
     return this.info.settings?.shape ?? {};
   }
-  updateParams(params: LayerParams<LData, Coord>, accessor: IconAccessor<LData> | null): string[] {
+  updateParams(params: LayerParams<LData, Coord>, accessor: IconAccessor<LData> | null) {
     params.props.hasShape = !!accessor;
     params.props.getShape = accessor;
     params.props.shapeAtlas = `/static/icons/shapes.png`;
     params.props.shapeMapping = MAPPED_ICONS.shapes;
-    return ['hasShape', 'getShape'];
+    this.setUpdateTriggers(params, ['hasShape', 'getShape'], this.currentSettings);
   }
 }

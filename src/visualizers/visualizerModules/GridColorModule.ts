@@ -31,14 +31,12 @@ export default class GridColorModule<
     }
 
     const changed = this.updateSettings(this.info.settings?.color ?? {});
-    if (!params.props.updateTriggers) {
-      params.props.updateTriggers = {};
-    }
     const accessor = this.updateAccessor(changed, visualizer);
 
     params.props.getCellValue = accessor;
-    params.props.updateTriggers['getCellValue'] = [this.currentSettings];
     params.props.colorMap = this.getColorMap();
+    this.setUpdateTriggers(params, 'getCellValue', this.currentSettings);
+
     return params;
   }
 

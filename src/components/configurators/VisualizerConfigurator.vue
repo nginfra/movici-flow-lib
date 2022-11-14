@@ -188,6 +188,7 @@ const FINALIZERS: Finalizers = {
       : {
           title: val.title,
           show: val.show,
+          onHover: val.onHover,
           dynamicTitle: val.dynamicTitle,
           items: val.items.map(item => {
             return {

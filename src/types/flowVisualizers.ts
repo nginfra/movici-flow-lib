@@ -111,7 +111,6 @@ export interface SizeClause {
   static?: StaticSizeClause;
   byValue?: ByValueSizeClause;
   dashed?: boolean;
-
 }
 
 type SizeUnits = 'pixels' | 'meters';
@@ -132,6 +131,7 @@ export interface ByValueSizeClause {
 export interface PopupClause {
   title: string;
   show?: boolean;
+  onHover?: boolean;
   dynamicTitle?: boolean;
   items: PopupItem[];
 }

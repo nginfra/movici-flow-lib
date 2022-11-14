@@ -232,6 +232,8 @@
         "dynamic": "Dynamic",
         "onClick": "On click",
         "onHover": "On hover",
+        "onClickOnly": "On click only",
+        "onClickAndHover": "On click & hover",
         "position": "Position",
         "showPopup": "Show popup",
         "static": "Static",

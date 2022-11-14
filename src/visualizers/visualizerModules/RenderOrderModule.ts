@@ -33,9 +33,6 @@ export default class RenderOrderModule<
   }
   compose(params: LayerParams<LData, Coord>, visualizer: IMapVisualizer<Coord>) {
     const changed = this.updateSettings(this.info.settings?.color ?? {});
-    if (!params.props.updateTriggers) {
-      params.props.updateTriggers = {};
-    }
     const accessor = this.updateAccessor(changed, visualizer),
       filterRanges = this.getFilterRanges(),
       active = !!(accessor && filterRanges);
@@ -44,8 +41,9 @@ export default class RenderOrderModule<
       params.type = orderedRendering(params.type);
       params.props.getOrderingValue = accessor;
       params.props.filterRanges = filterRanges;
-      params.props.updateTriggers['getOrderingValue'] = [this.currentSettings];
+      this.setUpdateTriggers(params, 'getOrderingValue', this.currentSettings);
     }
+
     // If we change from filtered to non-filtered, we need to tell deck.gl to fully
     // re-render the layer.
     if (active !== this.currentActive) {

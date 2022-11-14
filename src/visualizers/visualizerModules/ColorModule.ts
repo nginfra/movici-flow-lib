@@ -37,9 +37,6 @@ export default class ColorModule<
   }
   compose(params: LayerParams<LData, Coord>, visualizer: IMapVisualizer<Coord>) {
     const changed = this.updateSettings(this.info.settings?.color ?? {});
-    if (!params.props.updateTriggers) {
-      params.props.updateTriggers = {};
-    }
     const accessor = this.updateAccessor(changed, visualizer);
     return this.assignAccessor(params, accessor);
   }
@@ -152,9 +149,8 @@ export default class ColorModule<
         params.props.getColor = accessor;
         updateTriggers = ['getColor'];
     }
-    for (const trigger of updateTriggers) {
-      params.props.updateTriggers[trigger] = [this.currentSettings];
-    }
+    this.setUpdateTriggers(params, updateTriggers, this.currentSettings);
+
     return params;
   }
   private asFillColor(accessor: ColorAccessor<LData>): ColorAccessor<LData> {

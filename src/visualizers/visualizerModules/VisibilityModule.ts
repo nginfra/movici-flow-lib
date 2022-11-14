@@ -30,9 +30,7 @@ export default class VisibilityModule<
   }
   compose(params: LayerParams<LData, Coord>, visualizer: IMapVisualizer<Coord>) {
     const changed = this.updateSettings(this.info.settings?.visibility);
-    if (!params.props.updateTriggers) {
-      params.props.updateTriggers = {};
-    }
+
     const accessor = this.updateAccessor(changed, visualizer);
 
     // If we change from filtered to non-filtered, we need to tell deck.gl to fully
@@ -50,7 +48,7 @@ export default class VisibilityModule<
           filterSize: 1
         })
       );
-      params.props.updateTriggers.getFilterValue = [this.currentSettings];
+      this.setUpdateTriggers(params, 'getFilterValue', this.currentSettings);
     }
     return params;
   }
