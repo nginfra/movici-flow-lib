@@ -233,11 +233,14 @@ export default class EntitySelector extends Mixins(DraggableMixin) {
       color: {
         static: {
           color
+        },
+        advanced: {
+          fillOpacity: 255
         }
       },
       size: {
         static: {
-          size: 6,
+          size: type === 'polygons' ? 1 : 6,
           units: 'pixels'
         }
       }

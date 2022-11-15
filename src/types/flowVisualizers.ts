@@ -81,8 +81,8 @@ export interface ByValueColorClause {
 export interface AdvancedColorSettings {
   fillOpacity?: number;
   renderOrder?: RenderOrderType;
-  specialColor: RGBAColor;
-  undefinedColor: RGBAColor;
+  specialColor?: RGBAColor;
+  undefinedColor?: RGBAColor;
   legend?: LegendOptions;
 }
 
