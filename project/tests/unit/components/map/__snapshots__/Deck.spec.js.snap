@@ -5,7 +5,6 @@ exports[`Deck.vue renders correctly 1`] = `
   id="mapbox-container"
 >
   <div
-    class=""
     id="map"
   />
    

@@ -116,7 +116,7 @@
             />
           </template>
         </template>
-        <template #control-bottom="{ updateTimestamp, maxTimeAvailable, tapefileStores }">
+        <template v-if="timelineInfo" #control-bottom="{ updateTimestamp, maxTimeAvailable, tapefileStores }">
           <div class="box box-width-100" :class="{ 'pt-2': chartVisExpanded }">
             <ChartVis
               v-model="charts"

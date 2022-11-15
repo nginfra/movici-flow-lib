@@ -43,21 +43,6 @@
             {{ $t('flow.basemap')[item.name] | upperFirst }}
           </span>
         </div>
-        <div
-          v-for="(val, name) in colors"
-          :key="name"
-          class="item is-clickable"
-          @click="value_ = val"
-        >
-          <div
-            class="thumbnail solid-background-thumbnail"
-            :style="{ 'background-color': name }"
-            :class="{ active: val === value_ }"
-          />
-          <span class="is-size-7" :class="{ 'has-text-weight-bold': val === value_ }">
-            {{ $t('flow.basemap')[name] | upperFirst }}
-          </span>
-        </div>
       </div>
     </div>
   </div>

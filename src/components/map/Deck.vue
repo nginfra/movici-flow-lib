@@ -1,6 +1,6 @@
 <template>
   <div id="mapbox-container">
-    <div id="map" :class="{ 'is-hidden': !showMap }" />
+    <div id="map" />
     <canvas
       id="deckgl-overlay"
       :style="backgroundColorStyle"
@@ -153,7 +153,7 @@ export default class Deck extends Vue {
 
   @Watch('basemap')
   setStyle() {
-    this.map?.setStyle(this.basemap);
+    this.map?.setStyle(this.showMap ? this.basemap : (null as unknown as string));
   }
 
   @Watch('layers')
