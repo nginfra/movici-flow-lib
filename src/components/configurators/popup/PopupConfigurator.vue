@@ -7,14 +7,16 @@
             {{ $t('flow.visualization.popup.showPopup') }}
           </b-checkbox>
         </b-field>
-        <b-field class="when ml-6">
-          <b-radio class="mr-4" size="is-small" v-model="onHover" :native-value="false">
-            {{ $t('flow.visualization.popup.onClickOnly') }}
-          </b-radio>
-          <b-radio size="is-small" v-model="onHover" :native-value="true">
-            {{ $t('flow.visualization.popup.onClickAndHover') }}
-          </b-radio>
-        </b-field>
+        <template v-if="showPopup">
+          <b-field class="when ml-6">
+            <b-radio class="mr-4" size="is-small" v-model="onHover" :native-value="false">
+              {{ $t('flow.visualization.popup.onClickOnly') }}
+            </b-radio>
+            <b-radio size="is-small" v-model="onHover" :native-value="true">
+              {{ $t('flow.visualization.popup.onClickAndHover') }}
+            </b-radio>
+          </b-field>
+        </template>
       </div>
     </div>
     <div class="columns mb-0" v-if="showPopup">
