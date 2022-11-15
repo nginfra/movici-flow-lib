@@ -120,7 +120,7 @@ export default class ChartVisualizer extends BaseVisualizer<ChartVisualizerInfo>
           borderColor: colorTripleToHex(item.color)
         },
         point: {
-          radius: 1.5
+          radius: 2.5
         }
       }
     };

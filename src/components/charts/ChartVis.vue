@@ -50,6 +50,7 @@
         :chartOptions="options"
         :timestamp="timestamp"
         :customTimeFormat="customFormatter"
+        :chartInfo="currentChartInfo"
       />
     </div>
   </div>
@@ -99,6 +100,11 @@ export default class ChartVis extends Vue {
     data: ChartData;
   } | null = null;
 
+  
+  get validInfos() {
+    return this.value.filter(info => !Object.keys(info.errors).length);
+  }
+
   get backend(): Backend | null {
     return flowStore.backend;
   }
@@ -109,6 +115,9 @@ export default class ChartVis extends Vue {
 
   get options(): ChartOptions | null {
     return this.currentChart?.options || null;
+  }
+  get currentChartInfo(): ChartVisualizerInfo | null {
+    return this.validInfos.filter(i => i.id === this.currentChartId)[0] ?? null;
   }
 
   get tabActions(): ActionMenuItem[] {
@@ -165,14 +174,12 @@ export default class ChartVis extends Vue {
     this.registry.setTimelineInfo(this.timelineInfo);
   }
 
-  @Watch('value', { immediate: true })
+  @Watch('validInfos', { immediate: true })
   handelChartInfos() {
     this.isLoading = true;
     const visualizers = this.ensureManager();
     if (visualizers) {
-      visualizers
-        .updateVisualizers(this.value.filter(info => !Object.keys(info.errors).length))
-        .then(() => {});
+      visualizers.updateVisualizers(this.validInfos).then(() => {});
     }
   }
 
@@ -273,6 +280,7 @@ class ChartRegistry {
       data: this.getChartData(config)
     };
   }
+
   getChartData(config: ChartConfig): ChartData {
     const rv = {
       datasets: [] as ChartDataset[]
