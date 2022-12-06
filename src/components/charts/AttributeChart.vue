@@ -26,7 +26,8 @@ import {
   ChartData,
   ChartOptions,
   TooltipItem,
-  ChartEvent
+  ChartEvent,
+  LegendItem
 } from 'chart.js';
 import annotationPlugin, { AnnotationOptions } from 'chartjs-plugin-annotation';
 import { MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
@@ -118,7 +119,7 @@ export default class AttributeChart extends Vue {
               tooltip = createTooltip({
                 parent,
                 event,
-                text: this.getLegendTooltipContent(item)
+                text: this.getLegendTooltipContent(item as Required<LegendItem>)
               });
             }
           },
