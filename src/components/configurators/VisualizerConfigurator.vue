@@ -10,7 +10,7 @@
       </h1>
       <span class="separator is-flex-grow-1"></span>
       <b-button
-        class="close is-borderless is-transparent"
+        class="close is-borderless is-transparent has-hover-bg"
         icon-pack="far"
         icon-left="times"
         @click="close"
@@ -104,7 +104,7 @@
       <div class="left is-flex is-flex-grow-1"></div>
       <div class="right is-flex">
         <b-button
-          class="mr-2 is-transparent has-text-primary is-borderless"
+          class="mr-2 is-transparent has-text-primary is-borderless has-hover-bg"
           @click="close"
           size="is-small"
         >
@@ -638,7 +638,8 @@ interface ConfiguratorSettings {
   width: 45vw;
   max-width: 900px;
   background-color: var(--visualizer-editor-bg-color);
-  box-shadow: inset 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 0;
   z-index: 1;
   padding: 0 24px;
   transition: transform 0.5s;

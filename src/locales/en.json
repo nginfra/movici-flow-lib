@@ -158,7 +158,9 @@
       },
       "iconConfig": {
         "shape": "Shape",
+        "shapes": "Shapes",
         "icon": "Icon",
+        "icons": "Icons",
         "selectShape": "Select a Shape",
         "selectIcon": "Select an Icon",
         "far": "Regular",

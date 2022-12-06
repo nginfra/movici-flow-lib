@@ -46,6 +46,17 @@ export default class ByValueListMixin<Item> extends Vue {
     ];
   }
 
+  get lengthByDataType() {
+    switch (this.dataType) {
+      case 'BOOLEAN':
+        return 2;
+      case 'INT':
+      case 'DOUBLE':
+      default:
+        return 8;
+    }
+  }
+
   emitOriginalOrder(values: [number, Item][]) {
     this.$emit('input', this.reversed ? values.slice().reverse() : values);
   }

@@ -158,7 +158,9 @@
       },
       "iconConfig": {
         "shape": "Vorm",
+        "shapes": "Vormen",
         "icon": "Icoon",
+        "icons": "Iconen",
         "selectShape": "Selecteer een Vorm",
         "selectIcon": "Selecteer een Icoon",
         "far": "Normaal",

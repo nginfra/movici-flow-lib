@@ -107,8 +107,8 @@
     <b-button
       v-if="!isEnum"
       @click="addRow"
-      :disabled="hexColors.length >= maxColors"
-      class="is-size-7 is-transparent is-borderless has-text-primary has-text-weight-bold mt-2"
+      :disabled="value.length >= lengthByDataType"
+      class="is-size-7 is-transparent is-borderless has-text-primary has-hover-bg has-text-weight-bold mt-2"
       icon-pack="far"
       icon-left="plus-circle"
       size="is-small"

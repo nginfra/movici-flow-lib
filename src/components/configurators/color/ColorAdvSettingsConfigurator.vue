@@ -3,7 +3,7 @@
     <template #trigger="{ open }">
       <span class="is-flex is-align-items-center mb-2">
         <b-button
-          class="mr-2 is-transparent is-borderless"
+          class="mr-2 is-transparent is-borderless has-hover-bg"
           size="is-small"
           :icon-left="open ? 'angle-down' : 'angle-up'"
         />

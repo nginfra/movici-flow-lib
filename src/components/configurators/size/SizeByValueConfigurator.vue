@@ -36,7 +36,7 @@
       >
         <ByValueSizeList
           v-model="sizes"
-          :mode="sizeMode"
+          :mode="mode"
           :min-value="minValue"
           :max-value="maxValue"
           :units="units"
@@ -172,7 +172,7 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
     return !!this.entityEnums;
   }
 
-  get sizeMode(): 'number' | 'boolean' {
+  get mode(): 'number' | 'boolean' {
     return this.selectedDataType === 'BOOLEAN' ? 'boolean' : 'number';
   }
 
@@ -302,6 +302,7 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
     this.setupValidator();
     this.initializeValue(this.value?.byValue);
   }
+
   initializeValue(val?: ByValueSizeClause) {
     if (!val || isEmpty(val)) {
       this.setClause(BY_VALUE_DEFAULT_SIZES[this.geometry]);

@@ -24,7 +24,7 @@
       />
     </Draggable>
     <b-button
-      class="mt-2 is-transparent is-borderless is-align-self-baseline has-text-primary has-text-weight-bold"
+      class="mt-2 new-visualizer is-transparent has-hover-bg is-borderless is-align-self-baseline has-text-primary has-text-weight-bold"
       icon-left="plus-circle"
       icon-pack="far"
       size="is-small"

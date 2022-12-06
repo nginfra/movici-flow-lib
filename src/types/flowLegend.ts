@@ -1,6 +1,7 @@
 import { RGBAColor } from './colors';
 import {
   ByValueColorClause,
+  ByValueIconClause,
   FlowVisualizerType,
   LegendOptions,
   StaticColorClause,
@@ -49,6 +50,18 @@ export class IconStaticLegendItem extends IconLegendItem {
 
     if (static_ && legend) {
       this.iconLegends = [['', static_.icon]];
+    }
+  }
+}
+
+export class IconByValueLegendItem extends IconLegendItem {
+  constructor(byValue?: ByValueIconClause, legend?: LegendOptions) {
+    super({ iconLegends: [] });
+
+    if (byValue && legend?.labels) {
+      this.iconLegends = legend.labels.map((label: string, idx: number) => {
+        return [label, byValue.icons[idx][1]] as [string, string];
+      });
     }
   }
 }

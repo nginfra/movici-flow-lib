@@ -188,7 +188,10 @@ $container-bg: $white-ter;
     & > span {
       display: flex;
       align-items: center;
-      margin: 4px 0;
+      padding: 4px;
+      &:hover {
+        @include hover-grey-bgcolor;
+      }
       &.visibility {
         font-size: 20px;
         color: $grey;
@@ -196,10 +199,15 @@ $container-bg: $white-ter;
           color: $primary;
         }
       }
+      &.grip {
+        padding-left: 0;
+        padding-right: 0;
+      }
       &.edit,
       &.open,
       &.export,
       &.visibility {
+        @include border-radius;
         cursor: pointer;
       }
     }

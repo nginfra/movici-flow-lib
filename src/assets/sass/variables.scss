@@ -106,3 +106,7 @@ $half-left-menu-size: calc(#{$left-menu-size} / 2);
 @mixin border-radius {
   border-radius: 0.25rem !important;
 }
+
+@mixin hover-grey-bgcolor {
+  background-color: rgba(0, 0, 0, 0.05);
+}

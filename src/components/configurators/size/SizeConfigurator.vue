@@ -111,6 +111,7 @@ export default class SizeConfigurator extends Mixins(AttributeMixin) {
   get staticValidator() {
     return this.validator.child('static');
   }
+
   get byValueValidator() {
     return this.validator.child('byValue');
   }

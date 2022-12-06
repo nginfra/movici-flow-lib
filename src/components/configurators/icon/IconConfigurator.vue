@@ -6,7 +6,7 @@
           <b-radio class="mr-4" v-model="clauseType" native-value="static" size="is-small">
             {{ $t('flow.visualization.static') }}</b-radio
           >
-          <b-radio v-model="clauseType" native-value="byValue" size="is-small" disabled>
+          <b-radio v-model="clauseType" native-value="byValue" size="is-small">
             {{ $t('flow.visualization.byValue') }}
           </b-radio>
         </b-field>
@@ -24,29 +24,107 @@
       :value="currentClause"
       @input="updateSettings"
     />
+    <template v-else-if="clauseType === 'byValue'">
+      <div class="columns mb-0 is-multiline">
+        <div class="column is-two-thirds-desktop is-full-tablet">
+          <b-field
+            required
+            :label="$t('flow.visualization.basedOn')"
+            :message="errors['selectedEntityProp']"
+            :type="{ 'is-danger': errors['selectedEntityProp'] }"
+          >
+            <AttributeSelector
+              :value="selectedEntityProp"
+              :entity-props="entityProps"
+              :filter-prop="filterProp"
+              @input="updateAttribute"
+            />
+          </b-field>
+        </div>
+      </div>
+      <IconByValueConfigurator
+        :value="currentClause"
+        :validator="byValueValidator"
+        :entityProps="entityProps"
+        :selectedEntityProp="selectedEntityProp"
+        :summary="summary"
+        @input="updateSettings"
+      >
+        <template #legend-labels="{ entityEnums }">
+          <ColorLegendLabelsConfigurator
+            v-if="showLegend"
+            :value="legend"
+            @input="updateLegend($event)"
+            :placeholders="legendPlaceholders"
+            :nItems="nSteps"
+            :entityEnums="entityEnums"
+            reversed
+          />
+        </template>
+      </IconByValueConfigurator>
+    </template>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import IconStaticConfigurator from './IconStaticConfigurator.vue';
 import { IconClause, LegendOptions, PropertySummary } from '@movici-flow-common/types';
+import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
+import IconByValueConfigurator from './IconByValueConfigurator.vue';
+import AttributeMixin from '../AttributeMixin';
+import FormValidator from '@movici-flow-common/utils/FormValidator';
+import { attributeValidator, getLegendPlaceholders } from '../helpers';
+import ColorLegendLabelsConfigurator from '../color/ColorLegendLabelsConfigurator.vue';
 
 @Component({
   name: 'IconConfigurator',
   components: {
-    IconStaticConfigurator
+    IconStaticConfigurator,
+    IconByValueConfigurator,
+    AttributeSelector,
+    ColorLegendLabelsConfigurator
   }
 })
-export default class IconConfigurator extends Vue {
+export default class IconConfigurator extends Mixins(AttributeMixin) {
   @Prop({ type: Object, default: () => new Object() }) readonly value!: IconClause;
-  @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
+  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
+  allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
   currentClause: IconClause = {};
   clauseType: 'static' | 'byValue' | null = null;
   showLegend = false;
   legend: LegendOptions = {
     title: ''
   };
+
+  get staticValidator() {
+    return this.validator.child('static');
+  }
+
+  get byValueValidator() {
+    return this.validator.child('byValue');
+  }
+
+  get nSteps(): number {
+    if (this.clauseType === 'static') return 1;
+    return this.currentClause.byValue?.icons?.length ?? 0;
+  }
+
+  get legendPlaceholders(): string[] {
+    if (this.currentClause.byValue) {
+      const byValue = this.currentClause.byValue;
+      const mappingValues = byValue.icons?.map(val => val[0]);
+      if (!mappingValues) return [];
+      return getLegendPlaceholders(mappingValues, 'single');
+    }
+    return [];
+  }
+
+  updateAttribute(val: PropertySummary | null) {
+    if (val) {
+      this.ensureProp(val);
+    }
+  }
 
   updateSettings(updatedClause: IconClause) {
     this.currentClause = updatedClause;
@@ -68,6 +146,8 @@ export default class IconConfigurator extends Vue {
 
     if (this.showLegend) {
       toEmit.legend = this.legend;
+    } else {
+      delete toEmit.legend;
     }
 
     if (this.clauseType === 'static') {
@@ -90,6 +170,24 @@ export default class IconConfigurator extends Vue {
       this.currentClause = Object.assign({}, this.currentClause, this.value);
     } else {
       this.clauseType = 'static';
+    }
+  }
+
+  setupAttributeValidator() {
+    this.validator?.configure({
+      validators: {
+        selectedEntityProp: attributeValidator(this, () => this.clauseType === 'byValue')
+      },
+      onValidate: e => {
+        this.errors = e;
+      }
+    });
+  }
+
+  mounted() {
+    this.setupAttributeValidator();
+    if (this.value?.byValue?.attribute) {
+      this.pickSelectedEntityProp(this.value.byValue.attribute);
     }
   }
 }

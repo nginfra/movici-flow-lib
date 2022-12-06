@@ -55,7 +55,8 @@ import {
   LegendItem,
   IconLegendItem,
   IconClause,
-  IconStaticLegendItem
+  IconStaticLegendItem,
+  IconByValueLegendItem
 } from '@movici-flow-common/types';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import ColorBucketLegend from '../legends/ColorBucketLegend.vue';
@@ -117,10 +118,14 @@ export default class FlowLegend extends Vue {
 
     if (shapeClause?.static) {
       iconsLegendItems.shape = new IconStaticLegendItem(shapeClause.static, shapeLegend);
+    } else if (shapeClause?.byValue) {
+      iconsLegendItems.shape = new IconByValueLegendItem(shapeClause.byValue, shapeLegend);
     }
 
     if (iconClause?.static) {
       iconsLegendItems.icon = new IconStaticLegendItem(iconClause.static, iconLegend);
+    } else if (iconClause?.byValue) {
+      iconsLegendItems.icon = new IconByValueLegendItem(iconClause.byValue, iconLegend);
     }
 
     return iconsLegendItems;
@@ -166,12 +171,5 @@ export default class FlowLegend extends Vue {
 <style scoped lang="scss">
 hr {
   margin: 0.25em 0;
-}
-::v-deep {
-  .collapsed-icon {
-    &:hover {
-      background: $white-ter;
-    }
-  }
 }
 </style>

@@ -1,4 +1,9 @@
-import { ByValueSizeClause, FlowVisualizerType, StaticSizeClause } from '@movici-flow-common/types';
+import {
+  ByValueIconClause,
+  ByValueSizeClause,
+  FlowVisualizerType,
+  StaticSizeClause
+} from '@movici-flow-common/types';
 import { DIMENSIONS } from '@movici-flow-common/visualizers/visualizers';
 
 export const STATIC_DEFAULT_CONFIG: StaticSizeClause = {
@@ -65,4 +70,11 @@ export const STATIC_DEFAULT_CONFIG: StaticSizeClause = {
     })();
 
     return prev;
-  }, {} as Record<FlowVisualizerType, ByValueSizeClause>);
+  }, {} as Record<FlowVisualizerType, ByValueSizeClause>),
+  BY_VALUE_DEFAULT_ICON: ByValueIconClause = {
+    icons: [
+      [0, ''],
+      [1, '']
+    ],
+    attribute: null
+  };

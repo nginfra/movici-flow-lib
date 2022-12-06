@@ -94,9 +94,8 @@ export default class NavigationControl extends Vue {
     background-color: $white;
     border-radius: 0 !important;
     &:hover {
+      background-color: $white-ter;
       border-color: $grey-light;
-      color: $grey-darker;
-      background-color: $white;
     }
     &:focus {
       border-color: $primary;

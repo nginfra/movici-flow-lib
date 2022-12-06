@@ -1,7 +1,15 @@
 <template>
   <div class="columns is-multiline">
     <div class="column is-two-thirds-desktop is-full-tablet">
-      <IconSelector :value="currentIcon" pack="fas" @input="updateIcon($event)" />
+      <b-field :label="$t('flow.visualization.iconConfig.selectIcon')">
+        <IconSelector
+          :value="currentIcon"
+          pack="fas"
+          @input="updateIcon($event)"
+          :placeholder="$t('flow.visualization.iconConfig.selectIcon')"
+          allowEmpty
+        />
+      </b-field>
     </div>
     <div class="column is-one-third-desktop is-full-tablet">
       <slot name="legend-title"></slot>

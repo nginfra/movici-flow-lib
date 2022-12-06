@@ -3,9 +3,23 @@
     <span v-if="errors['shapeOrIcon']" class="error is-block is-size-7 has-text-danger mb-2">
       {{ errors['shapeOrIcon'] }}
     </span>
-    <ShapeConfigurator class="mt-2" v-model="shapeSettings" :entityProps="entityProps" />
+    <label class="label is-size-6">{{ $t('flow.visualization.iconConfig.shape') }}</label>
+    <ShapeConfigurator
+      class="mt-2"
+      v-model="shapeSettings"
+      :validator="validator"
+      :entityProps="entityProps"
+      :summary="summary"
+    />
     <hr />
-    <IconConfigurator class="mt-2" v-model="iconSettings" :entityProps="entityProps" />
+    <label class="label is-size-6">{{ $t('flow.visualization.iconConfig.icon') }}</label>
+    <IconConfigurator
+      class="mt-2"
+      v-model="iconSettings"
+      :validator="validator"
+      :entityProps="entityProps"
+      :summary="summary"
+    />
   </div>
 </template>
 
@@ -13,7 +27,7 @@
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 import IconConfigurator from './IconConfigurator.vue';
 import ShapeConfigurator from './ShapeConfigurator.vue';
-import { IconClause, PropertySummary } from '@movici-flow-common/types';
+import { DatasetSummary, IconClause, PropertySummary } from '@movici-flow-common/types';
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
 
@@ -29,6 +43,7 @@ export default class ShapeIconConfigurator extends Mixins(ValidationProvider) {
   @Prop({ type: Object, default: null }) readonly iconClause!: IconClause | null;
   @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
   @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
+  @Prop({ type: Object, default: null }) readonly summary!: DatasetSummary | null;
 
   get shapeSettings() {
     return this.shapeClause;

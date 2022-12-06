@@ -5,7 +5,7 @@
     </span>
     <b-tag
       v-for="(suggestion, idx) in filteredSuggestions"
-      class="is-clickable"
+      class="is-clickable has-hover-bg"
       :class="{ 'mr-2': idx !== filteredSuggestions.length - 1 }"
       :key="idx"
       @click="$emit('addItem', suggestion)"
@@ -45,12 +45,14 @@ export default class AttributeSuggestions extends Vue {
   }
 
   get filteredSuggestions() {
-    return this.value
-      .concat(this.defaultSuggestions)
-      .filter(attr => {
-        return !this.itemSet.has(attr.name);
-      })
-      .sort(sortByKeys(['+name']));
+    return [
+      ...this.defaultSuggestions,
+      ...this.value
+        .filter(attr => {
+          return !this.itemSet.has(attr.name);
+        })
+        .sort(sortByKeys(['+name']))
+    ];
   }
 }
 </script>

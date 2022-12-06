@@ -272,7 +272,7 @@ export default class FlowMain extends Vue {
               }
             }
             &:hover {
-              background-color: $white-bis;
+              @include hover-grey-bgcolor;
             }
             &.is-active {
               background-color: $white;

@@ -182,6 +182,9 @@ export default class SearchBar extends Vue {
   .expander {
     padding: 0;
     width: inherit;
+    &:hover {
+      background-color: $white-ter;
+    }
     ::v-deep .icon {
       margin-right: auto;
       margin-left: calc(0.5em - 2px);

@@ -78,7 +78,7 @@
                 <b-input expanded size="is-small" class="is-size-7" v-model="item.name" />
               </b-field>
               <b-button
-                class="is-borderless is-transparent is-flex has-text-danger"
+                class="is-borderless is-transparent has-hover-bg is-flex has-text-danger"
                 size="is-small"
                 @click="removeItem(index)"
                 icon-left="trash"

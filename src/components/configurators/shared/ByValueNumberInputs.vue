@@ -25,7 +25,7 @@
           @click="$emit('removeRow', index)"
           :title="$t('flow.visualization.colorConfig.removeRow')"
           :disabled="isDisabled"
-          class="ml-1 is-transparent is-borderless has-text-danger"
+          class="ml-1 is-transparent has-hover-bg is-borderless has-text-danger"
           icon-pack="far"
           icon-left="minus-circle"
           size="is-small"

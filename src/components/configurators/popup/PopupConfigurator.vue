@@ -46,7 +46,7 @@
         >
           <template #trigger>
             <b-button
-              class="is-size-7 is-transparent is-borderless has-text-primary has-text-weight-bold"
+              class="is-size-7 is-transparent has-hover-bg is-borderless has-text-primary has-text-weight-bold"
               icon-left="plus-circle"
               icon-pack="far"
               size="is-small"
@@ -111,7 +111,7 @@
                 {{ $t('flow.visualization.popup.setAsDynamicTitle') }}
               </b-checkbox>
               <b-button
-                class="is-transparent is-borderless ml-2 has-text-danger"
+                class="is-transparent is-borderless ml-2 has-text-danger has-hover-bg"
                 icon-left="minus-circle"
                 icon-pack="far"
                 size="is-small"
@@ -196,8 +196,11 @@ export default class PopupConfigurator extends Mixins(ValidationProvider, Dragga
     // any new byValue clauses must be added here!
     return [
       this.settings?.color?.byValue?.attribute,
-      this.settings?.size?.byValue?.attribute
-    ].filter(attr => attr);
+      this.settings?.size?.byValue?.attribute,
+      this.settings?.icon?.byValue?.attribute,
+      this.settings?.shape?.byValue?.attribute,
+      this.settings?.visibility?.byValue.attribute
+    ].filter((attr, pos, arr) => attr && arr.indexOf(attr) == pos);
   }
 
   // saves a last version of the clause, then emit whole settings object with new clause

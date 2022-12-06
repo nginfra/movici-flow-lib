@@ -12,7 +12,7 @@
       <div class="is-flex">
         <label class="label is-size-6-half is-flex-grow-1">Base Maps</label>
         <b-button
-          class="close is-borderless is-transparent"
+          class="close is-borderless is-transparent has-hover-bg"
           icon-pack="far"
           icon-left="times"
           size="is-small"
@@ -119,6 +119,9 @@ export default class BaseMapControl extends Vue {
   .toggler {
     padding: 0;
     width: inherit;
+    &:hover {
+      background-color: $white-ter;
+    }
     ::v-deep .icon {
       margin-right: auto;
       margin-left: calc(0.5em - 2px);

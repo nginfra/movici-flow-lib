@@ -51,7 +51,7 @@
         </b-field>
         <b-button
           @click="resetTimestamp"
-          class="is-transparent is-borderless has-text-primary is-pulled-right"
+          class="is-transparent is-borderless has-hover-bg has-text-primary is-pulled-right"
           icon-left="undo"
           icon-pack="far"
           size="is-small"

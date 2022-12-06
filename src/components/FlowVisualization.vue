@@ -19,7 +19,7 @@
               icon-left="fa-mov-save"
               size="is-small"
               @click="saveView(view.uuid)"
-              class="py-0 is-transparent is-borderless quick-save"
+              class="py-0 is-transparent is-borderless quick-save has-text-primary has-hover-bg"
               :title="isDirtyLabel"
             >
             </b-button>
@@ -116,7 +116,10 @@
             />
           </template>
         </template>
-        <template v-if="timelineInfo" #control-bottom="{ updateTimestamp, maxTimeAvailable, tapefileStores }">
+        <template
+          v-if="timelineInfo"
+          #control-bottom="{ updateTimestamp, maxTimeAvailable, tapefileStores }"
+        >
           <div class="box box-width-100" :class="{ 'pt-2': chartVisExpanded }">
             <ChartVis
               v-model="charts"

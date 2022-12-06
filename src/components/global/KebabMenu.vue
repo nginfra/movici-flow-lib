@@ -62,6 +62,10 @@ export default class MovKebabMenu extends Mixins(FixedPosition) {
     border: 0;
     background: transparent;
     height: 24px;
+    border-radius: 4px;
+    &:hover {
+      @include hover-grey-bgcolor;
+    }
     .ellipsis {
       width: 16px;
       height: 20px;

@@ -1,26 +1,26 @@
 <template>
   <div class="is-block">
     <div class="is-flex min-max mt-1">
-      <div class="sizes-is-flex is-flex-shrink-1 is-flex-direction-column mr-4">
+      <div class="icons is-flex is-flex-shrink-1 is-flex-direction-column mr-4">
         <span class="is-flex">
           <label class="label mr-1 is-flex-grow-1">
-            {{ $t('flow.visualization.sizeConfig.size') }} ({{ miniUnits }})
+            {{ $t('flow.visualization.type.icons') }}
           </label>
         </span>
         <div class="is-flex is-flex-direction-column">
           <b-field v-for="(val, i) in output" :key="i">
-            <b-numberinput
+            <IconSelector
               :value="val"
               @input="updateOutput(i, $event)"
-              :controls="false"
-              :min-step="1e-15"
-              step="1"
-              size="is-small"
+              :iconOptions="iconOptions"
+              :placeholder="$t('actions.select')"
+              pack="fas"
+              expanded
             />
           </b-field>
         </div>
       </div>
-      <div class="values is-flex is-flex-shrink-1 is-flex-direction-column">
+      <div class="values is-flex is-flex-grow-1 is-flex-direction-column">
         <span class="is-flex">
           <label class="label mr-1 is-flex-grow-1">
             {{ $t('flow.visualization.sizeConfig.value') }}
@@ -28,8 +28,8 @@
           <MovKebabMenu
             v-if="isMode('number') && !isEnum"
             :value="valueActions"
-            @resetValues="$emit('resetValues')"
             @interpolateMinMax="$emit('interpolateMinMax')"
+            @resetValues="$emit('resetValues')"
           />
         </span>
         <div class="is-flex is-flex-direction-column">
@@ -47,10 +47,10 @@
       </div>
     </div>
     <b-button
-      v-if="isEnum"
+      v-if="!isEnum"
       @click="addRow"
       :disabled="value.length >= lengthByDataType"
-      class="is-size-7 is-transparent has-hover-bg is-borderless has-text-primary has-text-weight-bold mt-2"
+      class="is-size-7 is-transparent is-borderless has-hover-bg has-text-primary has-text-weight-bold mt-2"
       icon-pack="far"
       icon-left="plus-circle"
       size="is-small"
@@ -66,28 +66,27 @@ import BooleanInputs from '../shared/BooleanInputs.vue';
 import ByValueNumberInputs from '../shared/ByValueNumberInputs.vue';
 import EnumInputs from '../shared/EnumInputs.vue';
 import ByValueListMixin from '../ByValueListMixin';
+import IconSelector from './IconSelector.vue';
+import { IconMapping } from '@movici-flow-common/visualizers/layers/ShapeIconLayer';
 
 @Component({
-  name: 'ByValueSizeList',
+  name: 'ByValueIconList',
   components: {
     BooleanInputs,
     ByValueNumberInputs,
-    EnumInputs
+    EnumInputs,
+    IconSelector
   }
 })
-export default class ByValueSizeList extends Mixins<ByValueListMixin<number>>(ByValueListMixin) {
-  @Prop({ type: String, default: 'pixels' }) readonly units!: string;
-  defaultOutputRow = 0;
+export default class ByValueIconList extends Mixins<ByValueListMixin<string>>(ByValueListMixin) {
+  @Prop({ type: Object }) iconOptions!: IconMapping;
 
-  get miniUnits() {
-    switch (this.units) {
-      case 'meters':
-        return 'm';
-      case 'pixels':
-        return 'px';
-      default:
-        return '';
-    }
+  get icons(): string[] {
+    return Object.keys(this.iconOptions ?? []);
+  }
+
+  mounted() {
+    this.defaultOutputRow = this.icons[0];
   }
 }
 </script>

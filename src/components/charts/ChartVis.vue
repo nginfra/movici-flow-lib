@@ -100,7 +100,6 @@ export default class ChartVis extends Vue {
     data: ChartData;
   } | null = null;
 
-  
   get validInfos() {
     return this.value.filter(info => !Object.keys(info.errors).length);
   }
