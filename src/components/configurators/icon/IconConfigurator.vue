@@ -30,11 +30,11 @@
           <b-field
             required
             :label="$t('flow.visualization.basedOn')"
-            :message="errors['selectedEntityProp']"
-            :type="{ 'is-danger': errors['selectedEntityProp'] }"
+            :message="errors['selectedAttribute']"
+            :type="{ 'is-danger': errors['selectedAttribute'] }"
           >
             <AttributeSelector
-              :value="selectedEntityProp"
+              :value="selectedAttribute"
               :entity-props="entityProps"
               :filter-prop="filterProp"
               @input="updateAttribute"
@@ -42,53 +42,65 @@
           </b-field>
         </div>
       </div>
-      <IconByValueConfigurator
-        :value="currentClause"
-        :validator="byValueValidator"
-        :entityProps="entityProps"
-        :selectedEntityProp="selectedEntityProp"
+      <ByValueConfigurator
+        v-if="selectedAttribute"
+        v-model="icons"
+        :selectedAttribute="selectedAttribute"
+        :strategy="strategy"
         :summary="summary"
-        @input="updateSettings"
+        :component="component"
+        :props="componentProps"
+        :label="header"
       >
-        <template #legend-labels="{ entityEnums }">
-          <ColorLegendLabelsConfigurator
+        <template #legend-labels="{ placeholders }">
+          <LegendLabelsConfigurator
             v-if="showLegend"
             :value="legend"
             @input="updateLegend($event)"
-            :placeholders="legendPlaceholders"
+            :placeholders="placeholders"
             :nItems="nSteps"
-            :entityEnums="entityEnums"
             reversed
           />
         </template>
-      </IconByValueConfigurator>
+      </ByValueConfigurator>
     </template>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import IconStaticConfigurator from './IconStaticConfigurator.vue';
-import { IconClause, LegendOptions, PropertySummary } from '@movici-flow-common/types';
 import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
-import IconByValueConfigurator from './IconByValueConfigurator.vue';
-import AttributeMixin from '../AttributeMixin';
-import FormValidator from '@movici-flow-common/utils/FormValidator';
-import { attributeValidator, getLegendPlaceholders } from '../helpers';
-import ColorLegendLabelsConfigurator from '../color/ColorLegendLabelsConfigurator.vue';
+import { IconClause, LegendOptions, PropertySummary } from '@movici-flow-common/types';
+import { MAPPED_ICONS } from '@movici-flow-common/visualizers/visualizerModules/iconCommon';
+import { Component, Mixins, Watch } from 'vue-property-decorator';
+import ConfiguratorMixin from '../ConfiguratorMixin';
+import { attributeValidator } from '../helpers';
+import ByValueConfigurator from '../shared/ByValueConfigurator.vue';
+import LegendLabelsConfigurator from '../shared/LegendLabelsConfigurator.vue';
+import { MappingStrategy } from '../shared/ValueMappingHelper';
+import IconSelector from './IconDropdownSelector.vue';
+import IconStaticConfigurator from './IconStaticConfigurator.vue';
 
+class IconMappingStrategy extends MappingStrategy<string> {
+  defaultStepCount(): number {
+    return 4;
+  }
+
+  defaultOutput(): string {
+    return Object.keys(MAPPED_ICONS.icons)[0];
+  }
+}
 @Component({
   name: 'IconConfigurator',
   components: {
     IconStaticConfigurator,
-    IconByValueConfigurator,
     AttributeSelector,
-    ColorLegendLabelsConfigurator
+    LegendLabelsConfigurator,
+    ByValueConfigurator
   }
 })
-export default class IconConfigurator extends Mixins(AttributeMixin) {
-  @Prop({ type: Object, default: () => new Object() }) readonly value!: IconClause;
-  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
+export default class IconConfigurator extends Mixins<ConfiguratorMixin<IconClause>>(
+  ConfiguratorMixin
+) {
   allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
   currentClause: IconClause = {};
   clauseType: 'static' | 'byValue' | null = null;
@@ -97,6 +109,35 @@ export default class IconConfigurator extends Mixins(AttributeMixin) {
     title: ''
   };
 
+  get icons() {
+    return this.currentClause.byValue?.icons ?? [];
+  }
+  set icons(val: [number, string][]) {
+    this.updateSettings({
+      byValue: {
+        attribute: this.selectedAttribute,
+        icons: val
+      }
+    });
+  }
+  get strategy() {
+    return new IconMappingStrategy();
+  }
+
+  get component() {
+    return IconSelector;
+  }
+  get componentProps() {
+    return {
+      iconOptions: MAPPED_ICONS.icons,
+      placeholder: this.$t('actions.select'),
+      pack: 'fas',
+      expanded: true
+    };
+  }
+  get header() {
+    return this.$t('flow.visualization.type.icons');
+  }
   get staticValidator() {
     return this.validator.child('static');
   }
@@ -108,16 +149,6 @@ export default class IconConfigurator extends Mixins(AttributeMixin) {
   get nSteps(): number {
     if (this.clauseType === 'static') return 1;
     return this.currentClause.byValue?.icons?.length ?? 0;
-  }
-
-  get legendPlaceholders(): string[] {
-    if (this.currentClause.byValue) {
-      const byValue = this.currentClause.byValue;
-      const mappingValues = byValue.icons?.map(val => val[0]);
-      if (!mappingValues) return [];
-      return getLegendPlaceholders(mappingValues, 'single');
-    }
-    return [];
   }
 
   updateAttribute(val: PropertySummary | null) {
@@ -176,7 +207,7 @@ export default class IconConfigurator extends Mixins(AttributeMixin) {
   setupAttributeValidator() {
     this.validator?.configure({
       validators: {
-        selectedEntityProp: attributeValidator(this, () => this.clauseType === 'byValue')
+        selectedAttribute: attributeValidator(this, () => this.clauseType === 'byValue')
       },
       onValidate: e => {
         this.errors = e;

@@ -73,8 +73,6 @@ export interface ByValueColorClause {
   type: 'buckets' | 'gradient';
   attribute: PropertySummary | null;
   colors: [number, RGBAColor][];
-  minValue?: number;
-  maxValue?: number;
   semiTransparent?: boolean;
 }
 

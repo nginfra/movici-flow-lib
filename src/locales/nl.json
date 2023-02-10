@@ -131,20 +131,25 @@
         "grid": "Grid",
         "floodingGrid": "Overstroming"
       },
+      "byValueConfig": {
+        "value": "Waarde",
+        "valueEnum": "Waarde (enumeratie)",
+        "valueRange": "Waarde (bereik)",
+        "steps": "Stappen",
+        "addRow": "Rij toevoegen",
+        "removeRow": "Rij verwijderen"
+      },
       "colorConfig": {
         "buckets": "Kleurvakken",
         "color": "Kleur",
         "colors": "Kleuren",
         "gradient": "Gradient",
-        "palette": "kleurenpalet",
-        "steps": "Stappen",
-        "type": "palet-type",
-        "value": "Waarde",
-        "valueEnum": "Waarde (enumeratie)",
-        "valueRange": "Waarde (bereik)",
+        "palette": "Kleurenpalet",
+
+        "type": "Kleurenpalet-type",
+
         "invertColors": "Kleurvolgorde omkeren",
-        "addRow": "Rij toevoegen",
-        "removeRow": "Rij verwijderen",
+
         "advanced": {
           "title": "Geavanceerd",
           "fillOpacity": "Fill opacity",
@@ -216,6 +221,7 @@
         "viewUpdateSuccess": "View succesvol ge-updatet",
         "deleteChart": "Weet je zeker dat je Grafiek <b>{name}</b> wilt verwijderen?"
       },
+      "invertOutput": "Volgorde omkeren",
       "resetValues": "Waarden terugzetten",
       "interpolateMinMax": "Stap-waarden herberekenen",
       "displayAs": "Weergeven in",

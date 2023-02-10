@@ -6,7 +6,7 @@
       :key="index"
       size="is-small"
     >
-      <div class="values is-flex">
+      <div class="is-flex">
         <slot name="before" v-bind="{ index }" />
         <span class="is-flex-grow-1 values-from">
           <b-input :value="enumLabels[val]" size="is-small" disabled />

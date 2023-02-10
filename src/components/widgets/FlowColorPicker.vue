@@ -4,9 +4,9 @@
     :class="position"
     ref="colorPickerContainer"
     :style="style"
-    v-if="open"
+    v-if="isOpen"
     tabindex="0"
-    @blur="close"
+    @blur="$emit('close')"
   >
     <Sketch v-model="rgba" :presetColors="preparedColorPresets"></Sketch>
   </div>
@@ -37,23 +37,24 @@ export default class FlowColorPicker extends Vue {
   @Prop({ type: String, default: 'top' }) readonly position!: string;
   @Ref('colorPickerContainer') readonly colorPickerContainer!: HTMLElement;
 
+  isOpen = false;
+  coolDown = false;
+
   get preparedColorPresets(): (string | RGBAObject)[] {
     return this.presets.map(color => (Array.isArray(color) ? colorTripleToRGBA(color) : color));
   }
 
   // looking into positioning this in diferent ways
   get style() {
-    return {
-      top: {
-        transform: `translateY(-96%) translateY(${this.translateY}px) translateX(${this.translateX}px)`
-      },
-      right: {
-        transform: `translateY(-35%) translateY(${this.translateY}px) translateX(20%) translateX(${this.translateX}px)`
-      },
-      'top-right': {
-        transform: `translateY(1%) translateY(${this.translateY}px) translateX(20%) translateX(${this.translateX}px)`
-      }
+    let transform = {
+      top: 'translateY(-100%) translateY(-10px)',
+      right: 'translateY(-50%)',
+      'top-right': 'translateY(-48px) translateX(12px)'
     }[this.position];
+
+    return {
+      transform: transform + `translateY(${this.translateY}px) translateX(${this.translateX}px)`
+    };
   }
 
   get rgba(): RGBAObject {
@@ -68,16 +69,34 @@ export default class FlowColorPicker extends Vue {
     this.$emit('input', color);
   }
 
-  @Watch('open')
-  autoFocus(open: boolean) {
-    this.$nextTick(() => {
-      if (open) this.colorPickerContainer.focus();
-    });
-  }
+  @Watch('open', { immediate: true })
+  handleOpen(open: boolean) {
+    /* We need to handle the blur event correctly. This means that we first have to focus the
+    colorPickerContainer when it appears, so that clicking outside it's area, actually triggers
+    the blur event. Because of Vue reasons, this needs to be done in a $nextTick callback.
+    Now that we're properly detecting the blur event, we need to deal with a false positive, namely
+    when we use an (outside this component) toggle button to close it. Clicking the toggle button
+    first fires the blur event (thereby closing this component) and then it is activated again in
+    the toggle action, which is undesirable. We therefore introduce a cooldown. If the component
+    has been closed, it cannot be opened again within x(=100) ms.
+    */
+    const COOLDOWN_MS = 100;
+    if (open && this.coolDown) {
+      this.$emit('close');
+    }
 
-  close(event: FocusEvent) {
-    const target = event.relatedTarget as HTMLElement;
-    if (!this.$el.contains(target)) this.$emit('close');
+    this.isOpen = open;
+
+    if (open) {
+      this.$nextTick(() => {
+        this.colorPickerContainer?.focus();
+      });
+    } else if (!this.coolDown) {
+      this.coolDown = true;
+      setTimeout(() => {
+        this.coolDown = false;
+      }, COOLDOWN_MS);
+    }
   }
 }
 

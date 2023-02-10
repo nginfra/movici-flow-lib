@@ -31,17 +31,6 @@
 
     <div class="contents mb-2" v-if="localValue.items.length">
       <label class="label is-size-6-half">{{ $t('flow.visualization.graph.lines') }}</label>
-      <FlowColorPicker
-        v-if="showColorPicker"
-        :value="getColor(colorPickerIndex)"
-        @input="updateColor(colorPickerIndex, $event)"
-        :open="showColorPicker"
-        @close="closeColorPicker"
-        :translateX="localValue.items.length ? 15 : 35"
-        :translateY="colorPickerIndex * 38"
-        :presets="colorPickerPresets"
-        position="top-right"
-      />
       <div class="box info mb-2 p-3 has-background-white-bis">
         <div class="header is-flex mb-0">
           <label class="label color is-size-7 is-flex-shrink-1 mr-2">
@@ -68,10 +57,10 @@
                 </span>
               </span>
               <b-field class="is-flex-shrink-1 mr-2 mb-0">
-                <ColorWrap
-                  :active="colorPickerIndex === index"
-                  :value="colorTripleToHex(item.color)"
-                  @click="openColorPicker(index)"
+                <ColorInput
+                  :value="item.color"
+                  @input="updateColor(index, $event)"
+                  colorPickerPosition="top-right"
                 />
               </b-field>
               <b-field class="is-flex-grow-1 is-align-items-center mr-2 mb-0">
@@ -131,33 +120,31 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
-import FlowColorPicker from '@movici-flow-common/components/configurators/color/FlowColorPicker.vue';
-import { ButtonItem, PropertyType } from '@movici-flow-common/types';
-import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
-import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
-import { MoviciError } from '@movici-flow-common/errors';
-import { flowStore } from '@movici-flow-common/store/store-accessor';
-import { colorTripleToHex, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { RGBAColor } from '@deck.gl/core';
-import Draggable from 'vuedraggable';
+import ColorInput from '@movici-flow-common/components/widgets/ColorInput.vue';
+import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
+import { MoviciError } from '@movici-flow-common/errors';
 import DraggableMixin from '@movici-flow-common/mixins/DraggableMixin';
+import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
+import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
+import { flowStore } from '@movici-flow-common/store/store-accessor';
+import { ButtonItem, PropertyType } from '@movici-flow-common/types';
+import { excludeKeys } from '@movici-flow-common/utils';
+import { colorTripleToHex, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
 import {
   ChartVisualizerInfo,
   ChartVisualizerItem
 } from '@movici-flow-common/visualizers/VisualizerInfo';
-import ColorWrap from '@movici-flow-common/components/configurators/color/ColorWrap.vue';
-import { excludeKeys } from '@movici-flow-common/utils';
 import { cloneDeep, isEqual } from 'lodash';
+import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
+import Draggable from 'vuedraggable';
 
 @Component({
   name: 'AttributeChartConfig',
   components: {
     AttributeSelector,
-    FlowColorPicker,
     Draggable,
-    ColorWrap
+    ColorInput
   }
 })
 export default class AttributeChartConfig extends Mixins(

@@ -2,11 +2,12 @@
   <div class="columns is-multiline">
     <div class="column is-two-thirds-desktop is-full-tablet">
       <b-field :label="$t('flow.visualization.iconConfig.selectIcon')">
-        <IconSelector
+        <IconDropdownSelector
           :value="currentIcon"
+          :iconOptions="iconOptions"
+          :placeholder="$t('flow.visualization.iconConfig.selectIcon')"
           pack="fas"
           @input="updateIcon($event)"
-          :placeholder="$t('flow.visualization.iconConfig.selectIcon')"
           allowEmpty
         />
       </b-field>
@@ -20,12 +21,13 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { IconClause } from '@movici-flow-common/types';
-import IconSelector from './IconSelector.vue';
+import IconDropdownSelector from './IconDropdownSelector.vue';
+import { MAPPED_ICONS } from '@movici-flow-common/visualizers/visualizerModules/iconCommon';
 
 @Component({
   name: 'IconStaticConfigurator',
   components: {
-    IconSelector
+    IconDropdownSelector
   }
 })
 export default class IconStaticConfigurator extends Vue {
@@ -33,6 +35,10 @@ export default class IconStaticConfigurator extends Vue {
 
   get currentIcon() {
     return this.value?.static?.icon ?? null;
+  }
+
+  get iconOptions() {
+    return MAPPED_ICONS.icons;
   }
 
   updateIcon(icon: string | null) {

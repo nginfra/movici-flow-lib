@@ -5,11 +5,11 @@
         <b-field
           required
           :label="$t('flow.visualization.basedOn')"
-          :message="errors['selectedEntityProp']"
-          :type="{ 'is-danger': errors['selectedEntityProp'] }"
+          :message="errors['selectedAttribute']"
+          :type="{ 'is-danger': errors['selectedAttribute'] }"
         >
           <AttributeSelector
-            :value="selectedEntityProp"
+            :value="selectedAttribute"
             :entity-props="entityProps"
             :filter-prop="filterProp"
             @input="updateAttribute"
@@ -19,20 +19,19 @@
     </div>
     <ColorByValueConfigurator
       :value="currentClause"
+      :strategy="strategy"
       :validator="validator"
-      :selectedEntityProp="selectedEntityProp"
+      :selectedAttribute="selectedAttribute"
       :summary="summary"
       @input="updateSettings"
-      :initialOpts="opts"
     >
-      <template #legend-labels="{ entityEnums }">
-        <ColorLegendLabelsConfigurator
+      <template #legend-labels="{ placeholders }">
+        <LegendLabelsConfigurator
           v-if="showLegend"
           :value="legend"
           @input="updateLegend($event)"
-          :placeholders="legendPlaceholders"
+          :placeholders="placeholders"
           :nItems="nSteps"
-          :entityEnums="entityEnums"
           reversed
         />
       </template>
@@ -43,60 +42,58 @@
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import ColorByValueConfigurator from '../color/ColorByValueConfigurator.vue';
-import ColorLegendLabelsConfigurator from '../color/ColorLegendLabelsConfigurator.vue';
-import { getLegendPlaceholders, PlaceholderType } from '../helpers';
+import LegendLabelsConfigurator from '../shared/LegendLabelsConfigurator.vue';
 import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
 import {
   ByValueColorClause,
   ColorClause,
   LegendOptions,
-  PropertySummary
+  PropertySummary,
+  RGBAColor
 } from '@movici-flow-common/types';
-import FormValidator from '@movici-flow-common/utils/FormValidator';
-import AttributeMixin from '../AttributeMixin';
+import ConfiguratorMixin from '../ConfiguratorMixin';
+
+import { ColorMappingStrategy } from '../color/ColorByValueConfigurator.vue';
+import { ValueMapping, ValueMappingHelper } from '../shared/ValueMappingHelper';
+import { DEFAULT_COLOR_PALETTES } from '../color/colorPalettes';
+
+class FloodingColorMappingStrategy extends ColorMappingStrategy {
+  defaultMapping(_: ValueMapping<RGBAColor>, helper: ValueMappingHelper<RGBAColor>) {
+    return helper.recalculateMapping({
+      mapping: [
+        [0, this.defaultOutput()],
+        [helper.getMaxValue() ?? 0, this.defaultOutput()]
+      ],
+      nSteps: this.defaultStepCount(),
+      forceRecalculateValues: true
+    });
+  }
+  defaultStepCount() {
+    return 3;
+  }
+}
 
 @Component({
   name: 'FloodingColorConfigurator',
   components: {
     AttributeSelector,
     ColorByValueConfigurator,
-    ColorLegendLabelsConfigurator
+    LegendLabelsConfigurator
   }
 })
-export default class FloodingColorConfigurator extends Mixins(AttributeMixin) {
-  @Prop({ type: Object }) readonly value?: ColorClause;
-  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
+export default class FloodingColorConfigurator extends Mixins<ConfiguratorMixin<ColorClause>>(
+  ConfiguratorMixin
+) {
   @Prop({ type: Boolean, default: false }) readonly showLegend!: boolean;
+  strategy = new FloodingColorMappingStrategy(DEFAULT_COLOR_PALETTES['Flooding'][0]);
   allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
   currentClause: ColorClause = {};
   legend: LegendOptions = {
     title: ''
   };
 
-  get opts() {
-    return {
-      allowedPropertyTypes: ['DOUBLE'],
-      selectedColorType: 'Flooding',
-      nSteps: 3,
-      maxValue: 1
-    };
-  }
-
   get nSteps(): number {
     return this.currentClause.byValue?.colors?.length ?? 0;
-  }
-
-  get legendPlaceholders(): string[] {
-    if (this.currentClause.byValue) {
-      const byValue = this.currentClause.byValue;
-      const mappingValues = byValue.colors?.map(val => val[0]);
-      if (!mappingValues) return [];
-
-      const maxValue = byValue.maxValue ?? 1;
-      const type: PlaceholderType = byValue.type === 'gradient' ? 'single' : 'range';
-      return getLegendPlaceholders(mappingValues, type, maxValue);
-    }
-    return [];
   }
 
   updateAttribute(val: PropertySummary | null) {

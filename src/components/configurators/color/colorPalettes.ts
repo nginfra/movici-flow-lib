@@ -20,6 +20,9 @@ export default class ColorPalette {
     this.reversed = reversed ?? false;
   }
 
+  supportsSize(size: number) {
+    return this.colorsForSize[size] !== undefined;
+  }
   getHexColorsForSize(size: number) {
     if (!this.colorsForSize[size]) {
       size = Math.max(...Object.keys(this.colorsForSize).map(n => Number(n)));
@@ -292,7 +295,7 @@ export const DEFAULT_COLOR_PALETTES = addReversedColorPalettes({
   ],
   Flooding: [
     new ColorPalette({
-      name: 'Default',
+      name: 'Flooding',
       colors: ['#87d9ff', '#0092ff', '#0000ff', '#6e22e7'],
       colorsForSize: {
         2: [0, 2],

@@ -1,53 +1,24 @@
 <template>
   <div>
-    <div v-if="selectedEntityProp && sizes" class="columns mb-0 is-multiline">
-      <div class="column is-two-thirds-desktop is-full-tablet">
-        <div class="is-flex" v-if="selectedDataType !== 'BOOLEAN'">
-          <b-field
-            class="mr-4 is-flex-shrink-1"
-            :label="$t('flow.visualization.colorConfig.steps')"
-          >
-            <b-select
-              :value="sizes.length"
-              @input="updateSteps"
-              size="is-small"
-              expanded
-              :disabled="selectedDataType === 'BOOLEAN' || isEnum"
-            >
-              <option v-for="index in stepArray" :key="index" :value="index">{{ index }}</option>
-            </b-select>
-          </b-field>
-          <b-field :label="$t('flow.visualization.displayAs')">
-            <b-radio v-model="units" native-value="meters" size="is-small" class="mr-4">
-              {{ $t('units.meters') }}
-            </b-radio>
-            <b-radio v-model="units" native-value="pixels" size="is-small">
-              {{ $t('units.pixels') }}
-            </b-radio>
-          </b-field>
-        </div>
-      </div>
-    </div>
-    <!-- todo: change to look closer to color configurator -->
-    <div v-if="value" class="columns mb-0 is-multiline">
-      <div
-        class="column py-0 is-two-thirds-desktop is-full-tablet"
-        v-if="sizes && sizes.length && selectedEntityProp"
-      >
-        <ByValueSizeList
-          v-model="sizes"
-          :mode="mode"
-          :min-value="minValue"
-          :max-value="maxValue"
-          :units="units"
-          :dataType="selectedEntityProp.data_type"
-          :entityEnums="entityEnums"
-          @resetValues="resetValues"
-          @interpolateMinMax="interpolateMinMax"
-          reversed
-        />
-      </div>
-    </div>
+    <ByValueConfigurator
+      v-model="sizes"
+      :selectedAttribute="selectedAttribute"
+      :strategy="strategy"
+      :summary="summary"
+      :component="component"
+      :label="header"
+    >
+      <template #options-side>
+        <b-field :label="$t('flow.visualization.displayAs')">
+          <b-radio v-model="units" native-value="meters" size="is-small" class="mr-4">
+            {{ $t('units.meters') }}
+          </b-radio>
+          <b-radio v-model="units" native-value="pixels" size="is-small">
+            {{ $t('units.pixels') }}
+          </b-radio>
+        </b-field>
+      </template>
+    </ByValueConfigurator>
     <div class="columns mt-2 mb-0 is-multiline" v-if="units === 'meters'">
       <div class="column pb-0 is-flex is-two-thirds-desktop is-full-tablet min-max-px">
         <b-field
@@ -96,52 +67,108 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import { ByValueSizeClause, PropertySummary, SizeClause } from '@movici-flow-common/types';
-import ByValueMixin from '../ByValueMixin';
 import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
-import { BY_VALUE_DEFAULT_SIZES } from './defaults';
-import ByValueSizeList from './ByValueSizeList.vue';
-import { recalculateMapping } from '../helpers';
-import { MoviciError } from '@movici-flow-common/errors';
+import { ByValueSizeClause, FlowVisualizerType, SizeClause } from '@movici-flow-common/types';
 import { isPositive } from '@movici-flow-common/utils/FormValidator';
-import { isEmpty, pick } from 'lodash';
+import { pick } from 'lodash';
+import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
+import ByValueMixin from '../ByValueMixin';
+import ByValueList from '../shared/ByValueList.vue';
+import NumberOutput from '../shared/NumberOutput.vue';
+import ByValueConfigurator from '../shared/ByValueConfigurator.vue';
+import {
+  interpolateMinMax,
+  MappingStrategy,
+  ValueMapping,
+  ValueMappingHelper
+} from '../shared/ValueMappingHelper';
+
+class SizeMappingStrategy extends MappingStrategy<number> {
+  geometry: FlowVisualizerType;
+
+  constructor(geometry: FlowVisualizerType) {
+    super();
+    this.geometry = geometry;
+  }
+  protected doRecalculateOutputs(outputs: number[], nSteps: number): number[] {
+    const first = outputs[0] ?? this.defaultOutput();
+    const last = outputs[outputs.length - 1] ?? this.defaultOutput();
+    return interpolateMinMax(first, last, nSteps, true);
+  }
+
+  defaultMapping(mapping: ValueMapping<number>, helper: ValueMappingHelper<number>) {
+    return helper.recalculateMapping({
+      mapping: [
+        [0, this.defaultOutput()],
+        [1, this.defaultOutput() * 2]
+      ],
+      nSteps: this.defaultStepCount(),
+      resetMinMax: true
+    });
+  }
+  defaultStepCount(): number {
+    return 2;
+  }
+  private defaults(): { size: number; minPixels: number; maxPixels: number } {
+    switch (this.geometry) {
+      case FlowVisualizerType.ICONS:
+        return {
+          size: 20,
+          minPixels: 5,
+          maxPixels: 100
+        };
+      case FlowVisualizerType.POINTS:
+      case FlowVisualizerType.LINES:
+      case FlowVisualizerType.POLYGONS:
+      case FlowVisualizerType.ARCS:
+      case FlowVisualizerType.GRID:
+      default:
+        return {
+          size: 5,
+          minPixels: 2,
+          maxPixels: 20
+        };
+    }
+  }
+  defaultOutput(): number {
+    return this.defaults().size;
+  }
+
+  minPixels(): number {
+    return this.defaults().minPixels;
+  }
+  maxPixels(): number {
+    return this.defaults().maxPixels;
+  }
+}
 
 @Component({
   name: 'SizeByValueConfigurator',
   components: {
     AttributeSelector,
-    ByValueSizeList
+    ByValueList,
+    ByValueConfigurator
   }
 })
 export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeClause>>(
   ByValueMixin
 ) {
-  @Prop({ type: Object, default: null }) declare selectedEntityProp: PropertySummary | null;
+  @Prop({ type: String, default: FlowVisualizerType.POINTS })
+  readonly geometry!: FlowVisualizerType;
   sizes: [number, number][] = [];
   units: 'pixels' | 'meters' = 'pixels';
   minPixels: number | null = null;
   maxPixels: number | null = null;
-  nSteps = 2;
-  stepArray: number[] = [2, 3, 4, 5, 6, 7, 8];
 
-  get mappingValues(): number[] {
-    return this.sizes.map(val => val[0]);
-  }
-
-  get sizeValues(): number[] {
-    return this.sizes.map(val => val[1]);
-  }
-
-  get defaultDataTypeSteps() {
-    return 2;
+  get strategy() {
+    return new SizeMappingStrategy(this.geometry);
   }
 
   get currentClause(): ByValueSizeClause | null {
-    if (!this.selectedEntityProp) return null;
+    if (!this.selectedAttribute) return null;
 
     const rv: ByValueSizeClause = {
-      attribute: this.selectedEntityProp,
+      attribute: this.selectedAttribute,
       sizes: this.sizes,
       units: this.units
     };
@@ -156,53 +183,24 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
     return rv;
   }
 
-  get currentMinValue() {
-    return this.sizes[0][0];
-  }
-
-  get currentMaxValue() {
-    return this.sizes[this.sizes.length - 1][0];
-  }
-
-  get entityEnums() {
-    return this.summary?.general?.enum?.[this.selectedEntityProp?.enum_name ?? ''] ?? null;
-  }
-
-  get isEnum() {
-    return !!this.entityEnums;
-  }
-
-  get mode(): 'number' | 'boolean' {
-    return this.selectedDataType === 'BOOLEAN' ? 'boolean' : 'number';
-  }
-
-  get defaults() {
-    return BY_VALUE_DEFAULT_SIZES[this.geometry];
-  }
-
   get minMaxPixelErrors() {
     return pick(this.errors, 'minPixels', 'maxPixels', 'minMaxPixels');
   }
-
-  interpolateMinMax() {
-    this.sizes = recalculateMapping(
-      {
-        values: this.mappingValues,
-        output: this.sizeValues,
-        nSteps: this.nSteps,
-        minValue: this.currentMinValue,
-        maxValue: this.currentMaxValue,
-        maxValueAsLastValue: true,
-        forceRecalculateValues: true
-      },
-      () => 0
-    );
+  get header() {
+    return `${this.$t('flow.visualization.sizeConfig.size')} (${this.miniUnits})`;
   }
 
-  @Watch('selectedEntityProp')
-  afterSelectedEntityProp(val: PropertySummary | null) {
-    if (val) {
-      this.resetByDataType(val.data_type);
+  get component() {
+    return NumberOutput;
+  }
+  get miniUnits() {
+    switch (this.units) {
+      case 'meters':
+        return 'm';
+      case 'pixels':
+        return 'px';
+      default:
+        return '';
     }
   }
 
@@ -213,61 +211,6 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
     }
   }
 
-  updateSteps(nSteps: number) {
-    if (this.selectedDataType === 'BOOLEAN' && nSteps !== 2) {
-      throw new MoviciError('Invalid steps for boolean');
-    }
-
-    this.processStepCount({ nSteps });
-  }
-
-  processStepCount(params?: { nSteps?: number; forceRecalculateValues?: boolean }) {
-    const newSteps = params?.nSteps ?? this.nSteps;
-    this.sizes = recalculateMapping(
-      {
-        values: this.mappingValues,
-        output: this.sizeValues,
-        interpolateOutput: newSteps !== this.nSteps,
-        nSteps: newSteps,
-        minValue: params?.forceRecalculateValues ? this.minValue : this.currentMinValue,
-        maxValue: params?.forceRecalculateValues ? this.maxValue : this.currentMaxValue,
-        maxValueAsLastValue: true,
-        forceRecalculateValues: params?.forceRecalculateValues
-      },
-      () => 0
-    );
-    this.nSteps = newSteps;
-  }
-
-  resetByDataType(dataType: string) {
-    if (this.isEnum) dataType = 'ENUM'; // overriding ENUMS
-
-    switch (dataType) {
-      case 'BOOLEAN':
-        this.processStepCount({ nSteps: 2, forceRecalculateValues: true });
-        break;
-      case 'ENUM':
-        this.processStepCount({
-          nSteps: this.entityEnums?.length ?? 2,
-          forceRecalculateValues: true
-        });
-        break;
-      case 'INT':
-      case 'DOUBLE':
-      default:
-        this.resetValues();
-        break;
-    }
-  }
-
-  resetValues() {
-    this.processStepCount({ forceRecalculateValues: true });
-  }
-
-  // TODO: create validator according to color length
-  // check for units
-  // values should be increasing
-  // sizes should not negative
   setupValidator() {
     this.validator?.configure({
       validators: {
@@ -300,25 +243,17 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
 
   mounted() {
     this.setupValidator();
-    this.initializeValue(this.value?.byValue);
-  }
-
-  initializeValue(val?: ByValueSizeClause) {
-    if (!val || isEmpty(val)) {
-      this.setClause(BY_VALUE_DEFAULT_SIZES[this.geometry]);
-      if (this.selectedEntityProp) {
-        this.resetByDataType(this.selectedEntityProp?.data_type);
-      }
-    } else {
-      this.setClause(val);
-    }
-  }
-
-  setClause(val: ByValueSizeClause) {
-    this.sizes = val.sizes;
-    this.units = val.units;
-    this.minPixels = val.minPixels ?? null;
-    this.maxPixels = val.maxPixels ?? null;
+    const clause = Object.assign(
+      {
+        units: 'pixels',
+        minPixels: this.strategy.minPixels(),
+        maxPixels: this.strategy.maxPixels()
+      },
+      this.value?.byValue
+    );
+    this.units = clause.units;
+    this.minPixels = clause.minPixels;
+    this.maxPixels = clause.maxPixels;
   }
 
   beforeDestroy() {
@@ -330,14 +265,6 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
 </script>
 
 <style scoped lang="scss">
-.size,
-.values {
-  ::v-deep {
-    .label {
-      height: 1.25rem;
-    }
-  }
-}
 .min-max-px,
 .min-max {
   ::v-deep {

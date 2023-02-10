@@ -9,137 +9,92 @@
         </b-field>
       </div>
     </div>
-    <div class="columns mb-0 is-multiline" v-if="showVisiblity">
-      <div class="column is-two-thirds-desktop is-full-tablet">
-        <b-field
-          required
-          :label="$t('flow.visualization.basedOn')"
-          :message="errors['selectedEntityProp']"
-          :type="{ 'is-danger': errors['selectedEntityProp'] }"
-        >
-          <AttributeSelector
-            :value="selectedEntityProp"
-            :entity-props="entityProps"
-            :filter-prop="filterProp"
-            @input="updateAttribute"
-          />
-        </b-field>
+    <template v-if="showVisiblity">
+      <div class="columns mb-0 is-multiline">
+        <div class="column is-two-thirds-desktop is-full-tablet">
+          <b-field
+            required
+            :label="$t('flow.visualization.basedOn')"
+            :message="errors['selectedAttribute']"
+            :type="{ 'is-danger': errors['selectedAttribute'] }"
+          >
+            <AttributeSelector
+              :value="selectedAttribute"
+              :entity-props="entityProps"
+              :filter-prop="filterProp"
+              @input="updateAttribute"
+            />
+          </b-field>
+        </div>
       </div>
-    </div>
-    <div class="columns" v-if="showVisiblity && selectedEntityProp">
-      <div class="column mapped-values is-full-tablet is-2">
-        <label class="label"> {{ $t('flow.visualization.visibilityConfig.value') }}</label>
-        <b-field v-for="(val, index) in mappingValues" class="is-align-items-center" :key="index">
-          <div class="values is-flex is-align-items-center">
-            <span class="is-flex-grow-1 values-from">
-              <b-input
-                :value="String(Boolean(val))"
-                native-class="has-text-centered"
-                size="is-small"
-                disabled
-              />
-            </span>
-          </div>
-        </b-field>
-      </div>
-      <div class="column is-1 visibility">
-        <label class="label"> {{ $t('flow.visualization.visibilityConfig.visible') }}</label>
-        <b-field
-          v-for="(val, index) in visibilities"
-          class="is-flex is-align-items-center"
-          :key="index"
-        >
-          <b-checkbox :value="val" @input="updateVisibilityFromIndex(index, $event)" />
-        </b-field>
-      </div>
-    </div>
+      <ByValueConfigurator
+        v-if="selectedAttribute"
+        v-model="mapping"
+        :selectedAttribute="selectedAttribute"
+        :strategy="strategy"
+        :summary="summary"
+        :component="component"
+        :label="$t('flow.visualization.visibilityConfig.visible')"
+        buckets
+      />
+    </template>
   </div>
 </template>
 
 <script lang="ts">
+import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
 import {
   ByValueVisibilityClause,
   PropertySummary,
   VisibilityClause,
   VisibilityMapping
 } from '@movici-flow-common/types';
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import ByValueMixin from './ByValueMixin';
-import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
 import isEqual from 'lodash/isEqual';
-import AttributeMixin from './AttributeMixin';
+import { Component, Mixins, Watch } from 'vue-property-decorator';
+import ByValueConfigurator from './shared/ByValueConfigurator.vue';
+import BooleanOutput from './shared/BooleanOutput.vue';
+import ConfiguratorMixin from './ConfiguratorMixin';
 import { attributeValidator } from './helpers';
-import FormValidator from '@movici-flow-common/utils/FormValidator';
+import { MappingStrategy } from './shared/ValueMappingHelper';
 
-const DEFAULT_BOOLEAN_MAPPING = [
-  [true, true],
-  [false, false]
-];
+class VisibilityMappingStrategy extends MappingStrategy<boolean> {
+  defaultStepCount(): number {
+    return 2;
+  }
+
+  defaultOutput(): boolean {
+    return true;
+  }
+}
 
 @Component({
   name: 'VisibilityConfigurator',
   components: {
-    AttributeSelector
+    AttributeSelector,
+    ByValueConfigurator
   }
 })
-export default class VisibilityConfigurator extends Mixins<
-  AttributeMixin,
-  ByValueMixin<VisibilityClause | null>
->(AttributeMixin, ByValueMixin) {
-  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
-  // overrides ByValueMixin
-  allowedPropertyTypes = ['BOOLEAN'];
+export default class VisibilityConfigurator extends Mixins<ConfiguratorMixin<VisibilityClause>>(
+  ConfiguratorMixin
+) {
+  allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
   showVisiblity = false;
   mapping: VisibilityMapping = [];
+  component = BooleanOutput;
+  strategy = new VisibilityMappingStrategy();
 
   get currentClause(): ByValueVisibilityClause | null {
-    if (!this.showVisiblity || !this.selectedEntityProp) return null;
+    if (!this.showVisiblity || !this.selectedAttribute) return null;
 
     return {
-      attribute: this.selectedEntityProp,
+      attribute: this.selectedAttribute,
       mapping: this.mapping
     };
   }
 
-  get mode(): 'number' | 'boolean' {
-    return this.selectedDataType === 'BOOLEAN' ? 'boolean' : 'number';
-  }
-
-  get mappingValues(): boolean[] {
-    return this.mapping.map(val => Boolean(val[0]));
-  }
-
-  get visibilities(): boolean[] {
-    return this.mapping.map(val => val[1]);
-  }
-
-  get selectedEntityPropName(): string {
-    return this.selectedEntityProp?.name ?? '';
-  }
-
-  get defaults() {
-    return {
-      attribute: null,
-      mapping: DEFAULT_BOOLEAN_MAPPING
-    };
-  }
-
-  /**
-   * Updates mapping[index] into newValue and the other index are set as opposite of newValue
-   * @param index index that will be changed
-   * @param newValue new boolean value for index
-   */
-  updateVisibilityFromIndex(index: number, newValue: boolean) {
-    this.mapping = this.mapping.map((val, i) => {
-      return (index === i ? [val[0], newValue] : [val[0], !newValue]) as [boolean, boolean];
-    });
-
-    this.prepareEmitClause(this.currentClause);
-  }
-
   @Watch('currentClause')
   prepareEmitClause(byValue: ByValueVisibilityClause | null) {
-    this.emitClause(byValue ? { byValue } : null);
+    this.$emit('input', byValue ? { byValue } : null);
   }
 
   /**
@@ -154,7 +109,7 @@ export default class VisibilityConfigurator extends Mixins<
         this.currentClause?.attribute ?? this.filteredEntityProps[0] ?? null
       );
     }
-    this.validator.touch('selectedEntityProp');
+    this.validator.touch('selectedAttribute');
     this.prepareEmitClause(this.currentClause);
     this.showVisiblity = value;
   }
@@ -178,7 +133,7 @@ export default class VisibilityConfigurator extends Mixins<
   setupAttributeValidator() {
     this.validator.configure({
       validators: {
-        selectedEntityProp: attributeValidator(this, () => this.showVisiblity)
+        selectedAttribute: attributeValidator(this, () => this.showVisiblity)
       },
       onValidate: e => {
         this.errors = e;
@@ -187,15 +142,13 @@ export default class VisibilityConfigurator extends Mixins<
   }
 
   mounted() {
-    const localValue: ByValueVisibilityClause = Object.assign(
-      {},
-      this.defaults,
-      this.value?.byValue
-    );
-
-    this.mapping = localValue.mapping;
-    this.toggleVisiblity(!!localValue.attribute);
-    this.pickSelectedEntityProp(localValue.attribute);
+    const mapping = this.value?.byValue?.mapping;
+    if (mapping?.length) {
+      this.mapping = mapping;
+    }
+    const attribute = this.value?.byValue?.attribute ?? null;
+    this.toggleVisiblity(!!attribute);
+    this.pickSelectedEntityProp(attribute);
     this.setupAttributeValidator();
   }
 

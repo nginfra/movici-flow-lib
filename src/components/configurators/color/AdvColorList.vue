@@ -2,31 +2,15 @@
   <div class="is-flex">
     <div class="is-flex-shrink-1 mr-4 colors">
       <label class="label">{{ $t('flow.visualization.colorConfig.advanced.advColours') }}</label>
-      <div class="is-relative" v-if="value && selectedIndex >= 0">
-        <FlowColorPicker
-          :value="colors[selectedIndex]"
-          @input="updateColor(selectedIndex, $event)"
-          :presets="presets"
-          :open="showColorPicker"
-          @close="showColorPicker = false"
-          :translateY="translateY"
-          position="top"
-        />
-      </div>
-      <b-field class="is-flex color-item" v-for="(color, index) in hexColors" :key="index">
-        <span
-          class="color-wrap"
-          :class="{ active: selectedIndex === index }"
-          :style="{ 'background-color': color }"
-          @click="openColorPicker(index)"
-        ></span>
+      <b-field class="is-flex" v-for="(color, index) in colors" :key="index">
+        <ColorInput :value="color" @input="updateColor(index, $event)" colorPickerPosition="top" />
         <span class="ml-1 is-size-7">
           {{ getColorTitle(index) }}
         </span>
       </b-field>
     </div>
     <div class="is-flex-grow-1 mapped-values">
-      <label class="label">{{ $t('flow.visualization.colorConfig.value') }}</label>
+      <label class="label">{{ $t('flow.visualization.byValueConfig.value') }}</label>
       <b-field class="is-align-items-center" v-for="(label, index) in labels" :key="index">
         <b-input :value="label" size="is-small" disabled></b-input>
       </b-field>
@@ -39,12 +23,11 @@ import { RGBAColor } from '@deck.gl/core';
 import { AdvColorMapping } from '@movici-flow-common/types';
 import { colorTripleToHex } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import FlowColorPicker from './FlowColorPicker.vue';
-
+import ColorInput from '../../widgets/ColorInput.vue';
 @Component({
   name: 'AdvColorList',
   components: {
-    FlowColorPicker
+    ColorInput
   }
 })
 export default class AdvColorList extends Vue {

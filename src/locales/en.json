@@ -131,20 +131,23 @@
         "grid": "Grid",
         "floodingGrid": "Flooding grid"
       },
+      "byValueConfig": {
+        "value": "Value",
+        "valueEnum": "Value (enumeration)",
+        "valueRange": "Value (range)",
+        "steps": "Steps",
+        "addRow": "Add row",
+        "removeRow": "Remove row"
+      },
       "colorConfig": {
         "buckets": "Buckets",
         "color": "Colour",
         "colors": "Colours",
         "gradient": "Gradient",
         "palette": "Colour palette",
-        "steps": "Steps",
         "type": "Colour type",
-        "value": "Value",
-        "valueEnum": "Value (enumeration)",
-        "valueRange": "Value (range)",
         "invertColors": "Invert color order",
-        "addRow": "Add row",
-        "removeRow": "Remove row",
+        
         "advanced": {
           "title": "Advanced settings",
           "fillOpacity": "Fill Opacity",
@@ -216,6 +219,7 @@
         "viewUpdateSuccess": "View successfully updated",
         "deleteChart": "Do you really want to delete <b>{name}</b> Chart?"
       },
+      "invertOutput": "Invert order",
       "resetValues": "Reset values to default",
       "interpolateMinMax": "Recalculate step values",
       "displayAs": "Display as",

@@ -1,53 +1,87 @@
 <template>
-  <b-field class="is-flex-grow-1 ml-2" :label="$t('flow.visualization.colorConfig.palette')">
-    <b-dropdown
-      :value="value"
-      @input="$emit('input', $event)"
-      class="select is-small"
-      aria-role="list"
-      expanded
-    >
-      <template #trigger>
-        <span class="color-option">
-          <b-tooltip type="is-black" position="is-top" :label="colorPalettes[value].name">
-            <span
-              class="color-piece is-size-7"
-              v-for="(color, index) in colorPalettes[value].getHexColorsForSize(nSteps)"
-              :style="{ 'background-color': color }"
-              :key="index"
-            ></span>
-          </b-tooltip>
-        </span>
-      </template>
-      <b-dropdown-item
-        class="color-option"
-        v-for="(item, index) in colorPalettes"
-        :value="index"
-        :key="index"
-        :focusable="false"
-        aria-role="listitem"
-      >
-        <b-tooltip type="is-black" position="is-top" :label="item.name">
-          <span
-            class="color-piece"
-            v-for="(color, index) in item.getHexColorsForSize(nSteps)"
-            :style="{ 'background-color': color }"
-            :key="index"
-          ></span>
-        </b-tooltip>
-      </b-dropdown-item>
-    </b-dropdown>
-  </b-field>
+  <div class="is-flex is-flex-direction-row is-flex-grow-1">
+    <b-field class="is-flex-grow-1" :label="$t('flow.visualization.colorConfig.type')">
+      <b-select :value="selectedGroupName" @input="selectGroupName" size="is-small" expanded>
+        <option v-for="(name, index) in groupNames" :key="index" :value="name">
+          {{ name }}
+        </option>
+      </b-select>
+    </b-field>
+    <ColorPaletteDropdown
+      v-if="colorPalettes"
+      v-model="selectedPaletteIdx"
+      :colorPalettes="colorPalettes"
+      :nSteps="nSteps"
+      :filter="colorPaletteFilter"
+    />
+  </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import ColorPalettes from './colorPalettes';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import ColorPaletteDropdown from './ColorPaletteDropdown.vue';
+import ColorPalette, { DEFAULT_COLOR_PALETTES } from './colorPalettes';
 
-@Component({ name: 'ColorPaletteSelector' })
+@Component({ name: 'ColorPaletteSelector', components: { ColorPaletteDropdown } })
 export default class ColorPaletteSelector extends Vue {
-  @Prop({ type: Number, default: 0 }) value!: number;
-  @Prop({ type: Number, default: 2 }) nSteps!: number;
-  @Prop({ type: Array, default: () => [] }) colorPalettes!: ColorPalettes[];
+  @Prop({ type: Object, default: null }) value!: ColorPalette | null;
+  @Prop({ type: Number, default: 4 }) nSteps!: number;
+
+  selectedGroupName = 'Sequential';
+  selectedPaletteIdx: number | null = 0;
+
+  get groupNames() {
+    return Object.keys(DEFAULT_COLOR_PALETTES);
+  }
+
+  get colorPalettes() {
+    return DEFAULT_COLOR_PALETTES[this.selectedGroupName] ?? [];
+  }
+
+  get currentColorPalette() {
+    return this.selectedPaletteIdx != null
+      ? this.colorPalettes[this.selectedPaletteIdx] ?? null
+      : null;
+  }
+  get colorPaletteFilter() {
+    const nSteps = this.nSteps;
+    return (palette: ColorPalette) => palette.supportsSize(nSteps);
+  }
+
+  selectGroupName(name: string) {
+    this.selectedGroupName = name;
+    this.selectedPaletteIdx = null;
+  }
+
+  @Watch('value', { immediate: true })
+  updateSelectors(palette: ColorPalette | null) {
+    if (!palette) {
+      this.selectedGroupName = 'Sequential';
+      this.selectedPaletteIdx = null;
+      return;
+    }
+    [this.selectedGroupName, this.selectedPaletteIdx] = this.lookupPalette(palette);
+  }
+  lookupPalette(colorPalette: ColorPalette): [string, number | null] {
+    for (let [groupName, palettes] of Object.entries(DEFAULT_COLOR_PALETTES)) {
+      for (let [idx, palette] of palettes.entries()) {
+        if (palette.name === colorPalette.name) {
+          return [groupName, idx];
+        }
+      }
+    }
+
+    return ['Sequential', null];
+  }
+
+  @Watch('currentColorPalette')
+  emitCurrentPalette() {
+    this.$emit('input', this.currentColorPalette);
+  }
+
+  mounted() {
+    this.emitCurrentPalette();
+  }
 }
 </script>
+<style lang="scss" scoped></style>

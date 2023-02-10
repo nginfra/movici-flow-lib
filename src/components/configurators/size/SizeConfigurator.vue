@@ -25,11 +25,11 @@
             <b-field
               required
               :label="$t('flow.visualization.basedOn')"
-              :message="errors['selectedEntityProp']"
-              :type="{ 'is-danger': errors['selectedEntityProp'] }"
+              :message="errors['selectedAttribute']"
+              :type="{ 'is-danger': errors['selectedAttribute'] }"
             >
               <AttributeSelector
-                :value="selectedEntityProp"
+                :value="selectedAttribute"
                 :entity-props="entityProps"
                 :filter-prop="filterProp"
                 @input="updateAttribute"
@@ -38,11 +38,11 @@
           </div>
         </div>
         <SizeByValueConfigurator
-          v-if="selectedEntityProp"
+          v-if="selectedAttribute"
           :value="currentClause"
           :validator="byValueValidator"
           :entityProps="entityProps"
-          :selectedEntityProp="selectedEntityProp"
+          :selectedAttribute="selectedAttribute"
           :summary="summary"
           :geometry="geometry"
           @input="updateSettings($event)"
@@ -83,13 +83,12 @@
 
 <script lang="ts">
 import { SizeClause, PropertySummary } from '@movici-flow-common/types';
-import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
+import { Component, Watch, Mixins } from 'vue-property-decorator';
 import SizeStaticConfigurator from './SizeStaticConfigurator.vue';
 import SizeByValueConfigurator from './SizeByValueConfigurator.vue';
-import FormValidator from '@movici-flow-common/utils/FormValidator';
 import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
 import isEqual from 'lodash/isEqual';
-import AttributeMixin from '../AttributeMixin';
+import ConfiguratorMixin from '../ConfiguratorMixin';
 import { attributeValidator } from '../helpers';
 
 @Component({
@@ -100,9 +99,9 @@ import { attributeValidator } from '../helpers';
     SizeByValueConfigurator
   }
 })
-export default class SizeConfigurator extends Mixins(AttributeMixin) {
-  @Prop({ type: Object, default: () => new Object() }) readonly value!: SizeClause;
-  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
+export default class SizeConfigurator extends Mixins<ConfiguratorMixin<SizeClause>>(
+  ConfiguratorMixin
+) {
   allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
   currentClause: SizeClause = {};
   clauseType: 'static' | 'byValue' | null = null;
@@ -159,7 +158,7 @@ export default class SizeConfigurator extends Mixins(AttributeMixin) {
   kindUpdated() {
     if (!this.clauseType) return;
     this.updateSettings({ [this.clauseType]: this.currentClause[this.clauseType] ?? {} });
-    this.validator.touch('selectedEntityProp');
+    this.validator.touch('selectedAttribute');
   }
 
   @Watch('value', { immediate: true })
@@ -181,7 +180,7 @@ export default class SizeConfigurator extends Mixins(AttributeMixin) {
   setupAttributeValidator() {
     this.validator?.configure({
       validators: {
-        selectedEntityProp: attributeValidator(this, () => this.clauseType === 'byValue')
+        selectedAttribute: attributeValidator(this, () => this.clauseType === 'byValue')
       },
       onValidate: e => {
         this.errors = e;

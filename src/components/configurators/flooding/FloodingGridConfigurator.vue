@@ -5,8 +5,8 @@
         <b-field
           :label="$t('flow.visualization.floodingConfig.heightMap')"
           required
-          :message="errors['localValue']"
-          :type="{ 'is-danger': errors['localValue'] }"
+          :message="errors['value']"
+          :type="{ 'is-danger': errors['value'] }"
         >
           <FilteredSelect
             class="is-flex-grow-1"
@@ -85,7 +85,7 @@ export default class FloodingGridConfigurator extends Mixins(ValidationProvider)
   setupValidator() {
     this.validator?.configure({
       validators: {
-        localValue: () => {
+        value: () => {
           if (!this.value) return 'Select a height map dataset';
         }
       },

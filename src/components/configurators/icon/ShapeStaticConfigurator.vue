@@ -1,7 +1,15 @@
 <template>
   <div class="columns is-multiline">
     <div class="column is-two-thirds-desktop is-full-tablet">
-      <ShapeSelector :value="currentShape" @input="updateIcon($event)" />
+      <IconButtonSelector
+        :value="currentShape"
+        :iconOptions="iconOptions"
+        pack="fas"
+        @input="updateIcon($event)"
+        buttons
+        allowEmpty
+        :label="$t('flow.visualization.iconConfig.selectShape')"
+      />
     </div>
     <div class="column is-one-third-desktop is-full-tablet">
       <slot name="legend-title"></slot>
@@ -12,12 +20,13 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { IconClause } from '@movici-flow-common/types';
-import ShapeSelector from './ShapeSelector.vue';
+import IconButtonSelector from './IconButtonSelector.vue';
+import { MAPPED_ICONS } from '@movici-flow-common/visualizers/visualizerModules/iconCommon';
 
 @Component({
   name: 'ShapeStaticConfigurator',
   components: {
-    ShapeSelector
+    IconButtonSelector
   }
 })
 export default class ShapeStaticConfigurator extends Vue {
@@ -26,7 +35,9 @@ export default class ShapeStaticConfigurator extends Vue {
   get currentShape() {
     return this.value?.static?.icon ?? null;
   }
-
+  get iconOptions() {
+    return MAPPED_ICONS.shapes;
+  }
   updateIcon(icon: string | null) {
     this.updateSettings(!icon ? {} : { static: { icon } });
   }

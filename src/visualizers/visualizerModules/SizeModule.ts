@@ -11,10 +11,15 @@ import {
 import isEqual from 'lodash/isEqual';
 import { NumberSizeMap } from '../maps/sizeMaps';
 import { SinglePropertyTapefile } from '../tapefile';
-import { DIMENSIONS } from '../visualizers';
 import { TapefileAccessor, VisualizerModule, VisualizerModuleParams } from './common';
 
 type SizeAccessor<D> = ((d: D) => number) | number;
+
+const DEFAULTS = {
+  SIZE: 5,
+  MIN_PIXELS: 0,
+  MAX_PIXELS: 1000
+};
 
 export default class SizeModule<
   Coord extends Coordinate,
@@ -36,8 +41,8 @@ export default class SizeModule<
 
     const {
       units,
-      minPixels = DIMENSIONS.SIZE_MIN_PIXELS,
-      maxPixels = DIMENSIONS.SIZE_MAX_PIXELS
+      minPixels = DEFAULTS.MIN_PIXELS,
+      maxPixels = DEFAULTS.MAX_PIXELS
     } = sizeClause ?? { units: 'pixels' };
 
     switch (params.type.layerName) {
@@ -140,7 +145,7 @@ export default class SizeModule<
     if (clause?.static) {
       return clause.static.size;
     }
-    return DIMENSIONS.SIZE;
+    return DEFAULTS.SIZE;
   }
 
   private setDashed(

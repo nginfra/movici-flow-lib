@@ -23,7 +23,7 @@
         <b-button
           v-if="hasRemoveButton"
           @click="$emit('removeRow', index)"
-          :title="$t('flow.visualization.colorConfig.removeRow')"
+          :title="$t('flow.visualization.byValueConfig.removeRow')"
           :disabled="isDisabled"
           class="ml-1 is-transparent has-hover-bg is-borderless has-text-danger"
           icon-pack="far"
@@ -41,7 +41,6 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 @Component({ name: 'ByValueNumberInputs' })
 export default class ByValueNumberInputs extends Vue {
   @Prop({ type: Array, required: true }) readonly value!: number[];
-  @Prop({ type: Boolean, default: false }) readonly reversed!: boolean;
   @Prop({ type: Boolean, default: false }) readonly hasRemoveButton!: boolean;
 
   get isDisabled() {

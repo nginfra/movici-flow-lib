@@ -33,11 +33,11 @@
             <b-field
               required
               :label="$t('flow.visualization.basedOn')"
-              :message="errors['selectedEntityProp']"
-              :type="{ 'is-danger': errors['selectedEntityProp'] }"
+              :message="errors['selectedAttribute']"
+              :type="{ 'is-danger': errors['selectedAttribute'] }"
             >
               <AttributeSelector
-                :value="selectedEntityProp"
+                :value="selectedAttribute"
                 :entity-props="entityProps"
                 :filter-prop="filterProp"
                 @input="updateAttribute"
@@ -46,22 +46,21 @@
           </div>
         </div>
         <ColorByValueConfigurator
-          v-if="selectedEntityProp"
+          v-if="selectedAttribute"
           :value="currentClause"
           :validator="validator"
           :entityProps="entityProps"
-          :selectedEntityProp="selectedEntityProp"
+          :selectedAttribute="selectedAttribute"
           :summary="summary"
           @input="updateSettings"
         >
-          <template #legend-labels="{ entityEnums }">
-            <ColorLegendLabelsConfigurator
+          <template #legend-labels="{ placeholders }">
+            <LegendLabelsConfigurator
               v-if="showLegend"
               :value="legend"
               @input="updateLegend($event)"
-              :placeholders="legendPlaceholders"
+              :placeholders="placeholders"
               :nItems="nSteps"
-              :entityEnums="entityEnums"
               reversed
             />
           </template>
@@ -76,7 +75,7 @@
         @input="updateAdvancedSettings($event)"
       >
         <template #legend-labels v-if="showLegend">
-          <ColorLegendLabelsConfigurator
+          <LegendLabelsConfigurator
             v-model="advLegend"
             :nItems="2"
             :placeholders="['Special', 'Undefined']"
@@ -96,30 +95,29 @@ import {
   PropertySummary,
   StaticColorClause
 } from '@movici-flow-common/types';
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
+import { Component, Mixins, Watch } from 'vue-property-decorator';
 import ColorStaticConfigurator from './ColorStaticConfigurator.vue';
 import ColorByValueConfigurator from './ColorByValueConfigurator.vue';
-import ColorLegendLabelsConfigurator from './ColorLegendLabelsConfigurator.vue';
+import LegendLabelsConfigurator from '../shared/LegendLabelsConfigurator.vue';
 import ColorAdvSettingsConfigurator from './ColorAdvSettingsConfigurator.vue';
-import { attributeValidator, getLegendPlaceholders, PlaceholderType } from '../helpers';
-import FormValidator from '@movici-flow-common/utils/FormValidator';
+import { attributeValidator } from '../helpers';
 import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
 import isEqual from 'lodash/isEqual';
-import AttributeMixin from '../AttributeMixin';
+import ConfiguratorMixin from '../ConfiguratorMixin';
 
 @Component({
   name: 'ColorConfigurator',
   components: {
     AttributeSelector,
-    ColorLegendLabelsConfigurator,
+    LegendLabelsConfigurator,
     ColorStaticConfigurator,
     ColorByValueConfigurator,
     ColorAdvSettingsConfigurator
   }
 })
-export default class ColorConfigurator extends Mixins(AttributeMixin) {
-  @Prop({ type: Object }) readonly value?: ColorClause;
-  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
+export default class ColorConfigurator extends Mixins<ConfiguratorMixin<ColorClause>>(
+  ConfiguratorMixin
+) {
   allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
   currentClause: ColorClause = {};
   clauseType: 'static' | 'byValue' | null = null;
@@ -147,19 +145,6 @@ export default class ColorConfigurator extends Mixins(AttributeMixin) {
   get nSteps(): number {
     if (this.clauseType === 'static') return 1;
     return this.currentClause.byValue?.colors?.length ?? 0;
-  }
-
-  get legendPlaceholders(): string[] {
-    if (this.currentClause.byValue) {
-      const byValue = this.currentClause.byValue;
-      const mappingValues = byValue.colors?.map(val => val[0]);
-      if (!mappingValues) return [];
-
-      const maxValue = byValue.maxValue ?? 1;
-      const type: PlaceholderType = byValue.type === 'gradient' ? 'single' : 'range';
-      return getLegendPlaceholders(mappingValues, type, maxValue);
-    }
-    return [];
   }
 
   updateSettings(updatedClause: { static?: StaticColorClause; byValue?: ByValueColorClause }) {
@@ -222,7 +207,7 @@ export default class ColorConfigurator extends Mixins(AttributeMixin) {
   kindUpdated() {
     if (!this.clauseType) return;
     this.updateSettings({ [this.clauseType]: this.currentClause[this.clauseType] ?? {} });
-    this.validator.touch('selectedEntityProp');
+    this.validator.touch('selectedAttribute');
   }
 
   @Watch('value', { immediate: true })
@@ -243,7 +228,7 @@ export default class ColorConfigurator extends Mixins(AttributeMixin) {
   setupAttributeValidator() {
     this.validator?.configure({
       validators: {
-        selectedEntityProp: attributeValidator(this, () => this.clauseType === 'byValue')
+        selectedAttribute: attributeValidator(this, () => this.clauseType === 'byValue')
       },
       onValidate: e => {
         this.errors = e;
@@ -260,45 +245,4 @@ export default class ColorConfigurator extends Mixins(AttributeMixin) {
 }
 </script>
 
-<style lang="scss">
-.color-item {
-  position: relative;
-  .color-wrap {
-    @include border-radius;
-    cursor: pointer;
-    border: 2px solid $white-ter;
-    min-width: 30px;
-    height: 30px;
-    line-height: unset;
-    &.active {
-      border-color: $primary;
-    }
-  }
-  .caret {
-    position: absolute;
-    width: 0;
-    height: 0;
-    top: 9px;
-    right: -8px;
-    border: 4px solid $black;
-    border-color: $white-ter $white-ter transparent transparent;
-    transform-origin: 0 0;
-    transform: rotate(45deg);
-  }
-  .grip {
-    .icon {
-      height: 0.8rem;
-      width: 0.6rem;
-      font-size: 14px;
-    }
-  }
-  &:hover {
-    .caret {
-      border-color: $grey-light $grey-light transparent transparent;
-    }
-    .color-wrap {
-      border-color: $grey-light;
-    }
-  }
-}
-</style>
+<style lang="scss"></style>

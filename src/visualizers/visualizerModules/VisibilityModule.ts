@@ -1,19 +1,19 @@
+import { DataFilterExtension } from '@deck.gl/extensions';
 import {
   Coordinate,
-  LayerParams,
-  Mapper,
-  VisibilityClause,
-  TopologyLayerData,
   IMapVisualizer,
-  ITapefile
+  ITapefile,
+  LayerParams,
+  TopologyLayerData,
+  VisibilityClause
 } from '@movici-flow-common/types';
 import isEqual from 'lodash/isEqual';
+import NumberMapper from '../maps/NumberMapper';
 import {
   TapefileAccessor,
   VisualizerModule,
   VisualizerModuleParams
 } from '../visualizerModules/common';
-import { DataFilterExtension } from '@deck.gl/extensions';
 
 type VisibilityAccessor<D> = ((d: D) => number) | number;
 
@@ -81,56 +81,21 @@ export default class VisibilityModule<
     visualizer: IMapVisualizer<Coord>
   ): VisibilityAccessor<LData> | null {
     if (clause?.byValue.attribute) {
-      const visibilityMapper = new VisiblityMapper(
-        clause.byValue.mapping.map(([inp, out]) => [inp, Number(out)])
-      );
-      const accessor: TapefileAccessor<number | boolean, number> = new TapefileAccessor(
+      const visibilityMapper = new NumberMapper<number>({
+        mapping: clause.byValue.mapping.map(([inp, out]) => [Number(inp), Number(out)]),
+        specialResult: 1,
+        undefinedResult: 0
+      });
+      const accessor: TapefileAccessor<number | null, number> = new TapefileAccessor(
         visibilityMapper
       );
 
       visualizer.requestTapefile(clause.byValue.attribute, t => {
-        accessor.setTapefile(t as ITapefile<number | boolean>);
+        accessor.setTapefile(t as ITapefile<number | null>);
       });
       return (d: LData) => accessor.getValue(d.idx);
     }
 
     return null;
-  }
-}
-
-export type BooleanMapping = [boolean | number, number][];
-export class VisiblityMapper implements Mapper<number | boolean, number> {
-  mapping: BooleanMapping;
-  staticValue?: number;
-  onValue?: boolean;
-  constructor(mapping: BooleanMapping) {
-    this.mapping = mapping;
-    if (!this.setupSimpleMapping(mapping)) {
-      throw new Error('Only supports simple, boolean mapping for visibility');
-    }
-  }
-
-  setupSimpleMapping(mapping: BooleanMapping): boolean {
-    if (!mapping) return true;
-    if (mapping.length === 0) {
-      this.staticValue = 1;
-      return true;
-    }
-
-    if (mapping.every(i => i[1] == mapping[0][1])) {
-      this.staticValue = mapping[0][1];
-      return true;
-    }
-
-    if (mapping.every(i => typeof i[0] === 'boolean')) {
-      this.onValue = mapping[0][0] == mapping[0][1];
-      return true;
-    }
-    return false;
-  }
-  getValue(input: number | boolean): number {
-    if (this.staticValue !== undefined) return this.staticValue;
-    if (this.onValue !== undefined) return input == this.onValue ? 1 : 0;
-    return 1;
   }
 }

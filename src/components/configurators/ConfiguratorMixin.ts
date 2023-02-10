@@ -10,13 +10,14 @@ import FormValidator from '@movici-flow-common/utils/FormValidator';
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 
 @Component
-export default class AttributeMixin extends Mixins(ValidationProvider) {
+export default class AttributeMixin<T> extends Mixins(ValidationProvider) {
+  @Prop({ type: Object, default: () => new Object() }) readonly value!: T;
   @Prop({ type: String, default: FlowVisualizerType.POINTS })
   readonly geometry!: FlowVisualizerType;
   @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
   @Prop({ type: Array, default: () => [] }) readonly entityProps!: PropertySummary[];
   @Prop({ type: Object, default: null }) readonly summary!: DatasetSummary | null;
-  selectedEntityProp: PropertySummary | null = null;
+  selectedAttribute: PropertySummary | null = null;
   allowedPropertyTypes!: string[];
 
   get filteredEntityProps() {
@@ -26,7 +27,7 @@ export default class AttributeMixin extends Mixins(ValidationProvider) {
   ensureProp(prop: PropertySummary) {
     const found = this.filteredEntityProps.find(entityProp => prop.name === entityProp.name);
     if (found) {
-      this.validated('selectedEntityProp', found);
+      this.validated('selectedAttribute', found);
     } else {
       throw new MoviciError('Invalid attribute selected');
     }
@@ -37,11 +38,11 @@ export default class AttributeMixin extends Mixins(ValidationProvider) {
   }
 
   /**
-   * Makes sure attribute coming from value is on the filtered entity props and sets to selectedEntityProp
+   * Makes sure attribute coming from value is on the filtered entity props and sets to selectedAttribute
    * @param attributeFromValue query attribute
    */
   pickSelectedEntityProp(attributeFromValue: PropertySummary | null) {
-    this.selectedEntityProp =
+    this.selectedAttribute =
       this.filteredEntityProps.find(attr => {
         return (
           attr.component == attributeFromValue?.component && attr.name == attributeFromValue?.name

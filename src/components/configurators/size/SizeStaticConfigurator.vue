@@ -86,7 +86,6 @@
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import { StaticSizeClause, SizeClause, FlowVisualizerType } from '@movici-flow-common/types';
-import { STATIC_DEFAULT_SIZES } from './defaults';
 import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import FormValidator, { isPositive } from '@movici-flow-common/utils/FormValidator';
 
@@ -119,7 +118,22 @@ export default class SizeStaticConfigurator extends Mixins(ValidationProvider) {
   }
 
   get defaults() {
-    return STATIC_DEFAULT_SIZES[this.geometry];
+    switch (this.geometry) {
+      case FlowVisualizerType.ICONS:
+        return {
+          size: 20,
+          units: 'pixels',
+          minPixels: 5,
+          maxPixels: 100
+        };
+      default:
+        return {
+          size: 5,
+          units: 'pixels',
+          minPixels: 2,
+          maxPixels: 5
+        };
+    }
   }
 
   @Watch('units')

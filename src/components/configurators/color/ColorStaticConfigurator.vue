@@ -1,25 +1,8 @@
 <template>
   <div class="columns is-multiline">
-    <div class="column is-two-thirds-desktop is-full-tablet color">
-      <FlowColorPicker
-        :value="color"
-        @input="updateColor($event)"
-        :presets="colorPickerPresets"
-        :open="showColorPicker"
-        @close="showColorPicker = false"
-        :translateY="-7"
-        position="right"
-      />
+    <div class="column is-two-thirds-desktop is-full-tablet">
       <label class="label">{{ $t('flow.visualization.colorConfig.color') }}</label>
-      <b-field v-if="color" class="color-item">
-        <span
-          class="color-wrap"
-          :class="{ active: showColorPicker }"
-          :style="{ 'background-color': hexColor }"
-          @click="showColorPicker = !showColorPicker"
-          ref="anchorRef"
-        ></span>
-      </b-field>
+      <ColorInput :value="color" @input="updateColor" colorPickerPosition="right" />
     </div>
     <div class="column is-one-third-desktop is-full-tablet">
       <slot name="legend-title"></slot>
@@ -28,55 +11,47 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import {
   colorTripleToHex,
   hexToColorTriple,
   MoviciColors
 } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { ColorClause, RGBAColor } from '@movici-flow-common/types';
-import FlowColorPicker from './FlowColorPicker.vue';
+import ColorInput from '@movici-flow-common/components/widgets/ColorInput.vue';
 
 @Component({
   name: 'ColorStaticConfigurator',
   components: {
-    FlowColorPicker
+    ColorInput
   }
 })
 export default class ColorStaticConfigurator extends Vue {
   @Prop({ type: Object, default: null }) readonly value!: ColorClause | null;
-  color: RGBAColor = hexToColorTriple(MoviciColors.GREEN);
   colorPickerPresets = Object.values(MoviciColors);
   showColorPicker = false;
+
+  get color() {
+    return this.value?.static?.color ?? hexToColorTriple(MoviciColors.GREEN);
+  }
 
   get hexColor() {
     return colorTripleToHex(this.color);
   }
 
-  updateColor(newValue: RGBAColor) {
+  updateColor(color: RGBAColor) {
     this.$emit('input', {
       static: {
-        color: newValue
+        color
       }
     } as ColorClause);
   }
-
-  @Watch('value', { immediate: true })
-  setupColor() {
-    if (this.value?.static?.color) {
-      this.color = this.value.static.color;
-    } else {
+  mounted() {
+    if (!this.value?.static?.color) {
       this.updateColor(this.color);
     }
   }
 }
 </script>
 
-<style scoped lang="scss">
-.color {
-  position: relative;
-  .color-wrap {
-    display: inline-block;
-  }
-}
-</style>
+<style scoped lang="scss"></style>

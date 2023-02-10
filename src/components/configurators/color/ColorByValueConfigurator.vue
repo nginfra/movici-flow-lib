@@ -1,90 +1,60 @@
 <template>
-  <div v-if="selectedEntityProp">
-    <div class="columns mb-0 is-multiline">
-      <div class="column is-full">
-        <div>
-          <b-field class="fill-type">
-            <b-radio
-              class="mr-4"
-              v-model="fillType"
-              native-value="buckets"
-              size="is-small"
-              :disabled="isBooleanOrEnum"
-            >
-              {{ $t('flow.visualization.colorConfig.buckets') }}
-            </b-radio>
-            <b-radio
-              v-model="fillType"
-              native-value="gradient"
-              size="is-small"
-              :disabled="isBooleanOrEnum"
-            >
-              {{ $t('flow.visualization.colorConfig.gradient') }}
-            </b-radio>
-          </b-field>
-          <div class="steps is-flex is-flex-direction-row">
-            <b-field class="is-flex-shrink-1" :label="$t('flow.visualization.colorConfig.steps')">
-              <b-select
-                :value="colorMapping.length"
-                @input="updateSteps"
+  <ByValueConfigurator
+    v-if="selectedAttribute"
+    v-model="colorMapping"
+    :selectedAttribute="selectedAttribute"
+    :summary="summary"
+    :component="component"
+    :props="componentProps"
+    :strategy="strategy_"
+    :label="$t('flow.visualization.colorConfig.colors')"
+    :buckets="fillType === 'buckets'"
+  >
+    <template #options-top="{ mappingHelper }">
+      <div class="columns mb-0 is-multiline">
+        <div class="column is-full">
+          <div>
+            <b-field class="fill-type">
+              <b-radio
+                class="mr-4"
+                v-model="fillType"
+                v-for="type in ['buckets', 'gradient']"
+                :key="type"
+                :native-value="type"
                 size="is-small"
-                expanded
-                :disabled="isBooleanOrEnum"
+                :disabled="!isMode(mappingHelper, 'number')"
               >
-                <option v-for="index in stepArray" :key="index" :value="index">
-                  {{ index }}
-                </option>
-              </b-select>
+                {{ $t('flow.visualization.colorConfig')[type] }}
+              </b-radio>
             </b-field>
-            <b-field class="is-flex-grow-1 ml-2" :label="$t('flow.visualization.colorConfig.type')">
-              <b-select
-                :value="selectedColorType"
-                @input="selectColorType"
-                size="is-small"
-                expanded
-              >
-                <option v-for="(type, index) in colorTypes" :key="index" :value="type">
-                  {{ type }}
-                </option>
-              </b-select>
-            </b-field>
-            <ColorPaletteSelector
-              v-if="colorPalettesFiltered.length"
-              :value="selectedColorPaletteIndex"
-              :colorPalettes="colorPalettesFiltered"
-              :nSteps="nSteps"
-              @input="selectColorPalette"
-            />
           </div>
         </div>
       </div>
-    </div>
-    <div class="columns mb-0 is-multiline">
-      <div class="column py-0 is-two-thirds-desktop">
-        <ByValueColorList
-          v-if="colorMapping.length"
-          v-model="colorMapping"
-          :mode="colorMode"
-          :presets="colorPickerPresets"
-          :min-value="minValue"
-          :max-value.sync="currentMaxValue"
-          :dataType="selectedEntityProp.data_type"
-          :entityEnums="entityEnums"
-          @resetValues="resetValues"
-          @interpolateMinMax="interpolateMinMax"
-          reversed
-        />
+    </template>
+
+    <template #options-side>
+      <ColorPaletteSelector v-model="colorPalette" :nSteps="nSteps" />
+    </template>
+
+    <template #after-output="{ mappingHelper }">
+      <div class="gradient-container is-flex-shrink-1" v-if="isMode(mappingHelper, 'continuous')">
+        <div class="gradient" :style="gradientColorStyle"></div>
       </div>
-      <div class="column py-0 is-one-third-desktop is-full-tablet">
-        <slot name="legend-labels" v-bind="{ entityEnums }" />
-      </div>
-    </div>
-  </div>
+    </template>
+
+    <template #legend-labels="{ placeholders }">
+      <slot name="legend-labels" v-bind="{ placeholders }" />
+    </template>
+  </ByValueConfigurator>
 </template>
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import { hexToColorTriple, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
+import {
+  colorTripleToHex,
+  hexToColorTriple,
+  MoviciColors
+} from '@movici-flow-common/visualizers/maps/colorMaps';
 import {
   ByValueColorClause,
   ColorClause,
@@ -92,192 +62,106 @@ import {
   PropertySummary,
   RGBAColor
 } from '@movici-flow-common/types';
-import ByValueColorList from './ByValueColorList.vue';
-import { recalculateMapping, RecalculateMappingParams } from '../../configurators/helpers';
+import { MappingStrategy, ValueMappingHelper, MappingMode } from '../shared/ValueMappingHelper';
 import ColorPaletteSelector from './ColorPaletteSelector.vue';
-import ColorPalettes, { DEFAULT_COLOR_PALETTES } from './colorPalettes';
+import ColorPalette, { DEFAULT_COLOR_PALETTES } from './colorPalettes';
 import ByValueMixin from '../ByValueMixin';
-import { MoviciError } from '@movici-flow-common/errors';
-import range from 'lodash/range';
+import ColorInput from '../../widgets/ColorInput.vue';
+import ByValueConfigurator from '../shared/ByValueConfigurator.vue';
 
-interface InitialOptions {
-  allowedPropertyTypes: string[];
-  selectedColorType: keyof typeof DEFAULT_COLOR_PALETTES;
-  nSteps: number;
+export class ColorMappingStrategy extends MappingStrategy<RGBAColor> {
+  palette: ColorPalette | null;
+  constructor(palette?: ColorPalette | null) {
+    super();
+    this.palette = palette ?? null;
+  }
+
+  protected doRecalculateOutputs(outputs: RGBAColor[], nSteps: number): RGBAColor[] {
+    if (this.palette) {
+      return this.palette.getColorTriplesForSize(nSteps);
+    }
+    return super.doRecalculateOutputs(outputs, nSteps);
+  }
+
+  defaultStepCount(): number {
+    return 4;
+  }
+
+  defaultOutput(): RGBAColor {
+    return hexToColorTriple(MoviciColors.WHITE);
+  }
+
+  setColorPalette(palette: ColorPalette | null) {
+    this.palette = palette;
+  }
 }
 
 @Component({
   name: 'ColorByValueConfigurator',
   components: {
-    ByValueColorList,
-    ColorPaletteSelector
+    ColorPaletteSelector,
+    ByValueConfigurator
   }
 })
 export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorClause>>(
   ByValueMixin
 ) {
-  @Prop({ type: Object }) readonly initialOpts?: InitialOptions;
-  @Prop({ type: Object }) declare selectedEntityProp: PropertySummary | null;
-  selectedColorType: keyof typeof DEFAULT_COLOR_PALETTES = 'Sequential';
+  @Prop({ type: Object }) declare selectedAttribute: PropertySummary | null;
+  @Prop({ type: Object, default: null }) strategy?: ColorMappingStrategy | null;
   colorMapping: ColorMapping = [];
   colorPickerPresets = Object.values(MoviciColors);
   fillType: 'buckets' | 'gradient' = 'buckets';
-  colorTypes: string[] = Object.keys(DEFAULT_COLOR_PALETTES);
-  selectedColorPaletteIndex = 0;
-  currentMaxValue = 1;
-  nSteps = 4;
 
-  get stepArray() {
-    return range(2, this.selectedColorPaletteLength + 2);
-  }
-
-  get mappingValues(): number[] {
-    return this.colorMapping.map(val => val[0]);
-  }
-
-  get colors(): RGBAColor[] {
-    return this.colorMapping.map(val => val[1]);
-  }
-
-  get selectedColorPalette(): string[] {
-    return this.colorPalettes[this.selectedColorPaletteIndex].getHexColorsForSize(this.nSteps);
-  }
-
-  get selectedColorPaletteLength() {
-    return Object.keys(this.colorPalettes[this.selectedColorPaletteIndex].colorsForSize).length;
-  }
-
-  get colorPalettes(): ColorPalettes[] {
-    return DEFAULT_COLOR_PALETTES[this.selectedColorType];
-  }
-
-  get colorMode(): 'buckets' | 'gradient' | 'boolean' {
-    return this.selectedDataType === 'BOOLEAN' ? 'boolean' : this.fillType;
+  get nSteps() {
+    return this.colorMapping.length;
   }
 
   get currentClause(): ByValueColorClause | null {
-    if (!this.selectedEntityProp) return null;
+    if (!this.selectedAttribute) return null;
 
     return {
       type: this.fillType,
-      attribute: this.selectedEntityProp,
-      colors: this.colorMapping,
-      maxValue: this.currentMaxValue
+      attribute: this.selectedAttribute,
+      colors: this.colorMapping
     };
   }
 
-  get colorPalettesFiltered(): ColorPalettes[] {
-    return this.colorPalettes?.filter(palette => palette.colorsForSize[this.nSteps]);
+  get component() {
+    return ColorInput;
   }
 
-  get currentMinValue() {
-    return this.mappingValues[0] ?? this.minValue;
-  }
-
-  get entityEnums() {
-    return this.summary?.general?.enum?.[this.selectedEntityProp?.enum_name ?? ''] ?? null;
-  }
-
-  get isEnum() {
-    return !!this.entityEnums;
-  }
-
-  get defaults() {
+  get componentProps() {
     return {
-      type: 'buckets',
-      attribute: null,
-      colors: []
+      caret: this.fillType === 'gradient'
     };
   }
 
-  get isBooleanOrEnum() {
-    return this.selectedDataType === 'BOOLEAN' || this.isEnum;
+  get gradientColorStyle() {
+    const hexColors = this.colorMapping.map(c => colorTripleToHex(c[1]));
+    const gradientString = hexColors.reverse().join();
+    return 'background: linear-gradient(' + gradientString + ')';
   }
 
-  selectColorPalette(index: number) {
-    this.selectedColorPaletteIndex = index;
-    this.recalculateColorMapping({
-      output: this.selectedColorPalette.map(hexColor => hexToColorTriple(hexColor))
-    });
+  get strategy_() {
+    return this.strategy ?? new ColorMappingStrategy(DEFAULT_COLOR_PALETTES['Sequential'][0]);
   }
 
-  updateSteps(nSteps: number) {
-    if (this.selectedDataType === 'BOOLEAN' && nSteps !== 2) {
-      throw new MoviciError('Invalid steps for boolean');
-    }
-
-    this.nSteps = nSteps;
-    this.recalculateColorMapping({
-      nSteps,
-      output: this.selectedColorPalette.map(hexColor => hexToColorTriple(hexColor))
-    });
+  get colorPalette() {
+    return this.strategy_.palette ?? null;
   }
 
-  @Watch('selectedEntityProp')
-  afterSelectedEntityProp(val: PropertySummary | null) {
-    /**
-     * STATE: TOUCHED DEFINED RESET VALID CLAUSE
-     * When the user selects and attribute, this function is fired.
-     * We set the selectedEntityProp (aka attribute) with this.ensureProp
-     * After that we can reset it to show the default UI config for that
-     * data_type, like an ENUM, BOOLEAN, INT or DOUBLE.
-     * This state is achievable from both UNTOUCHED NULL CLAUSE and
-     * UNTOUCHED DEFINED VALID CLAUSE. After that it only may become
-     * TOUCHED INVALID CLAUSE if the user inputs invalid data.
-     */
-    if (val) {
-      this.resetByDataType(val.data_type);
-
-      if (this.currentMaxValue !== this.maxValue) {
-        this.currentMaxValue = this.maxValue;
-      }
+  set colorPalette(palette: ColorPalette | null) {
+    this.strategy_.setColorPalette(palette);
+    if (palette) {
+      const newColors = this.strategy_.recalculateOutputs([], this.colorMapping.length);
+      this.colorMapping = this.colorMapping.map(([val], idx) => {
+        return [val, newColors[idx]];
+      });
     }
   }
 
-  resetValues() {
-    this.currentMaxValue = this.maxValue;
-    this.recalculateColorMapping({ forceRecalculateValues: true });
-  }
-
-  resetColorMapping(nSteps: number) {
-    this.nSteps = nSteps;
-    // resets to the first of the sequential palettes with nSteps
-    this.selectColorPalette(0);
-  }
-
-  recalculateColorMapping(params?: Partial<RecalculateMappingParams<RGBAColor>>) {
-    this.colorMapping = recalculateMapping(
-      {
-        output: params?.output ?? this.colors,
-        values: params?.values ?? this.mappingValues,
-        nSteps: params?.nSteps ?? this.nSteps,
-        minValue: params?.forceRecalculateValues ? this.minValue : this.currentMinValue,
-        maxValue: params?.forceRecalculateValues ? this.maxValue : this.currentMaxValue,
-        maxValueAsLastValue: this.colorMode !== 'buckets',
-        forceRecalculateValues: !!params?.forceRecalculateValues
-      },
-      () => hexToColorTriple(MoviciColors.WHITE)
-    );
-  }
-
-  interpolateMinMax() {
-    this.colorMapping = recalculateMapping(
-      {
-        output: this.colors,
-        values: this.mappingValues,
-        nSteps: this.nSteps,
-        minValue: this.currentMinValue,
-        maxValue: this.currentMaxValue,
-        maxValueAsLastValue: this.colorMode !== 'buckets',
-        forceRecalculateValues: true
-      },
-      () => hexToColorTriple(MoviciColors.WHITE)
-    );
-  }
-
-  @Watch('colorMapping')
-  afterColorMapping() {
-    this.nSteps = this.colorMapping.length;
+  isMode(helper: ValueMappingHelper<unknown>, mode: MappingMode) {
+    return helper.modeFlags.includes(mode);
   }
 
   @Watch('currentClause')
@@ -287,158 +171,24 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
     }
   }
 
-  selectColorType(val: string) {
-    this.selectedColorType = val;
-    this.selectColorPalette(0);
-  }
-
-  resetByDataType(dataType: string) {
-    this.resetColorMapping(this.defaultDataTypeSteps);
-
-    if (this.isEnum) dataType = 'ENUM'; // overriding ENUMS
-
-    switch (dataType) {
-      case 'BOOLEAN':
-        this.selectedColorType = 'Diverging';
-        this.selectedColorPaletteIndex = 0;
-        this.fillType = 'buckets';
-        this.recalculateColorMapping({
-          output:
-            DEFAULT_COLOR_PALETTES[this.selectedColorType][
-              this.selectedColorPaletteIndex
-            ].getColorTriplesForSize(2),
-          forceRecalculateValues: true
-        });
-        break;
-      case 'ENUM':
-        this.selectedColorType = 'Qualitative';
-        this.selectedColorPaletteIndex = 0;
-        this.fillType = 'buckets';
-        this.nSteps = this.entityEnums?.length ?? 0;
-        this.colorMapping = recalculateMapping(
-          {
-            values: [...Array(this.nSteps).keys()], // creates and array filled with [0, 1, 2, ..., this.nSteps]
-            output: DEFAULT_COLOR_PALETTES[this.selectedColorType][
-              this.selectedColorPaletteIndex
-            ].getColorTriplesForSize(this.nSteps),
-            nSteps: this.nSteps,
-            maxValueAsLastValue: true,
-            forceRecalculateValues: true
-          },
-          () => hexToColorTriple(MoviciColors.WHITE)
-        );
-        break;
-      case 'INT':
-      case 'DOUBLE':
-      default:
-        this.resetValues();
-        break;
-    }
-  }
-
   mounted() {
-    if (this.initialOpts) {
-      const { selectedColorType, nSteps } = this.initialOpts;
-      this.selectedColorType = selectedColorType ?? this.selectedColorType;
-      this.nSteps = nSteps ?? this.nSteps;
-    }
-    // STATE: READY
-
-    const localValue: ByValueColorClause = Object.assign({}, this.defaults, this.value?.byValue);
-    /**
-     * STATE: UNTOUCHED NULL INVALID UNSET CLAUSE
-     *
-     * IF 'this.value.byValue === undefined';
-     *   Here we have a brand new byValue configuration, byValue clause is undefined.
-     *   Although we fill currentMaxValue and fillType, because localValue.attribute is null
-     *   currentClause is also null. So after mount is done, this state has not changed
-     *   So We must set up so that the user selects the attribute, we add the default config.
-     *   After that the clause should behave like the it would be editing.
-     *
-     * IF this.value.byValue !== undefined
-     *   Here we received a byValueColorClause. After setting fillType and currentMaxValue,
-     *   the currentClause displays a value in this.pickSelectedEntityProp
-     *   UI Setup is pretty much done after we set the nSteps and colorMapping.
-     *   at this point the state is UNTOUCHED DEFINED VALID CLAUSE
-     */
-
-    this.currentMaxValue = localValue.maxValue ?? this.maxValue;
-    this.fillType = localValue.type;
-
-    if (localValue.colors.length) {
-      this.nSteps = localValue.colors.length;
-      this.colorMapping = localValue.colors;
-    } else {
-      this.resetColorMapping(this.defaultDataTypeSteps);
-    }
-
-    /**
-     * IF 'this.value.byValue !== undefined';
-     *   STATE: UNTOUCHED DEFINED VALID CLAUSE
-     */
-  }
-
-  beforeDestroy() {
-    if (this.validator) {
-      this.destroyValidator();
+    this.fillType = this.value?.byValue?.type ?? 'buckets';
+    const colors = this.value?.byValue?.colors;
+    if (colors?.length) {
+      this.colorMapping = colors;
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
-::v-deep {
-  .dropdown {
-    &.is-active {
-      border-color: $primary;
-      box-shadow: 0 0 0 0.125em rgba($primary, 0.25);
-    }
-    .dropdown-trigger {
-      @include border-radius;
-      cursor: pointer;
-      border: 2px solid $white-ter;
-      line-height: unset;
-      background-color: $white;
-      user-select: none;
-      .color-option {
-        .tooltip-trigger {
-          padding: 10px 20px 10px 0 !important;
-        }
-      }
-      &:hover {
-        border-color: $grey-light;
-        &::after {
-          border-color: $grey-darker;
-        }
-      }
-    }
+.gradient-container {
+  margin-right: 5px;
+  padding: 11px 0 11px 11px;
 
-    .color-option {
-      display: block;
-      line-height: 6px;
-      text-align: center;
-      height: 28px;
-      padding: 0;
-
-      .b-tooltip {
-        width: 100%;
-        height: 28px;
-        .tooltip-content {
-          line-height: initial !important;
-        }
-        .tooltip-trigger {
-          padding: 10px 0;
-        }
-      }
-      &.is-active {
-        background-color: unset;
-      }
-      span.color-piece {
-        height: 8px;
-        width: 16px;
-        display: inline-block;
-      }
-    }
+  .gradient {
+    height: 100%;
+    width: 8px;
   }
 }
 </style>

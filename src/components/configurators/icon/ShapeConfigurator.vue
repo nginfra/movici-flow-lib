@@ -31,11 +31,11 @@
           <b-field
             required
             :label="$t('flow.visualization.basedOn')"
-            :message="errors['selectedEntityProp']"
-            :type="{ 'is-danger': errors['selectedEntityProp'] }"
+            :message="errors['selectedAttribute']"
+            :type="{ 'is-danger': errors['selectedAttribute'] }"
           >
             <AttributeSelector
-              :value="selectedEntityProp"
+              :value="selectedAttribute"
               :entity-props="entityProps"
               :filter-prop="filterProp"
               @input="updateAttribute"
@@ -43,53 +43,66 @@
           </b-field>
         </div>
       </div>
-      <ShapeByValueConfigurator
-        :value="currentClause"
-        :validator="byValueValidator"
-        :entityProps="entityProps"
-        :selectedEntityProp="selectedEntityProp"
+      <ByValueConfigurator
+        v-if="selectedAttribute"
+        v-model="icons"
+        :selectedAttribute="selectedAttribute"
+        :strategy="strategy"
         :summary="summary"
-        @input="updateSettings"
+        :component="component"
+        :props="componentProps"
+        :label="header"
       >
-        <template #legend-labels="{ entityEnums }">
-          <ColorLegendLabelsConfigurator
+        <template #legend-labels="{ placeholders }">
+          <LegendLabelsConfigurator
             v-if="showLegend"
             :value="legend"
             @input="updateLegend($event)"
-            :placeholders="legendPlaceholders"
+            :placeholders="placeholders"
             :nItems="nSteps"
-            :entityEnums="entityEnums"
             reversed
           />
         </template>
-      </ShapeByValueConfigurator>
+      </ByValueConfigurator>
     </template>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
+import { Component, Mixins, Watch } from 'vue-property-decorator';
 import ShapeStaticConfigurator from './ShapeStaticConfigurator.vue';
-import ShapeByValueConfigurator from './ShapeByValueConfigurator.vue';
 import { IconClause, LegendOptions, PropertySummary } from '@movici-flow-common/types';
 import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
-import AttributeMixin from '../AttributeMixin';
-import FormValidator from '@movici-flow-common/utils/FormValidator';
-import { attributeValidator, getLegendPlaceholders } from '../helpers';
-import ColorLegendLabelsConfigurator from '../color/ColorLegendLabelsConfigurator.vue';
+import ConfiguratorMixin from '../ConfiguratorMixin';
+import { attributeValidator } from '../helpers';
+import LegendLabelsConfigurator from '../shared/LegendLabelsConfigurator.vue';
+import { MAPPED_ICONS } from '@movici-flow-common/visualizers/visualizerModules/iconCommon';
+import IconSelector from './IconDropdownSelector.vue';
+import ByValueConfigurator from '../shared/ByValueConfigurator.vue';
+import { MappingStrategy } from '../shared/ValueMappingHelper';
+
+class ShapeMappingStrategy extends MappingStrategy<string> {
+  defaultStepCount(): number {
+    return 4;
+  }
+
+  defaultOutput(): string {
+    return Object.keys(MAPPED_ICONS.shapes)[0];
+  }
+}
 
 @Component({
   name: 'ShapeConfigurator',
   components: {
     ShapeStaticConfigurator,
-    ShapeByValueConfigurator,
     AttributeSelector,
-    ColorLegendLabelsConfigurator
+    LegendLabelsConfigurator,
+    ByValueConfigurator
   }
 })
-export default class ShapeConfigurator extends Mixins(AttributeMixin) {
-  @Prop({ type: Object, default: () => new Object() }) readonly value!: IconClause;
-  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
+export default class ShapeConfigurator extends Mixins<ConfiguratorMixin<IconClause>>(
+  ConfiguratorMixin
+) {
   allowedPropertyTypes = ['BOOLEAN', 'INT', 'DOUBLE'];
   currentClause: IconClause = {};
   clauseType: 'static' | 'byValue' | null = null;
@@ -100,7 +113,35 @@ export default class ShapeConfigurator extends Mixins(AttributeMixin) {
   advLegend: LegendOptions = {
     labels: ['Special', 'Undefined']
   };
+  get icons() {
+    return this.currentClause.byValue?.icons ?? [];
+  }
+  set icons(val: [number, string][]) {
+    this.updateSettings({
+      byValue: {
+        attribute: this.selectedAttribute,
+        icons: val
+      }
+    });
+  }
+  get strategy() {
+    return new ShapeMappingStrategy();
+  }
 
+  get component() {
+    return IconSelector;
+  }
+  get componentProps() {
+    return {
+      iconOptions: MAPPED_ICONS.shapes,
+      placeholder: this.$t('actions.select'),
+      pack: 'fas',
+      expanded: true
+    };
+  }
+  get header() {
+    return this.$t('flow.visualization.iconConfig.shapes');
+  }
   get staticValidator() {
     return this.validator.child('static');
   }
@@ -112,16 +153,6 @@ export default class ShapeConfigurator extends Mixins(AttributeMixin) {
   get nSteps(): number {
     if (this.clauseType === 'static') return 1;
     return this.currentClause.byValue?.icons?.length ?? 0;
-  }
-
-  get legendPlaceholders(): string[] {
-    if (this.currentClause.byValue) {
-      const byValue = this.currentClause.byValue;
-      const mappingValues = byValue.icons?.map(val => val[0]);
-      if (!mappingValues) return [];
-      return getLegendPlaceholders(mappingValues, 'single');
-    }
-    return [];
   }
 
   updateAttribute(val: PropertySummary | null) {
@@ -182,13 +213,13 @@ export default class ShapeConfigurator extends Mixins(AttributeMixin) {
   kindUpdated() {
     if (!this.clauseType) return;
     this.updateSettings({ [this.clauseType]: this.currentClause[this.clauseType] ?? {} });
-    this.validator.touch('selectedEntityProp');
+    this.validator.touch('selectedAttribute');
   }
 
   setupAttributeValidator() {
     this.validator?.configure({
       validators: {
-        selectedEntityProp: attributeValidator(this, () => this.clauseType === 'byValue')
+        selectedAttribute: attributeValidator(this, () => this.clauseType === 'byValue')
       },
       onValidate: e => {
         this.errors = e;

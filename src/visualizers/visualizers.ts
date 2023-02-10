@@ -9,15 +9,6 @@ export interface VisualizerContext<I extends BaseVisualizerInfo> {
   onError?: (err: Error) => void;
 }
 
-export const DIMENSIONS = {
-  SIZE: 3.5,
-  SIZE_MIN_PIXELS: 2,
-  SIZE_MAX_PIXELS: 5,
-  ICON_SIZE: 20,
-  ICON_SIZE_MIN_PIXELS: 5,
-  ICON_SIZE_MAX_PIXELS: 20
-};
-
 export abstract class BaseVisualizer<I extends BaseVisualizerInfo> implements IVisualizer {
   tapefileStore: TapefileStore;
   info: I;
