@@ -30,6 +30,7 @@
       <ByValueConfigurator
         v-if="selectedAttribute"
         v-model="mapping"
+        :maxValue.sync="maxValue"
         :selectedAttribute="selectedAttribute"
         :strategy="strategy"
         :summary="summary"
@@ -82,14 +83,19 @@ export default class VisibilityConfigurator extends Mixins<ConfiguratorMixin<Vis
   mapping: VisibilityMapping = [];
   component = BooleanOutput;
   strategy = new VisibilityMappingStrategy();
+  maxValue: number | null = null;
 
   get currentClause(): ByValueVisibilityClause | null {
     if (!this.showVisiblity || !this.selectedAttribute) return null;
 
-    return {
+    const rv: ByValueVisibilityClause = {
       attribute: this.selectedAttribute,
       mapping: this.mapping
     };
+    if (this.maxValue != null) {
+      rv.maxValue = this.maxValue;
+    }
+    return rv;
   }
 
   @Watch('currentClause')
@@ -142,11 +148,17 @@ export default class VisibilityConfigurator extends Mixins<ConfiguratorMixin<Vis
   }
 
   mounted() {
-    const mapping = this.value?.byValue?.mapping;
-    if (mapping?.length) {
-      this.mapping = mapping;
+    let attribute: PropertySummary | null = null;
+    const clause = this.value?.byValue;
+
+    if (clause) {
+      attribute = clause.attribute;
+      if (clause.mapping.length) {
+        this.mapping = clause.mapping;
+      }
+      this.maxValue = clause.maxValue ?? null;
     }
-    const attribute = this.value?.byValue?.attribute ?? null;
+
     this.toggleVisiblity(!!attribute);
     this.pickSelectedEntityProp(attribute);
     this.setupAttributeValidator();

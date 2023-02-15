@@ -106,9 +106,9 @@ export default class ByValueConfigurator<T> extends Vue {
   @Prop({ type: Object, default: () => Object() }) readonly props!: Record<string, unknown>;
   @Prop({ default: '' }) readonly label!: string;
   @Prop({ type: Boolean, default: false }) readonly buckets!: boolean;
+  @Prop({ type: Number, default: null }) readonly maxValue!: number | null;
 
   mappingHelper: ValueMappingHelper<T> | null = null;
-  maxValue: number | null = null;
 
   stepArray: number[] = [2, 3, 4, 5, 6, 7, 8];
 
@@ -133,6 +133,7 @@ export default class ByValueConfigurator<T> extends Vue {
       this.maxValue
     );
   }
+
   isMode(query: MappingMode) {
     return this.mappingHelper!.modeFlags.includes(query);
   }
@@ -147,7 +148,7 @@ export default class ByValueConfigurator<T> extends Vue {
 
   resetValues() {
     const result = this.mappingHelper!.resetMinMax(this.value ?? []);
-    this.maxValue = this.mappingHelper!.getMaxValue();
+    this.$emit('update:maxValue', this.mappingHelper!.getMaxValue());
     this.emitMapping(result);
   }
 
@@ -161,15 +162,16 @@ export default class ByValueConfigurator<T> extends Vue {
 
   setMaxValue(val: number | null) {
     this.mappingHelper!.setMaxValue(val);
+    this.emitMaxValueFromHelper();
   }
 
-  updateMaxValueFromHelper() {
-    this.maxValue = this.mappingHelper!.getMaxValue();
+  emitMaxValueFromHelper() {
+    this.$emit('update:maxValue', this.mappingHelper!.getMaxValue());
   }
   @Watch('selectedAttribute')
   updateAttributeSummary(summary: PropertySummary) {
     this.evolveMappingHelper({ summary, buckets: this.buckets }, { resetMinMax: true });
-    this.updateMaxValueFromHelper();
+    this.emitMaxValueFromHelper();
   }
 
   @Watch('strategy')
@@ -190,10 +192,16 @@ export default class ByValueConfigurator<T> extends Vue {
     const newMapping = this.mappingHelper.initializeMapping(mapping, {
       overrideMax: maxValue
     });
-    this.updateMaxValueFromHelper();
+    this.emitMaxValueFromHelper();
     this.emitMapping(newMapping);
   }
 
+  @Watch('maxValue', { immediate: true })
+  updateMaxValue() {
+    if (this.maxValue != null) {
+      this.mappingHelper!.setMaxValue(this.maxValue);
+    }
+  }
   evolveMappingHelper(
     evolveArgs: {
       summary?: PropertySummary;
@@ -216,11 +224,12 @@ export default class ByValueConfigurator<T> extends Vue {
       buckets: this.buckets,
       enums: this.enums
     });
-    this.maxValue = this.mappingHelper.getMaxValue();
+    this.updateMaxValue();
   }
 
   mounted() {
     this.emitMapping(this.mappingHelper!.initializeMapping(this.value ?? []));
+    this.emitMaxValueFromHelper();
   }
 }
 </script>

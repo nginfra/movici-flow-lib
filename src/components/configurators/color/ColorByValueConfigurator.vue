@@ -2,6 +2,7 @@
   <ByValueConfigurator
     v-if="selectedAttribute"
     v-model="colorMapping"
+    :maxValue.sync="maxValue"
     :selectedAttribute="selectedAttribute"
     :summary="summary"
     :component="component"
@@ -111,6 +112,7 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
   colorMapping: ColorMapping = [];
   colorPickerPresets = Object.values(MoviciColors);
   fillType: 'buckets' | 'gradient' = 'buckets';
+  maxValue: number | null = null;
 
   get nSteps() {
     return this.colorMapping.length;
@@ -119,11 +121,15 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
   get currentClause(): ByValueColorClause | null {
     if (!this.selectedAttribute) return null;
 
-    return {
+    const rv: ByValueColorClause = {
       type: this.fillType,
       attribute: this.selectedAttribute,
       colors: this.colorMapping
     };
+    if (this.fillType === 'buckets' && this.maxValue != null) {
+      rv.maxValue = this.maxValue;
+    }
+    return rv;
   }
 
   get component() {
@@ -171,11 +177,15 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
     }
   }
 
-  mounted() {
+  created() {
     this.fillType = this.value?.byValue?.type ?? 'buckets';
-    const colors = this.value?.byValue?.colors;
-    if (colors?.length) {
-      this.colorMapping = colors;
+
+    const clause = this.value?.byValue;
+    if (clause) {
+      if (clause.colors.length) {
+        this.colorMapping = clause.colors;
+      }
+      this.maxValue = clause.maxValue ?? null;
     }
   }
 }

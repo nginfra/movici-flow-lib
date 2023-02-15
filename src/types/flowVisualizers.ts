@@ -73,6 +73,7 @@ export interface ByValueColorClause {
   type: 'buckets' | 'gradient';
   attribute: PropertySummary | null;
   colors: [number, RGBAColor][];
+  maxValue?: number;
   semiTransparent?: boolean;
 }
 
@@ -148,6 +149,7 @@ export type VisibilityMapping = [boolean | number, boolean][];
 export interface ByValueVisibilityClause {
   attribute: PropertySummary;
   mapping: VisibilityMapping;
+  maxValue?: number;
 }
 export interface VisibilityClause {
   byValue: ByValueVisibilityClause;
