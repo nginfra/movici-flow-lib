@@ -33,6 +33,8 @@
               @input="validated('minPixels', $event)"
               :controls="false"
               size="is-small"
+              min-step="0.01"
+
             />
             <span class="ml-1 is-size-7">px</span>
           </span>
@@ -48,6 +50,7 @@
               @input="validated('maxPixels', $event)"
               :controls="false"
               size="is-small"
+              min-step="0.01"
             />
             <span class="ml-1 is-size-7">px</span>
           </span>

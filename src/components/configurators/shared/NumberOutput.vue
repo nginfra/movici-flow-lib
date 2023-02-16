@@ -1,5 +1,5 @@
 <template>
-  <b-numberinput v-model="value_" :controls="false" :min-step="1e-15" step="1" size="is-small" />
+  <b-numberinput v-model="value_" :controls="false" :min-step="1e-15" size="is-small" />
 </template>
 
 <script lang="ts">
