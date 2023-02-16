@@ -182,7 +182,7 @@ export default class ColorByValueConfigurator extends Mixins<ByValueMixin<ColorC
 
     const clause = this.value?.byValue;
     if (clause) {
-      if (clause.colors.length) {
+      if (clause.colors?.length) {
         this.colorMapping = clause.colors;
       }
       this.maxValue = clause.maxValue ?? null;

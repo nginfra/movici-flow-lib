@@ -196,7 +196,7 @@ export default class ByValueConfigurator<T> extends Vue {
     this.emitMapping(newMapping);
   }
 
-  @Watch('maxValue', { immediate: true })
+  @Watch('maxValue')
   updateMaxValue() {
     if (this.maxValue != null) {
       this.mappingHelper!.setMaxValue(this.maxValue);

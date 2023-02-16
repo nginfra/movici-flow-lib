@@ -79,6 +79,8 @@ export default class ColorAdvSettingsConfigurator extends Vue {
   renderOrder: RenderOrderType = RenderOrderType.DISABLED;
   isOpen = false;
   colorPickerPresets = Object.values(MoviciColors);
+  specialColor = DEFAULT_SPECIAL_COLOR_TRIPLE;
+  undefinedColor = DEFAULT_UNDEFINED_COLOR_TRIPLE;
 
   get hasRenderOrder() {
     return this.fillType === 'buckets';
@@ -90,40 +92,44 @@ export default class ColorAdvSettingsConfigurator extends Vue {
 
   get advColors(): AdvColorMapping {
     return [
-      [-9999, this.value?.specialColor ?? DEFAULT_SPECIAL_COLOR_TRIPLE],
-      ['null', this.value?.undefinedColor ?? DEFAULT_UNDEFINED_COLOR_TRIPLE]
+      [-9999, this.calculatedValue.specialColor!],
+      ['null', this.calculatedValue?.undefinedColor!]
     ];
   }
 
-  updateColor({ id, newValue }: { id: number; newValue: RGBAColor }) {
-    this.emitAdvancedSettings(id == 0 ? { specialColor: newValue } : { undefinedColor: newValue });
+  get calculatedValue() {
+    const rv: AdvancedColorSettings = {
+      specialColor: this.specialColor,
+      undefinedColor: this.undefinedColor
+    };
+    if (this.hasRenderOrder) {
+      rv.renderOrder = this.renderOrder;
+    }
+    if (this.hasFillOpacity) {
+      rv.fillOpacity = Number(this.fillOpacity);
+    }
+    return rv;
   }
 
-  @Watch('fillOpacity')
-  @Watch('renderOrder')
-  emitAdvancedSettings(params?: { specialColor?: RGBAColor; undefinedColor?: RGBAColor }) {
-    const value: AdvancedColorSettings = {
-      specialColor: params?.specialColor ?? this.advColors[0][1],
-      undefinedColor: params?.undefinedColor ?? this.advColors[1][1]
-    };
-
-    if (this.hasRenderOrder) {
-      value.renderOrder = this.renderOrder;
+  updateColor({ id, newValue }: { id: number; newValue: RGBAColor }) {
+    if (id === 0) {
+      this.specialColor = newValue;
     } else {
-      delete value.renderOrder;
+      this.undefinedColor = newValue;
     }
+  }
 
-    if (this.hasFillOpacity) {
-      value.fillOpacity = Number(this.fillOpacity);
-    }
-
-    this.$emit('input', value);
+  @Watch('calculatedValue')
+  emitAdvancedSettings() {
+    this.$emit('input', this.calculatedValue);
   }
 
   @Watch('value', { immediate: true })
   onValueChange(value: AdvancedColorSettings | null) {
     this.renderOrder = value?.renderOrder ?? RenderOrderType.DISABLED;
     this.fillOpacity = value?.fillOpacity ?? DEFAULT_POLYGON_FILL_OPACITY;
+    this.specialColor = value?.specialColor ?? DEFAULT_SPECIAL_COLOR_TRIPLE;
+    this.undefinedColor = value?.undefinedColor ?? DEFAULT_UNDEFINED_COLOR_TRIPLE;
   }
 
   mounted() {

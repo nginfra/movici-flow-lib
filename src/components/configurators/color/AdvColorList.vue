@@ -21,7 +21,6 @@
 <script lang="ts">
 import { RGBAColor } from '@deck.gl/core';
 import { AdvColorMapping } from '@movici-flow-common/types';
-import { colorTripleToHex } from '@movici-flow-common/visualizers/maps/colorMaps';
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import ColorInput from '../../widgets/ColorInput.vue';
 @Component({
@@ -40,16 +39,8 @@ export default class AdvColorList extends Vue {
     return this.value.map(val => val[1]);
   }
 
-  get hexColors(): string[] {
-    return this.value.map(c => colorTripleToHex(c[1]));
-  }
-
   get labels(): string[] {
     return this.value.map(val => String(val[0]));
-  }
-
-  get translateY() {
-    return this.selectedIndex * 42 - 24;
   }
 
   updateColor(id: number, newValue: RGBAColor) {
@@ -58,18 +49,6 @@ export default class AdvColorList extends Vue {
 
   getColorTitle(i: number) {
     return i === 0 ? 'Special' : 'Undefined';
-  }
-
-  colorTripleToHex = colorTripleToHex;
-
-  openColorPicker(index: number) {
-    if (this.showColorPicker && this.selectedIndex === index) {
-      this.showColorPicker = false;
-      this.selectedIndex = -1;
-    } else {
-      this.selectedIndex = index;
-      this.showColorPicker = true;
-    }
   }
 }
 </script>

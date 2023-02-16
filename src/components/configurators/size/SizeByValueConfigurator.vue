@@ -241,16 +241,18 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
     });
   }
 
-  mounted() {
+  created() {
     this.setupValidator();
     const clause = Object.assign(
       {
         units: 'pixels',
+        sizes: [],
         minPixels: this.strategy.minPixels(),
         maxPixels: this.strategy.maxPixels()
       },
       this.value?.byValue
     );
+    this.sizes = clause.sizes;
     this.units = clause.units;
     this.minPixels = clause.minPixels;
     this.maxPixels = clause.maxPixels;
