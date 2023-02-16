@@ -14,7 +14,6 @@
               :controls="false"
               size="is-small"
               :min-step="1e-15"
-              min-step="0.01"
             />
           </b-field>
           <b-field class="is-flex-grow-1 ml-4" :label="$t('flow.visualization.displayAs')">
