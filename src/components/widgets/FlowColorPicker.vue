@@ -6,7 +6,7 @@
     :style="style"
     v-if="isOpen"
     tabindex="0"
-    @blur="$emit('close')"
+    @focusout="handleFocusOut($event)"
   >
     <Sketch v-model="rgba" :presetColors="preparedColorPresets"></Sketch>
   </div>
@@ -97,6 +97,27 @@ export default class FlowColorPicker extends Vue {
         this.coolDown = false;
       }, COOLDOWN_MS);
     }
+  }
+  handleFocusOut(event: FocusEvent) {
+    // when clicking outside the color picker we want to close it. We need to capture the focusout
+    // and then emit the close event. However, there are multiple children inside the color picker
+    // that may trigger the focusout event, so we need to check whether we've actually focused 
+    // outside the picker, or merely on a child.
+    // Also, we choose to use the focusout event and not the blur event since the focusout event
+    // bubbles up so that we can also capture it after we've focused on a child
+
+    const currentTarget = event.currentTarget as
+      | (EventTarget & {
+          contains: (e: Element | null) => boolean;
+        })
+      | null;
+    // Give browser time to focus the next element
+    requestAnimationFrame(() => {
+      // Check if the new focused element is a child of the original container
+      if (!currentTarget?.contains(document.activeElement)) {
+        this.$emit('close');
+      }
+    });
   }
 }
 

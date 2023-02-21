@@ -12,7 +12,7 @@ const FALLBACK_ICON = 'question',
       resizeQuality: 'high'
     }
   };
-
+const DEFAULT_SIZE_SCALE = 0.5;
 function getValue<D, T extends number | boolean | string>(
   d: D,
   accessor?: ((_: D) => T) | T
@@ -60,7 +60,7 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
     const hasIconAndShape = hasIcon && hasShape,
       getPixelOffset = hasIconAndShape
         ? (d: D) => {
-            const shape = getValue(d, getShape) ?? FALLBACK_ICON,
+            const shape = getValue(d, getShape) ?? FALLBACK_SHAPE,
               iconCenter = shapeMapping?.[shape]?.iconCenter ?? [0, 0],
               size = typeof getSize === 'function' ? getSize(d) : getSize;
             return iconCenter.map(i => i * size);
@@ -73,9 +73,14 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
         : getColor,
       getIconSize = hasIconAndShape
         ? (d: D) => {
-            const icon = getValue(d, getIcon) ?? FALLBACK_ICON,
-              sizeScale = iconMapping?.[icon]?.inShapeSize ?? 0.5,
-              size = typeof getSize === 'function' ? getSize(d) : getSize;
+            const icon = getValue(d, getIcon) ?? FALLBACK_ICON;
+            let sizeScale = iconMapping?.[icon]?.inShapeSize ?? DEFAULT_SIZE_SCALE;
+            if (typeof sizeScale !== 'number') {
+              const shape = getValue(d, getShape) ?? FALLBACK_SHAPE;
+              sizeScale = sizeScale[shape] ?? sizeScale.$default ?? DEFAULT_SIZE_SCALE;
+            }
+
+            const size = typeof getSize === 'function' ? getSize(d) : getSize;
             return size * sizeScale;
           }
         : getSize;
@@ -98,6 +103,8 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
           getSize: [
             ...(this.props.updateTriggers.getIcon ?? []),
             ...(this.props.updateTriggers.getSize ?? []),
+            ...(this.props.updateTriggers.getShape ?? []),
+
             hasIcon,
             hasShape
           ],
@@ -190,6 +197,7 @@ interface ShapeIconProps<D> {
 
 export type IconMapping = Record<string, IconMappingItem>;
 export type IconMappingOverrides = Record<string, Partial<IconMappingItem>>;
+export type InShapeSize = number | Record<string | '$default', number>;
 export interface IconMappingItem {
   url?: string;
   width: number;
@@ -197,6 +205,6 @@ export interface IconMappingItem {
   anchorX?: number;
   anchorY?: number;
   mask?: boolean;
-  inShapeSize?: number;
+  inShapeSize?: InShapeSize;
   iconCenter?: number[];
 }

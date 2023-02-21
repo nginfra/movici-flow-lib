@@ -17,49 +17,107 @@
     }
   },
   "icons": {
-    "archway": {},
+    "archway": {
+      "inShapeSize": {
+        "map-marker": 0.4,
+        "triangle": 0.4
+      }
+    },
     "biohazard": {},
     "bolt": {},
     "bomb": {},
     "broadcast-tower": {
-      "inShapeSize": 0.4
+      "inShapeSize": {
+        "map-marker": 0.4,
+        "triangle": 0.4
+      }
     },
     "building": {},
-    "church": {},
-    "city": {},
+    "church": {
+      "inShapeSize": {
+        "map-marker": 0.4,
+        "triangle": 0.4
+      }
+    },
+    "city": {
+      "inShapeSize": {
+        "map-marker": 0.4,
+        "triangle": 0.4
+      }
+    },
     "clinic-medical": {},
-    "digging": {},
+    "digging": {
+      "inShapeSize": {
+        "map-marker": 0.45
+      }
+    },
     "exclamation": {},
-    "farm": {},
+    "farm": {
+      "inShapeSize": {
+        "map-marker": 0.45,
+        "triangle": 0.45
+      } },
     "fire-extinguisher": {},
     "fire": {},
     "futbol": {},
     "glasses": {},
     "hospital-symbol": {},
     "hospital": {},
-    "hotel": {},
+    "hotel": {
+      "inShapeSize": {
+        "map-marker": 0.4,
+        "triangle": 0.4
+      } },
     "house-damage": {},
     "house-flood": {},
     "house": {},
     "industry": {},
     "medkit": {},
     "monument": {},
-    "mosque": {},
+    "mosque": {
+      "inShapeSize": {
+        "map-marker": 0.4,
+        "triangle": 0.4
+      }
+    },
     "music": {},
     "police-box": {},
     "question": {},
     "radiation": {},
-    "school": {},
+    "school": {
+      "inShapeSize": {
+        "map-marker": 0.4,
+        "triangle": 0.4
+      } },
     "seedling": {},
-    "store": {},
+    "store": {
+      "inShapeSize": {
+        "map-marker": 0.4,
+        "triangle": 0.4
+      } },
     "subway": {},
-    "synagogue": {},
+    "synagogue": {
+      "inShapeSize": {
+        "map-marker": 0.4
+      }
+    },
     "tombstone": {},
     "tooth": {},
     "train": {},
     "university": {},
-    "water": {},
-    "wheat": {},
-    "wind-turbine": {}    
+    "water": {
+      "inShapeSize": {
+        "map-marker": 0.45,
+        "triangle": 0.45
+      }
+
+    },
+    "wheat": {
+      "inShapeSize": {
+        "map-marker": 0.45,
+        "triangle": 0.45
+      }
+    },
+    "wind-turbine": {}
   }
 }

@@ -92,13 +92,14 @@ export default class ColorAdvSettingsConfigurator extends Vue {
 
   get advColors(): AdvColorMapping {
     return [
-      [-9999, this.calculatedValue.specialColor!],
-      ['null', this.calculatedValue?.undefinedColor!]
+      [-9999, this.calculatedValue.specialColor],
+      ['null', this.calculatedValue.undefinedColor]
     ];
   }
 
   get calculatedValue() {
-    const rv: AdvancedColorSettings = {
+    const rv: AdvancedColorSettings &
+      Required<Pick<AdvancedColorSettings, 'specialColor' | 'undefinedColor'>> = {
       specialColor: this.specialColor,
       undefinedColor: this.undefinedColor
     };
