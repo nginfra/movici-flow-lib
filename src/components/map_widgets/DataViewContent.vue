@@ -11,10 +11,10 @@
       </label>
       <template v-if="closable">
         <span class="pin is-clickable" :title="pinTitle" @click="$emit('togglePosition')">
-          <b-icon :pack="pinIconClass" icon="thumbtack" />
+          <o-icon :pack="pinIconClass" icon="thumbtack" />
         </span>
         <span class="close is-clickable" :title="$t('actions.close')" @click="$emit('close')">
-          <b-icon pack="far" icon="times" />
+          <o-icon pack="far" icon="times" />
         </span>
       </template>
     </div>

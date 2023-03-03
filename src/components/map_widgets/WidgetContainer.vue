@@ -1,11 +1,11 @@
 <template>
   <div class="data-viewer box popup-fixed" :class="{ collapsed }">
-    <b-collapse v-if="collapsable" :open.sync="open" animation="none" aria-id="container">
+    <o-collapse v-if="collapsable" :open.sync="open" animation="none" aria-id="container">
       <template #trigger>
         <slot name="collapse-title" :collapsed="collapsed"></slot>
       </template>
       <slot name="collapse-content" :collapsed="collapsed"></slot>
-    </b-collapse>
+    </o-collapse>
     <slot></slot>
   </div>
 </template>

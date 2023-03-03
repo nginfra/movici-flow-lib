@@ -136,6 +136,7 @@ export default class FormValidator implements IFormValidator {
     for (const dep of this.dependents[key] ?? []) {
       touched = this.resetError(dep) || touched;
     }
+    this.invokeCallbacks();
     return touched;
   }
 
@@ -183,7 +184,7 @@ export default class FormValidator implements IFormValidator {
     }
 
     this.children[name] ??= new FormValidator({
-      onValidate: (e: ErrorDict) => {
+      parentCallback: (e: ErrorDict) => {
         this.processChildErrors(name, e);
       }
     });
@@ -242,5 +243,5 @@ export function required(value: unknown, resource = 'Input') {
 }
 
 export function isPositive(value: unknown, resource = 'Input') {
-  if (value && typeof value === 'number' && value < 0) return `${resource} must be at least 0.`;
+  if (!(typeof value === 'number') || value < 0) return `${resource} must be at least 0.`;
 }

@@ -1,12 +1,12 @@
 <template>
-  <b-field
+  <o-field
     title="Search"
     class="search"
     :class="{ expand: expand, 'is-right': isRight }"
     @keydown.native.enter="getFirstSearchResult"
     @keydown.native.esc="search = ''"
   >
-    <b-autocomplete
+    <o-autocomplete
       v-model="search"
       :open-on-focus="true"
       :data="suggestions"
@@ -15,7 +15,7 @@
       @select="selectLocationFromSuggestion"
       @typing="onTyping"
       field="text"
-      size="is-small"
+      size="small"
       ref="autocomplete"
       placeholder="Search location..."
       icon="search"
@@ -27,15 +27,15 @@
           {{ errors }}
         </span>
       </template>
-    </b-autocomplete>
-    <b-button
+    </o-autocomplete>
+    <o-button
       class="expander is-border-transparent"
-      size="is-small"
+      size="small"
       v-show="!expand"
       @click="expandAndFocus"
       icon-left="search"
     />
-  </b-field>
+  </o-field>
 </template>
 
 <script lang="ts">
@@ -184,10 +184,6 @@ export default class SearchBar extends Vue {
     width: inherit;
     &:hover {
       background-color: $white-ter;
-    }
-    ::v-deep .icon {
-      margin-right: auto;
-      margin-left: calc(0.5em - 2px);
     }
   }
   .autocomplete {

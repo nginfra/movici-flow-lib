@@ -1,9 +1,9 @@
 <template>
   <div class="timeslider" v-if="timelineInfo">
-    <b-field>
-      <b-slider
+    <o-field>
+      <o-slider
         :value="value"
-        tooltip-type="is-black"
+        tooltip-variant="black"
         @input="$emit('input', $event)"
         :min="timelineInfo.start_time"
         :max="timelineInfo.start_time + timelineInfo.duration"
@@ -12,7 +12,7 @@
         :type="type"
         rounded
       />
-    </b-field>
+    </o-field>
     <div class="time-ticks" v-if="timelineInfo">
       <strong>{{ toFormattedDateTime(timelineInfo.start_time) }}</strong>
       <p>{{ toFormattedDateTime(value) }}</p>

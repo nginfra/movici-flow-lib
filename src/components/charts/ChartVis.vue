@@ -2,7 +2,7 @@
   <div class="chart-vis" v-if="charts.length && !isLoading">
     <div class="is-flex is-flex-direction-row-reverse" :disabled="charts.length">
       <span @click="toggleExpand" :class="{ expanded }">
-        <b-icon
+        <o-icon
           :title="$t('flow.visualization.graph.showCharts')"
           class="collapsed-icon"
           pack="far"
@@ -11,7 +11,7 @@
       </span>
     </div>
     <div class="chart-holder" v-if="expanded">
-      <b-tabs
+      <o-tabs
         v-if="charts.length"
         class="flow-tabs mr-5"
         :value="currentChartId"
@@ -19,30 +19,30 @@
         :animated="false"
         :animateInitially="false"
       >
-        <b-tab-item v-for="(chart, i) in charts" :key="chart.id" :value="chart.id">
+        <o-tab-item v-for="(chart, i) in charts" :key="chart.id" :value="chart.id">
           <template #header>
             <span>{{ chart.title }}</span>
             <div class="buttons mx-0" v-if="currentChartId === chart.id">
-              <b-button
+              <o-button
                 icon-pack="far"
                 icon-left="edit"
-                size="is-small"
+                size="small"
                 class="ml-2 mr-0 is-borderless has-text-primary"
                 :title="$t('actions.edit')"
                 @click="$emit('openConfig', i)"
               />
-              <b-button
+              <o-button
                 icon-pack="far"
                 icon-left="trash"
-                size="is-small"
+                size="small"
                 class="mx-0 is-borderless has-text-primary"
                 :title="$t('actions.delete')"
                 @click="removeChart(i)"
               />
             </div>
           </template>
-        </b-tab-item>
-      </b-tabs>
+        </o-tab-item>
+      </o-tabs>
       <AttributeChart
         class="mt-3"
         :id="currentChartId"

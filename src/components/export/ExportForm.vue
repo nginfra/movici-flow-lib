@@ -2,37 +2,37 @@
   <div class="export-content">
     <div class="columns multiline mb-0">
       <div class="column is-flex is-half-desktop is-full-tablet">
-        <b-field
+        <o-field
           class="is-flex-grow-1 mr-2"
           :label="$t('resources.dataset')"
-          :type="{ 'is-danger': errors['currentDatasetName'] }"
           :message="errors['currentDatasetName'] || ''"
+          :variant="errors['currentDatasetName'] && 'danger'"
         >
-          <b-select
+          <o-select
             :placeholder="$t('dataset.select')"
             :value="currentDatasetName"
-            size="is-small"
+            size="small"
             expanded
             @input="validated('currentDatasetName', $event)"
           >
             <option v-for="dataset in datasets" :value="dataset.name" :key="dataset.name">
               {{ datasetDisplayName(dataset) }}
             </option>
-          </b-select>
-        </b-field>
+          </o-select>
+        </o-field>
       </div>
       <div class="column is-flex is-half-desktop is-full-tablet">
-        <b-field
+        <o-field
           class="is-flex-grow-1"
           v-if="entityGroups || currentEntityName"
           :label="$t('resources.entityGroup')"
-          :type="{ 'is-danger': errors['currentEntityName'] }"
           :message="errors['currentEntityName'] || ''"
+          :variant="errors['currentEntityName'] && 'danger'"
         >
-          <b-select
+          <o-select
             :placeholder="$t('flow.entityGroup.select')"
             :value="currentEntityName"
-            size="is-small"
+            size="small"
             expanded
             :disabled="!entityGroups.length"
             @input="validated('currentEntityName', $event)"
@@ -40,40 +40,40 @@
             <option v-for="entity in entityGroups" :value="entity.name" :key="entity.name">
               {{ entity.name }} ({{ entity.count }})
             </option>
-          </b-select>
-        </b-field>
+          </o-select>
+        </o-field>
       </div>
     </div>
     <div class="columns mb-0">
       <div class="column is-full-desktop is-full-tablet">
-        <b-field :label="$t('misc.timestamp')">
+        <o-field :label="$t('misc.timestamp')">
           <TimeSlider v-model="currentTimestamp" :timeline-info="timelineInfo"></TimeSlider>
-        </b-field>
-        <b-button
+        </o-field>
+        <o-button
           @click="resetTimestamp"
           class="is-transparent is-borderless has-hover-bg has-text-primary is-pulled-right"
           icon-left="undo"
           icon-pack="far"
-          size="is-small"
+          size="small"
         >
           {{ $t('flow.export.resetTimestamp') }}
-        </b-button>
+        </o-button>
       </div>
     </div>
     <div class="columns multiline mb-0">
       <div class="column">
-        <b-field :label="$t('flow.export.format')">
-          <b-radio
+        <o-field :label="$t('flow.export.format')">
+          <o-radio
             class="mr-2"
             v-for="format in exportFormats"
             v-model="selectedFormat"
             :key="format"
             :native-value="format"
-            size="is-small"
+            size="small"
           >
             <span>.{{ format }} </span>
-          </b-radio>
-        </b-field>
+          </o-radio>
+        </o-field>
       </div>
     </div>
   </div>
@@ -87,6 +87,7 @@ import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
 import TimeSlider from '../map_widgets/TimeSlider.vue';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
 import { flowStore } from '@movici-flow-common/store/store-accessor';
+import FormValidator from '@movici-flow-common/utils/FormValidator';
 
 @Component({
   name: 'ExportForm',
@@ -97,6 +98,7 @@ export default class ExportForm extends Mixins(SummaryListing, ValidationProvide
   @Prop({ type: Object, required: true }) readonly timelineInfo!: TimeOrientedSimulationInfo;
   @Prop({ type: String, default: null }) readonly scenarioUuid!: string | null;
   @Prop({ type: Number, default: 0 }) readonly timestamp!: number;
+  @Prop({ type: Object, required: true }) declare readonly validator: FormValidator;
 
   currentTimestamp = 0;
   exportFormats = ['csv'];

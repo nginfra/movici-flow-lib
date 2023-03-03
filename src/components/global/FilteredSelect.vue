@@ -1,9 +1,9 @@
 <template>
-  <b-select
+  <o-select
     :value="value"
     @input="input"
     :placeholder="warning ? warning : $t('actions.select')"
-    size="is-small"
+    size="small"
     expanded
     :disabled="disabled"
   >
@@ -17,7 +17,7 @@
     >
       {{ getDisplayName(val) }}
     </option>
-  </b-select>
+  </o-select>
 </template>
 
 <script lang="ts">

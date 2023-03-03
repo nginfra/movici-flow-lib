@@ -10,7 +10,8 @@ export default (() => {
   const Flow_ = {
     install(Vue: typeof Vue_, options?: Partial<FlowPluginOptions>) {
       Object.entries(components).forEach(([name, component]) => {
-        registerComponent(Vue, component, name);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        registerComponent(Vue, component as any, name);
       });
 
       registerInNamespace(Vue, 'snackbar', MovSnackBarProgramatic);
@@ -22,3 +23,5 @@ export default (() => {
 
   return Flow_;
 })();
+
+// export { orugaConfig };

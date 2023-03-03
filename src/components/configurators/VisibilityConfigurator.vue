@@ -2,21 +2,21 @@
   <div>
     <div class="columns mb-0 is-multiline">
       <div class="column is-two-thirds-desktop is-full-tablet">
-        <b-field>
-          <b-checkbox :value="showVisiblity" @input="toggleVisiblity" size="is-small">
+        <o-field>
+          <o-checkbox :value="showVisiblity" @input="toggleVisiblity" size="small">
             {{ $t('flow.visualization.byValue') }}
-          </b-checkbox>
-        </b-field>
+          </o-checkbox>
+        </o-field>
       </div>
     </div>
     <template v-if="showVisiblity">
       <div class="columns mb-0 is-multiline">
         <div class="column is-two-thirds-desktop is-full-tablet">
-          <b-field
+          <o-field
             required
             :label="$t('flow.visualization.basedOn')"
             :message="errors['selectedAttribute']"
-            :type="{ 'is-danger': errors['selectedAttribute'] }"
+            :variant="errors['selectedAttribute'] && 'danger'"
           >
             <AttributeSelector
               :value="selectedAttribute"
@@ -24,7 +24,7 @@
               :filter-prop="filterProp"
               @input="updateAttribute"
             />
-          </b-field>
+          </o-field>
         </div>
       </div>
       <ByValueConfigurator

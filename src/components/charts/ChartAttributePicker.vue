@@ -1,38 +1,40 @@
 <template>
-  <div class="box has-background-white p-4">
-    <b-field
-      :message="errors['duplicateEntityId']"
-      :type="{ 'is-danger': errors['duplicateEntityId'] }"
-    >
-      <template #label>
-        <div class="is-flex is-align-items-center">
-          <label class="label is-size-7 mb-0 mr-2">{{
-            $t('flow.visualization.graph.chooseAttribute')
-          }}</label>
-          <b-icon
-            :title="$t('flow.visualization.graph.attributeInfo')"
-            size="is-tiny"
-            icon="info-circle"
-            type="is-info"
-          />
-        </div>
-      </template>
-      <AttributeSelector
-        expanded
-        :value="selectedAttribute"
-        :entity-props="properties"
-        :filter-prop="filterProp"
-        @input="updateAttribute"
+  <div class="modal-card">
+    <div class="box has-background-white p-4">
+      <o-field
+        :message="errors['duplicateEntityId']"
+        :variant="errors['duplicateEntityId'] && 'danger'"
+      >
+        <template #label>
+          <div class="is-flex is-align-items-center">
+            <label class="label is-size-7 mb-0 mr-2">{{
+              $t('flow.visualization.graph.chooseAttribute')
+            }}</label>
+            <o-icon
+              :title="$t('flow.visualization.graph.attributeInfo')"
+              size="tiny"
+              icon="info-circle"
+              variant="info"
+            />
+          </div>
+        </template>
+        <AttributeSelector
+          expanded
+          :value="selectedAttribute"
+          :entity-props="properties"
+          :filter-prop="filterProp"
+          @input="updateAttribute"
+        />
+      </o-field>
+      <MovButtons
+        size="is-small"
+        isPulledRight
+        :value="buttons"
+        @save="saveChart()"
+        @saveAndEdit="saveChart(true)"
+        @cancel="$emit('close')"
       />
-    </b-field>
-    <MovButtons
-      size="is-small"
-      isPulledRight
-      :value="buttons"
-      @save="saveChart()"
-      @saveAndEdit="saveChart(true)"
-      @cancel="$emit('close')"
-    />
+    </div>
   </div>
 </template>
 
@@ -87,7 +89,7 @@ export default class ChartAttributePicker extends Mixins(ValidationProvider, Sum
   get buttons(): ButtonItem[] {
     return [
       {
-        colorScheme: 'is-success',
+        variant: 'success',
         label: '' + this.$t('actions.save'),
         icon: 'save',
         iconPack: 'fas',
@@ -95,7 +97,7 @@ export default class ChartAttributePicker extends Mixins(ValidationProvider, Sum
         isDisabled: !this.isValid
       },
       {
-        colorScheme: 'is-success',
+        variant: 'success',
         label: `${this.$t('actions.save')} & ${this.$t('actions.edit')}`,
         icon: 'edit',
         iconPack: 'fas',
@@ -226,3 +228,8 @@ function getItemName(obj: DeckEntityObject<unknown>): string {
   return '#' + obj.id;
 }
 </script>
+<style lang="scss" scoped>
+.modal-card {
+  width: inherit;
+}
+</style>

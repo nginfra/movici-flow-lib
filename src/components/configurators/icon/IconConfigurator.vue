@@ -2,21 +2,21 @@
   <div>
     <div class="columns mb-0 layer-kind">
       <div class="column is-two-thirds-desktop">
-        <b-field>
-          <b-radio class="mr-4" v-model="clauseType" native-value="static" size="is-small">
-            {{ $t('flow.visualization.static') }}</b-radio
+        <o-field>
+          <o-radio class="mr-4" v-model="clauseType" native-value="static" size="small">
+            {{ $t('flow.visualization.static') }}</o-radio
           >
-          <b-radio v-model="clauseType" native-value="byValue" size="is-small">
+          <o-radio v-model="clauseType" native-value="byValue" size="small">
             {{ $t('flow.visualization.byValue') }}
-          </b-radio>
-        </b-field>
+          </o-radio>
+        </o-field>
       </div>
       <div class="column is-one-third-desktop">
-        <b-field>
-          <b-checkbox :value="showLegend" @input="updateShowLegend" size="is-small">
+        <o-field>
+          <o-checkbox :value="showLegend" @input="updateShowLegend" size="small">
             {{ $t('flow.visualization.showLegend') }}
-          </b-checkbox>
-        </b-field>
+          </o-checkbox>
+        </o-field>
       </div>
     </div>
     <IconStaticConfigurator
@@ -27,11 +27,11 @@
     <template v-else-if="clauseType === 'byValue'">
       <div class="columns mb-0 is-multiline">
         <div class="column is-two-thirds-desktop is-full-tablet">
-          <b-field
+          <o-field
             required
             :label="$t('flow.visualization.basedOn')"
             :message="errors['selectedAttribute']"
-            :type="{ 'is-danger': errors['selectedAttribute'] }"
+            :variant="errors['selectedAttribute'] && 'danger'"
           >
             <AttributeSelector
               :value="selectedAttribute"
@@ -39,7 +39,7 @@
               :filter-prop="filterProp"
               @input="updateAttribute"
             />
-          </b-field>
+          </o-field>
         </div>
       </div>
       <ByValueConfigurator

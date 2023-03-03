@@ -9,24 +9,24 @@
           <strong class="has-text-black">{{ $t('flow.scenarios.models') }}</strong>
           <span class="count">({{ currentScenario.models.length }})</span>
         </span>
-        <b-field class="scenario-model-type-list overflow-hover is-flex-grow-0 is-flex-shrink-2">
+        <o-field class="scenario-model-type-list overflow-hover is-flex-grow-0 is-flex-shrink-2">
           <ul class="flow-list is-size-7">
             <li v-for="(model, key) in scenarioModels" :key="key" :title="model.name">
               {{ model.name }}
             </li>
           </ul>
-        </b-field>
+        </o-field>
         <span class="is-size-7">
           <strong class="has-text-black">{{ $t('flow.datasets.label') }}</strong>
           <span class="count">({{ currentScenario.datasets.length }})</span>
         </span>
-        <b-field class="scenario-dataset-list overflow-hover is-flex-grow-0 is-flex-shrink-2">
+        <o-field class="scenario-dataset-list overflow-hover is-flex-grow-0 is-flex-shrink-2">
           <ul class="flow-list is-size-7">
             <li v-for="(dataset, key) in scenarioDatasets" :key="key" :title="dataset.name">
               {{ dataset.name }}
             </li>
           </ul>
-        </b-field>
+        </o-field>
         <div class="clear flex-grow-0 flex-shrink-1"></div>
       </template>
     </template>
@@ -37,7 +37,7 @@
           <h2 class="is-size-6">{{ $t('flow.mainView.noScenarioText') }}</h2>
         </header>
         <div class="no-resource">
-          <b-image src="/static/no-resources.png" />
+          <MovImage src="/static/no-resources.png" />
         </div>
       </template>
       <template v-else>
@@ -49,18 +49,18 @@
             >
               {{ currentScenario.display_name }}
             </h1>
-            <b-button class="is-warning mr-2" icon-pack="far" size="is-small" icon-left="undo"
-              >Reset</b-button
-            >
-            <b-button
+            <o-button class="is-warning mr-2" icon-pack="far" size="small" icon-left="undo">
+              Reset
+            </o-button>
+            <o-button
               class="is-primary"
               icon-pack="far"
-              size="is-small"
+              size="small"
               icon-left="redo"
               :disabled="isDisabled"
             >
               Run scenario
-            </b-button>
+            </o-button>
           </div>
           <div class="status">
             <span class="is-size-7 mr-2">Status:</span>
@@ -69,35 +69,35 @@
             </span>
           </div>
         </header>
-        <b-tabs class="flow-tabs uppercase mt-2" value="rawConfig">
-          <b-tab-item
+        <o-tabs class="flow-tabs uppercase mt-2" value="rawConfig">
+          <o-tab-item
             disabled
             value="widgetDashboard"
             icon="sliders-h"
             icon-pack="far"
             :label="$t('flow.scenarios.widgetDashboard')"
-          ></b-tab-item>
-          <b-tab-item
+          ></o-tab-item>
+          <o-tab-item
             disabled
             value="configAssistant"
             icon="th-list"
             icon-pack="far"
             :label="$t('flow.scenarios.configAssistant')"
-          ></b-tab-item>
-          <b-tab-item
+          ></o-tab-item>
+          <o-tab-item
             value="rawConfig"
             icon-pack="far"
             icon="code"
             :label="$t('flow.scenarios.rawConfig')"
           >
-            <b-input
+            <o-input
               v-model="formattedRawData"
               type="textarea"
-              custom-class="monospace"
+              class="is-monospace"
               readonly
-            ></b-input>
-          </b-tab-item>
-        </b-tabs>
+            ></o-input>
+          </o-tab-item>
+        </o-tabs>
       </template>
     </template>
   </FlowContainer>

@@ -1,19 +1,14 @@
 <template>
   <div>
-    <b-field
-      v-for="(val, index) in value"
-      class="is-align-items-center"
-      :key="index"
-      size="is-small"
-    >
+    <o-field v-for="(val, index) in value" class="is-align-items-center" :key="index" size="small">
       <div class="is-flex">
         <slot name="before" v-bind="{ index }" />
         <span class="is-flex-grow-1 values-from">
-          <b-input :value="enumLabels[val]" size="is-small" disabled />
+          <o-input :value="enumLabels[val]" size="small" disabled />
         </span>
         <slot name="after" v-bind="{ index }" />
       </div>
-    </b-field>
+    </o-field>
   </div>
 </template>
 

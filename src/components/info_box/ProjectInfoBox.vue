@@ -4,19 +4,19 @@
       <label class="is-size-7 is-block">
         {{ $t('flow.projects.label') }}
       </label>
-      <b-field v-if="edit">
-        <b-select
+      <o-field v-if="edit">
+        <o-select
           :value="currentProject"
           @input="$emit('setProject', $event)"
           :placeholder="$t('flow.projects.selectPlaceholder')"
-          size="is-small"
+          size="small"
           expanded
         >
           <option v-for="p in projects" :value="p" :key="p.uuid">
             {{ p.display_name }}
           </option>
-        </b-select>
-      </b-field>
+        </o-select>
+      </o-field>
       <span v-else-if="currentProject" class="is-size-6-half is-block">
         <router-link
           custom
@@ -33,19 +33,16 @@
         </router-link>
       </span>
     </div>
-    <MovKebabMenu v-if="actions.length" :value="actions" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { flowStore } from '@movici-flow-common/store/store-accessor';
-import { ActionMenuItem } from '@movici-flow-common/types';
 
 @Component({ name: 'ProjectInfoBox' })
 export default class ProjectInfoBox extends Vue {
   @Prop({ type: Boolean, default: false }) readonly edit!: boolean;
-  actions: ActionMenuItem[] = [];
 
   get currentProject() {
     return flowStore.project;

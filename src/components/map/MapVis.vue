@@ -7,12 +7,7 @@
     :basemap="basemap"
   >
     <template #map="{ map }">
-      <b-loading is-full-page :active="isLoading">
-        <div class="loading-icon-container">
-          <b-icon class="loading-icon" />
-          <span class="mt-6 is-block">Loading layers...</span>
-        </div>
-      </b-loading>
+      <o-loading full-page :active="isLoading" icon-size="large" />
       <Buildings v-if="buildings" :map="map" />
       <Scale v-if="scale" :map="map" />
     </template>
@@ -63,7 +58,7 @@ export default class MovMapVis<D = unknown> extends DeckContainerMixin<D> {
   @Prop({ type: Boolean, default: false }) readonly scale!: boolean;
   tapefileStores: TapefileStoreCollection = new TapefileStoreCollection();
   visualizers: VisualizerManager<ComposableVisualizerInfo, Visualizer> | null = null;
-  isLoading = false;
+  isLoading = true;
   maxTimeAvailable: number | null = null;
 
   get backend(): Backend | null {
@@ -204,12 +199,5 @@ function createComposableVisualizer(
 .timeslider {
   flex-grow: 1;
   margin: 0 80px;
-}
-.loading-overlay {
-  z-index: 1;
-  .loading-icon {
-    left: 50%;
-    transform: translateX(-50%);
-  }
 }
 </style>

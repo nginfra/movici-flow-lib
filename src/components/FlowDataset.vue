@@ -8,18 +8,18 @@
           >({{ filteredDatasets.length }} {{ $t('misc.of') }} {{ datasets.length }})</span
         >
       </span>
-      <b-field>
-        <b-input
+      <o-field>
+        <o-input
           v-model="search"
           :placeholder="$t('flow.datasets.searchPlaceholder')"
           type="search"
           icon-pack="far"
           icon="search"
-          size="is-small"
+          size="small"
         >
-        </b-input>
-      </b-field>
-      <b-field
+        </o-input>
+      </o-field>
+      <o-field
         class="dataset-selector overflow-hover is-flex-grow-1 is-flex-shrink-2"
         v-if="filteredDatasets.length"
       >
@@ -33,15 +33,15 @@
             v-html="datasetDisplayName(dataset)"
           ></li>
         </ul>
-      </b-field>
-      <b-button
+      </o-field>
+      <o-button
         class="is-primary is-align-self-baseline flex-grow-0 flex-shrink-1"
-        size="is-small"
+        size="small"
         icon-left="plus-circle"
         disabled
       >
         {{ $t('flow.datasets.addDataset') }}
-      </b-button>
+      </o-button>
     </template>
     <template #mainView>
       <!-- no dataset -->
@@ -53,7 +53,7 @@
           </div>
         </header>
         <div class="no-resource">
-          <b-image src="/static/no-resources.png" />
+          <MovImage src="/static/no-resources.png" />
         </div>
       </template>
       <!-- yes dataset -->
@@ -71,32 +71,32 @@
             </h2>
           </div>
         </header>
-        <b-tabs class="flow-tabs uppercase mt-2">
-          <b-tab-item
+        <o-tabs class="flow-tabs uppercase mt-2">
+          <o-tab-item
             value="dataPreview"
             icon="map"
             icon-pack="far"
             :label="$t('flow.datasets.dataPreview')"
           >
             <DatasetViewer v-model="currentDataset" />
-          </b-tab-item>
-          <b-tab-item
+          </o-tab-item>
+          <o-tab-item
             disabled
             value="usage"
             icon="fa-scenario"
             icon-pack="fak"
             :label="$t('flow.datasets.usage')"
           >
-          </b-tab-item>
-          <b-tab-item
+          </o-tab-item>
+          <o-tab-item
             disabled
             value="resume"
             icon-pack="far"
             icon="code"
             :label="$t('flow.datasets.resume')"
           >
-          </b-tab-item>
-          <b-tab-item value="info" icon="info-circle" icon-pack="fas" label="Info">
+          </o-tab-item>
+          <o-tab-item value="info" icon="info-circle" icon-pack="fas" label="Info">
             <div class="info details is-size-7 mt-2">
               <span class="is-block" v-for="(prop, key) in details" :key="key">
                 <label>{{ $t('flow.datasets.details.' + key) }}: </label>
@@ -106,8 +106,8 @@
             <div v-if="currentDataset.description" class="description is-size-6-half mt-4">
               {{ currentDataset.description }}
             </div>
-          </b-tab-item>
-        </b-tabs>
+          </o-tab-item>
+        </o-tabs>
       </template>
     </template>
   </FlowContainer>

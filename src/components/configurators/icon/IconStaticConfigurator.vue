@@ -1,7 +1,7 @@
 <template>
   <div class="columns is-multiline">
     <div class="column is-two-thirds-desktop is-full-tablet">
-      <b-field :label="$t('flow.visualization.iconConfig.selectIcon')">
+      <o-field :label="$t('flow.visualization.iconConfig.selectIcon')">
         <IconDropdownSelector
           :value="currentIcon"
           :iconOptions="iconOptions"
@@ -10,7 +10,7 @@
           @input="updateIcon($event)"
           allowEmpty
         />
-      </b-field>
+      </o-field>
     </div>
     <div class="column is-one-third-desktop is-full-tablet">
       <slot name="legend-title"></slot>

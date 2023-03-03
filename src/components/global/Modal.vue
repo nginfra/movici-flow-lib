@@ -1,16 +1,15 @@
 <template>
-  <b-modal
+  <o-modal
     :active="active"
     @close="$emit('close')"
-    has-modal-card
     trap-focus
     aria-role="dialog"
     aria-modal
-    :can-cancel="canCancel"
+    :can-cancel="cancelOpts"
     :width="width"
   >
-    <template v-slot="{ close }">
-      <ModalContent :title="title" @close="close">
+    <template>
+      <ModalContent :title="title" :hasCancelX="hasCancelX" @close="$emit('close')">
         <template v-slot:header>
           <slot name="header" />
         </template>
@@ -22,7 +21,7 @@
         </template>
       </ModalContent>
     </template>
-  </b-modal>
+  </o-modal>
 </template>
 
 <script lang="ts">
@@ -39,6 +38,16 @@ export default class Modal extends Vue {
   @Prop({ type: Number, default: 800 }) readonly width!: number;
   @Prop({ type: [Array, Boolean], default: () => ['escape', 'x', 'outside', 'button'] })
   readonly canCancel!: boolean | string[];
+
+  get hasCancelX() {
+    return typeof this.canCancel === 'boolean' || this.canCancel.includes('x');
+  }
+  get cancelOpts() {
+    if (Array.isArray(this.canCancel)) {
+      return this.canCancel.filter(v => v !== 'x');
+    }
+    return this.canCancel;
+  }
 }
 </script>
 

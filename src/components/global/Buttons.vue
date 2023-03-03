@@ -1,7 +1,7 @@
 <template>
   <div class="buttons-container" :class="{ 'is-sticky': isSticky }">
     <div :class="{ 'is-pulled-right': isPulledRight }">
-      <b-button
+      <o-button
         v-for="(btn, idx) in value"
         :class="{ 'mr-2': idx !== value.length }"
         :key="idx"
@@ -10,10 +10,10 @@
         @click="$emit(btn.event)"
         :icon-left="btn.icon"
         :icon-pack="btn.iconPack"
-        :type="btn.colorScheme"
+        :variant="btn.variant"
       >
         {{ btn.label }}
-      </b-button>
+      </o-button>
       <slot></slot>
     </div>
     <div v-if="isPulledRight" class="is-clearfix"></div>

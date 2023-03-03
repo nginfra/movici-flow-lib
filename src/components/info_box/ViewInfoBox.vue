@@ -11,11 +11,11 @@
         {{ $t('flow.visualization.infoLabel') }}
       </label>
       <span class="is-flex is-align-items-center is-flex-grow-1">
-        <b-input
+        <o-input
           class="is-flex-grow-1 view-name-input is-size-6-half"
           :value="name"
           @input="updateVisualizationName"
-        ></b-input>
+        />
         <slot name="quickSave"></slot>
         <MovKebabMenu
           :value="actions"
@@ -23,7 +23,6 @@
           @saveView="$emit('save-view')"
           @saveViewAsNew="$emit('save-view-as-new')"
           @deleteView="$emit('delete-view')"
-          @resetView="$emit('reset-view')"
           @close="openMenu = false"
         />
       </span>
@@ -76,7 +75,7 @@ export default class ViewInfoBox extends Vue {
       icon: 'trash',
       iconPack: 'far',
       event: 'deleteView',
-      colorScheme: 'is-danger'
+      variant: 'danger'
     }
   ];
 

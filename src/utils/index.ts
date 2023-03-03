@@ -83,26 +83,28 @@ function extractDefinedValues(obj: Record<string, string | undefined>) {
  * @param status
  */
 export function getClassFromStatus(status: string): string {
+  return 'is-' + getVariantFromStatus(status);
+}
+export function getVariantFromStatus(status: string): string {
   switch (status.toLowerCase()) {
     case 'empty':
-      return 'is-warning';
+      return 'warning';
     case 'failed':
     case 'unknown':
     case 'invalid':
     case 'cancelled':
-      return 'is-danger';
+      return 'danger';
     case 'ready':
     case 'running':
     case 'pending':
-      return 'is-info';
+      return 'info';
     case 'succeeded':
     case 'done':
-      return 'is-primary';
+      return 'primary';
     default:
-      return 'is-white';
+      return 'white';
   }
 }
-
 export function getStatusFromScenarioAndSimulation(
   scenario: ShortScenario,
   simulation: Simulation

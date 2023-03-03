@@ -5,7 +5,7 @@
       :key="i"
       class="is-flex is-flex-direction-row draw-options"
     >
-      <b-button
+      <o-button
         class="is-border-transparent"
         :title="item.title"
         :disabled="!item.enabled()"
@@ -17,14 +17,13 @@
           last: i === calculatedOptions.length - 1
         }"
         @click="click(item)"
-        size="is-small"
+        size="small"
         :icon-left="item.icon"
         :icon-pack="item.pack"
-      >
-      </b-button>
+      />
       <span v-if="isOptionActive(item.id) && item.options" class="options">
         <template v-for="(child, j) in item.options">
-          <b-button
+          <o-button
             class="is-border-transparent"
             :key="j"
             :title="child.title"
@@ -36,11 +35,10 @@
               last: j === item.options.length - 1
             }"
             @click="click(child)"
-            size="is-small"
+            size="small"
             :icon-left="child.icon"
             :icon-pack="child.pack"
-          >
-          </b-button>
+          />
         </template>
       </span>
     </span>
@@ -341,7 +339,7 @@ export default class FeatureDrawControl extends Vue {
     }
   }
 
-  @Watch('registerMapOnClick', { immediate: true })
+  @Watch('registerMapOn', { immediate: true })
   doRegisterMapOnClick() {
     this.registerMapOn?.('click', {
       selected: (e: PickInfo<unknown>) => {
@@ -411,6 +409,8 @@ export default class FeatureDrawControl extends Vue {
               this.updateSelected([...this.selectedFeatureIndexes, clicked.index]);
             }
           }
+          // stop event propagation
+          return true;
         },
         onEdit: ({ editType, updatedData }: EditAction<FeatureCollection>) => {
           this.$emit('input', updatedData.features);
@@ -440,7 +440,6 @@ export default class FeatureDrawControl extends Vue {
 
   mounted() {
     this.emitFeatureLayer();
-    this.$emit('registerMapOn');
   }
 }
 </script>

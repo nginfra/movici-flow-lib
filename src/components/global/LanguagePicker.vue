@@ -1,9 +1,9 @@
 <template>
-  <b-field :label="label">
-    <b-select :value="value" @input="$emit('input', $event)">
+  <o-field :label="label">
+    <o-select :value="value" @input="$emit('input', $event)">
       <option v-for="lang in languages" :key="lang" :value="lang">{{ lang }}</option>
-    </b-select>
-  </b-field>
+    </o-select>
+  </o-field>
 </template>
 
 <script lang="ts">

@@ -3,7 +3,7 @@
     <span class="is-size-7 has-text-weight-bold has-text-grey mr-1">
       {{ $t('flow.visualization.popup.suggestions') }}:
     </span>
-    <b-tag
+    <MovTag
       v-for="(suggestion, idx) in filteredSuggestions"
       class="is-clickable has-hover-bg"
       :class="{ 'mr-2': idx !== filteredSuggestions.length - 1 }"
@@ -12,8 +12,8 @@
       :title="suggestion.description"
     >
       {{ suggestion.name }}
-      <b-icon class="ml-1" size="is-small" icon="plus-circle" pack="fal" />
-    </b-tag>
+      <o-icon class="ml-1" size="small" icon="plus-circle" pack="fal" />
+    </MovTag>
   </div>
 </template>
 

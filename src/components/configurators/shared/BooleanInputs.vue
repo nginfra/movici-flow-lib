@@ -1,13 +1,13 @@
 <template>
   <div>
-    <b-field v-for="(val, index) in value" class="is-align-items-center" :key="index">
-      <b-input
+    <o-field v-for="(val, index) in value" class="is-align-items-center" :key="index">
+      <o-input
         :value="String(Boolean(val))"
         native-class="has-text-centered"
-        size="is-small"
+        size="small"
         disabled
-      ></b-input>
-    </b-field>
+      />
+    </o-field>
   </div>
 </template>
 

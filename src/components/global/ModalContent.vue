@@ -3,7 +3,7 @@
     <header class="modal-card-head">
       <slot name="header">
         <p class="modal-card-title">{{ title }}</p>
-        <button type="button" class="delete" @click="$emit('close')" />
+        <button v-if="hasCancelX" type="button" class="delete" @click="$emit('close')" />
       </slot>
     </header>
     <section class="modal-card-body" :class="{ 'border-round': !hasFooter }">
@@ -21,7 +21,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component({ name: 'ModalContent' })
 export default class ModalContent extends Vue {
   @Prop({ type: String }) readonly title?: string;
-
+  @Prop({ type: Boolean, default: false }) readonly hasCancelX!: boolean;
   get hasFooter() {
     return !!this.$slots.footer;
   }

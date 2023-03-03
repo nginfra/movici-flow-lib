@@ -1,26 +1,17 @@
 <template>
   <div>
-    <b-field
-      v-for="(val, index) in value"
-      class="is-align-items-center"
-      :key="index"
-      size="is-small"
-    >
+    <o-field v-for="(val, index) in value" class="is-align-items-center" :key="index" size="small">
       <div class="values is-flex">
         <slot name="before" v-bind="{ index }" />
         <span class="is-flex-grow-1 values-from">
-          <b-numberinput
+          <MovNumberinput
             :value="val"
             @input="$emit('updateMappingValue', { index, val: $event })"
-            :controls="false"
-            :min-step="1e-15"
-            step="1"
-            class="has-text-centered"
-            size="is-small"
+            size="small"
           />
         </span>
         <slot name="after" v-bind="{ index }" />
-        <b-button
+        <o-button
           v-if="hasRemoveButton"
           @click="$emit('removeRow', index)"
           :title="$t('flow.visualization.byValueConfig.removeRow')"
@@ -28,10 +19,10 @@
           class="ml-1 is-transparent has-hover-bg is-borderless has-text-danger"
           icon-pack="far"
           icon-left="minus-circle"
-          size="is-small"
+          size="small"
         />
       </div>
-    </b-field>
+    </o-field>
   </div>
 </template>
 

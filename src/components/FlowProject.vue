@@ -35,7 +35,7 @@
     <template #mainView>
       <template v-if="!currentProject">
         <div class="no-resource">
-          <b-image src="/static/no-project.png"></b-image>
+          <MovImage src="/static/no-project.png"></MovImage>
           <div class="has-text-centered mt-3">
             <h1 class="is-size-4 has-text-weight-bold">{{ $t('flow.mainView.noProjectTitle') }}</h1>
             <h2 class="is-size-6">{{ $t('flow.mainView.noProjectText') }}</h2>

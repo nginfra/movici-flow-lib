@@ -1,7 +1,6 @@
 import Vue, { VueConstructor } from 'vue';
 import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
 import merge from 'lodash/merge';
-import Buefy from 'buefy';
 import Vuex, { StoreOptions } from 'vuex';
 import { VueClass } from 'vue-class-component/lib/declarations';
 import VueI18n from 'vue-i18n';
@@ -67,7 +66,6 @@ export function getLocalVue(opts: { mountOptions?: Record<string, unknown> }): V
 
   localVue.use(Vuex);
   localVue.use(VueI18n);
-  localVue.use(Buefy, { defaultIconPack: 'fas' });
 
   return localVue;
 }

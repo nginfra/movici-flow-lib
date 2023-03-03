@@ -1,17 +1,17 @@
 <template>
   <div class="columns mb-0 is-multiline" v-if="localValue && summary">
     <div class="column is-two-thirds-desktop is-full-tablet">
-      <b-field
+      <o-field
         :label="$t('flow.visualization.geometryConfig.geometryLabel')"
         required
         :message="errors['localValue']"
-        :type="{ 'is-danger': errors['localValue'] }"
+        :variant="errors['localValue'] && 'danger'"
       >
         <template #label>
           {{ $t('flow.visualization.geometryConfig.geometryLabel') }}
-          <b-icon
-            size="is-small"
-            type="is-info"
+          <o-icon
+            size="small"
+            variant="info"
             icon-pack="far"
             icon="info-circle"
             :title="$t('flow.visualization.geometryConfig.geometryInfo')"
@@ -24,7 +24,7 @@
         >
           <span class="mr-4 is-size-7 label"> {{ key | upperFirst }}: </span>
           <FilteredSelect
-            class="is-flex-grow-1"
+            class="is-flex-grow-1 unset-width"
             :value="localValue[key]"
             @input="updateValue(key, $event)"
             :options="summary.entity_groups"
@@ -32,7 +32,7 @@
             :displayName="displayName"
           />
         </span>
-      </b-field>
+      </o-field>
     </div>
   </div>
 </template>
@@ -140,4 +140,8 @@ export default class GeometryConfigurator extends Mixins(ValidationProvider) {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.unset-width {
+  width: unset;
+}
+</style>

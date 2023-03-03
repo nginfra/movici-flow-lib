@@ -2,18 +2,18 @@
   <div class="is-flex">
     <div class="is-flex-shrink-1 mr-4 colors">
       <label class="label">{{ $t('flow.visualization.colorConfig.advanced.advColours') }}</label>
-      <b-field class="is-flex" v-for="(color, index) in colors" :key="index">
+      <o-field class="is-flex" v-for="(color, index) in colors" :key="index">
         <ColorInput :value="color" @input="updateColor(index, $event)" colorPickerPosition="top" />
         <span class="ml-1 is-size-7">
           {{ getColorTitle(index) }}
         </span>
-      </b-field>
+      </o-field>
     </div>
     <div class="is-flex-grow-1 mapped-values">
       <label class="label">{{ $t('flow.visualization.byValueConfig.value') }}</label>
-      <b-field class="is-align-items-center" v-for="(label, index) in labels" :key="index">
-        <b-input :value="label" size="is-small" disabled></b-input>
-      </b-field>
+      <o-field class="is-align-items-center" v-for="(label, index) in labels" :key="index">
+        <o-input :value="label" size="small" disabled></o-input>
+      </o-field>
     </div>
   </div>
 </template>

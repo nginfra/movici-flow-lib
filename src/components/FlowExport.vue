@@ -1,47 +1,49 @@
 <template>
-  <div class="box has-background-white p-4">
-    <div class="is-flex is-flex is-align-items-center mb-3">
-      <h1 class="is-size-6 has-text-black text-ellipsis">
-        {{ $t('flow.export.modalTitle') }} {{ currentScenario.display_name }}
-      </h1>
-    </div>
-    <div class="columns mt-2">
-      <div class="column is-one-third">
-        <label class="label is-size-7">{{ $t('flow.export.filterData') }}</label>
-        <ExportLayerPicker :layers="visualizers" @selectLayer="selectedCVI = $event" />
+  <div class="modal-card">
+    <div class="box has-background-white p-4">
+      <div class="is-flex is-flex is-align-items-center mb-3">
+        <h1 class="is-size-6 has-text-black text-ellipsis">
+          {{ $t('flow.export.modalTitle') }} {{ currentScenario.display_name }}
+        </h1>
       </div>
-      <div class="column">
-        <div v-if="currentScenario">
-          <ExportForm
-            :value="selectedCVI"
-            :validator="validator"
-            :scenario-uuid="currentScenario.uuid"
-            :timestamp="timestamp"
-            :timeline-info="timelineInfo"
-            @exportConfig="exportConfig = $event"
-          />
+      <div class="columns mt-2">
+        <div class="column is-one-third">
+          <label class="label is-size-7">{{ $t('flow.export.filterData') }}</label>
+          <ExportLayerPicker :layers="visualizers" @selectLayer="selectedCVI = $event" />
+        </div>
+        <div class="column">
+          <div v-if="currentScenario">
+            <ExportForm
+              :value="selectedCVI"
+              :validator="validator"
+              :scenario-uuid="currentScenario.uuid"
+              :timestamp="timestamp"
+              :timeline-info="timelineInfo"
+              @exportConfig="exportConfig = $event"
+            />
+          </div>
         </div>
       </div>
+      <div class="bottom is-pulled-right">
+        <o-button
+          size="small"
+          icon-pack="far"
+          class="mr-2 has-text-weight-bold"
+          @click="$emit('close')"
+        >
+          {{ $t('actions.cancel') }}
+        </o-button>
+        <o-button
+          size="small"
+          icon-pack="far"
+          class="is-primary has-text-weight-bold"
+          @click="exportData"
+        >
+          {{ $t('flow.export.label') }}
+        </o-button>
+      </div>
+      <div class="is-clearfix"></div>
     </div>
-    <div class="bottom is-pulled-right">
-      <b-button
-        size="is-small"
-        icon-pack="far"
-        class="mr-2 has-text-weight-bold"
-        @click="$emit('close')"
-      >
-        {{ $t('actions.cancel') }}
-      </b-button>
-      <b-button
-        size="is-small"
-        icon-pack="far"
-        class="is-primary has-text-weight-bold"
-        @click="exportData"
-      >
-        {{ $t('flow.export.label') }}
-      </b-button>
-    </div>
-    <div class="is-clearfix"></div>
   </div>
 </template>
 
@@ -50,7 +52,6 @@ import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import { TimeOrientedSimulationInfo } from '../types';
 import FlowContainer from './FlowContainer.vue';
 import FlowLayerPicker from './widgets/FlowLayerPicker.vue';
-import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
 import ExportForm from './export/ExportForm.vue';
 import ExportLayerPicker from './export/ExportLayerPicker.vue';
@@ -64,7 +65,6 @@ import { flowStore, flowVisualizationStore } from '../store/store-accessor';
   components: {
     FlowLayerPicker,
     FlowContainer,
-    ProjectInfoBox,
     ScenarioInfoBox,
     ExportForm,
     ExportLayerPicker
@@ -115,13 +115,16 @@ export default class FlowExport extends Mixins(ValidationProvider) {
     this.validator = new FormValidator();
   }
 
-  mounted() {
+  created() {
     this.setupValidator();
   }
 }
 </script>
 
 <style scoped lang="scss">
+.modal-card {
+  width: inherit;
+}
 ::v-deep {
   .group-picker .header .label {
     max-width: 200px;

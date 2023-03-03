@@ -20,7 +20,7 @@ export interface ActionItem {
   iconPack?: string;
   label: string;
   event: string;
-  colorScheme?: string;
+  variant?: string;
   isDisabled?: boolean;
   component?: typeof Vue;
 }

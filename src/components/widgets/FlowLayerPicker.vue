@@ -23,15 +23,15 @@
         tooltipActive
       />
     </Draggable>
-    <b-button
+    <o-button
       class="mt-2 new-visualizer is-transparent has-hover-bg is-borderless is-align-self-baseline has-text-primary has-text-weight-bold"
       icon-left="plus-circle"
       icon-pack="far"
-      size="is-small"
+      size="small"
       @click="startEditingItem(-1)"
     >
       {{ $t('flow.visualization.newVisualizer') }}
-    </b-button>
+    </o-button>
     <VisualizerConfigurator
       v-if="open > -2"
       :vGroups="[]"
@@ -44,14 +44,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop } from 'vue-property-decorator';
-import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
-import VisualizerElement from './VisualizerElement.vue';
-import VisualizerConfigurator from '../configurators/VisualizerConfigurator.vue';
-import { Scenario, TimeOrientedSimulationInfo } from '@movici-flow-common/types';
-import { flowStore } from '@movici-flow-common/store/store-accessor';
-import Draggable from 'vuedraggable';
+import DialogModal from '@/components/global-alt/DialogModal.vue';
 import DraggableMixin from '@movici-flow-common/mixins/DraggableMixin';
+import { flowStore } from '@movici-flow-common/store/store-accessor';
+import { Scenario, TimeOrientedSimulationInfo } from '@movici-flow-common/types';
+import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
+import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
+import Draggable from 'vuedraggable';
+import VisualizerConfigurator from '../configurators/VisualizerConfigurator.vue';
+import VisualizerElement from './VisualizerElement.vue';
 
 @Component({
   name: 'FlowLayerPicker',
@@ -94,17 +95,23 @@ export default class FlowLayerPicker extends Mixins(DraggableMixin) {
     if (this.open === -2) {
       this.$emit('update:open', index);
     } else if (this.open !== index) {
-      this.$buefy.dialog.confirm({
-        message: '' + this.$t('flow.visualization.dialogs.closeConfigurator'),
-        cancelText: '' + this.$t('actions.cancel'),
-        confirmText: '' + this.$t('misc.yes'),
-        type: 'is-primary',
-        onConfirm: () => {
-          this.$emit('update:open', -2);
-          // this makes sure a fresh componenent is built without leftovers from previous values
-          this.$nextTick(() => {
-            this.$emit('update:open', index);
-          });
+      this.$oruga.modal.open({
+        parent: this,
+        component: DialogModal,
+        props: {
+          message: '' + this.$t('flow.visualization.dialogs.closeConfigurator'),
+          cancelText: '' + this.$t('actions.cancel'),
+          confirmText: '' + this.$t('misc.yes'),
+
+          variant: 'primary',
+          canCancel: true,
+          onConfirm: () => {
+            this.$emit('update:open', -2);
+            // this makes sure a fresh componenent is built without leftovers from previous values
+            this.$nextTick(() => {
+              this.$emit('update:open', index);
+            });
+          }
         }
       });
     }
@@ -142,19 +149,25 @@ export default class FlowLayerPicker extends Mixins(DraggableMixin) {
 
   deleteItem(idx: number) {
     const name = this.value[idx].name;
-    this.$buefy.dialog.confirm({
-      message: '' + this.$t('flow.visualization.dialogs.deleteVisualizer', { name }),
-      cancelText: '' + this.$t('actions.cancel'),
-      confirmText: '' + this.$t('actions.delete'),
-      type: 'is-danger',
-      onConfirm: () => {
-        this.$emit(
-          'input',
-          this.value.filter((val, arrayIdx) => idx !== arrayIdx)
-        );
-        // if we delete what is open, we close the window
-        if (this.open === idx) {
-          this.$emit('update:open', -2);
+    this.$oruga.modal.open({
+      parent: this,
+      component: DialogModal,
+      props: {
+        message: '' + this.$t('flow.visualization.dialogs.deleteVisualizer', { name }),
+        cancelText: '' + this.$t('actions.cancel'),
+        confirmText: '' + this.$t('actions.delete'),
+
+        variant: 'danger',
+        canCancel: true,
+        onConfirm: () => {
+          this.$emit(
+            'input',
+            this.value.filter((val, arrayIdx) => idx !== arrayIdx)
+          );
+          // if we delete what is open, we close the window
+          if (this.open === idx) {
+            this.$emit('update:open', -2);
+          }
         }
       }
     });

@@ -11,41 +11,34 @@
       class="type is-size-7 is-italic text-ellipsis"
       :title="`Display as: ${value.settings.type}`"
     >
-      <b-icon class="is-tiny mr-2" type="is-small" :icon="typeIcon[0]" :pack="typeIcon[1]" />{{
-        value.settings.type
-      }}
+      <o-icon class="mr-2" size="tiny" :icon="typeIcon[0]" :pack="typeIcon[1]" />
+      {{ value.settings.type }}
     </span>
     <span
       class="dataset is-size-7 is-italic text-ellipsis"
       :title="`Dataset name: ${value.datasetName}`"
     >
-      <b-icon class="is-tiny mr-2" type="is-small" icon="fa-dataset" pack="fak" />{{
-        value.datasetName
-      }}
+      <o-icon class="mr-2" size="tiny" icon="fa-dataset" pack="fak" />{{ value.datasetName }}
     </span>
     <span
       class="entityGroup is-size-7 is-italic text-ellipsis"
       :title="`Entity group: ${value.entityGroup}`"
     >
-      <b-icon class="is-tiny mr-2" type="is-small" icon="object-group" pack="far" />{{
-        value.entityGroup
-      }}
+      <o-icon class="mr-2" size="tiny" icon="object-group" pack="far" />{{ value.entityGroup }}
     </span>
     <span
       class="attribute is-size-7 is-italic text-ellipsis"
       v-if="colorByValue"
       :title="`Based on: ${colorByValue.attribute.name}`"
     >
-      <b-icon class="is-tiny mr-2" type="is-small" icon="file" pack="far" />{{
-        colorByValue.attribute.name
-      }}
+      <o-icon class="mr-2" size="tiny" icon="file" pack="far" />{{ colorByValue.attribute.name }}
     </span>
     <span
       class="color byValue buckets is-flex is-align-items-center"
       v-if="colorByValue && colorByValue.type === 'buckets'"
       title="Colors"
     >
-      <b-icon class="is-tiny mr-2" type="is-small" icon="fill" pack="far" />
+      <o-icon class="mr-2" size="tiny" icon="fill" pack="far" />
       <span
         v-for="(color, index) in colorByValue.colors"
         :style="{ 'background-color': convertColor(color[1]) }"
@@ -57,7 +50,7 @@
       v-if="colorByValue && colorByValue.type === 'gradient'"
       title="Color gradient"
     >
-      <b-icon class="is-tiny mr-2" type="is-small" icon="fill" pack="far" />
+      <o-icon class="mr-2" size="tiny" icon="fill" pack="far" />
       <span
         :style="{
           background: linearGradient,
@@ -66,7 +59,7 @@
       />
     </span>
     <span class="color static is-flex is-align-items-center" v-if="colorStatic" title="Color">
-      <b-icon class="is-tiny mr-2" type="is-small" icon="fill" pack="far" />
+      <o-icon class="mr-2" size="tiny" icon="fill" pack="far" />
       <span :style="{ 'background-color': convertColor(colorStatic.color) }" />
     </span>
   </div>

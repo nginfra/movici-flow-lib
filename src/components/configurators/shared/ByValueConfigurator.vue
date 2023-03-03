@@ -4,20 +4,20 @@
     <div class="columns mb-0 is-multiline">
       <div class="column is-full">
         <div class="is-flex">
-          <b-field
+          <o-field
             class="mr-4 is-flex-shrink-1"
             :label="$t('flow.visualization.byValueConfig.steps')"
           >
-            <b-select
+            <o-select
               :value="value.length"
               @input="updateSteps"
-              size="is-small"
+              size="small"
               expanded
               :disabled="!isMode('number')"
             >
               <option v-for="index in stepArray" :key="index" :value="index">{{ index }}</option>
-            </b-select>
-          </b-field>
+            </o-select>
+          </o-field>
           <slot name="options-side" v-bind="{ mappingHelper }"></slot>
         </div>
       </div>
@@ -44,7 +44,7 @@
           </template>
         </ByValueList>
       </div>
-      <div class="column py-0 is-one-third-desktop is-full-tablet">
+      <div class="column mt-1 py-0 is-one-third-desktop is-full-tablet">
         <slot name="legend-labels" v-bind="{ placeholders: legendPlaceHolders }" />
       </div>
     </div>

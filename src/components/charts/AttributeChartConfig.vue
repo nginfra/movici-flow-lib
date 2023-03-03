@@ -2,12 +2,12 @@
   <div class="chart-config" v-if="localValue">
     <header class="mb-2">
       <div class="row is-flex is-align-items-center">
-        <b-icon pack="far" icon="chart-line" />
+        <o-icon pack="far" icon="chart-line" />
         <h1 class="is-size-4 has-text-weight-bold is-flex-grow-1 ml-2">
           {{ $t('flow.visualization.graph.title') }}
         </h1>
         <span class="close is-clickable" :title="$t('actions.close')" @click="$emit('close')">
-          <b-icon pack="far" icon="times" />
+          <o-icon pack="far" icon="times" />
         </span>
       </div>
       <div class="row">
@@ -18,14 +18,14 @@
     </header>
     <div class="columns mb-0">
       <div class="column">
-        <b-field :label="$t('flow.visualization.graph.graphDisplayName')">
-          <b-input
+        <o-field :label="$t('flow.visualization.graph.graphDisplayName')">
+          <o-input
             size="is-small"
             class="is-size-7"
             v-model="localValue.title"
             :placeholder="localValue.title"
           />
-        </b-field>
+        </o-field>
       </div>
     </div>
 
@@ -56,17 +56,17 @@
                   <i class="far fa-ellipsis-v"></i>
                 </span>
               </span>
-              <b-field class="is-flex-shrink-1 mr-2 mb-0">
+              <o-field class="is-flex-shrink-1 mr-2 mb-0">
                 <ColorInput
                   :value="item.color"
                   @input="updateColor(index, $event)"
                   colorPickerPosition="top-right"
                 />
-              </b-field>
-              <b-field class="is-flex-grow-1 is-align-items-center mr-2 mb-0">
-                <b-input expanded size="is-small" class="is-size-7" v-model="item.name" />
-              </b-field>
-              <b-button
+              </o-field>
+              <o-field class="is-flex-grow-1 is-align-items-center mr-2 mb-0">
+                <o-input expanded size="is-small" class="is-size-7" v-model="item.name" />
+              </o-field>
+              <o-button
                 class="is-borderless is-transparent has-hover-bg is-flex has-text-danger"
                 size="is-small"
                 @click="removeItem(index)"
@@ -74,7 +74,7 @@
                 title="Remove graph"
                 :disabled="localValue.items.length === 1"
               />
-              <b-button
+              <o-button
                 class="is-borderless is-flex"
                 size="is-small"
                 @click="toggleDetails(index)"
@@ -90,17 +90,17 @@
               v-if="showDetails[index]"
               class="details is-flex mt-2 mb-1 px-3 py-2 has-background-white"
             >
-              <b-field class="is-flex-shrink-1 mr-5" :label="`${$t('resources.entity')} ID`">
+              <o-field class="is-flex-shrink-1 mr-5" :label="`${$t('resources.entity')} ID`">
                 <span class="value is-size-7">{{ item.entityId }}</span>
-              </b-field>
-              <b-field class="is-flex-shrink-1 mr-5" :label="$t('resources.entityGroup')">
+              </o-field>
+              <o-field class="is-flex-shrink-1 mr-5" :label="$t('resources.entityGroup')">
                 <span class="value is-size-7">{{ item.entityGroup }}</span>
-              </b-field>
-              <b-field class="is-flex-shrink-1" :label="$t('resources.dataset')">
+              </o-field>
+              <o-field class="is-flex-shrink-1" :label="$t('resources.dataset')">
                 <span class="value is-size-7">{{
                   item.datasetName | snakeToSpaces | upperFirst
                 }}</span>
-              </b-field>
+              </o-field>
             </div>
           </div>
         </Draggable>
@@ -168,7 +168,7 @@ export default class AttributeChartConfig extends Mixins(
   get buttons(): ButtonItem[] {
     return [
       {
-        colorScheme: 'is-success',
+        variant: 'success',
         label: '' + this.$t('actions.save'),
         icon: 'save',
         iconPack: 'fas',

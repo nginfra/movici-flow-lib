@@ -6,84 +6,45 @@
       :strategy="strategy"
       :summary="summary"
       :component="component"
+      :props="componentProps"
       :label="header"
     >
       <template #options-side>
-        <b-field :label="$t('flow.visualization.displayAs')">
-          <b-radio v-model="units" native-value="meters" size="is-small" class="mr-4">
+        <o-field :label="$t('flow.visualization.displayAs')">
+          <o-radio v-model="units" native-value="meters" size="small" class="mr-4">
             {{ $t('units.meters') }}
-          </b-radio>
-          <b-radio v-model="units" native-value="pixels" size="is-small">
+          </o-radio>
+          <o-radio v-model="units" native-value="pixels" size="small">
             {{ $t('units.pixels') }}
-          </b-radio>
-        </b-field>
+          </o-radio>
+        </o-field>
       </template>
     </ByValueConfigurator>
-    <div class="columns mt-2 mb-0 is-multiline" v-if="units === 'meters'">
-      <div class="column pb-0 is-flex is-two-thirds-desktop is-full-tablet min-max-px">
-        <b-field
-          class="mr-4 mb-0"
-          :label="$t('flow.visualization.sizeConfig.minPixels')"
-          :type="{ 'is-danger': errors['minPixels'] }"
-          :addons="false"
-        >
-          <span class="is-flex is-align-items-center">
-            <b-numberinput
-              :value="minPixels"
-              @input="validated('minPixels', $event)"
-              :controls="false"
-              size="is-small"
-              min-step="0.01"
-            />
-            <span class="ml-1 is-size-7">px</span>
-          </span>
-        </b-field>
-        <b-field
-          :label="$t('flow.visualization.sizeConfig.maxPixels')"
-          :type="{ 'is-danger': errors['maxPixels'] }"
-          :addons="false"
-        >
-          <span class="is-flex is-align-items-center">
-            <b-numberinput
-              :value="maxPixels"
-              @input="validated('maxPixels', $event)"
-              :controls="false"
-              size="is-small"
-              min-step="0.01"
-            />
-            <span class="ml-1 is-size-7">px</span>
-          </span>
-        </b-field>
-      </div>
-    </div>
-    <div class="errors">
-      <p
-        class="has-text-danger is-size-7 mt-1"
-        v-for="(error, key) in minMaxPixelErrors"
-        :key="key"
-      >
-        {{ error }}
-      </p>
-    </div>
+    <MinMaxPixels
+      v-if="currentClause.units === 'meters'"
+      :minPixels.sync="minPixels"
+      :maxPixels.sync="maxPixels"
+      :units="currentClause.units"
+      :validator="minMaxPixelsValidator"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
 import { ByValueSizeClause, FlowVisualizerType, SizeClause } from '@movici-flow-common/types';
-import { isPositive } from '@movici-flow-common/utils/FormValidator';
 import { pick } from 'lodash';
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import ByValueMixin from '../ByValueMixin';
-import ByValueList from '../shared/ByValueList.vue';
-import NumberOutput from '../shared/NumberOutput.vue';
 import ByValueConfigurator from '../shared/ByValueConfigurator.vue';
+import ByValueList from '../shared/ByValueList.vue';
 import {
   interpolateMinMax,
   MappingStrategy,
   ValueMapping,
   ValueMappingHelper
 } from '../shared/ValueMappingHelper';
+import MinMaxPixels from './MinMaxPixels.vue';
 
 class SizeMappingStrategy extends MappingStrategy<number> {
   geometry: FlowVisualizerType;
@@ -149,7 +110,8 @@ class SizeMappingStrategy extends MappingStrategy<number> {
   components: {
     AttributeSelector,
     ByValueList,
-    ByValueConfigurator
+    ByValueConfigurator,
+    MinMaxPixels
   }
 })
 export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeClause>>(
@@ -164,6 +126,10 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
 
   get strategy() {
     return new SizeMappingStrategy(this.geometry);
+  }
+
+  get minMaxPixelsValidator() {
+    return this.validator?.child('minMaxPixels');
   }
 
   get currentClause(): ByValueSizeClause | null {
@@ -193,7 +159,12 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
   }
 
   get component() {
-    return NumberOutput;
+    return 'MovNumberinput';
+  }
+  get componentProps() {
+    return {
+      size: 'small'
+    };
   }
   get miniUnits() {
     switch (this.units) {
@@ -213,38 +184,7 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
     }
   }
 
-  setupValidator() {
-    this.validator?.configure({
-      validators: {
-        minPixels: () => {
-          if (this.units === 'pixels') return;
-          return isPositive(this.minPixels, 'Min size');
-        },
-
-        maxPixels: () => {
-          if (this.units === 'pixels') return;
-          return isPositive(this.maxPixels, 'Max size');
-        },
-
-        minMaxPixels: {
-          depends: ['minPixels', 'maxPixels'],
-          validator: () => {
-            if (this.units === 'pixels') return;
-            if (
-              this.minPixels !== null &&
-              this.maxPixels !== null &&
-              this.minPixels > this.maxPixels
-            )
-              return 'Max size must be at least min size.';
-          }
-        }
-      },
-      onValidate: e => (this.errors = e)
-    });
-  }
-
   created() {
-    this.setupValidator();
     const clause = Object.assign(
       {
         units: 'pixels',
@@ -261,25 +201,9 @@ export default class SizeByValueConfigurator extends Mixins<ByValueMixin<SizeCla
   }
 
   beforeDestroy() {
-    if (this.validator) {
-      this.destroyValidator();
-    }
+    this.destroyValidator();
   }
 }
 </script>
 
-<style scoped lang="scss">
-.min-max-px,
-.min-max {
-  ::v-deep {
-    .b-numberinput {
-      width: 4.5rem;
-    }
-    .field {
-      .field {
-        align-items: center;
-      }
-    }
-  }
-}
-</style>
+<style scoped lang="scss"></style>

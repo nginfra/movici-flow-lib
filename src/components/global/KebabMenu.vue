@@ -12,7 +12,7 @@
       @click="toggle(!visible)"
     >
       <span class="ellipsis">
-        <b-icon size="is-small" pack="far" :icon="visible ? 'angle-right' : 'ellipsis-v'"></b-icon>
+        <o-icon size="small" pack="far" :icon="visible ? 'angle-right' : 'ellipsis-v'" />
       </span>
     </div>
     <div :style="style" v-show="visible" ref="popupRef">

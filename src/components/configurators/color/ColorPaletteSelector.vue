@@ -1,12 +1,12 @@
 <template>
   <div class="is-flex is-flex-direction-row is-flex-grow-1">
-    <b-field class="is-flex-grow-1" :label="$t('flow.visualization.colorConfig.type')">
-      <b-select :value="selectedGroupName" @input="selectGroupName" size="is-small" expanded>
+    <o-field class="is-flex-grow-1" :label="$t('flow.visualization.colorConfig.type')">
+      <o-select :value="selectedGroupName" @input="selectGroupName" size="small" expanded>
         <option v-for="(name, index) in groupNames" :key="index" :value="name">
           {{ name }}
         </option>
-      </b-select>
-    </b-field>
+      </o-select>
+    </o-field>
     <ColorPaletteDropdown
       v-if="colorPalettes"
       v-model="selectedPaletteIdx"

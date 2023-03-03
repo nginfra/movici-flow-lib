@@ -2,11 +2,11 @@
   <div>
     <div class="columns mb-0 is-multiline">
       <div class="column is-two-thirds-desktop is-full-tablet">
-        <b-field
+        <o-field
           required
           :label="$t('flow.visualization.basedOn')"
           :message="errors['selectedAttribute']"
-          :type="{ 'is-danger': errors['selectedAttribute'] }"
+          :variant="errors['selectedAttribute'] && 'danger'"
         >
           <AttributeSelector
             :value="selectedAttribute"
@@ -14,7 +14,7 @@
             :filter-prop="filterProp"
             @input="updateAttribute"
           />
-        </b-field>
+        </o-field>
       </div>
     </div>
     <ColorByValueConfigurator

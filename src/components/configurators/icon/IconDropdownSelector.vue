@@ -1,15 +1,15 @@
 <template>
-  <b-field :label="label">
+  <o-field :label="label">
     <template v-if="buttons">
-      <b-button
+      <o-button
         v-if="allowEmpty"
         title="Empty"
-        size="is-small"
+        size="small"
         @click="$emit('input', null)"
         :class="{ 'is-primary': isSelected(null) }"
       />
-      <b-button
-        size="is-small"
+      <o-button
+        size="small"
         :title="icon | upperFirst"
         v-for="icon in icons"
         :key="icon"
@@ -19,25 +19,25 @@
       />
     </template>
     <template v-else>
-      <b-dropdown :value="value" @input="$emit('input', $event)">
+      <o-dropdown :value="value" @input="$emit('input', $event)">
         <template #trigger>
           <div class="select">
             <span class="selected-icon" v-if="value">
-              <b-icon class="mr-2" :icon="value" :pack="pack" />
+              <o-icon class="mr-2" :icon="value" :pack="pack" />
               {{ value }}
             </span>
             <span class="placeholder" v-else>{{ placeholder }}...</span>
           </div>
         </template>
-        <b-dropdown-item class="empty" :value="null" v-if="allowEmpty">
-          <b-icon size="is-large" />
-        </b-dropdown-item>
-        <b-dropdown-item v-for="(icon, idx) in icons" :key="idx" :value="icon">
-          <b-icon :icon="icon" :pack="pack" :title="icon | upperFirst" size="is-large" />
-        </b-dropdown-item>
-      </b-dropdown>
+        <o-dropdown-item class="empty" :value="null" v-if="allowEmpty">
+          <o-icon size="is-large" />
+        </o-dropdown-item>
+        <o-dropdown-item v-for="(icon, idx) in icons" :key="idx" :value="icon">
+          <o-icon :icon="icon" :pack="pack" :title="icon | upperFirst" size="large" />
+        </o-dropdown-item>
+      </o-dropdown>
     </template>
-  </b-field>
+  </o-field>
 </template>
 
 <script lang="ts">
@@ -67,6 +67,11 @@ export default class IconDropdownSelector extends Vue {
 .selected-icon,
 .placeholder {
   width: 180px;
+  .icon {
+    color: $grey-darker;
+    display: inline-flex;
+    position: unset;
+  }
 }
 ::v-deep {
   .select {
@@ -80,7 +85,6 @@ export default class IconDropdownSelector extends Vue {
       padding-right: 2.5em;
       background-color: $white;
       border-radius: 2px;
-      color: $grey-darker;
       align-items: center;
       border: 2px solid $white-ter;
       box-shadow: none;
@@ -105,9 +109,11 @@ export default class IconDropdownSelector extends Vue {
     font-size: 0.75rem;
   }
   .dropdown-content {
+    &.is-active {
+      display: flex !important;
+    }
     max-height: 200px;
     width: 200px;
-    display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
     overflow: auto;

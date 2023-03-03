@@ -1,32 +1,29 @@
 <template>
   <div class="nav" :class="{ 'is-right-nav': isRight }">
     <div class="mapboxgl-ctrl mapboxgl-ctrl-group">
-      <b-button
+      <o-button
         class="is-border-transparent"
         title="Zoom In"
         @click="zoom++"
         icon-left="plus"
         icon-pack="fal"
-      >
-      </b-button>
-      <b-button
+      />
+      <o-button
         class="is-border-transparent"
         title="Zoom Out"
         @click="zoom--"
         icon-left="minus"
         icon-pack="fal"
-      >
-      </b-button>
-      <b-button
+      />
+      <o-button
         v-if="centerCamera"
         class="is-border-transparent"
         title="Return to center of the view"
         @click="updateViewState({ ...centerCamera, transitionDuration: 300 })"
         icon-left="crosshairs"
         icon-pack="fal"
-      >
-      </b-button>
-      <b-button
+      />
+      <o-button
         class="is-border-transparent mapboxgl-ctrl-compass"
         title="Reset View"
         @click="updateViewState({ bearing: 0, pitch: 0, transitionDuration: 300 })"
@@ -34,9 +31,9 @@
         <span
           class="mapboxgl-ctrl-icon"
           aria-hidden="true"
-          :style="{ transform: `rotate(${-bearing}deg)` }"
+          :style="{ transform: `rotate(${-bearing}deg)`, height: '26px', width: '26px' }"
         ></span>
-      </b-button>
+      </o-button>
     </div>
   </div>
 </template>

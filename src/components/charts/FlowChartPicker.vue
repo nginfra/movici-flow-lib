@@ -40,13 +40,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop } from 'vue-property-decorator';
-import Draggable from 'vuedraggable';
+import DialogModal from '@/components/global-alt/DialogModal.vue';
 import DraggableMixin from '@movici-flow-common/mixins/DraggableMixin';
 import { ActionMenuItem } from '@movici-flow-common/types';
-import AttributeChartConfig from './AttributeChartConfig.vue';
 import { ChartVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
-
+import { Component, Mixins, Prop } from 'vue-property-decorator';
+import Draggable from 'vuedraggable';
+import AttributeChartConfig from './AttributeChartConfig.vue';
 @Component({
   name: 'FlowChartPicker',
   components: { Draggable, AttributeChartConfig }
@@ -67,7 +67,7 @@ export default class FlowChartPicker extends Mixins(DraggableMixin) {
       iconPack: 'far',
       label: 'Delete',
       event: 'delete',
-      colorScheme: 'is-danger'
+      variant: 'danger'
     }
   ];
 
@@ -94,17 +94,23 @@ export default class FlowChartPicker extends Mixins(DraggableMixin) {
     if (this.open === -2) {
       this.$emit('update:open', index);
     } else if (this.open !== index) {
-      this.$buefy.dialog.confirm({
-        message: '' + this.$t('flow.visualization.dialogs.closeConfigurator'),
-        cancelText: '' + this.$t('actions.cancel'),
-        confirmText: '' + this.$t('misc.yes'),
-        type: 'is-primary',
-        onConfirm: () => {
-          this.$emit('update:open', -2);
-          // this makes sure a fresh componenent is built without leftovers from previous values
-          this.$nextTick(() => {
-            this.$emit('update:open', index);
-          });
+      this.$oruga.modal.open({
+        parent: this,
+        component: DialogModal,
+        props: {
+          message: '' + this.$t('flow.visualization.dialogs.closeConfigurator'),
+          cancelText: '' + this.$t('actions.cancel'),
+          confirmText: '' + this.$t('misc.yes'),
+
+          variant: 'primary',
+          canCancel: true,
+          onConfirm: () => {
+            this.$emit('update:open', -2);
+            // this makes sure a fresh componenent is built without leftovers from previous values
+            this.$nextTick(() => {
+              this.$emit('update:open', index);
+            });
+          }
         }
       });
     }
@@ -122,19 +128,25 @@ export default class FlowChartPicker extends Mixins(DraggableMixin) {
 
   deleteItem(idx: number) {
     const name = this.value[idx].title;
-    this.$buefy.dialog.confirm({
-      message: '' + this.$t('flow.visualization.dialogs.deleteChart', { name }),
-      cancelText: '' + this.$t('actions.cancel'),
-      confirmText: '' + this.$t('actions.delete'),
-      type: 'is-danger',
-      onConfirm: () => {
-        this.$emit(
-          'input',
-          this.value.filter((val, arrayIdx) => idx !== arrayIdx)
-        );
-        // if we delete what is open, we close the window
-        if (this.open === idx) {
-          this.$emit('update:open', -2);
+    this.$oruga.modal.open({
+      parent: this,
+      component: DialogModal,
+      props: {
+        message: '' + this.$t('flow.visualization.dialogs.deleteChart', { name }),
+        cancelText: '' + this.$t('actions.cancel'),
+        confirmText: '' + this.$t('actions.delete'),
+
+        variant: 'danger',
+        canCancel: true,
+        onConfirm: () => {
+          this.$emit(
+            'input',
+            this.value.filter((val, arrayIdx) => idx !== arrayIdx)
+          );
+          // if we delete what is open, we close the window
+          if (this.open === idx) {
+            this.$emit('update:open', -2);
+          }
         }
       }
     });

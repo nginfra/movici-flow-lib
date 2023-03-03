@@ -31,7 +31,7 @@ describe('ColorByValueConfigurator.vue', () => {
     // in new visualizer
     wrapper = createComponentWrapper(FilteredSelect, wrapperOptions());
 
-    expect(wrapper.findAll('b-select-stub').length).toBe(1);
+    expect(wrapper.findAll('o-select').length).toBe(1);
     expect(wrapper.findAll('option').length).toBe(0);
   });
 
@@ -42,7 +42,7 @@ describe('ColorByValueConfigurator.vue', () => {
       wrapperOptions({ value: data[0], options: data })
     );
 
-    expect(wrapper.findAll('b-select-stub').length).toBe(1);
+    expect(wrapper.findAll('o-select').length).toBe(1);
     expect(wrapper.findAll('option').length).toBe(3);
   });
 

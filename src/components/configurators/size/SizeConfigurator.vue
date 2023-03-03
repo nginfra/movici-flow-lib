@@ -2,12 +2,12 @@
   <div>
     <div class="columns mb-0 layer-kind">
       <div class="column is-two-thirds-desktop is-full-tablet">
-        <b-radio class="mr-4" v-model="clauseType" native-value="static" size="is-small">
-          {{ $t('flow.visualization.static') }}</b-radio
+        <o-radio class="mr-4" v-model="clauseType" native-value="static" size="small">
+          {{ $t('flow.visualization.static') }}</o-radio
         >
-        <b-radio v-model="clauseType" native-value="byValue" size="is-small">
+        <o-radio v-model="clauseType" native-value="byValue" size="small">
           {{ $t('flow.visualization.byValue') }}
-        </b-radio>
+        </o-radio>
       </div>
     </div>
     <div v-if="clauseType">
@@ -22,11 +22,11 @@
       <template v-else-if="clauseType === 'byValue'">
         <div class="columns mb-0 is-multiline">
           <div class="column is-two-thirds-desktop is-full-tablet">
-            <b-field
+            <o-field
               required
               :label="$t('flow.visualization.basedOn')"
               :message="errors['selectedAttribute']"
-              :type="{ 'is-danger': errors['selectedAttribute'] }"
+              :variant="errors['selectedAttribute'] && 'danger'"
             >
               <AttributeSelector
                 :value="selectedAttribute"
@@ -34,7 +34,7 @@
                 :filter-prop="filterProp"
                 @input="updateAttribute"
               />
-            </b-field>
+            </o-field>
           </div>
         </div>
         <SizeByValueConfigurator
@@ -50,12 +50,12 @@
       </template>
       <hr />
 
-      <b-collapse v-model="miscIsOpen">
+      <o-collapse v-model="miscIsOpen">
         <template #trigger="{ open }">
           <span class="is-flex is-align-items-center mb-2">
-            <b-button
+            <o-button
               class="mr-2 is-transparent is-borderless"
-              size="is-small"
+              size="small"
               :icon-left="open ? 'angle-down' : 'angle-up'"
             />
             <label class="is-size-6-half ml-1">
@@ -65,18 +65,14 @@
         </template>
         <div class="columns mt-4 pl-1 is-multiline">
           <div class="column py-0 is-two-thirds-desktop">
-            <b-field>
-              <b-checkbox
-                size="is-small"
-                :value="dashed"
-                @input="updateSettings({ dashed: $event })"
-              >
+            <o-field>
+              <o-checkbox size="small" :value="dashed" @input="updateSettings({ dashed: $event })">
                 {{ $t('flow.visualization.sizeConfig.dashed') }}
-              </b-checkbox>
-            </b-field>
+              </o-checkbox>
+            </o-field>
           </div>
         </div>
-      </b-collapse>
+      </o-collapse>
     </div>
   </div>
 </template>

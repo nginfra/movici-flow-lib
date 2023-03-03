@@ -15,19 +15,19 @@
       <div class="columns mb-0 is-multiline">
         <div class="column is-full">
           <div>
-            <b-field class="fill-type">
-              <b-radio
+            <o-field class="fill-type">
+              <o-radio
                 class="mr-4"
                 v-model="fillType"
                 v-for="type in ['buckets', 'gradient']"
                 :key="type"
                 :native-value="type"
-                size="is-small"
+                size="small"
                 :disabled="!isMode(mappingHelper, 'number')"
               >
                 {{ $t('flow.visualization.colorConfig')[type] }}
-              </b-radio>
-            </b-field>
+              </o-radio>
+            </o-field>
           </div>
         </div>
       </div>

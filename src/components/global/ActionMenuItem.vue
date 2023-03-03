@@ -8,7 +8,7 @@
       @click="emit(value.event, $event)"
       class="dropdown-item action-menu-item"
     >
-      <b-icon :icon="value.icon" :pack="value.iconPack || 'far'" class="mr-2"></b-icon>
+      <o-icon :icon="value.icon" :pack="value.iconPack || 'far'" class="mr-2"></o-icon>
       <span>
         {{ value.label }}
       </span>
@@ -26,7 +26,7 @@ export default class MovActionMenuItem extends Vue {
   @Prop({ type: Object, default: () => new Object() }) readonly value!: ActionMenuItem | null;
 
   itemClass(item: ActionMenuItem) {
-    const rv = [item.colorScheme];
+    const rv = [item.variant];
     if (item.isDisabled) rv.push('is-disabled');
     return rv;
   }

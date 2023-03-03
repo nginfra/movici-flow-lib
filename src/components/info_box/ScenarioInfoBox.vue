@@ -5,19 +5,19 @@
         {{ $t('resources.scenario') }}
         <span v-if="edit" class="count">({{ scenarios.length }})</span>
       </label>
-      <b-field class="is-flex-grow-0 is-flex-shrink-1" v-if="edit">
-        <b-select
+      <o-field class="is-flex-grow-0 is-flex-shrink-1" v-if="edit">
+        <o-select
           :value="currentScenarioUUID"
           @input="$emit('setScenarioUUID', $event)"
           :placeholder="$t('flow.scenarios.selectPlaceholder')"
-          size="is-small"
+          size="small"
           expanded
         >
           <option v-for="s in scenarios" :value="s.uuid" :key="s.uuid">
             {{ s.display_name }}
           </option>
-        </b-select>
-      </b-field>
+        </o-select>
+      </o-field>
       <span class="is-block" v-else-if="currentScenario">
         <span class="is-size-6-half is-flex is-align-items-center">
           <router-link custom :to="to" class="display-name is-flex-grow-1" v-slot="{ navigate }">
@@ -31,20 +31,17 @@
         </span>
       </span>
     </div>
-    <MovKebabMenu v-if="actions.length" :value="actions" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { flowStore } from '@movici-flow-common/store/store-accessor';
-import { ActionMenuItem } from '@movici-flow-common/types';
 import { getClassFromStatus } from '@movici-flow-common/utils';
 
 @Component({ name: 'ScenarioInfoBox' })
 export default class ScenarioInfoBox extends Vue {
   @Prop({ type: Boolean, default: false }) readonly edit!: boolean;
-  actions: ActionMenuItem[] = [];
 
   get currentScenarioUUID() {
     return this.currentScenario ? this.currentScenario.uuid : null;

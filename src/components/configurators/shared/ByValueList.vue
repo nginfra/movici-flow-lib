@@ -1,6 +1,6 @@
 <template>
   <div class="is-block">
-    <div class="is-flex min-max mt-1">
+    <div class="is-flex mt-1">
       <div class="is-flex-shrink-1 is-flex-direction-column mr-4">
         <span class="is-flex">
           <label class="label mr-1 is-flex-grow-1">{{ label }}</label>
@@ -16,9 +16,9 @@
               :class="{ dashed: drag }"
               @change="updateDraggable"
             >
-              <b-field class="is-flex output-item" v-for="(val, i) in output" :key="i">
+              <o-field class="is-flex output-item" v-for="(val, i) in output" :key="i">
                 <span class="grip mx-1">
-                  <span class="icon is-small fa-stack has-text-grey">
+                  <span class="icon small fa-stack has-text-grey">
                     <i class="far fa-ellipsis-v"></i>
                     <i class="far fa-ellipsis-v"></i>
                   </span>
@@ -32,7 +32,7 @@
                     @click="$emit('click', i)"
                   />
                 </span>
-              </b-field>
+              </o-field>
             </Draggable>
           </div>
           <slot name="after-output" v-bind="{ output }"></slot>
@@ -63,23 +63,23 @@
           >
             <template v-if="isMode('buckets')" #after="{ index }">
               <span class="values-dash mx-1"> - </span>
-              <span class="is-flex-grow-1 values-to">
-                <b-numberinput
+              <span class="is-flex-grow-1">
+                <MovNumberinput
                   v-if="isMaxIndex(index)"
                   :value="maxValue"
                   @input="$emit('update:maxValue', $event)"
                   :controls="false"
                   :min-step="1e-15"
                   class="has-text-centered"
-                  size="is-small"
+                  size="small"
                 />
-                <b-numberinput
+                <MovNumberinput
                   v-else
                   :value="mappingValues[bucketEndIndex(index)]"
                   :controls="false"
                   :min-step="1e-15"
                   class="has-text-centered"
-                  size="is-small"
+                  size="small"
                   disabled
                 />
               </span>
@@ -88,16 +88,16 @@
         </div>
       </div>
     </div>
-    <b-button
+    <o-button
       v-if="isMode('number')"
       @click="$emit('add-row')"
       class="is-size-7 is-transparent has-hover-bg is-borderless has-text-primary has-text-weight-bold mt-2"
       icon-pack="far"
       icon-left="plus-circle"
-      size="is-small"
+      size="small"
     >
       {{ $t('flow.visualization.byValueConfig.addRow') }}
-    </b-button>
+    </o-button>
   </div>
 </template>
 

@@ -4,7 +4,7 @@
       <li class="icons" v-for="(iconLegend, idx) in value.shape.iconLegends" :key="idx">
         <div class="is-flex pb-1" :class="isShapeStatic ? 'static' : 'byValue'">
           <span class="is-flex is-align-items-center">
-            <b-icon :icon="iconLegend[1]" pack="fas" size="is-small" class="is-flex-grow-1" />
+            <o-icon :icon="iconLegend[1]" pack="fas" size="small" class="is-flex-grow-1" />
             <span class="ml-2 legend-value" v-if="!isShapeStatic">{{ iconLegend[0] }}</span>
           </span>
           <label class="label is-size-7 mb-0" :class="{ 'ml-2': isShapeStatic }" v-if="idx < 1">
@@ -17,7 +17,7 @@
       <li class="icons" v-for="(iconLegend, idx) in value.icon.iconLegends" :key="idx">
         <div class="is-flex pb-1" :class="isIconStatic ? 'static' : 'byValue'">
           <span class="is-flex is-align-items-center">
-            <b-icon :icon="iconLegend[1]" pack="fas" size="is-small" class="is-flex-grow-1" />
+            <o-icon :icon="iconLegend[1]" pack="fas" size="small" class="is-flex-grow-1" />
             <span class="ml-2 legend-value" v-if="!isIconStatic">{{ iconLegend[0] }}</span>
           </span>
           <label class="label is-size-7 mb-0" :class="{ 'ml-2': isIconStatic }" v-if="idx < 1">
@@ -59,10 +59,6 @@ ul {
       align-items: flex-start;
     }
     span {
-      &.icon {
-        width: 16px;
-        height: 16px;
-      }
       &.legend-value {
         line-height: 16px;
       }

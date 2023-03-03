@@ -9,72 +9,71 @@
         }}
       </h1>
       <span class="separator is-flex-grow-1"></span>
-      <b-button
+      <o-button
         class="close is-borderless is-transparent has-hover-bg"
         icon-pack="far"
         icon-left="times"
         @click="close"
-      >
-      </b-button>
+      />
     </header>
     <div class="editor-content" v-if="datasets">
       <div class="columns mb-0">
         <div class="column">
-          <b-field
+          <o-field
             required
             :label="$t('resources.dataset')"
-            :type="{ 'is-danger': errors['currentDataset'] }"
+            :variant="errors['currentDataset'] && 'danger'"
             :message="errors['currentDataset'] || ''"
           >
-            <b-select
+            <o-select
               :value="currentDataset"
               @input="headerValidated('currentDataset', $event)"
               :placeholder="$t('dataset.select')"
-              size="is-small"
+              size="small"
               expanded
             >
               <option v-for="d in datasets" :value="d" :key="d.uuid">
                 {{ d.name | snakeToSpaces | upperFirst }}
               </option>
-            </b-select>
-          </b-field>
+            </o-select>
+          </o-field>
         </div>
         <div class="column">
-          <b-field
+          <o-field
             required
             :label="$t('resources.entityGroup')"
-            :type="{ 'is-danger': errors['currentEntityName'] }"
+            :variant="errors['currentEntityName'] && 'danger'"
             :message="errors['currentEntityName'] || ''"
           >
-            <b-select
+            <o-select
               :value="currentEntityName"
               @input="headerValidated('currentEntityName', $event)"
               :disabled="entityGroups.length < 1"
               :placeholder="$t('flow.entityGroup.select')"
-              size="is-small"
+              size="small"
               expanded
             >
               <option v-for="entity in entityGroups" :value="entity.name" :key="entity.name">
                 {{ entity.name }} ({{ entity.count }})
               </option>
-            </b-select>
-          </b-field>
+            </o-select>
+          </o-field>
         </div>
       </div>
       <div class="columns mb-0">
         <div class="column is-full">
-          <b-field
+          <o-field
             required
             :label="$t('flow.visualization.visualiserDisplayName')"
-            :type="{ 'is-danger': errors['displayName'] }"
+            :variant="errors['displayName'] && 'danger'"
             :message="errors['displayName'] || ''"
           >
-            <b-input
-              size="is-small"
+            <o-input
+              size="small"
               :value="displayName"
               @input="headerValidated('displayName', $event)"
             />
-          </b-field>
+          </o-field>
         </div>
       </div>
       <div class="geometry-settings mb-2">
@@ -85,60 +84,62 @@
           showAs="button"
         />
       </div>
-      <b-tabs class="flow-tabs pickers" v-if="filteredConfigurators.length" v-model="tab">
-        <b-tab-item v-for="conf in filteredConfigurators" :key="conf.name">
+      <o-tabs class="flow-tabs pickers" v-if="filteredConfigurators.length" v-model="tab">
+        <o-tab-item v-for="(conf, idx) in filteredConfigurators" :key="idx" :value="idx">
           <template #header>
             <span> {{ conf.name }} </span>
-            <b-icon
+            <o-icon
               icon="exclamation-circle"
-              type="is-danger"
-              size="is-small"
+              variant="danger"
+              size="small"
               v-if="tabHasErrors(conf.id)"
             />
           </template>
           <component :is="conf.component" :name="conf.name" v-bind="conf.vBind" v-on="conf.vOn" />
-        </b-tab-item>
-      </b-tabs>
+        </o-tab-item>
+      </o-tabs>
     </div>
     <div class="bottom">
       <div class="left is-flex is-flex-grow-1"></div>
       <div class="right is-flex">
-        <b-button
+        <o-button
           class="mr-2 is-transparent has-text-primary is-borderless has-hover-bg"
           @click="close"
-          size="is-small"
+          size="small"
         >
           {{ $t('actions.cancel') }}
-        </b-button>
-        <b-button
-          type="is-primary"
+        </o-button>
+        <o-button
+          variant="primary"
           :disabled="!isDirty"
           @click="submit(false)"
           class="mr-2"
-          size="is-small"
+          size="small"
           icon-pack="fak"
           icon-left="fa-mov-save"
         >
           {{ $t('flow.visualization.save') }}
-        </b-button>
-        <b-button
+        </o-button>
+        <o-button
           outlined
-          type="is-primary"
+          variant="primary"
           :disabled="!isDirty"
           @click="submit(true)"
           icon-pack="fak"
           icon-left="fa-mov-save"
-          size="is-small"
+          size="small"
         >
           {{ $t('flow.visualization.saveAndClose') }}
-        </b-button>
+        </o-button>
       </div>
     </div>
   </section>
 </template>
 
 <script lang="ts">
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
+import DialogModal from '@/components/global-alt/DialogModal.vue';
+import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
+import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
 import { flowStore } from '@movici-flow-common/store/store-accessor';
 import {
   ColorClause,
@@ -148,22 +149,21 @@ import {
   ScenarioDataset,
   SizeClause
 } from '@movici-flow-common/types';
-import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
-import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
-import GeometrySelector from '../widgets/GeometrySelector.vue';
-import VisibilityConfigurator from './VisibilityConfigurator.vue';
-import ColorConfigurator from './color/ColorConfigurator.vue';
-import SizeConfigurator from './size/SizeConfigurator.vue';
-import PopupConfigurator from './popup/PopupConfigurator.vue';
-import ShapeIconConfigurator from './icon/ShapeIconConfigurator.vue';
+import { excludeKeys, propertyString } from '@movici-flow-common/utils';
 import FormValidator from '@movici-flow-common/utils/FormValidator';
-import FloodingGridConfigurator from './flooding/FloodingGridConfigurator.vue';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
-import { propertyString, excludeKeys } from '@movici-flow-common/utils';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 import { VueClass } from 'vue-class-component/lib/declarations';
+import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
+import GeometrySelector from '../widgets/GeometrySelector.vue';
+import ColorConfigurator from './color/ColorConfigurator.vue';
+import FloodingGridConfigurator from './flooding/FloodingGridConfigurator.vue';
 import GeometryConfigurator from './GeometryConfigurator.vue';
+import ShapeIconConfigurator from './icon/ShapeIconConfigurator.vue';
+import PopupConfigurator from './popup/PopupConfigurator.vue';
+import SizeConfigurator from './size/SizeConfigurator.vue';
+import VisibilityConfigurator from './VisibilityConfigurator.vue';
 
 interface FinalizerContext {
   datasets: Record<string, ScenarioDataset | Dataset>;
@@ -528,15 +528,23 @@ export default class VisualizerConfigurator extends Mixins(SummaryListing, Valid
   }
 
   close() {
-    if (this.isDirty && !this.hasEmptySettings)
-      this.$buefy.dialog.confirm({
-        message: this.$t('flow.visualization.dialogs.unsavedChanges') + '!',
-        cancelText: '' + this.$t('flow.visualization.dialogs.continueEditing'),
-        confirmText: '' + this.$t('flow.visualization.dialogs.discardChanges'),
-        type: 'is-danger',
-        onConfirm: () => this.$emit('close')
+    if (this.isDirty && !this.hasEmptySettings) {
+      this.$oruga.modal.open({
+        parent: this,
+        component: DialogModal,
+        props: {
+          message: this.$t('flow.visualization.dialogs.unsavedChanges') + '!',
+          cancelText: '' + this.$t('flow.visualization.dialogs.continueEditing'),
+          confirmText: '' + this.$t('flow.visualization.dialogs.discardChanges'),
+
+          variant: 'danger',
+          canCancel: true,
+          onConfirm: () => this.$emit('close')
+        }
       });
-    else this.$emit('close');
+    } else {
+      this.$emit('close');
+    }
   }
 
   submit(close?: boolean) {

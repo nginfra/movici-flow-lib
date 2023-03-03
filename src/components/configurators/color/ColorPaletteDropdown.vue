@@ -1,6 +1,6 @@
 <template>
-  <b-field class="is-flex-grow-1 ml-2" :label="$t('flow.visualization.colorConfig.palette')">
-    <b-dropdown
+  <o-field class="is-flex-grow-1 ml-2" :label="$t('flow.visualization.colorConfig.palette')">
+    <o-dropdown
       :value="value"
       @input="$emit('input', $event)"
       class="select is-small"
@@ -9,17 +9,17 @@
     >
       <template #trigger>
         <span class="color-option">
-          <b-tooltip type="is-black" position="is-top" :label="currentName">
+          <o-tooltip variant="black" position="top" :label="currentName">
             <span
               class="color-piece is-size-7"
               v-for="(color, index) in currentColors"
               :style="{ 'background-color': color }"
               :key="index"
             ></span>
-          </b-tooltip>
+          </o-tooltip>
         </span>
       </template>
-      <b-dropdown-item
+      <o-dropdown-item
         class="color-option"
         v-for="[index, palette] in validPalettes"
         :value="index"
@@ -27,17 +27,17 @@
         :focusable="false"
         aria-role="listitem"
       >
-        <b-tooltip type="is-black" position="is-top" :label="palette.name">
+        <o-tooltip variant="black" position="top" :label="palette.name">
           <span
             class="color-piece"
             v-for="(color, index) in palette.getHexColorsForSize(nSteps)"
             :style="{ 'background-color': color }"
             :key="index"
-          ></span>
-        </b-tooltip>
-      </b-dropdown-item>
-    </b-dropdown>
-  </b-field>
+          />
+        </o-tooltip>
+      </o-dropdown-item>
+    </o-dropdown>
+  </o-field>
 </template>
 
 <script lang="ts">

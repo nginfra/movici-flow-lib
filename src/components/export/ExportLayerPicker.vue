@@ -19,7 +19,7 @@
           <span class="is-block is-size-6-half text-ellipsis">{{ layer.name }}</span>
         </label>
         <span class="export mr-1" @click="toggleSummary">
-          <b-icon size="is-small" pack="fas" :icon="isOpen ? 'angle-up' : 'angle-down'"></b-icon>
+          <o-icon size="is-small" pack="fas" :icon="isOpen ? 'angle-up' : 'angle-down'" />
         </span>
       </template>
     </VisualizerElement>

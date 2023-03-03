@@ -4,7 +4,7 @@
       <div
         class="is-flex-direction-row-reverse is-align-content-space-between is-flex is-align-items-center is-clickable"
       >
-        <b-icon
+        <o-icon
           :title="$t('flow.datasets.entitySummary')"
           class="collapsed-icon"
           pack="far"
@@ -17,7 +17,7 @@
     </template>
     <template #collapse-content>
       <div class="box-content mt-2">
-        <b-field class="entity-selector">
+        <o-field class="entity-selector">
           <ul class="entities-list is-size-7">
             <Draggable
               :value="entityGroupsFiltered"
@@ -43,9 +43,9 @@
                   </span>
                 </span>
                 <div class="checkbox-holder">
-                  <b-checkbox v-model="activeEntityGroups[idx]" size="is-small">
+                  <o-checkbox v-model="activeEntityGroups[idx]" size="is-small">
                     {{ group.name | snakeToSpaces | upperFirst }} ({{ group.count }})
-                  </b-checkbox>
+                  </o-checkbox>
                   <GeometrySelector
                     :value="group.type"
                     @input="$set(group, 'type', $event)"
@@ -62,7 +62,7 @@
               </li>
             </Draggable>
           </ul>
-        </b-field>
+        </o-field>
       </div>
     </template>
   </WidgetContainer>

@@ -18,10 +18,10 @@
           <span class="is-block is-size-6-half text-ellipsis">{{ value.name }}</span>
         </label>
         <span v-if="showOnHeader('errors') && errors.length" class="errors mr-2">
-          <b-icon
+          <o-icon
             :title="errors.join('\n')"
             :type="errorColor"
-            size="is-small"
+            size="small"
             pack="far"
             icon="exclamation-triangle"
           />
@@ -32,11 +32,11 @@
           class="visibility mr-1"
           :class="{ enabled: value.visible }"
         >
-          <b-icon
-            size="is-small"
+          <o-icon
+            size="small"
             pack="fak"
             :icon="value.visible ? 'fa-visibility' : 'fa-visibility-off'"
-          ></b-icon>
+          />
         </span>
       </template>
       <MovKebabMenu
@@ -44,12 +44,12 @@
         :value="filteredActions"
         @edit="$emit('edit')"
         @export="$emit('export')"
-        @delete="handleEvent('delete')"
+        @delete="$emit('delete')"
         @reload="$emit('reload')"
       />
     </div>
     <VisualizerSummary v-if="value" :value="value" :progress="progress" :show="isOpen" />
-    <b-progress v-if="showLoader" :class="{ fade: progress >= 100 }" :value="progress" />
+    <MovProgress v-if="showLoader" :class="{ fade: progress >= 100 }" :value="progress" />
   </div>
 </template>
 
@@ -92,14 +92,14 @@ export default class VisualizerElement extends Vue {
       iconPack: 'far',
       label: 'Delete',
       event: 'delete',
-      colorScheme: 'is-danger'
+      variant: 'danger'
     },
     {
       icon: 'redo',
       iconPack: 'fas',
       label: 'Reload',
       event: 'reload',
-      colorScheme: 'is-danger'
+      variant: 'danger'
     }
   ];
 
@@ -124,11 +124,6 @@ export default class VisualizerElement extends Vue {
 
   toggleSummary() {
     this.isOpen = !this.isOpen;
-  }
-
-  handleEvent(name: string) {
-    this.$emit(name);
-    this.$emit('close-editor');
   }
 
   toggleVisibility(force?: boolean) {

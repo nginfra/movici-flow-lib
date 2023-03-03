@@ -2,11 +2,11 @@
   <div>
     <div class="columns mb-0 is-multiline" v-if="datasets">
       <div class="column is-two-thirds-desktop is-full-tablet">
-        <b-field
+        <o-field
           :label="$t('flow.visualization.floodingConfig.heightMap')"
           required
           :message="errors['value']"
-          :type="{ 'is-danger': errors['value'] }"
+          :variant="errors['value'] && 'danger'"
         >
           <FilteredSelect
             class="is-flex-grow-1"
@@ -16,14 +16,14 @@
             :filterVal="filterVal"
             :displayName="displayName"
           />
-        </b-field>
+        </o-field>
       </div>
       <div class="column is-one-third-desktop">
-        <b-field>
-          <b-checkbox v-model="showLegend" size="is-small">
+        <o-field>
+          <o-checkbox v-model="showLegend" size="small">
             {{ $t('flow.visualization.showLegend') }}
-          </b-checkbox>
-        </b-field>
+          </o-checkbox>
+        </o-field>
       </div>
     </div>
     <FloodingColorConfigurator

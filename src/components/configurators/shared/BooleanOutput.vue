@@ -1,5 +1,5 @@
 <template>
-  <b-checkbox class="fixed-height" v-model="value_" />
+  <o-checkbox class="fixed-height" v-model="value_" />
 </template>
 
 <script lang="ts">

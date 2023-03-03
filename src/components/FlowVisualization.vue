@@ -10,24 +10,23 @@
         @delete-view="confirmDeleteView"
         @save-view="confirmSaveView"
         @save-view-as-new="saveViewAsNew"
-        @reset-view="confirmResetViewWithName"
       >
         <template #quickSave>
           <span class="is-relative quick-save-container">
-            <b-button
+            <o-button
               icon-pack="fak"
               icon-left="fa-mov-save"
-              size="is-small"
+              size="small"
               @click="saveView(view.uuid)"
               class="py-0 is-transparent is-borderless quick-save has-text-primary has-hover-bg"
               :title="isDirtyLabel"
             >
-            </b-button>
+            </o-button>
             <div v-if="isCurrentViewDirty" class="notification-marker"></div>
           </span>
         </template>
       </ViewInfoBox>
-      <b-tabs
+      <o-tabs
         :value="visualizerTabOpen"
         @input="
           changeVisualizer({
@@ -39,7 +38,7 @@
         class="flow-tabs uppercase field is-flex-grow-0 is-flex-shrink-2"
         :style="tabHeight"
       >
-        <b-tab-item :label="$t('flow.visualization.tabs.visualizers')">
+        <o-tab-item :label="$t('flow.visualization.tabs.visualizers')" :value="0">
           <FlowLayerPicker
             ref="layerPicker"
             v-model="visualizers"
@@ -47,11 +46,11 @@
             :scenario="currentScenario"
             :timestamp="timestamp"
           />
-        </b-tab-item>
-        <b-tab-item :label="$t('flow.visualization.tabs.charts')">
+        </o-tab-item>
+        <o-tab-item :label="$t('flow.visualization.tabs.charts')" :value="1">
           <FlowChartPicker v-model="charts" :open.sync="visualizerOpen" />
-        </b-tab-item>
-      </b-tabs>
+        </o-tab-item>
+      </o-tabs>
     </template>
     <template #mainView>
       <MapVis
@@ -146,7 +145,17 @@
 </template>
 
 <script lang="ts">
+import DialogModal from '@/components/global-alt/DialogModal.vue';
+import { PickInfo } from '@deck.gl/core/lib/deck';
+import { ensureProjection, transformBBox } from '@movici-flow-common/crs';
+import { MoviciError } from '@movici-flow-common/errors';
+import { Visualizer } from '@movici-flow-common/visualizers';
+import VisualizerManager from '@movici-flow-common/visualizers/VisualizerManager';
+import { isEmpty } from 'lodash';
+import isEqual from 'lodash/isEqual';
+import isError from 'lodash/isError';
 import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator';
+import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
 import {
   ActionMenuItem,
   CameraOptions,
@@ -156,42 +165,33 @@ import {
   UUID,
   View
 } from '../types';
-import MapVis from './map/MapVis.vue';
-import FlowContainer from './FlowContainer.vue';
-import ChartVis from './charts/ChartVis.vue';
-import defaults from './map/defaults';
+import { buildFlowUrl } from '../utils';
+import { successMessage } from '../utils/snackbar';
+import { simplifiedCamera, validateForContentErrors } from '../visualizers/viewHelpers';
 import {
   BaseVisualizerInfo,
   ChartVisualizerInfo,
   ChartVisualizerItem,
   ComposableVisualizerInfo
 } from '../visualizers/VisualizerInfo';
-import FlowLayerPicker from './widgets/FlowLayerPicker.vue';
+import ChartAttributePicker from './charts/ChartAttributePicker.vue';
+import ChartVis from './charts/ChartVis.vue';
+import FlowChartPicker from './charts/FlowChartPicker.vue';
+import FlowContainer from './FlowContainer.vue';
 import ProjectInfoBox from './info_box/ProjectInfoBox.vue';
 import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
 import ViewInfoBox from './info_box/ViewInfoBox.vue';
-import SearchBar from './map/controls/SearchBar.vue';
-import NavigationControl from './map/controls/NavigationControl.vue';
 import BaseMapControl from './map/controls/BaseMapControl.vue';
-import MapContextMenu from './map_widgets/MapContextMenu.vue';
-import TimeSlider from './map_widgets/TimeSlider.vue';
-import { simplifiedCamera, validateForContentErrors } from '../visualizers/viewHelpers';
-import { buildFlowUrl } from '../utils';
-import isEqual from 'lodash/isEqual';
+import NavigationControl from './map/controls/NavigationControl.vue';
+import SearchBar from './map/controls/SearchBar.vue';
+import defaults from './map/defaults';
+import MapVis from './map/MapVis.vue';
 import FlowLegend from './map_widgets/legends/FlowLegend.vue';
-import { successMessage } from '../utils/snackbar';
-import { flowStore, flowUIStore, flowVisualizationStore } from '../store/store-accessor';
-import { MoviciError } from '@movici-flow-common/errors';
-import { ensureProjection, transformBBox } from '@movici-flow-common/crs';
-import isError from 'lodash/isError';
+import MapContextMenu from './map_widgets/MapContextMenu.vue';
 import MapEntityPopup from './map_widgets/MapEntityPopup.vue';
 import RightSidePopup from './map_widgets/RightSidePopup.vue';
-import { PickInfo } from '@deck.gl/core/lib/deck';
-import FlowChartPicker from './charts/FlowChartPicker.vue';
-import VisualizerManager from '@movici-flow-common/visualizers/VisualizerManager';
-import { Visualizer } from '@movici-flow-common/visualizers';
-import { isEmpty } from 'lodash';
-import ChartAttributePicker from './charts/ChartAttributePicker.vue';
+import TimeSlider from './map_widgets/TimeSlider.vue';
+import FlowLayerPicker from './widgets/FlowLayerPicker.vue';
 
 @Component({
   name: 'FlowVisualization',
@@ -215,23 +215,29 @@ import ChartAttributePicker from './charts/ChartAttributePicker.vue';
   },
   beforeRouteLeave(to: unknown, from: unknown, next: () => void) {
     if ((this as FlowVisualization).isCurrentViewDirty) {
-      this.$buefy.dialog.confirm({
-        message: '' + this.$t('flow.visualization.dialogs.unsavedView'),
-        cancelText: '' + this.$t('actions.cancel'),
-        confirmText: '' + this.$t('actions.leave'),
-        type: 'is-danger',
-        onConfirm: () => {
-          next();
+      this.$oruga.modal.open({
+        parent: this,
+        component: DialogModal,
+        props: {
+          message: '' + this.$t('flow.visualization.dialogs.unsavedView'),
+          cancelText: '' + this.$t('actions.cancel'),
+          confirmText: '' + this.$t('actions.leave'),
+          variant: 'danger',
+          canCancel: true,
+          onConfirm: () => next()
         }
       });
     } else if ((this as FlowVisualization).visualizers.length) {
-      this.$buefy.dialog.confirm({
-        message: '' + this.$t('flow.visualization.dialogs.leaveView'),
-        cancelText: '' + this.$t('actions.cancel'),
-        confirmText: '' + this.$t('actions.leave'),
-        type: 'is-warning',
-        onConfirm: () => {
-          next();
+      this.$oruga.modal.open({
+        parent: this,
+        component: DialogModal,
+        props: {
+          message: '' + this.$t('flow.visualization.dialogs.leaveView'),
+          cancelText: '' + this.$t('actions.cancel'),
+          confirmText: '' + this.$t('actions.leave'),
+          variant: 'warning',
+          canCancel: true,
+          onConfirm: () => next()
         }
       });
     } else {
@@ -400,12 +406,12 @@ export default class FlowVisualization extends Vue {
     datasetUUID?: string | null;
     scenarioUUID?: string;
   }) {
-    this.$buefy.modal.open({
-      component: ChartAttributePicker,
+    this.$oruga.modal.open({
       parent: this,
+      component: ChartAttributePicker,
       width: 'max-content',
       canCancel: ['x', 'escape'],
-      customClass: 'overflow-visible',
+      override: 'overflow-visible',
       props: {
         value: this.charts,
         object: info.object,
@@ -518,17 +524,21 @@ export default class FlowVisualization extends Vue {
       name = view.name;
 
     if (viewUUID && name) {
-      this.$buefy.dialog.confirm({
-        message:
-          '' +
-          this.$t('flow.visualization.dialogs.confirmOverwriteView', {
-            name
-          }),
-        cancelText: '' + this.$t('actions.cancel'),
-        confirmText: '' + this.$t('misc.yes'),
-        type: 'is-primary',
-        onConfirm: () => {
-          this.saveView(viewUUID).then(() => {});
+      this.$oruga.modal.open({
+        parent: this,
+        component: DialogModal,
+        props: {
+          message:
+            '' +
+            this.$t('flow.visualization.dialogs.confirmOverwriteView', {
+              name
+            }),
+          cancelText: '' + this.$t('actions.cancel'),
+          confirmText: '' + this.$t('misc.yes'),
+
+          variant: 'primary',
+          canCancel: true,
+          onConfirm: () => this.saveView(viewUUID).then(() => {})
         }
       });
     } else if (this.currentScenario?.uuid) {
@@ -546,23 +556,36 @@ export default class FlowVisualization extends Vue {
       viewUUID = this.view?.uuid;
 
     if (viewUUID && viewName) {
-      this.$buefy.dialog.confirm({
-        message:
-          '' +
-          this.$t('flow.visualization.dialogs.confirmDeleteView', {
-            name: viewName
-          }),
-        cancelText: '' + this.$t('actions.cancel'),
-        confirmText: '' + this.$t('misc.yes'),
-        type: 'is-danger',
-        onConfirm: () =>
-          this.deleteView({ viewUUID }).then(() => {
-            this.resetView();
-            this.reloadWithViewUrl();
-          })
+      this.$oruga.modal.open({
+        parent: this,
+        component: DialogModal,
+        props: {
+          message:
+            '' +
+            this.$t('flow.visualization.dialogs.confirmDeleteView', {
+              name: viewName
+            }),
+          cancelText: '' + this.$t('actions.cancel'),
+          confirmText: '' + this.$t('misc.yes'),
+
+          variant: 'danger',
+          canCancel: true,
+          onConfirm: () =>
+            this.deleteView({ viewUUID }).then(() => {
+              this.resetView();
+              this.reloadWithViewUrl();
+            })
+        }
       });
     } else {
-      this.$buefy.dialog.alert('' + this.$t('flow.visualization.dialogs.noViewToDelete'));
+      this.$oruga.modal.open({
+        parent: this,
+        component: DialogModal,
+        props: {
+          message: '' + this.$t('flow.visualization.dialogs.noViewToDelete'),
+          canCancel: false
+        }
+      });
     }
   }
 
@@ -621,29 +644,6 @@ export default class FlowVisualization extends Vue {
     }
 
     return rv;
-  }
-
-  async confirmResetViewWithName() {
-    const { name, uuid } = this.view ?? {};
-
-    let message = null;
-    if (uuid && name) {
-      message = '' + this.$t('flow.visualization.dialogs.confirmResetViewWithName', { name });
-    } else if (this.visualizers.length) {
-      message = '' + this.$t('flow.visualization.dialogs.confirmResetViewWithoutName');
-    }
-
-    if (message !== null) {
-      this.$buefy.dialog.confirm({
-        message,
-        cancelText: '' + this.$t('actions.cancel'),
-        confirmText: '' + this.$t('misc.yes'),
-        type: 'is-danger',
-        onConfirm: () => this.resetView()
-      });
-    } else {
-      this.resetView();
-    }
   }
 
   async updateTabHeight() {

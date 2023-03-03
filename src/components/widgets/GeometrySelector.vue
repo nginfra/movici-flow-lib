@@ -1,49 +1,49 @@
 <template>
   <div class="holder">
-    <b-field
+    <o-field
       class="show-as-buttons"
       v-if="showAs === 'button'"
-      :type="{ 'is-danger': !!errorMessage }"
+      :variant="errorMessage && 'danger'"
       :message="errorMessage"
       :label="label"
       required
     >
       <div class="block mb-0">
         <template v-for="(c, idx) in choices">
-          <b-tooltip
+          <o-tooltip
             :label="$t('flow.visualization.type')[c.geometry]"
             :key="c.geometry"
-            type="is-black"
-            position="is-top"
+            variant="black"
+            position="top"
             :class="{ 'mr-2': idx !== choices.length - 1 }"
           >
-            <b-button
+            <o-button
               class="v-info-geometry"
               :disabled="!c.enabled"
               :icon-pack="c.iconPack"
               :icon-left="c.icon"
               :active="c.geometry === choice"
               @click="choice = c.geometry"
-            ></b-button>
-          </b-tooltip>
+            ></o-button>
+          </o-tooltip>
         </template>
       </div>
-    </b-field>
+    </o-field>
     <div
       class="is-flex is-flex-direction-row show-as-radios"
       v-else-if="showAs === 'radio' && validChoices.length > 1"
     >
       <template v-for="c in choices">
-        <b-radio
+        <o-radio
           v-model="choice"
           v-if="c.enabled"
           :key="c.geometry"
           :native-value="c.geometry"
           class="is-flex"
-          size="is-small"
+          size="small"
         >
           {{ $t('flow.visualization.type')[c.geometry] }}
-        </b-radio>
+        </o-radio>
       </template>
     </div>
   </div>

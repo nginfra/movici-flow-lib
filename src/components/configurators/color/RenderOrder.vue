@@ -1,29 +1,30 @@
 <template>
-  <b-field>
+  <o-field>
     <template #label>
       {{ $t('flow.visualization.colorConfig.advanced.renderOrder') }}
-      <b-icon
-        size="is-small"
+      <o-icon
+        size="small"
+        variant="info"
         icon-pack="far"
         icon="info-circle"
         :title="$t('flow.visualization.colorConfig.advanced.renderOrderInfo')"
       />
     </template>
     <div class="is-flex is-flex-direction-column">
-      <b-radio
+      <o-radio
         v-for="(label, index) in labels"
         :key="index"
         class="mb-2"
-        size="is-small"
+        size="small"
         :value="value"
         @input="input"
         :native-value="label"
         type="is-success is-outlined"
       >
         <span>{{ $t('flow.visualization.colorConfig.advanced.' + label) }}</span>
-      </b-radio>
+      </o-radio>
     </div>
-  </b-field>
+  </o-field>
 </template>
 
 <script lang="ts">

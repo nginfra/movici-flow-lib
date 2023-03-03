@@ -5,7 +5,7 @@
         class="is-flex-direction-row-reverse is-align-content-space-between is-flex is-align-items-center is-clickable"
         aria-controls="legend-container"
       >
-        <b-icon
+        <o-icon
           class="collapsed-icon"
           :title="$t('flow.legend.label')"
           pack="far"

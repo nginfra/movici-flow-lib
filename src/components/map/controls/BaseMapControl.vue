@@ -1,9 +1,9 @@
 <template>
   <div class="basemap-control" :class="{ 'is-right': isRight }" title="Base Maps">
-    <b-button
+    <o-button
       class="toggler is-border-transparent"
-      size="is-small"
-      :type="toggle ? 'is-primary' : ''"
+      size="small"
+      :variant="toggle ? 'primary' : ''"
       @click="toggle = !toggle"
       icon-pack="fak"
       icon-left="fa-basemap"
@@ -11,14 +11,13 @@
     <div class="basemap-selector box" v-if="toggle">
       <div class="is-flex">
         <label class="label is-size-6-half is-flex-grow-1">Base Maps</label>
-        <b-button
+        <o-button
           class="close is-borderless is-transparent has-hover-bg"
           icon-pack="far"
           icon-left="times"
-          size="is-small"
+          size="small"
           @click="toggle = false"
-        >
-        </b-button>
+        />
       </div>
       <div class="is-flex is-flex-wrap-nowrap is-justify-content-space-between">
         <div
@@ -27,7 +26,7 @@
           :key="item.name"
           @click="value_ = item.value"
         >
-          <b-image
+          <MovImage
             v-if="item.type === 'image'"
             class="thumbnail"
             :class="{ active: item.value === value_ }"
@@ -121,10 +120,6 @@ export default class BaseMapControl extends Vue {
     width: inherit;
     &:hover {
       background-color: $white-ter;
-    }
-    ::v-deep .icon {
-      margin-right: auto;
-      margin-left: calc(0.5em - 2px);
     }
   }
 }

@@ -1,10 +1,10 @@
 <template>
-  <b-collapse v-model="isOpen">
+  <o-collapse v-model="isOpen">
     <template #trigger="{ open }">
       <span class="is-flex is-align-items-center mb-2">
-        <b-button
+        <o-button
           class="mr-2 is-transparent is-borderless has-hover-bg"
-          size="is-small"
+          size="small"
           :icon-left="open ? 'angle-down' : 'angle-up'"
         />
         <label class="is-size-6-half ml-1">
@@ -27,21 +27,15 @@
     </div>
     <div class="columns mb-2 is-multiline">
       <div class="column py-1 is-2" v-if="hasFillOpacity">
-        <b-field :label="$t('flow.visualization.colorConfig.advanced.fillOpacity')">
+        <o-field :label="$t('flow.visualization.colorConfig.advanced.fillOpacity')">
           <span class="is-flex-grow-1 mr-2">
-            <b-input
-              size="is-small"
-              type="number"
-              max="100"
-              min="0"
-              v-model="fillOpacity"
-            ></b-input>
+            <o-input size="small" type="number" max="100" min="0" v-model="fillOpacity" />
           </span>
           <span class="is-size-6-half">%</span>
-        </b-field>
+        </o-field>
       </div>
     </div>
-  </b-collapse>
+  </o-collapse>
 </template>
 
 <script lang="ts">

@@ -1,17 +1,12 @@
 <template>
   <div class="is-flex flow-content" :class="collapsedClass">
-    <b-loading is-full-page :active="loading">
-      <div class="loading-icon-container">
-        <b-icon class="loading-icon" />
-        <span class="mt-6 is-block" v-if="loadingMessage">{{ loadingMessage }}</span>
-      </div>
-    </b-loading>
+    <o-loading full-page :active="loading" icon-size="large" />
     <aside
       :class="!loading ? 'is-opacity-1' : 'is-opacity-0'"
       class="column options is-gapless is-margin-less left-panel"
     >
       <div class="top-logo is-flex mb-5 mt-2 is-flex-grow-0 is-flex-shrink-1">
-        <b-image src="/static/movici-flow.svg" alt="MoViCI flow"></b-image>
+        <MovImage src="/static/movici-flow.svg" alt="MoViCI flow"></MovImage>
       </div>
       <slot name="leftPanel"></slot>
     </aside>
@@ -47,10 +42,6 @@ export default class FlowContainer extends Vue {
     return flowUIStore.loading;
   }
 
-  get loadingMessage() {
-    return flowUIStore.loadingMessage;
-  }
-
   mounted() {
     flowUIStore.toggleCollapse(false);
   }
@@ -58,10 +49,6 @@ export default class FlowContainer extends Vue {
 </script>
 
 <style scoped lang="scss">
-.loading-overlay .loading-icon {
-  left: 50%;
-  transform: translateX(-50%);
-}
 .flow-content {
   background-color: $white;
   height: 100%;

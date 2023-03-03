@@ -1,16 +1,16 @@
 <template>
   <section class="flow columns is-gapless is-margin-less">
-    <b-menu class="column flow-menu" :activable="false">
-      <b-menu-list aria-role="menu">
-        <b-menu-item class="home" tag="router-link" :to="homeRoute">
+    <o-menu class="column flow-menu" :activable="false">
+      <o-menu-list aria-role="menu">
+        <o-menu-item class="home" tag="router-link" :to="homeRoute">
           <template #label>
-            <b-image
+            <MovImage
               src="/static/movici-logo.svg"
               :title="$t('flow.leftMenu.returnToDashboard')"
-            ></b-image>
+            ></MovImage>
           </template>
-        </b-menu-item>
-        <b-menu-item
+        </o-menu-item>
+        <o-menu-item
           v-for="section in sectionMenu"
           aria-role="menuitem"
           :key="section.name"
@@ -20,32 +20,31 @@
           :disabled="!section.enabled"
           :active="isActive(section.to)"
           @click="click(section)"
-          size="is-medium"
           tag="a"
-        ></b-menu-item>
-        <b-menu-item v-if="userInitials" class="bottom">
+        />
+        <o-menu-item v-if="userInitials" class="bottom">
           <template #label>
             <span class="is-small icon user-initials">
               {{ userInitials }}
             </span>
             <span class="pt-1">{{ flowVersion }}</span>
           </template>
-        </b-menu-item>
-      </b-menu-list>
-    </b-menu>
-    <b-tooltip
+        </o-menu-item>
+      </o-menu-list>
+    </o-menu>
+    <o-tooltip
       class="collapse-button"
-      type="is-black"
-      position="is-right"
+      variant="black"
+      position="right"
       :label="(collapse ? $t('flow.leftMenu.expand') : $t('flow.leftMenu.collapse')) + ' menu'"
     >
-      <b-button
-        size="is-small"
+      <o-button
+        size="small"
         v-if="!disableCollapser"
         :icon-left="collapse ? 'angle-right' : 'angle-left'"
         @click="toggleCollapse()"
-      ></b-button>
-    </b-tooltip>
+      ></o-button>
+    </o-tooltip>
     <main class="column">
       <router-view></router-view>
     </main>
@@ -159,13 +158,12 @@ export default class FlowMain extends Vue {
           enabled: false,
           type: 'callback',
           callback: () => {
-            this.$buefy.modal.open({
+            this.$oruga.modal.open({
               parent: this,
               width: 720,
               component: FlowExport,
               canCancel: ['x', 'escape'],
               customClass: 'overflow-visible',
-              hasModalCard: false
             });
           }
         }
@@ -249,6 +247,7 @@ export default class FlowMain extends Vue {
             }
             span {
               &:not(.icon) {
+                line-height: 1.5rem;
                 font-size: 0.625rem;
                 color: $black-bis !important;
                 display: flex;
@@ -282,6 +281,7 @@ export default class FlowMain extends Vue {
               }
             }
             &.is-disabled {
+              pointer-events: none;
               opacity: 1;
               span {
                 &:not(.icon) {

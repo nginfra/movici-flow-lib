@@ -5,9 +5,9 @@
         <label class="label is-flex-grow-1">{{ $t('flow.visualization.legendLabel') }}</label>
         <MovKebabMenu :value="actions" @resetLegends="resetLegends" @clearLegends="clearLegends" />
       </span>
-      <b-field v-for="[index, item] in labelEntries" :key="index">
-        <b-input :value="item" @input="updateItem(index, $event)" size="is-small" />
-      </b-field>
+      <o-field v-for="[index, item] in labelEntries" :key="index">
+        <o-input :value="item" @input="updateItem(index, $event)" size="small" />
+      </o-field>
     </div>
   </div>
 </template>
@@ -34,7 +34,7 @@ export default class LegendLabelsConfigurator extends Vue {
       icon: 'trash',
       iconPack: 'far',
       event: 'clearLegends',
-      colorScheme: 'is-danger'
+      variant: 'danger'
     }
   ];
 

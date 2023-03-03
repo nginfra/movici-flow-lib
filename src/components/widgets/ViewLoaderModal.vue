@@ -10,22 +10,22 @@
       </span>
     </template>
     <template #content>
-      <b-field v-if="views.length">
-        <b-select v-model="selectedView" size="is-small" expanded>
+      <o-field v-if="views.length">
+        <o-select v-model="selectedView" size="small" expanded>
           <option v-for="(view, index) in views" :value="view" :key="index">
             {{ view.name }}
           </option>
-        </b-select>
-      </b-field>
+        </o-select>
+      </o-field>
     </template>
     <template #footer>
       <div class="is-flex is-flex-grow-1 is-justify-content-flex-end">
-        <b-button size="is-small" @click="$emit('close')">
+        <o-button size="small" @click="$emit('close')">
           {{ views.length ? $t('actions.cancel') : $t('actions.back') }}
-        </b-button>
-        <b-button v-if="views.length" size="is-small" @click="emitAndClose" type="is-primary">
+        </o-button>
+        <o-button v-if="views.length" size="small" @click="emitAndClose" variant="primary">
           {{ $t('flow.visualization.dialogs.loadView') }}
-        </b-button>
+        </o-button>
       </div>
     </template>
   </MovModal>

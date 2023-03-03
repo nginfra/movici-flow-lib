@@ -1,10 +1,8 @@
-import { SnackbarProgrammatic as Snackbar } from 'buefy';
-import { BSnackbarConfig } from 'buefy/types/components';
-
+import { NotificationProgrammatic as Notification } from '@oruga-ui/oruga';
 export function successMessage(message: string) {
   openSnackbar({
     message: message,
-    type: 'is-success',
+    variant: 'success',
     duration: 3000
   });
 }
@@ -12,17 +10,18 @@ export function successMessage(message: string) {
 export function failMessage(message: string) {
   openSnackbar({
     message: message,
-    type: 'is-danger',
-    duration: 60000
+    variant: 'danger',
+    duration: 3000
   });
 }
 
-function openSnackbar(message: BSnackbarConfig) {
-  Snackbar.open({
-    type: 'is-success',
-    position: 'is-top',
+function openSnackbar(params: Record<string, unknown>) {
+  Notification.open({
+    position: 'top',
+    rootClass: 'toast-notification',
+    closable: true,
     queue: false,
-    ...message
+    ...params
   });
 }
 

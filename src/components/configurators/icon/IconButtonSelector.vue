@@ -1,14 +1,14 @@
 <template>
-  <b-field :label="label">
-    <b-button
+  <o-field :label="label">
+    <o-button
       v-if="allowEmpty"
       title="Empty"
-      size="is-small"
+      size="small"
       @click="$emit('input', null)"
       :class="{ 'is-primary': isSelected(null) }"
     />
-    <b-button
-      size="is-small"
+    <o-button
+      size="small"
       :title="icon | upperFirst"
       v-for="icon in icons"
       :key="icon"
@@ -16,7 +16,7 @@
       @click="$emit('input', icon)"
       :class="{ 'is-primary': isSelected(icon) }"
     />
-  </b-field>
+  </o-field>
 </template>
 
 <script lang="ts">

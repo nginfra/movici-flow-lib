@@ -2,40 +2,40 @@
   <div>
     <div class="columns mb-0 layer-kind">
       <div class="column is-two-thirds-desktop is-full-tablet show is-flex">
-        <b-field class="show-popup">
-          <b-checkbox v-model="showPopup" size="is-small">
+        <o-field class="show-popup">
+          <o-checkbox v-model="showPopup" size="small">
             {{ $t('flow.visualization.popup.showPopup') }}
-          </b-checkbox>
-        </b-field>
+          </o-checkbox>
+        </o-field>
         <template v-if="showPopup">
-          <b-field class="when ml-6">
-            <b-radio class="mr-4" size="is-small" v-model="onHover" :native-value="false">
+          <o-field class="when ml-6">
+            <o-radio class="mr-4" size="small" v-model="onHover" :native-value="false">
               {{ $t('flow.visualization.popup.onClickOnly') }}
-            </b-radio>
-            <b-radio size="is-small" v-model="onHover" :native-value="true">
+            </o-radio>
+            <o-radio size="small" v-model="onHover" :native-value="true">
               {{ $t('flow.visualization.popup.onClickAndHover') }}
-            </b-radio>
-          </b-field>
+            </o-radio>
+          </o-field>
         </template>
       </div>
     </div>
     <div class="columns mb-0" v-if="showPopup">
       <div class="column is-two-thirds is-full-tablet popup-title">
-        <b-field :label="$t('flow.visualization.popup.title')">
-          <b-input
+        <o-field :label="$t('flow.visualization.popup.title')">
+          <o-input
             :value="currentClause.title"
             @input="updateValue({ title: $event })"
             :placeholder="$t('flow.visualization.popup.titlePlaceholder')"
-            size="is-small"
+            size="small"
             :disabled="dynamicTitle"
-          ></b-input>
-        </b-field>
+          ></o-input>
+        </o-field>
       </div>
     </div>
     <div class="columns mb-0 items" v-if="showPopup">
       <div class="column is-full">
         <label class="label">{{ $t('misc.properties') }}</label>
-        <b-dropdown
+        <o-dropdown
           class="mr-4 mb-2"
           :value="items"
           @input="addItem($event)"
@@ -45,16 +45,16 @@
           max-height="200"
         >
           <template #trigger>
-            <b-button
+            <o-button
               class="is-size-7 is-transparent has-hover-bg is-borderless has-text-primary has-text-weight-bold"
               icon-left="plus-circle"
               icon-pack="far"
-              size="is-small"
+              size="small"
             >
               {{ $t('flow.visualization.popup.addItem') }}
-            </b-button>
+            </o-button>
           </template>
-          <b-dropdown-item
+          <o-dropdown-item
             v-for="(item, index) in availableItems"
             :value="item.attribute"
             :key="index"
@@ -64,8 +64,8 @@
             class="is-size-7"
           >
             {{ propertyString(item.attribute) }}
-          </b-dropdown-item>
-        </b-dropdown>
+          </o-dropdown-item>
+        </o-dropdown>
         <AttributeSuggestions
           :value="suggestions"
           :items="items"
@@ -100,24 +100,24 @@
                   {{ propertyString(item.attribute) }}
                 </span>
               </label>
-              <b-input
+              <o-input
                 :placeholder="propertyString(item.attribute)"
                 :value="item.name"
                 @input="updateName(idx, $event)"
                 :disabled="idx === 0 && dynamicTitle"
-                size="is-small"
-              ></b-input>
-              <b-checkbox class="ml-2" v-if="idx === 0" size="is-small" v-model="dynamicTitle">
+                size="small"
+              ></o-input>
+              <o-checkbox class="ml-2" v-if="idx === 0" size="small" v-model="dynamicTitle">
                 {{ $t('flow.visualization.popup.setAsDynamicTitle') }}
-              </b-checkbox>
-              <b-button
+              </o-checkbox>
+              <o-button
                 class="is-transparent is-borderless ml-2 has-text-danger has-hover-bg"
                 icon-left="minus-circle"
                 icon-pack="far"
-                size="is-small"
+                size="small"
                 @click="removeItem(idx)"
               >
-              </b-button>
+              </o-button>
             </div>
           </div>
         </Draggable>
