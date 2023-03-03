@@ -25,7 +25,6 @@
         :value="currentClause"
         :validator="validator"
         @input="updateSettings"
-        size="is-small"
       />
       <template v-else-if="clauseType === 'byValue'">
         <div class="columns mb-0 is-multiline">

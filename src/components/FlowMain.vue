@@ -162,8 +162,7 @@ export default class FlowMain extends Vue {
               parent: this,
               width: 720,
               component: FlowExport,
-              canCancel: ['x', 'escape'],
-              customClass: 'overflow-visible',
+              canCancel: ['x', 'escape']
             });
           }
         }

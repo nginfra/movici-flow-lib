@@ -27,7 +27,7 @@
         />
       </o-field>
       <MovButtons
-        size="is-small"
+        size="small"
         isPulledRight
         :value="buttons"
         @save="saveChart()"

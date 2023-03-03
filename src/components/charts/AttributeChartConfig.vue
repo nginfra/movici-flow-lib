@@ -20,7 +20,7 @@
       <div class="column">
         <o-field :label="$t('flow.visualization.graph.graphDisplayName')">
           <o-input
-            size="is-small"
+            size="small"
             class="is-size-7"
             v-model="localValue.title"
             :placeholder="localValue.title"
@@ -51,7 +51,7 @@
           <div class="item mb-1" v-for="(item, index) in localValue.items" :key="index">
             <div class="is-flex is-align-items-center">
               <span class="grip mx-1">
-                <span class="icon is-small fa-stack has-text-grey">
+                <span class="icon small fa-stack has-text-grey">
                   <i class="far fa-ellipsis-v"></i>
                   <i class="far fa-ellipsis-v"></i>
                 </span>
@@ -64,11 +64,11 @@
                 />
               </o-field>
               <o-field class="is-flex-grow-1 is-align-items-center mr-2 mb-0">
-                <o-input expanded size="is-small" class="is-size-7" v-model="item.name" />
+                <o-input expanded size="small" class="is-size-7" v-model="item.name" />
               </o-field>
               <o-button
                 class="is-borderless is-transparent has-hover-bg is-flex has-text-danger"
-                size="is-small"
+                size="small"
                 @click="removeItem(index)"
                 icon-left="trash"
                 title="Remove graph"
@@ -76,7 +76,7 @@
               />
               <o-button
                 class="is-borderless is-flex"
-                size="is-small"
+                size="small"
                 @click="toggleDetails(index)"
                 :icon-left="showDetails[index] ? 'angle-up' : 'angle-down'"
                 :title="
@@ -109,7 +109,7 @@
 
     <div class="bottom">
       <MovButtons
-        size="is-small"
+        size="small"
         isPulledRight
         :value="buttons"
         @saveChart="saveChart"

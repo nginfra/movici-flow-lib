@@ -43,7 +43,7 @@
                   </span>
                 </span>
                 <div class="checkbox-holder">
-                  <o-checkbox v-model="activeEntityGroups[idx]" size="is-small">
+                  <o-checkbox v-model="activeEntityGroups[idx]" size="small">
                     {{ group.name | snakeToSpaces | upperFirst }} ({{ group.count }})
                   </o-checkbox>
                   <GeometrySelector

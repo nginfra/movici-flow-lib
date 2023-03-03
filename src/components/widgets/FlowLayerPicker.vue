@@ -49,7 +49,7 @@ import DraggableMixin from '@movici-flow-common/mixins/DraggableMixin';
 import { flowStore } from '@movici-flow-common/store/store-accessor';
 import { Scenario, TimeOrientedSimulationInfo } from '@movici-flow-common/types';
 import { ComposableVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
+import { Component, Mixins, Prop } from 'vue-property-decorator';
 import Draggable from 'vuedraggable';
 import VisualizerConfigurator from '../configurators/VisualizerConfigurator.vue';
 import VisualizerElement from './VisualizerElement.vue';

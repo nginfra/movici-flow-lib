@@ -48,7 +48,7 @@
           />
         </o-tab-item>
         <o-tab-item :label="$t('flow.visualization.tabs.charts')" :value="1">
-          <FlowChartPicker v-model="charts" :open.sync="visualizerOpen" />
+          <FlowChartPicker v-model="charts" :open.sync="chartConfigOpen" />
         </o-tab-item>
       </o-tabs>
     </template>
@@ -128,7 +128,7 @@
               :timelineInfo="timelineInfo"
               :timestamp="timestamp"
               :customTimeFormat="customTimeFormat"
-              @openConfig="chartConfigOpen = $event"
+              @openConfig="changeVisualizer({ tab: 1, index: $event })"
             />
             <TimeSlider
               :value="timestamp"
@@ -258,6 +258,7 @@ export default class FlowVisualization extends Vue {
   viewState: Nullable<CameraOptions> = defaults.viewState();
   visualizerTabOpen = 0;
   visualizerOpen = -2;
+  chartConfigOpen = -2;
 
   validVisualizers: ComposableVisualizerInfo[] = [];
   charts: ChartVisualizerInfo[] = [];
@@ -355,11 +356,6 @@ export default class FlowVisualization extends Vue {
     }
   }
 
-  @Watch('chartConfigOpen')
-  afterSetGraphConfig() {
-    this.visualizerTabOpen = 1;
-  }
-
   getContextMenuActions(info: PickInfo<unknown> | undefined): ActionMenuItem[] {
     return info?.layer
       ? [
@@ -436,8 +432,18 @@ export default class FlowVisualization extends Vue {
   }
 
   changeVisualizer({ tab, index }: { tab: number; index: number }) {
+    console.log({ tab, index });
+
     this.visualizerTabOpen = tab;
-    this.visualizerOpen = index;
+    if (tab === 0) {
+      this.visualizerOpen = index;
+    } else if (tab === 1) {
+      this.chartConfigOpen = index;
+    }
+
+    // this.$nextTick(() => {
+    //   this.visualizerOpen = index;
+    // });
   }
   /**
    * set the state of the visualization (visualizers, camera, etc) from a `FlowViewConfig` object
