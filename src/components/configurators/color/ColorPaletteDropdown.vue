@@ -49,7 +49,7 @@ export default class ColorPaletteDropdown extends Vue {
   @Prop({ type: Number, default: null }) value!: number | null;
   @Prop({ type: Number, default: 2 }) nSteps!: number;
   @Prop({ type: Array, default: () => [] }) colorPalettes!: ColorPalette[];
-  @Prop({ type: Function, default: () => () => true }) filter!: (palette: ColorPalette) => boolean;
+  @Prop({ type: Function, default: () => true }) filter!: (palette: ColorPalette) => boolean;
 
   get currentName() {
     return this.value != null ? this.colorPalettes[this.value].name : 'Select a palette';

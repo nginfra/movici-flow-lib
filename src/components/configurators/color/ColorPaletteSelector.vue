@@ -76,7 +76,9 @@ export default class ColorPaletteSelector extends Vue {
 
   @Watch('currentColorPalette')
   emitCurrentPalette() {
-    this.$emit('input', this.currentColorPalette);
+    if (this.currentColorPalette) {
+      this.$emit('input', this.currentColorPalette);
+    }
   }
 
   mounted() {
