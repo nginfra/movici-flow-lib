@@ -92,7 +92,7 @@ export default class GeometryConfigurator extends Mixins(ValidationProvider) {
   }
 
   updateValue(key: string, val: EntityGroupSummary) {
-    this.validated('localValue', Object.assign(this.localValue, { [key]: val }));
+    this.validated('localValue', Object.assign(this.localValue!, { [key]: val }));
     const rv: Record<string, string> = { ...this.value, [key]: val.name };
     this.$emit('input', rv);
   }

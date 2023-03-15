@@ -19,10 +19,10 @@
           >
             <o-button
               class="v-info-geometry"
+              :class="{'is-active': c.geometry === choice}"
               :disabled="!c.enabled"
               :icon-pack="c.iconPack"
               :icon-left="c.icon"
-              :active="c.geometry === choice"
               @click="choice = c.geometry"
             ></o-button>
           </o-tooltip>
@@ -179,7 +179,6 @@ export default class GeometrySelector extends Vue {
     height: 2.25rem;
     width: 2.75rem;
     font-size: 1.25rem;
-    &:active,
     &.is-active {
       background-color: $green;
       color: $green-light;

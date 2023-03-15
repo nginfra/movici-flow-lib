@@ -428,6 +428,13 @@ export class StreamingTapefile<T> extends BaseTapefile<T> {
         heapPop(this.pending, (a, b) => a[0] - b[0]) as [number, EntityUpdate<T>]
       )[1];
       this.writer.appendUpdate(nextUpdate);
+
+      // In case we've received an update at the same time as our current timestamp, we need to
+      // make sure the tapefile state is updated with the new update data
+      if (nextUpdate.timestamp === this.inner?.currentTime && this.inner.currentUpdateIdx != null) {
+        this.inner.applyUpdateAtIndex(this.inner.currentUpdateIdx);
+      }
+
       this.nextUpdateSequence++;
       newDataTimestamp = nextUpdate.timestamp;
     }
