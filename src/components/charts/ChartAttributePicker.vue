@@ -197,6 +197,8 @@ export default class ChartAttributePicker extends Mixins(ValidationProvider, Sum
           const found = this.value.find(chart => {
             return chart.items.some(i => {
               return (
+                i.datasetName == this.datasetName &&
+                i.entityGroup == this.entityGroup &&
                 i.attribute === this.selectedAttribute?.name &&
                 i.entityId === this.object.id &&
                 i.entityIdx === this.object.idx
