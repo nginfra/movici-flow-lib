@@ -222,7 +222,7 @@ export default class ChartVis extends Vue {
 }
 
 function chartDataKey({ id, item }: { id: string; item: DatasetConfig }) {
-  return `${id}:${item.tapefile.attribute}:${item.entityIdx}`;
+  return `${id}:${item.key}:${item.entityIdx}`;
 }
 
 class ChartRegistry {

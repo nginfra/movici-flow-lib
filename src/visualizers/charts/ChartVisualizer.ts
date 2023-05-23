@@ -20,6 +20,7 @@ export interface ChartConfig {
 export interface DatasetConfig {
   dataset: Omit<ChartDataset, 'data'>;
   tapefile: StreamingTapefile<number>;
+  key: string,
   entityIdx: number;
 }
 export interface ChartVisualizerContext extends VisualizerContext<ChartVisualizerInfo> {
@@ -27,7 +28,7 @@ export interface ChartVisualizerContext extends VisualizerContext<ChartVisualize
 }
 
 function tapefileKey(item: ChartVisualizerItem) {
-  return item.datasetName + ':' + item.attribute;
+  return `${item.datasetName}:${item.entityGroup}:${item.attribute}`
 }
 export default class ChartVisualizer extends BaseVisualizer<ChartVisualizerInfo> {
   tapefiles: Record<string, StreamingTapefile<number>>;
@@ -75,15 +76,18 @@ export default class ChartVisualizer extends BaseVisualizer<ChartVisualizerInfo>
     if (!this.tapefiles) return null;
     const datasets: DatasetConfig[] = [];
     for (const item of this.info.items) {
-      const tf = this.tapefiles[tapefileKey(item)];
+      const key = tapefileKey(item)
+      const tf = this.tapefiles[key];
+
       if (!tf) {
-        console.error(`missing tapefile ${tapefileKey(item)}`);
+        console.error(`missing tapefile ${key}`);
         continue;
       }
 
       datasets.push({
         dataset: this.getChartDataset(item),
         entityIdx: item.entityIdx,
+        key,
         tapefile: tf
       });
     }
