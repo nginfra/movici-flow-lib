@@ -1,39 +1,43 @@
 <template>
   <div class="item">
+    <component v-if="modelValue.component" :is="modelValue.component" />
     <a
-      v-if="!value.component"
+      v-else
       :focusable="false"
-      :disabled="value.isDisabled"
-      :class="itemClass(value)"
-      @click="emit(value.event, $event)"
+      :disabled="modelValue.isDisabled"
+      :class="itemClass(modelValue)"
+      @click.stop="doEmit(modelValue.event)"
       class="dropdown-item action-menu-item"
     >
-      <o-icon :icon="value.icon" :pack="value.iconPack || 'far'" class="mr-2"></o-icon>
+      <o-icon :icon="modelValue.icon" :pack="modelValue.iconPack || 'far'" class="mr-2"></o-icon>
       <span>
-        {{ value.label }}
+        {{ modelValue.label }}
       </span>
     </a>
-    <component v-else :is="value.component" />
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ActionMenuItem } from '@movici-flow-common/types';
+<script setup lang="ts">
+import type { ActionItem } from "@movici-flow-common/types";
 
-@Component({ name: 'MovActionMenuItem' })
-export default class MovActionMenuItem extends Vue {
-  @Prop({ type: Object, default: () => new Object() }) readonly value!: ActionMenuItem | null;
+defineProps<{
+  modelValue: ActionItem;
+}>();
 
-  itemClass(item: ActionMenuItem) {
-    const rv = [item.variant];
-    if (item.isDisabled) rv.push('is-disabled');
-    return rv;
-  }
+const emit = defineEmits<{
+  (e: "action", action: string): void;
+  (e: string): void;
+}>();
 
-  emit(event: string, value: unknown) {
-    this.$emit('emitAndClose', { event, value });
-  }
+function itemClass(item: ActionItem) {
+  const rv = [item.variant];
+  if (item.isDisabled) rv.push("is-disabled");
+  return rv;
+}
+
+function doEmit(action: string) {
+  emit("action", action);
+  emit(action);
 }
 </script>
 

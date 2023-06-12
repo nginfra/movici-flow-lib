@@ -1,4 +1,4 @@
-import {
+import type {
   ByValueColorClause,
   ColorClause,
   Coordinate,
@@ -7,24 +7,24 @@ import {
   StaticColorClause,
   TopologyLayerData,
   IMapVisualizer,
-  ITapefile
-} from '@movici-flow-common/types';
-import isEqual from 'lodash/isEqual';
-import NumberMapper from '../maps/NumberMapper';
+  ITapefile,
+} from "@movici-flow-common/types";
+import isEqual from "lodash/isEqual";
+import NumberMapper from "../maps/NumberMapper";
 import {
   DEFAULT_POLYGON_FILL_OPACITY,
-  interpolateColorMapping
-} from '@movici-flow-common/utils/colorUtils';
+  interpolateColorMapping,
+} from "@movici-flow-common/utils/colorUtils";
 import {
   TapefileAccessor,
   VisualizerModule,
-  VisualizerModuleParams
-} from '../visualizerModules/common';
+  type VisualizerModuleParams,
+} from "../visualizerModules/common";
 import {
   DEFAULT_SPECIAL_COLOR_TRIPLE,
-  DEFAULT_UNDEFINED_COLOR_TRIPLE
-} from '../../utils/colorUtils';
-import { isError } from 'lodash';
+  DEFAULT_UNDEFINED_COLOR_TRIPLE,
+} from "../../utils/colorUtils";
+import isError from "lodash/isError";
 type ColorAccessor<D> = ((d: D) => RGBAColor) | RGBAColor;
 export default class ColorModule<
   Coord extends Coordinate,
@@ -75,14 +75,14 @@ export default class ColorModule<
       const colorMap = new NumberMapper<RGBAColor>({
         mapping: this.prepareColors(clause.byValue),
         specialResult: clause.advanced?.specialColor ?? DEFAULT_SPECIAL_COLOR_TRIPLE,
-        undefinedResult: clause.advanced?.undefinedColor ?? DEFAULT_UNDEFINED_COLOR_TRIPLE
+        undefinedResult: clause.advanced?.undefinedColor ?? DEFAULT_UNDEFINED_COLOR_TRIPLE,
       });
 
       const accessor = new TapefileAccessor(colorMap);
-      visualizer.requestTapefile(clause.byValue.attribute, t => {
+      visualizer.requestTapefile(clause.byValue.attribute, (t) => {
         accessor.setTapefile(t as ITapefile<number | null>);
         colorMap.setSpecialValue((t as ITapefile<number>).specialValue);
-        t.onSpecialValue(val => colorMap.setSpecialValue(val as number));
+        t.onSpecialValue((val) => colorMap.setSpecialValue(val as number));
       });
       return (d: LData) => accessor.getValue(d.idx);
     }
@@ -95,7 +95,7 @@ export default class ColorModule<
 
   prepareColors(colorClause: ByValueColorClause): [number, RGBAColor][] {
     const colors = colorClause.colors;
-    if (colors.length < 2 || colorClause.type == 'buckets') {
+    if (colors.length < 2 || colorClause.type == "buckets") {
       return colors;
     }
 
@@ -112,10 +112,10 @@ export default class ColorModule<
       try {
         rv.push(...interpolateColorMapping(colors[i], colors[i + 1], inBetween));
       } catch (e) {
-        let msg = 'Could not interpolate between colors';
+        let msg = "Could not interpolate between colors";
 
         if (isError(e)) {
-          msg += ': ' + e.message;
+          msg += ": " + e.message;
         }
         throw new Error(msg);
       }
@@ -126,28 +126,28 @@ export default class ColorModule<
   assignAccessor(params: LayerParams<LData, Coord>, accessor: ColorAccessor<LData>) {
     let updateTriggers: string[];
     switch (params.type.layerName) {
-      case 'ScatterplotLayer':
+      case "ScatterplotLayer":
         params.props.getFillColor = accessor;
-        updateTriggers = ['getFillColor'];
+        updateTriggers = ["getFillColor"];
         break;
-      case 'PolygonLayer':
+      case "PolygonLayer":
         params.props.getLineColor = this.asLineColor(accessor);
         params.props.getFillColor = this.asFillColor(accessor);
-        updateTriggers = ['getLineColor', 'getFillColor'];
+        updateTriggers = ["getLineColor", "getFillColor"];
         break;
-      case 'SolidPolygonLayer':
+      case "SolidPolygonLayer":
         params.props.getFillColor = this.asFillColor(accessor);
-        updateTriggers = ['getFillColor'];
+        updateTriggers = ["getFillColor"];
         break;
-      case 'ArcLayer':
+      case "ArcLayer":
         params.props.getSourceColor = accessor;
         params.props.getTargetColor = accessor;
-        updateTriggers = ['getSourceColor', 'getTargetColor'];
+        updateTriggers = ["getSourceColor", "getTargetColor"];
         break;
-      case 'ShapeIconLayer':
+      case "ShapeIconLayer":
       default:
         params.props.getColor = accessor;
-        updateTriggers = ['getColor'];
+        updateTriggers = ["getColor"];
     }
     this.setUpdateTriggers(params, updateTriggers, this.currentSettings);
 
@@ -191,6 +191,6 @@ function getFillOpacity(color: RGBAColor, fillOpacity: number): RGBAColor {
 
 function darken(color: RGBAColor, fillOpacity: number): RGBAColor {
   return (color.slice(0, 3) as [number, number, number]).map(
-    c => (1 - fillOpacity) * c
+    (c) => (1 - fillOpacity) * c
   ) as RGBAColor;
 }

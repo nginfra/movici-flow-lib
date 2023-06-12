@@ -1,8 +1,8 @@
-import { CompositeLayer, LayerExtension } from '@deck.gl/core';
-import { DataFilterExtension } from '@deck.gl/extensions';
-import { LayerConstructor } from '@movici-flow-common/types';
-import { LayerProps } from '@deck.gl/core/lib/layer';
-import { CompositeLayerProps } from '@deck.gl/core/lib/composite-layer';
+import { CompositeLayer, LayerExtension } from "@deck.gl/core";
+import { DataFilterExtension } from "@deck.gl/extensions";
+import type { LayerConstructor } from "@movici-flow-common/types";
+import type { LayerProps } from "@deck.gl/core/lib/layer";
+import type { CompositeLayerProps } from "@deck.gl/core/lib/composite-layer";
 
 /**
  * Wrap a deckcgl layer class into an OrderedRendering variant, a CompositeLayer which takes a
@@ -43,14 +43,14 @@ export default function orderedRendering<D, P extends LayerProps<D>>(
       } = this.props;
 
       const extensions: LayerExtension[] = props.extensions ?? [];
-      if (!extensions.filter(e => e instanceof DataFilterExtension).length) {
+      if (!extensions.filter((e) => e instanceof DataFilterExtension).length) {
         extensions.push(new DataFilterExtension({ filterSize: 1 }));
       }
 
       updateTriggers.getFilterValue = [
         ...(updateTriggers.getFilterValue ?? []),
         ...(updateTriggers.getOrderingValue ?? []),
-        filterRanges
+        filterRanges,
       ];
       return filterRanges.map((filterRange, idx) => {
         return new LayerType({
@@ -60,7 +60,7 @@ export default function orderedRendering<D, P extends LayerProps<D>>(
             ...props,
             data,
             id: String(idx),
-            extensions
+            extensions,
           }),
           // filterRange, updateTriggers and getFilterValue are overridden by `getSublayerProps`
           // see also https://github.com/visgl/deck.gl/issues/6814 so we need to post-add them
@@ -72,8 +72,8 @@ export default function orderedRendering<D, P extends LayerProps<D>>(
             originalFilterRange,
             getOrderingValue,
             filterRange,
-            idx
-          })
+            idx,
+          }),
         });
       });
     }
@@ -85,7 +85,7 @@ export default function orderedRendering<D, P extends LayerProps<D>>(
       getFilterValue,
       originalFilterRange,
       getOrderingValue,
-      filterRange
+      filterRange,
     }: {
       getFilterValue?: (obj: D) => number;
       originalFilterRange?: [number, number];
@@ -110,9 +110,9 @@ export default function orderedRendering<D, P extends LayerProps<D>>(
     ...LayerType.defaultProps,
     filterRanges: [[Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY]],
     getFilterValue: {
-      type: 'accessor',
-      value: () => 1
-    }
+      type: "accessor",
+      value: () => 1,
+    },
   };
   return OrderedRenderingLayer;
 }

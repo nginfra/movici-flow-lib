@@ -1,6 +1,6 @@
-import { ensureProjection, transform, transformArray } from '../crs';
-import {
-  ComponentProperty,
+import { ensureProjection, transform, transformArray } from "../crs";
+import type {
+  DataAttribute,
   Coordinate,
   EntityGroupData,
   LineCoordinate,
@@ -13,10 +13,12 @@ import {
   GridCellGeometryData,
   EntityGroupImportantAttributesData,
   ImportantAttributeData,
-  ImportantAttribute,
-  BaseEntityGroup
-} from '../types';
-import { DatasetDownloader } from '../utils/DatasetDownloader';
+  BaseEntityGroup,
+  CoordinateArray,
+} from "../types";
+import { ImportantAttribute } from "../types";
+
+import type { DatasetDownloader } from "../utils/DatasetDownloader";
 
 export interface ITopologyGetter<Coord extends Coordinate> {
   getTopology(): Promise<TopologyLayerData<Coord>[]>;
@@ -43,7 +45,7 @@ export abstract class SimpleTopologyGetter<
   async getTopology(): Promise<TopologyLayerData<Coord>[]> {
     const [datasetData, metaData] = await Promise.all([
       this.getDatasetData(),
-      this.store.getMetaData()
+      this.store.getMetaData(),
     ]);
     const crs = metaData?.epsg_code;
     await ensureProjection(crs);
@@ -74,37 +76,34 @@ export abstract class SimpleTopologyGetter<
   }
 }
 
-const POINT_ATTRIBUTES: ComponentProperty[] = [
-  { component: null, name: 'geometry.x' },
-  { component: null, name: 'geometry.y' }
+const POINT_ATTRIBUTES: DataAttribute[] = [{ name: "geometry.x" }, { name: "geometry.y" }];
+const LINE_ATTRIBUTES: DataAttribute[] = [
+  { name: "geometry.linestring_2d" },
+  { name: "geometry.linestring_3d" },
 ];
-const LINE_ATTRIBUTES: ComponentProperty[] = [
-  { component: null, name: 'geometry.linestring_2d' },
-  { component: null, name: 'geometry.linestring_3d' }
+const POLYGON_ATTRIBUTES: DataAttribute[] = [
+  { name: "geometry.polygon_3d" },
+  { name: "geometry.polygon_2d" },
+  { name: "geometry.polygon" },
 ];
-const POLYGON_ATTRIBUTES: ComponentProperty[] = [
-  { component: null, name: 'geometry.polygon_3d' },
-  { component: null, name: 'geometry.polygon_2d' },
-  { component: null, name: 'geometry.polygon' }
-];
-const GRID_CELL_ATTRIBUTES: ComponentProperty[] = [{ component: null, name: 'grid.grid_points' }];
+const GRID_CELL_ATTRIBUTES: DataAttribute[] = [{ name: "grid.grid_points" }];
 
 export class PointTopologyGetter extends SimpleTopologyGetter<PointGeometryData, PointCoordinate> {
   protected getDatasetData(): Promise<PointGeometryData & EntityGroupImportantAttributesData> {
     return this.store.getDatasetState<PointGeometryData & EntityGroupImportantAttributesData>({
       entityGroup: this.entity,
-      properties: withImportantAttributes(POINT_ATTRIBUTES)
+      properties: withImportantAttributes(POINT_ATTRIBUTES),
     });
   }
 
   getCoordinate(data: PointGeometryData, i: number, crs?: string | number | null) {
-    if (!data?.['geometry.x'] || !data?.['geometry.y']) {
-      throw new Error('Point geometry not found in dataset');
+    if (!data?.["geometry.x"] || !data?.["geometry.y"]) {
+      throw new Error("Point geometry not found in dataset");
     }
-    if (data['geometry.x'][i] === null || data['geometry.y'][i] === null) {
+    if (data["geometry.x"][i] === null || data["geometry.y"][i] === null) {
       return null;
     }
-    return transform([data['geometry.x'][i], data['geometry.y'][i]], crs);
+    return transform([data["geometry.x"][i], data["geometry.y"][i]], crs);
   }
 }
 
@@ -112,14 +111,14 @@ export class LineTopologyGetter extends SimpleTopologyGetter<LineGeometryData, L
   protected getDatasetData(): Promise<LineGeometryData & EntityGroupImportantAttributesData> {
     return this.store.getDatasetState<LineGeometryData & EntityGroupImportantAttributesData>({
       entityGroup: this.entity,
-      properties: withImportantAttributes(LINE_ATTRIBUTES)
+      properties: withImportantAttributes(LINE_ATTRIBUTES),
     });
   }
 
   getCoordinate(data: LineGeometryData, i: number, crs?: string | number | null) {
-    const arr = data?.['geometry.linestring_3d'] ?? data['geometry.linestring_2d'];
+    const arr = data?.["geometry.linestring_3d"] ?? data["geometry.linestring_2d"];
     if (!arr) {
-      throw new Error('Line geometry not found in dataset');
+      throw new Error("Line geometry not found in dataset");
     }
     if (arr[i] === null) {
       return null;
@@ -135,16 +134,16 @@ export class PolygonTopologyGetter extends SimpleTopologyGetter<
   protected getDatasetData(): Promise<PolygonGeometryData & EntityGroupImportantAttributesData> {
     return this.store.getDatasetState<PolygonGeometryData & EntityGroupImportantAttributesData>({
       entityGroup: this.entity,
-      properties: withImportantAttributes(POLYGON_ATTRIBUTES)
+      properties: withImportantAttributes(POLYGON_ATTRIBUTES),
     });
   }
 
   getCoordinate(data: PolygonGeometryData, i: number, crs?: string | number | null) {
     const arr =
-      data?.['geometry.polygon_3d'] ?? data['geometry.polygon_2d'] ?? data['geometry.polygon'];
+      data?.["geometry.polygon_3d"] ?? data["geometry.polygon_2d"] ?? data["geometry.polygon"];
 
     if (!arr) {
-      throw new Error('Polygon geometry not found in dataset');
+      throw new Error("Polygon geometry not found in dataset");
     }
     if (arr[i] === null) {
       return null;
@@ -170,13 +169,13 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
     const [cellData, pointData, metaData] = await Promise.all([
       this.store.getDatasetState<GridCellGeometryData & EntityGroupImportantAttributesData>({
         entityGroup: this.cellEntityGroup,
-        properties: withImportantAttributes(GRID_CELL_ATTRIBUTES)
+        properties: withImportantAttributes(GRID_CELL_ATTRIBUTES),
       }),
       this.store.getDatasetState<PointGeometryData>({
         entityGroup: this.pointEntityGroup,
-        properties: POINT_ATTRIBUTES
+        properties: POINT_ATTRIBUTES,
       }),
-      this.store.getMetaData()
+      this.store.getMetaData(),
     ]);
     const crs = metaData?.epsg_code;
     await ensureProjection(crs);
@@ -204,8 +203,8 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
     i: number,
     points: PointsByIdT
   ): PolygonCoordinate | null {
-    const gridPoints = data['grid.grid_points'][i];
-    const rv: PolygonCoordinate = [];
+    const gridPoints = data["grid.grid_points"][i];
+    const rv: CoordinateArray = [];
     for (let i = 0; i < gridPoints.length; i++) {
       const point = points[gridPoints[i]];
 
@@ -230,35 +229,35 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
     return points;
   }
   getPointCoordinate(data: PointGeometryData, i: number, crs?: string | number | null) {
-    if (!data?.['geometry.x'] || !data?.['geometry.y']) {
-      throw new Error('Point geometry not found in dataset');
+    if (!data?.["geometry.x"] || !data?.["geometry.y"]) {
+      throw new Error("Point geometry not found in dataset");
     }
-    if (data['geometry.x'][i] === null || data['geometry.y'][i] === null) {
+    if (data["geometry.x"][i] === null || data["geometry.y"][i] === null) {
       return null;
     }
-    return transform([data['geometry.x'][i], data['geometry.y'][i]], crs);
+    return transform([data["geometry.x"][i], data["geometry.y"][i]], crs);
   }
 }
 
-function withImportantAttributes(attrs: ComponentProperty[]): ComponentProperty[] {
+function withImportantAttributes(attrs: DataAttribute[]): DataAttribute[] {
   return [
     ...attrs,
     ...Object.values(ImportantAttribute).map((a: string) => {
       return {
-        component: '',
-        name: a
+        component: "",
+        name: a,
       };
-    })
+    }),
   ];
 }
 
 function containsAttributes(
   attributeNames: string[],
   minFound: number
-): (attributes: ComponentProperty[]) => boolean {
-  return (attributes: ComponentProperty[]): boolean => {
+): (attributes: DataAttribute[]) => boolean {
+  return (attributes: DataAttribute[]): boolean => {
     return (
-      attributes.filter(p => {
+      attributes.filter((p) => {
         return attributeNames.includes(p.name);
       }).length >= minFound
     );
@@ -278,7 +277,7 @@ function createDataObject<
   const rv: any = {
     idx,
     id: data.id[idx],
-    coordinates: coord
+    coordinates: coord,
   };
   for (const attr of Object.values(ImportantAttribute)) {
     const attrData = data[attr] as string[];
@@ -289,10 +288,10 @@ function createDataObject<
   return rv;
 }
 
-export const isPoints = containsAttributes(['geometry.x', 'geometry.y'], 2);
-export const isLines = containsAttributes(['geometry.linestring_2d', 'geometry.linestring_3d'], 1);
+export const isPoints = containsAttributes(["geometry.x", "geometry.y"], 2);
+export const isLines = containsAttributes(["geometry.linestring_2d", "geometry.linestring_3d"], 1);
 export const isPolygons = containsAttributes(
-  ['geometry.polygon', 'geometry.polygon_2d', 'geometry.polygon_3d'],
+  ["geometry.polygon", "geometry.polygon_2d", "geometry.polygon_3d"],
   1
 );
-export const isGrid = containsAttributes(['grid.grid_points'], 1);
+export const isGrid = containsAttributes(["grid.grid_points"], 1);

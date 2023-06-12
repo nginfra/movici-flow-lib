@@ -1,16 +1,16 @@
-import { ComponentProperty, EntityGroupData, EntityUpdate, Update } from '../types';
-import { DatasetDownloader } from './DatasetDownloader';
+import type { DataAttribute, EntityGroupData, EntityUpdate, Update } from "../types";
+import type { DatasetDownloader } from "./DatasetDownloader";
 
 export class TimelineDownloader {
   entityGroup: string;
-  properties: ComponentProperty[];
+  properties: DataAttribute[];
   store: DatasetDownloader;
   reportProgress?: (p: number) => void;
   private progress: number;
   private maxProgress: number;
   constructor(
     entityGroup: string,
-    properties: ComponentProperty[],
+    properties: DataAttribute[],
     store: DatasetDownloader,
     reportProgress?: (p: number) => void
   ) {
@@ -37,22 +37,24 @@ export class TimelineDownloader {
     const promises = [];
     for (let i = 0; i < updatesList.length; i++) {
       promises.push(
-        this.store.getUpdateData(updatesList[i], this.entityGroup, this.properties).then(update => {
-          this.updateProgress();
-          return update;
-        })
+        this.store
+          .getUpdateData(updatesList[i], this.entityGroup, this.properties)
+          .then((update) => {
+            this.updateProgress();
+            return update;
+          })
       );
     }
-    return Promise.all(promises).then(upd => {
+    return Promise.all(promises).then((upd) => {
       return upd
-        .filter(upd => {
+        .filter((upd) => {
           return upd?.data[this.entityGroup];
         })
-        .map(upd => {
+        .map((upd) => {
           return {
             timestamp: upd.timestamp,
             iteration: upd.iteration,
-            data: upd.data[this.entityGroup] as EntityGroupData<T>
+            data: upd.data[this.entityGroup] as EntityGroupData<T>,
           };
         });
     });

@@ -1,19 +1,19 @@
-import { RGBAColor } from './colors';
-import {
+import type { RGBAColor } from "./colors";
+import type {
   ByValueColorClause,
   ByValueIconClause,
   FlowVisualizerType,
   LegendOptions,
   StaticColorClause,
-  StaticIconClause
-} from './flowVisualizers';
+  StaticIconClause,
+} from "./flowVisualizers";
 
 export class LegendItem {
   title: string;
   icon?: IconShapeLegendItem | null;
   color?: ColorLegendItem | null;
 
-  constructor({ title, icon, color }: Pick<LegendItem, 'title' | 'icon' | 'color'>) {
+  constructor({ title, icon, color }: Pick<LegendItem, "title" | "icon" | "color">) {
     this.title = title;
     this.icon = icon;
     this.color = color;
@@ -21,7 +21,7 @@ export class LegendItem {
 
   isSimpleLegend() {
     let found = 0;
-    const keys: (keyof this)[] = ['icon', 'color'];
+    const keys: (keyof this)[] = ["icon", "color"];
     for (const key of keys) {
       if (this[key]) {
         found++;
@@ -49,7 +49,7 @@ export class IconStaticLegendItem extends IconLegendItem {
     super({ iconLegends: [] });
 
     if (static_ && legend) {
-      this.iconLegends = [['', static_.icon]];
+      this.iconLegends = [["", static_.icon]];
     }
   }
 }
@@ -67,8 +67,8 @@ export class IconByValueLegendItem extends IconLegendItem {
 }
 
 export class ColorLegendItem {
-  visualizerType?: FlowVisualizerType;
-  colorType: 'buckets' | 'gradient';
+  visualizerType: FlowVisualizerType;
+  colorType: "buckets" | "gradient";
   colorLegends: [string, RGBAColor][];
 
   constructor({ visualizerType, colorType, colorLegends }: ColorLegendItem) {
@@ -79,23 +79,19 @@ export class ColorLegendItem {
 }
 
 export class ColorByValueLegendItem extends ColorLegendItem {
-  constructor(config: ColorLegendItem, byValue?: ByValueColorClause, legend?: LegendOptions) {
+  constructor(config: ColorLegendItem, byValue: ByValueColorClause, legend: LegendOptions) {
     super(config);
 
-    if (byValue && legend?.labels) {
-      this.colorLegends = legend.labels.map((label: string, idx: number) => {
+    this.colorLegends =
+      legend.labels?.map((label: string, idx: number) => {
         return [label, byValue.colors[idx][1]] as [string, RGBAColor];
-      });
-    }
+      }) ?? [];
   }
 }
 
 export class ColorStaticLegendItem extends ColorLegendItem {
-  constructor(config: ColorLegendItem, static_?: StaticColorClause, legend?: LegendOptions) {
+  constructor(config: ColorLegendItem, static_: StaticColorClause) {
     super(config);
-
-    if (static_ && legend) {
-      this.colorLegends = [['', static_.color]];
-    }
+    this.colorLegends = [["", static_.color]];
   }
 }

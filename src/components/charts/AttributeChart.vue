@@ -1,39 +1,36 @@
 <template>
   <div id="attribute-chart" style="position: relative">
     <Scatter
-      ref="chart"
-      :chart-data="chartData"
-      :chart-options="options"
-      :chart-id="id"
+      ref="scatter"
+      :data="chartData"
+      :options="options"
+      :id="id"
       :css-classes="cssClasses"
-      :styles="styles"
+      :style="styles"
     />
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Scatter } from 'vue-chartjs/legacy';
+<script setup lang="ts">
+import { Scatter } from "vue-chartjs";
+import { formatValueByDataType, type Formatter } from "@movici-flow-common/utils/format";
+import type { ChartVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
+import { MoviciColors } from "@movici-flow-common/visualizers/maps/colorMaps";
+import type { ChartData, ChartEvent, ChartOptions, TooltipItem, ChartType } from "chart.js";
 import {
   Chart as ChartJS,
-  Title,
-  Tooltip,
   Legend,
   LineElement,
   LinearScale,
-  CategoryScale,
   PointElement,
-  ChartData,
-  ChartOptions,
-  TooltipItem,
-  ChartEvent,
-  LegendItem
-} from 'chart.js';
-import annotationPlugin, { AnnotationOptions } from 'chartjs-plugin-annotation';
-import { MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
-import { ChartConfig } from '@movici-flow-common/visualizers/charts/ChartVisualizer';
-import { Formatter, formatValueByDataType } from '@movici-flow-common/utils/format';
-import { ChartVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
+  Title,
+  Tooltip,
+  CategoryScale,
+} from "chart.js";
+import type { AnnotationOptions } from "chartjs-plugin-annotation";
+import annotationPlugin from "chartjs-plugin-annotation";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, type CSSProperties } from "vue";
+import { useI18n } from "vue-i18n";
 
 ChartJS.register(
   Title,
@@ -45,167 +42,163 @@ ChartJS.register(
   PointElement,
   annotationPlugin
 );
+const { t } = useI18n();
 
-function defaultCustomTimeFormat(val: number) {
-  return 'default: ' + new Date(val * 1000).toLocaleString('NL-nl');
+const props = withDefaults(
+  defineProps<{
+    chartData: ChartData<"scatter">;
+    chartOptions: ChartOptions;
+    chartInfo: ChartVisualizerInfo;
+    timestamp: number;
+    cssClasses?: string;
+    dataType?: string;
+    enums?: string[];
+    customTimeFormat?(val: number): string;
+  }>(),
+  {
+    cssClasses: "",
+    customTimeFormat: (val: number) => new Date(val * 1000).toLocaleString("NL-nl"),
+  }
+);
+const id = computed(() => props.chartInfo.id);
+
+const scatter = ref<{ chart: ChartJS } | null>(null);
+
+defineExpose({
+  getChart: () => scatter.value?.chart,
+});
+
+const windowHeight = ref(0);
+function updateWindowHeight() {
+  windowHeight.value = window.innerHeight;
+}
+onMounted(() => {
+  updateWindowHeight();
+  nextTick(() => {
+    window.addEventListener("resize", updateWindowHeight);
+  });
+});
+onBeforeUnmount(() => window.removeEventListener("resize", updateWindowHeight));
+
+const styles = computed<CSSProperties>(() => {
+  const verticalOverhead = 175, // px
+    boxFillHeight = 2 / 5,
+    chartHeight = Math.max(Math.floor(windowHeight.value * boxFillHeight - verticalOverhead), 150);
+
+  return {
+    height: chartHeight + "px",
+    position: "relative",
+  };
+});
+
+const options = computed(() => {
+  let tooltip: HTMLElement | null = null;
+
+  return {
+    ...props.chartOptions,
+    responsive: true,
+    interaction: {
+      intersect: true,
+      mode: "nearest",
+    },
+    plugins: {
+      annotation: {
+        annotations: [getLineAnotation(props.timestamp)],
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: TooltipItem<ChartType>) => {
+            const labels: string[] = [];
+
+            if (context.parsed.x !== null) {
+              labels.push(props.customTimeFormat(context.parsed.x));
+            }
+            // add enum, units and so on
+            labels.push("Value: " + formatValue(context.parsed.y));
+
+            return labels;
+          },
+        },
+      },
+      legend: {
+        onHover: (event: ChartEvent, item: { datasetIndex: number; text: string }) => {
+          if (tooltip) return;
+
+          const parent = document.getElementById("attribute-chart");
+
+          if (parent) {
+            tooltip = createTooltip({
+              parent,
+              event,
+              text: getLegendTooltipContent(item),
+            });
+          }
+        },
+        onLeave: () => {
+          if (tooltip) {
+            tooltip.remove();
+            tooltip = null;
+          }
+        },
+      },
+    },
+  } as ChartOptions<"scatter">;
+});
+
+function getLegendTooltipContent(legendItem: { datasetIndex: number; text: string }) {
+  const info = props.chartInfo?.items[legendItem.datasetIndex];
+  if (!info) {
+    return legendItem.text;
+  }
+  return `${info.datasetName} -> ${info.entityGroup} -> [${info.entityId}] ${info.name}`;
 }
 
-@Component({
-  name: 'AttributeChart',
-  components: {
-    Scatter
+function formatValue(value: unknown) {
+  const formatters: Record<string, Formatter> = {
+    NULL: () => "N/A",
+    BOOLEAN: (val: unknown) => String(val ? t("misc.yes") : t("misc.no")),
+  };
+  const enums = props.enums;
+  if (enums) {
+    formatters.ENUM = (val: unknown) => enums[Number(val)] ?? `N/A (${val})`;
   }
-})
-export default class AttributeChart extends Vue {
-  @Prop({ type: Object, required: true }) readonly chartData!: ChartData;
-  @Prop({ type: Object, required: true }) readonly chartOptions!: ChartConfig;
-  @Prop({ type: Object, default: null }) readonly chartInfo!: ChartVisualizerInfo | null;
-  @Prop({ default: '', type: String }) readonly id!: string;
-  @Prop({ type: Number, default: 0 }) readonly timestamp!: number;
-  @Prop({ type: String, default: '' }) readonly cssClasses!: string;
-  @Prop({ type: String, default: 'DOUBLE' }) readonly dataType!: string | null;
-  @Prop({ type: Array, default: null }) readonly enums!: string[] | null;
-  @Prop({ type: Function, default: defaultCustomTimeFormat })
-  readonly customTimeFormat!: (val: number) => string;
-  windowHeight = 0;
+  const datatype = typeof value === "boolean" ? "BOOLEAN" : "DOUBLE";
+  return formatValueByDataType(value, datatype, formatters);
+}
 
-  get styles() {
-    const verticalOverhead = 175, // px
-      boxFillHeight = 2 / 5,
-      chartHeight = Math.max(Math.floor(this.windowHeight * boxFillHeight - verticalOverhead), 150);
-
-    return {
-      height: chartHeight + 'px',
-      position: 'relative'
-    };
-  }
-
-  get options(): ChartOptions {
-    let tooltip: HTMLElement | null = null;
-
-    const rv: ChartOptions = {
-      ...this.chartOptions,
-      responsive: true,
-      interaction: {
-        intersect: true,
-        mode: 'nearest'
-      },
-      plugins: {
-        annotation: {
-          annotations: [this.getLineAnotation(this.timestamp)]
-        },
-        tooltip: {
-          callbacks: {
-            label: (context: TooltipItem<'line'>) => {
-              const labels: string[] = [];
-
-              if (context.parsed.x !== null) {
-                labels.push(this.customTimeFormat(context.parsed.x));
-              }
-              // add enum, units and so on
-              labels.push('Value: ' + this.formatValue(context.parsed.y));
-
-              return labels;
-            }
-          }
-        },
-        legend: {
-          onHover: (event, item) => {
-            if (tooltip) return;
-
-            const parent = document.getElementById('attribute-chart');
-
-            if (parent) {
-              tooltip = createTooltip({
-                parent,
-                event,
-                text: this.getLegendTooltipContent(item as Required<LegendItem>)
-              });
-            }
-          },
-          onLeave: () => {
-            if (tooltip) {
-              tooltip.remove();
-              tooltip = null;
-            }
-          }
-        }
-      }
-    };
-
-    return rv;
-  }
-
-  getLegendTooltipContent(legendItem: { datasetIndex: number; text: string }) {
-    const info = this.chartInfo?.items[legendItem.datasetIndex];
-    if (!info) {
-      return legendItem.text;
-    }
-    return `${info.datasetName} -> ${info.entityGroup} -> [${info.entityId}] ${info.name}`;
-  }
-
-  formatValue(value: unknown) {
-    const formatters: Record<string, Formatter> = {
-      NULL: () => 'N/A',
-      BOOLEAN: (val: unknown) => String(val ? this.$t('misc.yes') : this.$t('misc.no'))
-    };
-    const enums = this.enums;
-    if (enums) {
-      formatters.ENUM = (val: unknown) => enums[Number(val)] ?? `N/A (${val})`;
-    }
-    const datatype = typeof value === 'boolean' ? 'BOOLEAN' : 'DOUBLE';
-    return formatValueByDataType(value, datatype, formatters);
-  }
-
-  getLineAnotation(timestamp: number): AnnotationOptions {
-    return {
-      type: 'line',
-      xMin: timestamp,
-      xMax: timestamp,
-      borderColor: MoviciColors.DARK_GREY,
-      borderWidth: 2,
-      value: 100
-    };
-  }
-
-  setWindowHeight() {
-    this.windowHeight = window.innerHeight;
-  }
-
-  mounted() {
-    this.setWindowHeight();
-    this.$nextTick(() => {
-      window.addEventListener('resize', this.setWindowHeight);
-    });
-  }
-
-  beforeDestroy() {
-    window.removeEventListener('resize', this.setWindowHeight);
-  }
+function getLineAnotation(timestamp: number): AnnotationOptions {
+  return {
+    type: "line",
+    xMin: timestamp,
+    xMax: timestamp,
+    borderColor: MoviciColors.DARK_GREY,
+    borderWidth: 2,
+    value: 100,
+  };
 }
 
 function createTooltip({
   parent,
   event,
-  text
+  text,
 }: {
   parent: HTMLElement;
   event: ChartEvent;
   text: string;
 }) {
-  const tooltip = document.createElement('span');
+  const tooltip = document.createElement("span");
   Object.assign(tooltip.style, {
-    position: 'absolute',
-    left: event.x + 'px',
-    top: event.y + 'px',
-    color: 'white',
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    borderRadius: '5px',
-    transform: 'translate(-50%, -120%)',
-    padding: '2px 10px',
+    position: "absolute",
+    left: event.x + "px",
+    top: event.y + "px",
+    color: "white",
+    backgroundColor: "rgba(0,0,0,0.8)",
+    borderRadius: "5px",
+    transform: "translate(-50%, -120%)",
+    padding: "2px 10px",
     fontFamily: '"Source Sans Pro", sans-serif',
-    pointerEvents: 'none',
-    fontSize: '.85em'
+    pointerEvents: "none",
+    fontSize: ".85em",
   });
   tooltip.textContent = text;
   parent.appendChild(tooltip);

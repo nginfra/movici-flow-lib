@@ -1,6 +1,6 @@
-import { IVisualizer } from '../types';
-import { TapefileStore } from './TapefileStore';
-import { BaseVisualizerInfo } from './VisualizerInfo';
+import type { IVisualizer } from "../types";
+import type { TapefileStore } from "./TapefileStore";
+import type { BaseVisualizerInfo } from "./VisualizerInfo";
 
 export interface VisualizerContext<I extends BaseVisualizerInfo> {
   info: I;
@@ -36,7 +36,7 @@ export abstract class BaseVisualizer<I extends BaseVisualizerInfo> implements IV
 
   async load(): Promise<void> {
     if (this.mustReload()) {
-      this.info.unsetError('load');
+      this.info.unsetError("load");
       try {
         await this.doLoad();
       } catch (err: unknown) {
@@ -69,7 +69,7 @@ export abstract class BaseVisualizer<I extends BaseVisualizerInfo> implements IV
   }
 
   private handleError(err: Error, callback?: (e: Error) => void) {
-    this.info.setError('load', err.message);
+    this.info.setError("load", err.message);
     if (this.onError) {
       this.onError(err);
     }

@@ -1,19 +1,19 @@
-import { DataFilterExtension } from '@deck.gl/extensions';
-import {
+import { DataFilterExtension } from "@deck.gl/extensions";
+import type {
   Coordinate,
   IMapVisualizer,
   ITapefile,
   LayerParams,
   TopologyLayerData,
-  VisibilityClause
-} from '@movici-flow-common/types';
-import isEqual from 'lodash/isEqual';
-import NumberMapper from '../maps/NumberMapper';
+  VisibilityClause,
+} from "@movici-flow-common/types";
+import isEqual from "lodash/isEqual";
+import NumberMapper from "../maps/NumberMapper";
 import {
   TapefileAccessor,
   VisualizerModule,
-  VisualizerModuleParams
-} from '../visualizerModules/common';
+  type VisualizerModuleParams,
+} from "../visualizerModules/common";
 
 type VisibilityAccessor<D> = ((d: D) => number) | number;
 
@@ -45,10 +45,10 @@ export default class VisibilityModule<
       params.props.extensions ??= [];
       params.props.extensions.push(
         new DataFilterExtension({
-          filterSize: 1
+          filterSize: 1,
         })
       );
-      this.setUpdateTriggers(params, 'getFilterValue', this.currentSettings);
+      this.setUpdateTriggers(params, "getFilterValue", this.currentSettings);
     }
     return params;
   }
@@ -84,13 +84,13 @@ export default class VisibilityModule<
       const visibilityMapper = new NumberMapper<number>({
         mapping: clause.byValue.mapping.map(([inp, out]) => [Number(inp), Number(out)]),
         specialResult: 1,
-        undefinedResult: 0
+        undefinedResult: 0,
       });
       const accessor: TapefileAccessor<number | null, number> = new TapefileAccessor(
         visibilityMapper
       );
 
-      visualizer.requestTapefile(clause.byValue.attribute, t => {
+      visualizer.requestTapefile(clause.byValue.attribute, (t) => {
         accessor.setTapefile(t as ITapefile<number | null>);
       });
       return (d: LData) => accessor.getValue(d.idx);

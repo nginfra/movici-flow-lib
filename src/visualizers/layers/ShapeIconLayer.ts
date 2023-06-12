@@ -1,16 +1,16 @@
-import { CompositeLayer } from '@deck.gl/core';
-import { IconLayer } from '@deck.gl/layers';
-import { CompositeLayerProps } from '@deck.gl/core/lib/composite-layer';
-import { PointCoordinate, RGBAColor, TopologyLayerData } from '@movici-flow-common/types';
-import { getContrastingColor } from '@movici-flow-common/utils/colorUtils';
-import { IconPackName } from '../visualizerModules/iconCommon';
+import { CompositeLayer } from "@deck.gl/core";
+import { IconLayer } from "@deck.gl/layers";
+import type { CompositeLayerProps } from "@deck.gl/core/lib/composite-layer";
+import type { PointCoordinate, RGBAColor, TopologyLayerData } from "@movici-flow-common/types";
+import { getContrastingColor } from "@movici-flow-common/utils/colorUtils";
+import type { IconPackName } from "../visualizerModules/iconCommon";
 
-const FALLBACK_ICON = 'question',
-  FALLBACK_SHAPE = 'map-marker',
+const FALLBACK_ICON = "question",
+  FALLBACK_SHAPE = "map-marker",
   LOAD_OPTIONS = {
     imagebitmap: {
-      resizeQuality: 'high'
-    }
+      resizeQuality: "high",
+    },
   };
 const DEFAULT_SIZE_SCALE = 0.5;
 function getValue<D, T extends number | boolean | string>(
@@ -18,7 +18,7 @@ function getValue<D, T extends number | boolean | string>(
   accessor?: ((_: D) => T) | T
 ): T | null {
   if (!accessor) return null;
-  if (typeof accessor === 'function') {
+  if (typeof accessor === "function") {
     return accessor(d);
   }
   return accessor;
@@ -54,39 +54,37 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
     getIcon,
     iconAtlas,
     iconMapping,
-    sizeMinPixels,
-    sizeMaxPixels
   }: CompositeLayerProps<D> & ShapeIconProps<D>) {
     const hasIconAndShape = hasIcon && hasShape,
       getPixelOffset = hasIconAndShape
         ? (d: D) => {
             const shape = getValue(d, getShape) ?? FALLBACK_SHAPE,
               iconCenter = shapeMapping?.[shape]?.iconCenter ?? [0, 0],
-              size = typeof getSize === 'function' ? getSize(d) : getSize;
-            return iconCenter.map(i => i * size);
+              size = typeof getSize === "function" ? getSize(d) : getSize;
+            return iconCenter.map((i) => i * size);
           }
         : [0, 0],
       getIconColor = hasIconAndShape
         ? (d: D) => {
-            return getContrastingColor(typeof getColor === 'function' ? getColor(d) : getColor);
+            return getContrastingColor(typeof getColor === "function" ? getColor(d) : getColor);
           }
         : getColor,
       getIconSize = hasIconAndShape
         ? (d: D) => {
             const icon = getValue(d, getIcon) ?? FALLBACK_ICON;
             let sizeScale = iconMapping?.[icon]?.inShapeSize ?? DEFAULT_SIZE_SCALE;
-            if (typeof sizeScale !== 'number') {
+            if (typeof sizeScale !== "number") {
               const shape = getValue(d, getShape) ?? FALLBACK_SHAPE;
               sizeScale = sizeScale[shape] ?? sizeScale.$default ?? DEFAULT_SIZE_SCALE;
             }
 
-            const size = typeof getSize === 'function' ? getSize(d) : getSize;
+            const size = typeof getSize === "function" ? getSize(d) : getSize;
             return size * sizeScale;
           }
         : getSize;
     return new IconLayer(
       this.getSubLayerProps({
-        id: 'icon',
+        id: "icon",
         data,
         iconAtlas,
         iconMapping,
@@ -95,8 +93,6 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
         getColor: getIconColor,
         getSize: getIconSize,
         getPixelOffset,
-        sizeMinPixels: sizeMinPixels ? sizeMinPixels : 0,
-        sizeMaxPixels: sizeMaxPixels ? sizeMaxPixels : Number.MAX_SAFE_INTEGER,
         updateTriggers: {
           getPosition: this.props.updateTriggers.getPosition,
           getIcon: this.props.updateTriggers.getIcon,
@@ -106,19 +102,19 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
             ...(this.props.updateTriggers.getShape ?? []),
 
             hasIcon,
-            hasShape
+            hasShape,
           ],
           getColor: [...(this.props.updateTriggers.getColor ?? []), hasIcon, hasShape],
           getPixelOffset: [
             ...(this.props.updateTriggers.getShape ?? []),
             ...(this.props.updateTriggers.getSize ?? []),
             hasIcon,
-            hasShape
+            hasShape,
           ],
           iconAtlas: this.props.updateTriggers.iconAtlas,
-          iconMapping: this.props.updateTriggers.iconMapping
+          iconMapping: this.props.updateTriggers.iconMapping,
         },
-        loadOptions: LOAD_OPTIONS
+        loadOptions: LOAD_OPTIONS,
       })
     );
   }
@@ -131,12 +127,10 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
     shapeMapping,
     getSize,
     getColor,
-    sizeMinPixels,
-    sizeMaxPixels
   }: CompositeLayerProps<D> & ShapeIconProps<D>) {
     return new IconLayer(
       this.getSubLayerProps({
-        id: 'shape',
+        id: "shape",
         data,
         iconAtlas: shapeAtlas,
         iconMapping: shapeMapping,
@@ -144,8 +138,6 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
         getIcon: getShape,
         getColor,
         getSize,
-        sizeMinPixels: sizeMinPixels ? sizeMinPixels : 0,
-        sizeMaxPixels: sizeMaxPixels ? sizeMaxPixels : Number.MAX_SAFE_INTEGER,
         updateTriggers: {
           getPosition: this.props.updateTriggers.getPosition,
           getIcon: this.props.updateTriggers.getShape,
@@ -153,27 +145,27 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
           getColor: this.props.updateTriggers.getColor,
           getPixelOffset: this.props.updateTriggers.getPixelOffset,
           iconAtlas: this.props.updateTriggers.shapeAtlas,
-          iconMapping: this.props.updateTriggers.shapeMapping
+          iconMapping: this.props.updateTriggers.shapeMapping,
         },
-        loadOptions: LOAD_OPTIONS
+        loadOptions: LOAD_OPTIONS,
       })
     );
   }
 }
 
-ShapeIconLayer.layerName = 'ShapeIconLayer';
+ShapeIconLayer.layerName = "ShapeIconLayer";
 
 ShapeIconLayer.defaultProps = {
   hasIcon: false,
-  getIcon: { type: 'accessor', value: FALLBACK_ICON },
+  getIcon: { type: "accessor", value: FALLBACK_ICON },
   hasShape: false,
-  getShape: { type: 'accessor', value: FALLBACK_SHAPE },
-  getColor: { type: 'accessor', value: [0, 0, 0, 255] },
-  getSize: { type: 'accessor', value: 25 },
+  getShape: { type: "accessor", value: FALLBACK_SHAPE },
+  getColor: { type: "accessor", value: [0, 0, 0, 255] },
+  getSize: { type: "accessor", value: 25 },
   getPosition: {
-    type: 'accessor',
-    value: (d: TopologyLayerData<PointCoordinate>) => d.coordinates
-  }
+    type: "accessor",
+    value: (d: TopologyLayerData<PointCoordinate>) => d.coordinates,
+  },
 };
 
 interface ShapeIconProps<D> {
@@ -191,13 +183,11 @@ interface ShapeIconProps<D> {
   getColor: ((_: D) => RGBAColor) | RGBAColor;
   getSize: ((_: D) => number) | number;
   getPosition: (_: D) => PointCoordinate;
-  sizeMinPixels?: number;
-  sizeMaxPixels?: number;
 }
 
 export type IconMapping = Record<string, IconMappingItem>;
 export type IconMappingOverrides = Record<string, Partial<IconMappingItem>>;
-export type InShapeSize = number | Record<string | '$default', number>;
+export type InShapeSize = number | Record<string | "$default", number>;
 export interface IconMappingItem {
   url?: string;
   width: number;

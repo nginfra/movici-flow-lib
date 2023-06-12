@@ -1,13 +1,8 @@
-import upperFirst from 'lodash/upperFirst';
-import VueRouter from 'vue-router';
-import VueI18n from 'vue-i18n';
+import upperFirst from "lodash/upperFirst";
 
-import { buildFlowUrl } from './utils';
-import { failMessage } from './utils/snackbar';
+import type { FlowLocation } from "./types";
 
 type ErrorProps = {
-  $t: typeof VueI18n.prototype.t;
-  $router: VueRouter;
   query?: Record<string, string | undefined>;
   onDone?: () => void;
 };
@@ -21,24 +16,22 @@ export class MoviciError extends Error {
   }
 
   get name() {
-    return 'MoviciError';
+    return "MoviciError";
   }
-
-  handleError(props: ErrorProps) {
-    const error = this.message
-      ? this.message
-      : this.id
-      ? props.$t('flow.errors.' + this.id, this?.context ?? {}) + ''
-      : 'Unknown Error';
-
-    failMessage(error);
-    console.error(this);
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  handleError(props: ErrorProps) {}
 }
 
 export class ValidationError extends MoviciError {
   get name() {
-    return 'ValidationError';
+    return "ValidationError";
+  }
+}
+export class FlowRedirect extends MoviciError {
+  location: FlowLocation;
+  constructor(location: FlowLocation, message?: string, context?: Record<string, string>) {
+    super(message, context);
+    this.location = location;
   }
 }
 
@@ -46,30 +39,23 @@ export class FlowErrorSetup extends MoviciError {
   redirect?: string;
 
   get name() {
-    return 'FlowErrorSetup: ' + upperFirst(this.id);
-  }
-
-  async handleError(props: ErrorProps): Promise<void> {
-    super.handleError(props);
-    if (this.redirect) {
-      await props.$router.push(buildFlowUrl(this.redirect, props.query));
-    }
+    return "FlowErrorSetup: " + upperFirst(this.id);
   }
 }
 
 export class UserNotFound extends FlowErrorSetup {
-  id = 'userNotFound';
-  redirect = 'Console';
+  id = "userNotFound";
+  redirect = "Console";
 }
 
 export class ProjectNameNotProvided extends FlowErrorSetup {
-  id = 'projectNameNotProvided';
-  redirect = 'FlowProject';
+  id = "projectNameNotProvided";
+  redirect = "FlowProject";
 }
 
 export class ProjectInvalid extends FlowErrorSetup {
-  id = 'projectInvalid';
-  redirect = 'FlowProject';
+  id = "projectInvalid";
+  redirect = "FlowProject";
 
   async handleError(props: ErrorProps): Promise<void> {
     delete props.query?.project;
@@ -79,13 +65,13 @@ export class ProjectInvalid extends FlowErrorSetup {
 }
 
 export class ScenarioNameNotProvided extends FlowErrorSetup {
-  id = 'scenarioNameNotProvided';
-  redirect = 'FlowScenario';
+  id = "scenarioNameNotProvided";
+  redirect = "FlowScenario";
 }
 
 export class ScenarioInvalid extends FlowErrorSetup {
-  id = 'scenarioInvalid';
-  redirect = 'FlowScenario';
+  id = "scenarioInvalid";
+  redirect = "FlowScenario";
 
   async handleError(props: ErrorProps): Promise<void> {
     delete props.query?.scenario;
@@ -94,13 +80,13 @@ export class ScenarioInvalid extends FlowErrorSetup {
 }
 
 export class ViewHasNoScenario extends FlowErrorSetup {
-  id = 'viewHasNoScenario';
-  redirect = 'FlowVisualization';
+  id = "viewHasNoScenario";
+  redirect = "FlowVisualization";
 }
 
 export class ViewInvalid extends FlowErrorSetup {
-  id = 'viewInvalid';
-  redirect = 'FlowVisualization';
+  id = "viewInvalid";
+  redirect = "FlowVisualization";
 
   async handleError(props: ErrorProps): Promise<void> {
     delete props.query?.view;
@@ -109,16 +95,16 @@ export class ViewInvalid extends FlowErrorSetup {
 }
 
 export class ViewNotInScenario extends FlowErrorSetup {
-  id = 'viewNotInScenario';
-  redirect = 'FlowScenario';
+  id = "viewNotInScenario";
+  redirect = "FlowScenario";
 }
 
 export class ViewNotInProject extends FlowErrorSetup {
-  id = 'viewNotInProject';
-  redirect = 'FlowProject';
+  id = "viewNotInProject";
+  redirect = "FlowProject";
 }
 
 export class SummaryNotFound extends FlowErrorSetup {
-  id = 'summaryNotFound';
-  redirect = 'FlowScenario';
+  id = "summaryNotFound";
+  redirect = "FlowScenario";
 }

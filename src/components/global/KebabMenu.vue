@@ -5,54 +5,54 @@
     class="dropdown dropdown-menu-animation is-mobile-modal"
   >
     <div
-      ref="anchorRef"
+      ref="anchor"
       role="button"
       aria-haspopup="true"
       class="dropdown-trigger"
-      @click="toggle(!visible)"
+      @click.stop="toggle()"
     >
       <span class="ellipsis">
         <o-icon size="small" pack="far" :icon="visible ? 'angle-right' : 'ellipsis-v'" />
       </span>
     </div>
-    <div :style="style" v-show="visible" ref="popupRef">
+    <div :style="style" v-show="visible" ref="fixedposition">
       <MovActionMenu>
         <MovActionMenuItem
-          v-for="(item, index) in value"
+          v-for="(item, index) in modelValue"
           :key="index"
-          :value="item"
-          @emitAndClose="emitAndClose($event.event, $event.value)"
+          :modelValue="item"
+          @action="handleAction"
         />
       </MovActionMenu>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Mixins, Prop, Ref } from 'vue-property-decorator';
-import FixedPosition from '@movici-flow-common/mixins/FixedPosition';
-import { ActionMenuItem } from '@movici-flow-common/types';
-import MovActionMenuItem from './ActionMenuItem.vue';
+<script setup lang="ts">
+import { useFixedPosition } from "@movici-flow-common/composables/useFixedPosition";
+import type { ActionItem } from "@movici-flow-common/types";
 
-@Component({
-  name: 'MovKebabMenu',
-  components: {
-    MovActionMenuItem
-  }
-})
-export default class MovKebabMenu extends Mixins(FixedPosition) {
-  @Prop({ type: Array, default: () => [] }) readonly value!: ActionMenuItem[];
-  @Ref('anchorRef') declare readonly anchorRef: HTMLElement;
-  @Ref('popupRef') declare readonly popupRef_: Vue;
-  adjust = {
+defineProps<{
+  modelValue: ActionItem[];
+}>();
+
+const emit = defineEmits<{
+  (e: "action", action: string): void;
+  (e: string): void;
+}>();
+
+const { anchor, fixedposition, visible, toggle, style } = useFixedPosition({
+  overflowClass: "overflox",
+  adjust: {
     top: -12,
-    left: 4
-  };
+    left: 4,
+  },
+});
 
-  emitAndClose(event: string, value: unknown) {
-    this.$emit(event, value);
-    this.visible = false;
-  }
+function handleAction(action: string) {
+  emit("action", action);
+  emit(action);
+  visible.value = false;
 }
 </script>
 

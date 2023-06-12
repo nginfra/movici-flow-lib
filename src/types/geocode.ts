@@ -1,4 +1,4 @@
-import { UUID } from './general';
+import type { UUID } from "./general";
 
 export interface GeocodeSuggestion {
   text: string;

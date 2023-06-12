@@ -1,5 +1,5 @@
-import { ComponentProperty, ShortScenario, Simulation } from '../types';
-import upperFirst from 'lodash/upperFirst';
+import upperFirst from "lodash/upperFirst";
+import type { DataAttribute, ShortScenario, Simulation, UUID } from "../types";
 
 /**
  * Shorthand for checking the existence of a property on an object. Use the
@@ -17,11 +17,15 @@ export function hasOwnProperty<O, K extends PropertyKey>(
   return Object.prototype.hasOwnProperty.call(obj, property);
 }
 
+export function hasUUID<T>(obj: T): obj is T & { uuid: UUID } {
+  return hasOwnProperty(obj, "uuid") && typeof obj.uuid === "string";
+}
+
 export function excludeKeys<T, K extends (keyof T)[]>(obj: T, keys: K): Omit<T, K[number]> {
   const ret = {} as {
-    [K in keyof typeof obj]: typeof obj[K];
+    [K in keyof T]: T[K];
   };
-  let key: keyof typeof obj;
+  let key: keyof T;
   for (key in obj) {
     if (!keys.includes(key)) {
       ret[key] = obj[key];
@@ -35,29 +39,20 @@ export function excludeKey<T>(k: keyof T, { [k]: _, ...o }: T) {
   return o;
 }
 
-export function propertyString(property: ComponentProperty | string): string {
-  if (typeof property === 'string') return property;
-  const base = property.component ? property.component + '/' : '';
-  return base + property.name;
+export function attributeString(property: DataAttribute | string): string {
+  return typeof property === "string" ? property : property.name;
 }
 
-export function parsePropertyString(val: string): ComponentProperty {
-  const parts = val.split('/');
-  if (parts.length === 1) {
-    return { name: parts[0], component: null };
-  }
-  if (parts.length === 2) {
-    return { component: parts[0], name: parts[1] };
-  }
-  throw new Error(`Couldn't parse '${val}' as a valid property identifier`);
+export function parseattributeString(val: string): DataAttribute {
+  return { name: val };
 }
 
 export function getBaseURL(): string {
   return (
     window.location.protocol +
-    '//' +
+    "//" +
     window.location.hostname +
-    (window.location.port ? `:${window.location.port}` : '') +
+    (window.location.port ? `:${window.location.port}` : "") +
     window.location.pathname
   );
 }
@@ -65,7 +60,7 @@ export function getBaseURL(): string {
 export function buildFlowUrl(name: string, query: Record<string, string | undefined> = {}) {
   return {
     name,
-    query: extractDefinedValues(query) as Record<string, string>
+    query: extractDefinedValues(query) as Record<string, string>,
   };
 }
 
@@ -83,33 +78,33 @@ function extractDefinedValues(obj: Record<string, string | undefined>) {
  * @param status
  */
 export function getClassFromStatus(status: string): string {
-  return 'is-' + getVariantFromStatus(status);
+  return "is-" + getVariantFromStatus(status);
 }
 export function getVariantFromStatus(status: string): string {
   switch (status.toLowerCase()) {
-    case 'empty':
-      return 'warning';
-    case 'failed':
-    case 'unknown':
-    case 'invalid':
-    case 'cancelled':
-      return 'danger';
-    case 'ready':
-    case 'running':
-    case 'pending':
-      return 'info';
-    case 'succeeded':
-    case 'done':
-      return 'primary';
+    case "empty":
+      return "warning";
+    case "failed":
+    case "unknown":
+    case "invalid":
+    case "cancelled":
+      return "danger";
+    case "ready":
+    case "running":
+    case "pending":
+      return "info";
+    case "succeeded":
+    case "done":
+      return "primary";
     default:
-      return 'white';
+      return "white";
   }
 }
 export function getStatusFromScenarioAndSimulation(
   scenario: ShortScenario,
   simulation: Simulation
 ) {
-  const allStatuses = ['failed', 'invalid', 'pending', 'running', 'succeeded', 'ready', 'unknown'];
+  const allStatuses = ["failed", "invalid", "pending", "running", "succeeded", "ready", "unknown"];
   const scenarioStatus = getStatusOrUnknown(scenario).toLowerCase();
   const simulationStatus = getStatusOrUnknown(simulation).toLowerCase();
   for (let i = 0; i < allStatuses.length; i++) {
@@ -118,11 +113,11 @@ export function getStatusFromScenarioAndSimulation(
       return upperFirst(status);
     }
   }
-  return 'unknown'; // should not get here
+  return "unknown"; // should not get here
 }
 
 function getStatusOrUnknown(obj: ShortScenario | Simulation) {
-  return obj.status ? obj.status : 'Unknown';
+  return obj.status ? obj.status : "Unknown";
 }
 
 /**
@@ -135,12 +130,12 @@ export function sortByKeys<K>(keys: string[], allowNull = true) {
   const order: number[] = [];
   // remapping the keys, slicing the - or + sign if needed
   // also determines the order they will sorted by pushing into order
-  keys = keys.map(key => {
+  keys = keys.map((key) => {
     const substr = key.substring(0, 1);
-    if (['-', '+'].includes(substr)) {
+    if (["-", "+"].includes(substr)) {
       key = key.substring(1);
     }
-    order.push(substr === '-' ? -1 : 1);
+    order.push(substr === "-" ? -1 : 1);
     return key;
   });
 
@@ -157,7 +152,7 @@ export function sortByKeys<K>(keys: string[], allowNull = true) {
         // checks for null on each value
         if (!isNullA && !isNullB) {
           const getParsedValue = (val: unknown): string | number =>
-              typeof val === 'string' ? val.toUpperCase() : Number(val),
+              typeof val === "string" ? val.toUpperCase() : Number(val),
             valueA = getParsedValue(rawValueA),
             valueB = getParsedValue(rawValueB);
 
@@ -183,4 +178,11 @@ export function sortByKeys<K>(keys: string[], allowNull = true) {
 
     return 0;
   };
+}
+
+export function arrayToMap<T>(items: T[], key: (i: T) => string): Record<string, T> {
+  return items.reduce((result, item) => {
+    result[key(item)] = item;
+    return result;
+  }, {} as Record<string, T>);
 }

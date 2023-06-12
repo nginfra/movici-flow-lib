@@ -52,5 +52,5 @@ export default class EventHandler<E extends string, D> {
 }
 
 function isCallbackIdentifier(id: unknown): id is CallbackIdentifier {
-  return typeof id === 'number';
+  return typeof id === "number";
 }

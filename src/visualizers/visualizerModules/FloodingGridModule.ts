@@ -1,16 +1,16 @@
-import {
+import type {
   Coordinate,
   FloodingGridClause,
   IMapVisualizer,
   LayerParams,
-  TopologyLayerData
-} from '@movici-flow-common/types';
+  TopologyLayerData,
+} from "@movici-flow-common/types";
 
-import { VisualizerModule } from './common';
+import { VisualizerModule } from "./common";
 
-import { fromArrayBuffer } from 'geotiff';
-import { TypedArray } from '@deck.gl/layers/path-layer/path-layer';
-import isEqual from 'lodash/isEqual';
+import { fromArrayBuffer } from "geotiff";
+import type { TypedArray } from "@deck.gl/layers/path-layer/path-layer";
+import isEqual from "lodash/isEqual";
 type NumberAccessor<D> = ((d: D) => number) | number;
 
 export default class FloodingGridModule<
@@ -22,18 +22,18 @@ export default class FloodingGridModule<
   workerID?: number;
 
   compose(params: LayerParams<LData, Coord>, visualizer: IMapVisualizer<Coord>) {
-    if (params.type.layerName !== 'GridLayer') {
+    if (params.type.layerName !== "GridLayer") {
       return params;
     }
     const changed = this.updateSettings(this.info.settings?.floodingGrid);
 
     if (this.currentSettings) {
       const datasetUUID = this.currentSettings.heightMapDatasetUUID;
-      if (!datasetUUID) throw new Error('Invalid heightmap dataset');
-      const { url, options } = visualizer.getFetchRequest('datasetDataBlob', { datasetUUID });
+      if (!datasetUUID) throw new Error("Invalid heightmap dataset");
+      const { url, options } = visualizer.getFetchRequest("datasetDataBlob", { datasetUUID });
       params.props.texture = url;
       params.props.loadOptions = Object.assign(params.props.loadOptions ?? {}, {
-        fetch: options
+        fetch: options,
       });
       params.props.loaders ??= [];
       params.props.loaders.push(this.getLoader(changed));
@@ -66,13 +66,13 @@ export default class FloodingGridModule<
         workerID = this.workerID;
       }
 
-      workerID ??= status.register(['heightmap']);
+      workerID ??= status.register(["heightmap"]);
       this.workerID = workerID;
       if (resetStatus) {
-        status.updateProgress(workerID, 'heightmap', 0);
+        status.updateProgress(workerID, "heightmap", 0);
       }
       onDone = () => {
-        status.updateProgress(workerID as number, 'heightmap', 100);
+        status.updateProgress(workerID as number, "heightmap", 100);
       };
     }
     return GeoTIFFLoader(onDone);
@@ -81,10 +81,10 @@ export default class FloodingGridModule<
 
 function GeoTIFFLoader(onDone?: () => void) {
   return {
-    name: 'GeoTIFF Loader',
-    id: 'geotiff',
-    extensions: ['tiff', 'tif', 'geotiff'],
-    mimeTypes: ['image/tiff', 'image/geo+tiff'],
+    name: "GeoTIFF Loader",
+    id: "geotiff",
+    extensions: ["tiff", "tif", "geotiff"],
+    mimeTypes: ["image/tiff", "image/geo+tiff"],
     async parse(buffer: ArrayBuffer) {
       const geotiff = await fromArrayBuffer(buffer);
       const image = await geotiff.getImage();
@@ -103,8 +103,8 @@ function GeoTIFFLoader(onDone?: () => void) {
         data: rasters[0],
         width: rasters.width,
         height: rasters.height,
-        bbox: bboxTexture
+        bbox: bboxTexture,
       };
-    }
+    },
   };
 }

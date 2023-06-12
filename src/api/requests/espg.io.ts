@@ -1,5 +1,5 @@
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { BaseRequest } from './base';
+import type { AxiosRequestConfig, AxiosResponse } from "axios";
+import { BaseRequest } from "./base";
 
 interface GetProjectionResponse {
   results: { proj4: string }[];
@@ -13,16 +13,16 @@ export class GetEPSGProjection extends BaseRequest<string | null> {
   }
   makeRequest(): AxiosRequestConfig<GetProjectionResponse> {
     return {
-      url: 'https://epsg.io/',
+      url: "https://epsg.io/",
       params: {
         q: this.crs,
-        format: 'json'
-      }
+        format: "json",
+      },
     };
   }
   makeResponse(resp: AxiosResponse<GetProjectionResponse>): string | null {
     const data = resp.data;
-    if (data.status !== 'ok' || !data.results.length) return null;
+    if (data.status !== "ok" || !data.results.length) return null;
     return data.results[0].proj4;
   }
 }

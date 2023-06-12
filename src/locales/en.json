@@ -22,6 +22,7 @@
     "save": "Save",
     "saveAsNew": "Save as new",
     "saveAndGenerate": "Save and generate",
+    "saveAndEdit": "Save & Edit",
     "search": "Search",
     "select": "Select",
     "selectAll": "Select all",
@@ -31,14 +32,13 @@
     "close": "Close"
   },
   "dataset": {
-    "addNew": "@:(actions.addNew) @:(resources.dataset)",
-    "duration": "Processing duration (sec)",
-    "edit": "@:(actions.edit) @:(resources.dataset)",
+    "addNew": "Add new dataset",
+    "edit": "Edit dataset",
     "initData": "Init data",
-    "invalid": "Invalid @:(resources.dataset)",
-    "nonAvailable": "No @:(resources.datasets) available",
-    "select": "Select a @:(resources.dataset)",
-    "selectRequiredTypes": "Select required :@(resources.dataset) types"
+    "invalid": "Invalid dataset",
+    "nonAvailable": "No datasets available",
+    "select": "Select a dataset",
+    "selectRequiredTypes": "Select required dataset types"
   },
   "flow": {
     "errors": {
@@ -55,7 +55,6 @@
       "summaryEntityGroupNotFound": "Entity group {entityGroup} not found in dataset {datasetName}"
     },
     "datasets": {
-      "addDataset": "Add dataset",
       "dataPreview": "Data preview",
       "details": {
         "created_on": "Created on",
@@ -65,13 +64,13 @@
       },
       "entitySummary": "Entity Groups",
       "label": "Datasets",
-      "resume": "Resume",
+      "summary": "Summary",
       "searchPlaceholder": "Search datasets...",
       "usage": "Usage",
       "zeroEntities": "This dataset can't be visualised"
     },
     "entityGroup": {
-      "select": "Select an @:(resources.entityGroup)"
+      "select": "Select an entity group"
     },
     "export": {
       "custom": "Custom",
@@ -100,9 +99,9 @@
     "projects": {
       "details": {
         "created_on": "Created on",
-        "dataset_count": "@:(resources.dataset)s",
+        "dataset_count": "Datasets",
         "last_updated": "Last updated",
-        "scenario_count": "@:(resources.scenario)s",
+        "scenario_count": "Scenarios",
         "tags": "Tags"
       },
       "label": "Workspace",
@@ -147,7 +146,7 @@
         "palette": "Colour palette",
         "type": "Colour type",
         "invertColors": "Invert color order",
-        
+
         "advanced": {
           "title": "Advanced settings",
           "fillOpacity": "Fill Opacity",
@@ -212,7 +211,7 @@
         "noViewToDelete": "There is no current view to delete",
         "selectView": "Select a View",
         "unsavedChanges": "<b>You have unsaved changes!</b> <br>Do you want to close the Configurator?",
-        "unsavedView": "<b>You have an unsaved changes!</b> <br>Do you want to leave the Visualisation?",
+        "unsavedView": "<b>You have an unsaved changes!</b> <br>Do you want to leave this page?",
         "leaveView": "Do you want to leave the Visualisation? <br>You will need to reload the view.",
         "viewCreateSuccess": "View successfully saved",
         "viewDeleteSuccess": "View successfully deleted",
@@ -272,7 +271,7 @@
       "visualiserDisplayName": "Visualiser display name"
     },
     "visualizerGroup": {
-      "select": "Select an @:(resources.visualizerGroup)"
+      "select": "Select a visualiser group"
     },
     "basemap": {
       "light": "light",
@@ -306,7 +305,7 @@
     "currentTime": "Current time",
     "data": "Data",
     "data_type": "Data Type",
-    "dataset_format": " @:(resources.dataset) Format",
+    "dataset_format": "Dataset format",
     "description": "Description",
     "displayName": "Display name",
     "duration": "Duration",
@@ -327,18 +326,19 @@
     "timeScale": "Time scale",
     "type": "Type",
     "unit": "Unit",
-    "username": "Username / @:(properties.email)",
+    "username": "Username / E-mail",
     "zip_code": "Zip code"
   },
   "resources": {
-    "analysis": "Analysis",
     "dataset": "Dataset",
-    "dataset_type": "Dataset Type",
-    "dataset_types": "@:(resources.dataset_type)s",
-    "datasets": "@:(resources.dataset)s",
+    "datasets": "Datasets",
+    "dataset_generator": "Dataset Generator",
+    "dataset_generators": "Dataset Generators",
+    "dataset_type": "Dataset type",
+    "dataset_types": "Dataset types",
     "entity": "Entity",
-    "entity_type": "Entity Type",
-    "entity_types": "@:(resources.entity_type)s",
+    "entity_type": "Entity type",
+    "entity_types": "Entity types",
     "entityGroup": "Entity group",
     "impactIndicator": "Impact indicator",
     "model": "Model",
@@ -346,30 +346,26 @@
     "model_types": "Model Types",
     "models": "Models",
     "organisation": "Organisation",
-    "organisations": "@:(resources.organisation)s",
+    "organisations": "Organisations",
     "profile": "Profile",
     "project": "Workspace",
-    "projects": "@:(resources.project)s",
-    "property_type": "Property Type",
-    "property_types": "@:(resources.property_type)s",
+    "projects": "Workspaces",
+    "attribute_type": "Attribute Type",
+    "attribute_types": "Attribute Types",
     "region": "Region",
+    "role": "Role",
+    "roles": "Roles",
     "scenario": "Scenario",
-    "scenarios": "@:(resources.scenario)s",
+    "scenarios": "Scenarios",
     "schema": "Dataset Schema",
     "scope": "Scope",
-    "scopes": "@:(resources.scope)s",
+    "scopes": "Scopes",
     "timeline": "Timeline",
     "user": "User",
-    "users": "@:(resources.user)s",
+    "users": "Users",
     "view": "View",
-    "views": "@:(resources.view)s",
+    "views": "Views",
     "visualizerGroup": "Visualiser group"
-  },
-  "settings": {
-    "dataEngineVersion": "Data Engine version",
-    "language": "Language",
-    "selectDataEngineVersion": "@:(actions.select) @:(settings.dataEngineVersion)",
-    "selectLanguage": "@:(actions.select) a @:(settings.language)"
   },
   "time": {
     "days": "Days",
@@ -379,8 +375,8 @@
   },
   "units": {
     "meter": "metre",
-    "meters": "@:(units.meter)s",
+    "meters": "metres",
     "pixel": "pixel",
-    "pixels": "@:(units.pixel)s"
+    "pixels": "pixels"
   }
 }

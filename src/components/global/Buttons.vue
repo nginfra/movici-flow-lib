@@ -1,35 +1,51 @@
 <template>
-  <div class="buttons-container" :class="{ 'is-sticky': isSticky }">
-    <div :class="{ 'is-pulled-right': isPulledRight }">
+  <div class="buttons-container" :class="{ 'is-sticky': props.isSticky }">
+    <div :class="{ 'is-pulled-right': props.isPulledRight }">
       <o-button
-        v-for="(btn, idx) in value"
-        :class="{ 'mr-2': idx !== value.length }"
+        v-for="(btn, idx) in modelValue"
+        :class="{ 'mr-2': idx !== modelValue.length }"
         :key="idx"
-        :size="size"
+        :size="props.size"
         :disabled="btn.isDisabled"
-        @click="$emit(btn.event)"
+        @click="doEmit(btn.event)"
         :icon-left="btn.icon"
         :icon-pack="btn.iconPack"
         :variant="btn.variant"
       >
-        {{ btn.label }}
+        {{ noTranslate ? btn.label : $t(btn.label) }}
       </o-button>
       <slot></slot>
     </div>
-    <div v-if="isPulledRight" class="is-clearfix"></div>
+    <div v-if="props.isPulledRight" class="is-clearfix"></div>
   </div>
 </template>
 
-<script lang="ts">
-import { ButtonItem } from '@movici-flow-common/types';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import type { ButtonItem } from "@movici-flow-common/types";
 
-@Component({ name: 'MovButtons' })
-export default class MovButtons extends Vue {
-  @Prop({ type: Boolean, default: false }) readonly isPulledRight!: boolean;
-  @Prop({ type: Boolean, default: false }) readonly isSticky!: boolean;
-  @Prop({ type: String, default: '' }) readonly size!: string;
-  @Prop({ type: Array }) readonly value!: ButtonItem[];
+const emit = defineEmits<{
+  (e: "action", action: string): void;
+  (e: string): void;
+}>();
+
+const props = withDefaults(
+  defineProps<{
+    modelValue: ButtonItem[];
+    isPulledRight?: boolean;
+    isSticky?: boolean;
+    size?: string;
+    noTranslate?: boolean;
+  }>(),
+  {
+    isPulledRight: false,
+    isSticky: false,
+    size: "",
+  }
+);
+
+function doEmit(event: string) {
+  emit("action", event);
+  emit(event);
 }
 </script>
 

@@ -1,10 +1,10 @@
 <template>
-  <div class="chart-config" v-if="localValue">
+  <div class="chart-config" v-if="local">
     <header class="mb-2">
       <div class="row is-flex is-align-items-center">
         <o-icon pack="far" icon="chart-line" />
         <h1 class="is-size-4 has-text-weight-bold is-flex-grow-1 ml-2">
-          {{ $t('flow.visualization.graph.title') }}
+          {{ $t("flow.visualization.graph.title") }}
         </h1>
         <span class="close is-clickable" :title="$t('actions.close')" @click="$emit('close')">
           <o-icon pack="far" icon="times" />
@@ -22,87 +22,90 @@
           <o-input
             size="small"
             class="is-size-7"
-            v-model="localValue.title"
-            :placeholder="localValue.title"
+            v-model="local.title"
+            :placeholder="local.title"
           />
         </o-field>
       </div>
     </div>
 
-    <div class="contents mb-2" v-if="localValue.items.length">
-      <label class="label is-size-6-half">{{ $t('flow.visualization.graph.lines') }}</label>
+    <div class="contents mb-2" v-if="local.items.length">
+      <label class="label is-size-6-half">{{ $t("flow.visualization.graph.lines") }}</label>
       <div class="box info mb-2 p-3 has-background-white-bis">
         <div class="header is-flex mb-0">
           <label class="label color is-size-7 is-flex-shrink-1 mr-2">
-            {{ $t('flow.visualization.colorConfig.color') }}
+            {{ $t("flow.visualization.colorConfig.color") }}
           </label>
           <label class="label display-name is-size-7 is-flex-grow-1">
-            {{ $t('properties.displayName') }}
+            {{ $t("properties.displayName") }}
           </label>
         </div>
         <Draggable
-          :value="localValue.items"
+          :modelValue="items"
+          :item-key="itemKey"
           v-bind="draggableOptions"
           v-on="draggableEvents"
           class="draggable contents"
-          :class="{ dashed: drag }"
-          @change="updateDraggable"
+          :class="{ dashed: dragging }"
+          @change="onDrag"
         >
-          <div class="item mb-1" v-for="(item, index) in localValue.items" :key="index">
-            <div class="is-flex is-align-items-center">
-              <span class="grip mx-1">
-                <span class="icon small fa-stack has-text-grey">
-                  <i class="far fa-ellipsis-v"></i>
-                  <i class="far fa-ellipsis-v"></i>
+          <template #item="{ index, element }">
+            <div class="item mb-1">
+              <div class="is-flex is-align-items-center">
+                <span class="grip mx-1">
+                  <span class="icon small fa-stack has-text-grey">
+                    <i class="far fa-ellipsis-v"></i>
+                    <i class="far fa-ellipsis-v"></i>
+                  </span>
                 </span>
-              </span>
-              <o-field class="is-flex-shrink-1 mr-2 mb-0">
-                <ColorInput
-                  :value="item.color"
-                  @input="updateColor(index, $event)"
-                  colorPickerPosition="top-right"
+                <o-field class="is-flex-shrink-1 mr-2 mb-0">
+                  <ColorInput
+                    :modelValue="element.color"
+                    @update:modelValue="updateColor(index, $event)"
+                    colorPickerPosition="top-right"
+                  />
+                </o-field>
+                <o-field class="is-flex-grow-1 is-align-items-center mr-2 mb-0">
+                  <o-input expanded size="small" class="is-size-7" v-model="element.name" />
+                </o-field>
+                <o-button
+                  class="is-borderless is-transparent has-hover-bg is-flex has-text-danger"
+                  size="small"
+                  @click="removeItem(index)"
+                  icon-left="trash"
+                  title="Remove graph"
+                  :disabled="local.items.length === 1"
                 />
-              </o-field>
-              <o-field class="is-flex-grow-1 is-align-items-center mr-2 mb-0">
-                <o-input expanded size="small" class="is-size-7" v-model="item.name" />
-              </o-field>
-              <o-button
-                class="is-borderless is-transparent has-hover-bg is-flex has-text-danger"
-                size="small"
-                @click="removeItem(index)"
-                icon-left="trash"
-                title="Remove graph"
-                :disabled="localValue.items.length === 1"
-              />
-              <o-button
-                class="is-borderless is-flex"
-                size="small"
-                @click="toggleDetails(index)"
-                :icon-left="showDetails[index] ? 'angle-up' : 'angle-down'"
-                :title="
-                  !showDetails[index]
-                    ? $t('flow.visualization.graph.showEntityDetails')
-                    : $t('flow.visualization.graph.hideEntityDetails')
-                "
-              />
+                <o-button
+                  class="is-borderless is-flex"
+                  size="small"
+                  @click="toggleDetails(index)"
+                  :icon-left="showDetails[index] ? 'angle-up' : 'angle-down'"
+                  :title="
+                    !showDetails[index]
+                      ? $t('flow.visualization.graph.showEntityDetails')
+                      : $t('flow.visualization.graph.hideEntityDetails')
+                  "
+                />
+              </div>
+              <div
+                v-if="showDetails[index]"
+                class="details is-flex mt-2 mb-1 px-3 py-2 has-background-white"
+              >
+                <o-field class="is-flex-shrink-1 mr-5" :label="`${$t('resources.entity')} ID`">
+                  <span class="value is-size-7">{{ element.entityId }}</span>
+                </o-field>
+                <o-field class="is-flex-shrink-1 mr-5" :label="$t('resources.entityGroup')">
+                  <span class="value is-size-7">{{ element.entityGroup }}</span>
+                </o-field>
+                <o-field class="is-flex-shrink-1" :label="$t('resources.dataset')">
+                  <span class="value is-size-7">
+                    {{ readableDatasetName(element.datasetName) }}
+                  </span>
+                </o-field>
+              </div>
             </div>
-            <div
-              v-if="showDetails[index]"
-              class="details is-flex mt-2 mb-1 px-3 py-2 has-background-white"
-            >
-              <o-field class="is-flex-shrink-1 mr-5" :label="`${$t('resources.entity')} ID`">
-                <span class="value is-size-7">{{ item.entityId }}</span>
-              </o-field>
-              <o-field class="is-flex-shrink-1 mr-5" :label="$t('resources.entityGroup')">
-                <span class="value is-size-7">{{ item.entityGroup }}</span>
-              </o-field>
-              <o-field class="is-flex-shrink-1" :label="$t('resources.dataset')">
-                <span class="value is-size-7">{{
-                  item.datasetName | snakeToSpaces | upperFirst
-                }}</span>
-              </o-field>
-            </div>
-          </div>
+          </template>
         </Draggable>
       </div>
     </div>
@@ -111,183 +114,113 @@
       <MovButtons
         size="small"
         isPulledRight
-        :value="buttons"
-        @saveChart="saveChart"
+        :modelValue="buttons"
+        @save="saveChart"
         @cancel="$emit('close')"
       />
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { RGBAColor } from '@deck.gl/core';
-import ColorInput from '@movici-flow-common/components/widgets/ColorInput.vue';
-import AttributeSelector from '@movici-flow-common/components/widgets/AttributeSelector.vue';
-import { MoviciError } from '@movici-flow-common/errors';
-import DraggableMixin from '@movici-flow-common/mixins/DraggableMixin';
-import SummaryListing from '@movici-flow-common/mixins/SummaryListing';
-import ValidationProvider from '@movici-flow-common/mixins/ValidationProvider';
-import { flowStore } from '@movici-flow-common/store/store-accessor';
-import { ButtonItem, PropertyType } from '@movici-flow-common/types';
-import { excludeKeys } from '@movici-flow-common/utils';
-import { colorTripleToHex, MoviciColors } from '@movici-flow-common/visualizers/maps/colorMaps';
+<script setup lang="ts">
+import ColorInput from "@movici-flow-common/components/ColorInput.vue";
+import { useButtons } from "@movici-flow-common/composables/useButtons";
+import { useDraggable } from "@movici-flow-common/composables/useDraggable";
+import { MoviciError } from "@movici-flow-common/errors";
+import type { RGBAColor } from "@movici-flow-common/types";
+import { excludeKeys } from "@movici-flow-common/utils";
+import { snakeToSpaces, upperFirst } from "@movici-flow-common/utils/filters";
 import {
   ChartVisualizerInfo,
-  ChartVisualizerItem
-} from '@movici-flow-common/visualizers/VisualizerInfo';
-import { cloneDeep, isEqual } from 'lodash';
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import Draggable from 'vuedraggable';
+  ChartVisualizerItem,
+} from "@movici-flow-common/visualizers/VisualizerInfo";
+import cloneDeep from "lodash/cloneDeep";
+import isEqual from "lodash/isEqual";
+import { computed, ref, watch, type Ref } from "vue";
+import Draggable from "vuedraggable";
 
-@Component({
-  name: 'AttributeChartConfig',
-  components: {
-    AttributeSelector,
-    Draggable,
-    ColorInput
+const props = defineProps<{
+  modelValue: ChartVisualizerInfo;
+}>();
+const emit = defineEmits<{
+  (e: "update:modelValue", val: ChartVisualizerInfo): void;
+}>();
+const local = ref<ChartVisualizerInfo>();
+const selectedAttributeName = computed(() => {
+  return local.value?.attribute ?? "";
+});
+
+const showDetails = ref([]) as Ref<boolean[]>;
+function hideAllDetails() {
+  showDetails.value = Array.from({ length: props.modelValue?.items.length ?? 0 }, () => false);
+}
+watch(
+  () => props.modelValue,
+  (val) => {
+    local.value = cloneDeep(val);
+    hideAllDetails();
+  },
+  { immediate: true }
+);
+
+const hasPendingChanges = computed(() => {
+  if (!props.modelValue || !local.value) return false;
+
+  const value = excludeKeys(props.modelValue, ["id", "errors", "status"]),
+    finalized = excludeKeys(local.value, ["id", "errors", "status"]);
+  return !isEqual(finalized, value);
+});
+
+const disabledButtons = computed(() => ({
+  save: !hasPendingChanges.value,
+}));
+const allButtons = useButtons(disabledButtons);
+const buttons = [allButtons.save, allButtons.cancel];
+
+const items = computed({
+  get: () => local.value!.items,
+  set: (val) => {
+    local.value!.items = val;
+  },
+});
+
+const { draggableEvents, draggableOptions, dragging, draggableChange } = useDraggable(
+  items,
+  "chart-items"
+);
+function onDrag(event: { moved: { oldIndex: number; newIndex: number } }) {
+  draggableChange(event);
+  hideAllDetails();
+}
+function itemKey(item: ChartVisualizerItem) {
+  return `${item.datasetName}-${item.entityGroup}-${item.entityId}`;
+}
+
+function removeItem(index: number) {
+  local.value?.items.splice(index);
+  showDetails.value.splice(index);
+}
+
+function toggleDetails(idx: number) {
+  showDetails.value = showDetails.value.map((val, i) => (idx === i ? !val : val));
+}
+
+function updateColor(idx: number, color: RGBAColor) {
+  if (local.value) {
+    local.value.items = local.value.items.map((config, i) => {
+      return idx == i ? new ChartVisualizerItem({ ...config, color }) : config;
+    });
   }
-})
-export default class AttributeChartConfig extends Mixins(
-  ValidationProvider,
-  SummaryListing,
-  DraggableMixin
-) {
-  @Prop({ type: Object, default: null }) readonly value!: ChartVisualizerInfo | null;
-  localValue: ChartVisualizerInfo | null = null;
-  allowedPropertyTypes = ['INT', 'DOUBLE'];
-  showColorPicker = false;
-  colorPickerPresets = Object.values(MoviciColors);
-  colorPickerIndex = -1;
-  showDetails: boolean[] = [];
-  currentScenarioUUID = '';
+}
 
-  get filteredEntityProps() {
-    return this.properties.filter(this.filterProp);
+function readableDatasetName(name: string) {
+  return upperFirst(snakeToSpaces(name));
+}
+function saveChart() {
+  if (!local.value) {
+    throw new MoviciError("Chart is invalid");
   }
-
-  get buttons(): ButtonItem[] {
-    return [
-      {
-        variant: 'success',
-        label: '' + this.$t('actions.save'),
-        icon: 'save',
-        iconPack: 'fas',
-        event: 'saveChart',
-        isDisabled: !this.hasPendingChanges
-      },
-      {
-        label: '' + this.$t('actions.cancel'),
-        icon: 'times',
-        iconPack: 'fas',
-        event: 'cancel'
-      }
-    ];
-  }
-
-  get disabledFields() {
-    return ['dataset', 'entityGroup', 'attribute'];
-  }
-
-  get selectedAttributeName() {
-    return this.localValue?.attribute ?? '';
-  }
-
-  get hasPendingChanges() {
-    if (!this.value || !this.localValue) throw new MoviciError('Empty or invalid configuration');
-
-    const value = excludeKeys(this.value, ['id', 'errors', 'status']),
-      finalized = excludeKeys(this.localValue, ['id', 'errors', 'status']);
-    return !isEqual(finalized, value);
-  }
-
-  getSuggestedColor(chart: ChartVisualizerInfo) {
-    return this.colorPickerPresets[chart?.items.length ?? 0 % (this.colorPickerPresets.length - 1)];
-  }
-
-  colorTripleToHex = colorTripleToHex;
-
-  isDisabled(field: string) {
-    return this.disabledFields.includes(field);
-  }
-
-  updateColor(idx: number, color: RGBAColor) {
-    if (this.localValue) {
-      this.localValue.items = this.localValue.items.map((config, i) => {
-        return idx == i ? new ChartVisualizerItem({ ...config, color }) : config;
-      });
-    }
-  }
-
-  getColor(colorPickerIndex: number) {
-    return this.localValue?.items[colorPickerIndex].color ?? null;
-  }
-
-  filterProp(prop: PropertyType) {
-    return this.allowedPropertyTypes.indexOf(prop.data_type) !== -1;
-  }
-
-  saveChart() {
-    if (!this.localValue) {
-      throw new MoviciError('Chart is invalid');
-    }
-    this.$emit('input', this.localValue);
-  }
-
-  openColorPicker(index: number) {
-    if (this.showColorPicker && this.colorPickerIndex === index) {
-      this.showColorPicker = false;
-      this.colorPickerIndex = -1;
-    } else {
-      this.colorPickerIndex = index;
-      this.showColorPicker = true;
-    }
-  }
-
-  closeColorPicker() {
-    this.colorPickerIndex = -1;
-    this.showColorPicker = false;
-  }
-
-  updateDraggable(event: { moved: { oldIndex: number; newIndex: number } }) {
-    if (this.localValue) {
-      this.localValue.items = this.move<ChartVisualizerItem>(
-        event.moved.oldIndex,
-        event.moved.newIndex,
-        this.localValue.items
-      );
-      this.showDetails = Array.from({ length: this.localValue.items.length }, () => false);
-    }
-  }
-
-  removeItem(index: number) {
-    this.localValue?.items.splice(index);
-    this.showDetails.splice(index);
-  }
-
-  toggleDetails(idx: number) {
-    this.showDetails = this.showDetails.map((val, i) => (idx === i ? !val : val));
-  }
-
-  setLocalValue(value: ChartVisualizerInfo | null) {
-    this.localValue = cloneDeep(value);
-    if (this.localValue) {
-      const contentConfig = this.localValue.items[0];
-
-      this.currentEntityName = contentConfig.entityGroup;
-      this.currentDatasetName = contentConfig.datasetName;
-      this.currentDataset = this.datasets.find(d => d.name === this.currentDatasetName) || null;
-      this.showDetails = Array.from({ length: this.localValue.items.length }, () => false);
-    }
-  }
-
-  @Watch('value', { immediate: true })
-  afterValue() {
-    this.setLocalValue(this.value);
-  }
-
-  async mounted() {
-    this.datasets = (await flowStore.getDatasets()) ?? [];
-  }
+  emit("update:modelValue", local.value);
 }
 </script>
 
@@ -306,18 +239,16 @@ export default class AttributeChartConfig extends Mixins(
     }
   }
 }
-::v-deep {
-  .field {
-    margin-bottom: 0.125em;
-    .field-label {
-      min-width: 80px;
-    }
-    .label {
-      font-size: 0.75rem;
-    }
-    span {
-      display: block;
-    }
+:deep(.field) {
+  margin-bottom: 0.125em;
+  .field-label {
+    min-width: 80px;
+  }
+  .label {
+    font-size: 0.75rem;
+  }
+  span {
+    display: block;
   }
 }
 

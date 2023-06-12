@@ -1,19 +1,19 @@
-import {
+import type {
   ColorClause,
   Coordinate,
   LayerParams,
   TopologyLayerData,
   ITapefile,
   ByValueColorClause,
-  IMapVisualizer
-} from '@movici-flow-common/types';
-import isEqual from 'lodash/isEqual';
-import { TapefileAccessor, VisualizerModule, VisualizerModuleParams } from './common';
+  IMapVisualizer,
+} from "@movici-flow-common/types";
+import isEqual from "lodash/isEqual";
+import { TapefileAccessor, VisualizerModule, type VisualizerModuleParams } from "./common";
 
-import NumberToNumberMap from '../maps/NumberToNumberMap';
-import { RGBAColor } from 'deck.gl';
-import { interpolateColorMapping } from '@movici-flow-common/utils/colorUtils';
-import { isError } from 'lodash';
+import NumberToNumberMap from "../maps/NumberToNumberMap";
+import type { RGBAColor } from "deck.gl";
+import { interpolateColorMapping } from "@movici-flow-common/utils/colorUtils";
+import isError from "lodash/isError";
 type NumberAccessor<D> = ((d: D) => number) | number;
 
 export default class GridColorModule<
@@ -26,7 +26,7 @@ export default class GridColorModule<
     super(params);
   }
   compose(params: LayerParams<LData, Coord>, visualizer: IMapVisualizer<Coord>) {
-    if (params.type.layerName !== 'GridLayer') {
+    if (params.type.layerName !== "GridLayer") {
       return params;
     }
 
@@ -35,7 +35,7 @@ export default class GridColorModule<
 
     params.props.getCellValue = accessor;
     params.props.colorMap = this.getColorMap();
-    this.setUpdateTriggers(params, 'getCellValue', this.currentSettings);
+    this.setUpdateTriggers(params, "getCellValue", this.currentSettings);
 
     return params;
   }
@@ -44,7 +44,7 @@ export default class GridColorModule<
    * Updates current settings. returns true when values have changed, otherwise false
    * @param settings
    */
-  private updateSettings(settings: Pick<ColorClause, 'static' | 'byValue'>): boolean {
+  private updateSettings(settings: Pick<ColorClause, "static" | "byValue">): boolean {
     const changed = !isEqual(settings, this.currentSettings);
     if (changed) {
       this.currentSettings = settings;
@@ -71,10 +71,10 @@ export default class GridColorModule<
       const mapper = new NumberToNumberMap();
 
       const accessor = new TapefileAccessor(mapper);
-      visualizer.requestTapefile(clause.byValue.attribute, t => {
+      visualizer.requestTapefile(clause.byValue.attribute, (t) => {
         accessor.setTapefile(t as ITapefile<number | null>);
         mapper.setSpecialValue((t as ITapefile<number>).specialValue);
-        t.onSpecialValue(val => mapper.setSpecialValue(val as number));
+        t.onSpecialValue((val) => mapper.setSpecialValue(val as number));
       });
       return (d: LData) => accessor.getValue(d.idx);
     }
@@ -90,12 +90,12 @@ export default class GridColorModule<
 
     return [
       [0, staticColor],
-      [1, staticColor]
+      [1, staticColor],
     ];
   }
   prepareColors(colorClause: ByValueColorClause): [number, RGBAColor][] {
     const colors = colorClause.colors;
-    if (colors.length < 2 || colorClause.type == 'buckets') {
+    if (colors.length < 2 || colorClause.type == "buckets") {
       return colors;
     }
 
@@ -112,10 +112,10 @@ export default class GridColorModule<
       try {
         rv.push(...interpolateColorMapping(colors[i], colors[i + 1], inBetween));
       } catch (e) {
-        let msg = 'Could not interpolate between colors';
+        let msg = "Could not interpolate between colors";
 
         if (isError(e)) {
-          msg += ': ' + e.message;
+          msg += ": " + e.message;
         }
         throw new Error(msg);
       }

@@ -1,15 +1,15 @@
-import { Backend } from '@movici-flow-common/types';
-import { parsePropertyString } from '@movici-flow-common/utils';
-import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
-import { ChartOptions } from 'chart.js';
-import { merge } from 'lodash';
-import { colorTripleToHex, MoviciColors } from '../maps/colorMaps';
-import { StreamingTapefile } from '../tapefile';
-import { ChartVisualizerInfo, ChartVisualizerItem } from '../VisualizerInfo';
-import { BaseVisualizer, VisualizerContext } from '../visualizers';
+import type { Backend } from "@movici-flow-common/types";
+import { parseattributeString } from "@movici-flow-common/utils";
+import { DatasetDownloader } from "@movici-flow-common/utils/DatasetDownloader";
+import type { ChartOptions } from "chart.js";
+import merge from "lodash/merge";
+import { colorTripleToHex, MoviciColors } from "../maps/colorMaps";
+import type { StreamingTapefile } from "../tapefile";
+import type { ChartVisualizerInfo, ChartVisualizerItem } from "../VisualizerInfo";
+import { BaseVisualizer, type VisualizerContext } from "../visualizers";
 
-import { ChartDataset } from 'chart.js';
-import { AnnotationOptions } from 'chartjs-plugin-annotation';
+import type { ChartDataset } from "chart.js";
+import type { AnnotationOptions } from "chartjs-plugin-annotation";
 
 export interface ChartConfig {
   id: string;
@@ -18,9 +18,9 @@ export interface ChartConfig {
   data: DatasetConfig[];
 }
 export interface DatasetConfig {
-  dataset: Omit<ChartDataset, 'data'>;
+  dataset: Omit<ChartDataset, "data">;
   tapefile: StreamingTapefile<number>;
-  key: string,
+  key: string;
   entityIdx: number;
 }
 export interface ChartVisualizerContext extends VisualizerContext<ChartVisualizerInfo> {
@@ -28,7 +28,7 @@ export interface ChartVisualizerContext extends VisualizerContext<ChartVisualize
 }
 
 function tapefileKey(item: ChartVisualizerItem) {
-  return `${item.datasetName}:${item.entityGroup}:${item.attribute}`
+  return `${item.datasetName}:${item.entityGroup}:${item.attribute}`;
 }
 export default class ChartVisualizer extends BaseVisualizer<ChartVisualizerInfo> {
   tapefiles: Record<string, StreamingTapefile<number>>;
@@ -46,10 +46,10 @@ export default class ChartVisualizer extends BaseVisualizer<ChartVisualizerInfo>
         store: new DatasetDownloader({
           scenarioUUID: this.info.scenarioUUID,
           datasetUUID: item.datasetUUID as string,
-          backend: this.backend
+          backend: this.backend,
         }),
         entityGroup: item.entityGroup,
-        attributes: [parsePropertyString(item.attribute)]
+        attributes: [parseattributeString(item.attribute)],
       });
     }
   }
@@ -65,8 +65,8 @@ export default class ChartVisualizer extends BaseVisualizer<ChartVisualizerInfo>
       animation: false,
       scales: {
         x: { beginAtZero: true, display: false, ticks: { stepSize: 1 } },
-        y: { beginAtZero: true }
-      }
+        y: { beginAtZero: true },
+      },
     };
     merge(rv, this.info.settings);
     return rv;
@@ -76,7 +76,7 @@ export default class ChartVisualizer extends BaseVisualizer<ChartVisualizerInfo>
     if (!this.tapefiles) return null;
     const datasets: DatasetConfig[] = [];
     for (const item of this.info.items) {
-      const key = tapefileKey(item)
+      const key = tapefileKey(item);
       const tf = this.tapefiles[key];
 
       if (!tf) {
@@ -88,7 +88,7 @@ export default class ChartVisualizer extends BaseVisualizer<ChartVisualizerInfo>
         dataset: this.getChartDataset(item),
         entityIdx: item.entityIdx,
         key,
-        tapefile: tf
+        tapefile: tf,
       });
     }
 
@@ -96,18 +96,18 @@ export default class ChartVisualizer extends BaseVisualizer<ChartVisualizerInfo>
       id: this.info.id,
       title: this.info.title,
       options: this.getOptions(),
-      data: datasets
+      data: datasets,
     };
   }
 
   getLineAnotation(timestamp: number): AnnotationOptions {
     return {
-      type: 'line',
+      type: "line",
       xMin: timestamp,
       xMax: timestamp,
       borderColor: MoviciColors.DARK_GREY,
       borderWidth: 2,
-      value: 100
+      value: 100,
     };
   }
 
@@ -121,12 +121,12 @@ export default class ChartVisualizer extends BaseVisualizer<ChartVisualizerInfo>
       elements: {
         line: {
           backgroundColor: colorTripleToHex(item.color),
-          borderColor: colorTripleToHex(item.color)
+          borderColor: colorTripleToHex(item.color),
         },
         point: {
-          radius: 2.5
-        }
-      }
+          radius: 2.5,
+        },
+      },
     };
   }
 }

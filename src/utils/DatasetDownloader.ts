@@ -1,6 +1,6 @@
-import { ComponentProperty, EntityGroupSpecialValues, Update, UpdateWithData } from '../types';
-import { Backend } from '../types/backend';
-import { specialValues } from './datasetUtils';
+import type { DataAttribute, EntityGroupSpecialValues, Update, UpdateWithData } from "../types";
+import type { Backend } from "../types/backend";
+import { specialValues } from "./datasetUtils";
 
 export interface DatasetStoreConfig {
   backend: Backend;
@@ -21,12 +21,12 @@ export class DatasetDownloader {
 
   async getInitialData<T>(params: {
     entityGroup: string;
-    properties?: ComponentProperty[];
+    properties?: DataAttribute[];
   }): Promise<T> {
     const resp = await this.backend.dataset.getData<T>({
       datasetUUID: this.datasetUUID,
       entityGroup: params.entityGroup,
-      properties: params.properties
+      properties: params.properties,
     });
 
     const entityData = resp?.data && resp.data[params.entityGroup];
@@ -40,7 +40,7 @@ export class DatasetDownloader {
 
   async getDatasetState<T>(params: {
     entityGroup: string;
-    properties?: ComponentProperty[];
+    properties?: DataAttribute[];
     timestamp?: number;
   }): Promise<T> {
     if (!this.scenarioUUID) {
@@ -52,7 +52,7 @@ export class DatasetDownloader {
       scenarioUUID: this.scenarioUUID,
       entityGroup: params.entityGroup,
       properties: params.properties,
-      timestamp: params.timestamp
+      timestamp: params.timestamp,
     });
 
     const entityData = resp?.data && resp.data[params.entityGroup];
@@ -69,7 +69,7 @@ export class DatasetDownloader {
     }
     const allUpdates = await this.backend.updates.list(this.scenarioUUID);
     if (!allUpdates) {
-      throw new Error('Error when downloading updates');
+      throw new Error("Error when downloading updates");
     }
     return allUpdates.filter((upd: Update) => upd.dataset_uuid === this.datasetUUID);
   }
@@ -77,12 +77,12 @@ export class DatasetDownloader {
   async getUpdateData(
     update: Update,
     entityGroup: string,
-    properties: ComponentProperty[]
+    properties: DataAttribute[]
   ): Promise<UpdateWithData> {
     const data = await this.backend.updates.get(update.uuid, entityGroup, properties);
 
     if (!data) {
-      throw new Error('Error when downloading updates');
+      throw new Error("Error when downloading updates");
     }
 
     return data;

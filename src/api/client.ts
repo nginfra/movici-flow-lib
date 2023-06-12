@@ -1,13 +1,19 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { BaseRequest } from './requests';
-import { ConcurrencyManager } from './concurrency';
-import { failMessage } from '@movici-flow-common/utils/snackbar';
-import upperFirst from 'lodash/upperFirst';
-import { hasOwnProperty } from '@movici-flow-common/utils';
+import axios, { AxiosError, type AxiosInstance, type AxiosRequestConfig } from "axios";
+import type { BaseRequest } from "./requests";
+import { ConcurrencyManager } from "./concurrency";
+import upperFirst from "lodash/upperFirst";
+import type { IClient } from "../types";
+
+export function hasOwnProperty<O, K extends PropertyKey>(
+  obj: O,
+  property: K
+): obj is O & Record<K, unknown> {
+  return Object.prototype.hasOwnProperty.call(obj, property);
+}
 
 const API_CONCURRENCY = 10;
 
-interface ErrorHandlingConfig {
+export interface ErrorHandlingConfig {
   [k: number]: (e: HTTPErrorPayload) => void;
   http?: (e: HTTPErrorPayload) => void;
   all?: (e: Error | unknown) => void;
@@ -25,7 +31,7 @@ interface ClientConfig {
   defaultCallbacks?: ErrorHandlingConfig;
 }
 
-export default class Client {
+export default class Client implements IClient {
   readonly onError: ErrorHandlingConfig;
   baseURL: string;
   apiToken: string | null;
@@ -44,9 +50,9 @@ export default class Client {
   downloadAsFile(data: Blob, filename: string) {
     const url = window.URL.createObjectURL(data);
 
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.setAttribute('download', filename);
+    link.setAttribute("download", filename);
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -92,8 +98,8 @@ export default class Client {
       options: {
         method: axiosConfig.method,
         headers: axiosConfig.headers as Record<string, string>,
-        body: axiosConfig.data ? JSON.stringify(axiosConfig.data) : undefined // assume json body
-      }
+        body: axiosConfig.data ? JSON.stringify(axiosConfig.data) : undefined, // assume json body
+      },
     };
   }
 }
@@ -104,51 +110,47 @@ export function defaultClient(settings?: {
   callbacks?: ErrorHandlingConfig;
 }): Client {
   return new Client({
-    baseURL: settings?.baseURL ?? '/',
+    baseURL: settings?.baseURL ?? "/",
     apiToken: settings?.apiToken,
     concurrency: API_CONCURRENCY,
-    defaultCallbacks: settings?.callbacks ?? {
-      http(e: HTTPErrorPayload) {
-        failMessage(e.message);
-      }
-    }
+    defaultCallbacks: settings?.callbacks,
   });
 }
 
 const HTTPS_STATUS_CODES: Record<number, string> = {
-  400: 'Bad Request',
-  401: 'Unauthorized',
-  403: 'Forbidden',
-  404: 'Not Found',
-  409: 'Conflict',
-  500: 'Internal Server Error',
-  502: 'Bad Gateway'
+  400: "Bad Request",
+  401: "Unauthorized",
+  403: "Forbidden",
+  404: "Not Found",
+  409: "Conflict",
+  500: "Internal Server Error",
+  502: "Bad Gateway",
 };
 
 function parseHTTPError(err: AxiosError): HTTPErrorPayload {
   let status: number | undefined = undefined,
-    message = '';
+    message = "";
 
   if (err.response) {
     status = err.response.status;
-    let errMessages: string | Record<string, string> = '';
-    if (hasOwnProperty(err.response.data, 'message')) {
-      errMessages = err.response.data.message as string | Record<string, string>;
+    let errMessages: string | Record<string, string> = "";
+    if (hasOwnProperty(err.response.data, "message")) {
+      errMessages = (err.response.data as { message: string | Record<string, string> }).message;
     }
 
-    if (typeof errMessages !== 'string') {
+    if (typeof errMessages !== "string") {
       message = Object.entries(errMessages)
         .map(([key, msg]) => {
           return `${upperFirst(key)}: ${msg}`;
         })
-        .join('<br>');
+        .join("<br>");
     } else {
       message = errMessages;
     }
   }
 
   if (!message) {
-    message = status ? HTTPS_STATUS_CODES[status] : 'Unknown Error';
+    message = status ? HTTPS_STATUS_CODES[status] : "Unknown Error";
   }
 
   return { status, message };

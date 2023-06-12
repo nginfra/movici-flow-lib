@@ -1,24 +1,24 @@
-import { PathStyleExtension } from '@deck.gl/extensions';
-import {
+import { PathStyleExtension } from "@deck.gl/extensions";
+import type {
   ByValueSizeClause,
   Coordinate,
   LayerParams,
   StaticSizeClause,
   SizeClause,
   TopologyLayerData,
-  IMapVisualizer
-} from '@movici-flow-common/types';
-import isEqual from 'lodash/isEqual';
-import { NumberSizeMap } from '../maps/sizeMaps';
-import { SinglePropertyTapefile } from '../tapefile';
-import { TapefileAccessor, VisualizerModule, VisualizerModuleParams } from './common';
+  IMapVisualizer,
+} from "@movici-flow-common/types";
+import isEqual from "lodash/isEqual";
+import { NumberSizeMap } from "../maps/sizeMaps";
+import type { SinglePropertyTapefile } from "../tapefile";
+import { TapefileAccessor, VisualizerModule, type VisualizerModuleParams } from "./common";
 
 type SizeAccessor<D> = ((d: D) => number) | number;
 
 const DEFAULTS = {
   SIZE: 5,
   MIN_PIXELS: 0,
-  MAX_PIXELS: 1000
+  MAX_PIXELS: 1000,
 };
 
 export default class SizeModule<
@@ -42,51 +42,51 @@ export default class SizeModule<
     const {
       units,
       minPixels = DEFAULTS.MIN_PIXELS,
-      maxPixels = DEFAULTS.MAX_PIXELS
-    } = sizeClause ?? { units: 'pixels' };
+      maxPixels = DEFAULTS.MAX_PIXELS,
+    } = sizeClause ?? { units: "pixels" };
 
     switch (params.type.layerName) {
-      case 'ShapeIconLayer':
+      case "ShapeIconLayer":
         params.props.getSize = accessor;
         params.props.sizeUnits = units;
-        if (units == 'meters') {
+        if (units == "meters") {
           params.props.sizeMaxPixels = maxPixels;
           params.props.sizeMinPixels = minPixels;
         }
-        updateTriggers = ['getSize'];
+        updateTriggers = ["getSize"];
         break;
-      case 'ScatterplotLayer':
+      case "ScatterplotLayer":
         params.props.getRadius = accessor;
         params.props.radiusUnits = units;
-        if (units == 'meters') {
+        if (units == "meters") {
           params.props.radiusMaxPixels = maxPixels;
           params.props.radiusMinPixels = minPixels;
         }
-        updateTriggers = ['getRadius'];
+        updateTriggers = ["getRadius"];
         break;
-      case 'PathLayer':
-      case 'LineLayer':
-      case 'ArcLayer':
+      case "PathLayer":
+      case "LineLayer":
+      case "ArcLayer":
         params.props.getWidth = accessor;
         params.props.widthUnits = units;
-        if (units == 'meters') {
+        if (units == "meters") {
           params.props.widthMaxPixels = maxPixels;
           params.props.widthMinPixels = minPixels;
         }
-        updateTriggers = ['getWidth'];
+        updateTriggers = ["getWidth"];
         break;
-      case 'PolygonLayer':
+      case "PolygonLayer":
         params.props.getLineWidth = accessor;
         params.props.lineWidthUnits = units;
-        if (units === 'meters') {
+        if (units === "meters") {
           params.props.lineWidthMaxPixels = maxPixels;
           params.props.lineWidthMinPixels = minPixels;
         }
-        updateTriggers = ['getLineWidth'];
+        updateTriggers = ["getLineWidth"];
         break;
       default:
         params.props.getWidth = accessor;
-        updateTriggers = ['getWidth'];
+        updateTriggers = ["getWidth"];
     }
 
     this.setDashed(params, this.info.settings?.size?.dashed ?? false, visualizer);
@@ -131,11 +131,11 @@ export default class SizeModule<
   ): SizeAccessor<LData> {
     if (clause?.byValue?.attribute) {
       const sizeMap = new NumberSizeMap({
-        sizes: clause.byValue.sizes
+        sizes: clause.byValue.sizes,
       });
 
       const accessor = new TapefileAccessor(sizeMap);
-      visualizer.requestTapefile(clause.byValue.attribute, t => {
+      visualizer.requestTapefile(clause.byValue.attribute, (t) => {
         accessor.setTapefile(t as SinglePropertyTapefile<number | null>);
       });
 
@@ -161,8 +161,8 @@ export default class SizeModule<
     }
     if (dashed) {
       switch (params.type.layerName) {
-        case 'PathLayer':
-        case 'PolygonLayer':
+        case "PathLayer":
+        case "PolygonLayer":
           params.props.extensions ??= [];
           params.props.extensions.push(
             new PathStyleExtension({ dash: true, highPrecisionDash: true })

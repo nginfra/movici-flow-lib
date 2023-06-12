@@ -1,22 +1,18 @@
-import { PickInfo } from 'deck.gl';
-import { DeckMouseEvent } from './deck';
-import { PropertyType } from './schema';
-import { ITapefile } from './visualization';
-
-export type PopupType = 'onClick' | 'onHover';
-
-export type PopupPosition = 'map' | 'right-side';
+import type { PickInfo } from "deck.gl";
+import type { DeckMouseEvent } from "./deck";
+import type { AttributeType } from "./schema";
+import type { ITapefile } from "./visualization";
 
 export interface PopupItem {
   name: string;
-  attribute: PropertyType;
+  attribute: AttributeType;
 }
 
 export interface PopupContent<D = unknown> {
   title: string;
   dynamicTitle?: boolean;
   pickInfo: PickInfo<D>;
-  index: number;
+  entityIndex: number;
   items: PopupContentItem[];
 }
 
@@ -25,13 +21,14 @@ export interface PopupContentItem extends PopupItem {
   enum?: string[];
 }
 
-export type PopupSettings = {
+export type PopupKind = "map-hover" | "map-persistent" | "right-side";
+export type PopupAccent = "strong" | "weak";
+
+export type PopupInfo<D = unknown> = {
   layerId: string;
-  visible: boolean;
-  type: PopupType;
-  position: PopupPosition;
-  content: PopupContent;
-  highlighted: PopupType | null;
+  kind: PopupKind;
+  content: PopupContent<D>;
+  accent?: PopupAccent | null;
 };
 
 export type PopupEventCallback = (content: PopupContent | null, ev?: DeckMouseEvent) => void;

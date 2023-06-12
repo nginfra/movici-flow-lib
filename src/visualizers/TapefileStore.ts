@@ -1,17 +1,18 @@
-import {
-  ComponentProperty,
+import type {
+  DataAttribute,
   EntityGroupData,
   EntityGroupSpecialValues,
   Update,
   UpdateWithData,
-  UUID
-} from '@movici-flow-common/types';
-import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
-import EventHandler from '@movici-flow-common/utils/EventHandler';
-import { PriorityQueue } from '@movici-flow-common/utils/queue';
-import StatusTracker from '@movici-flow-common/utils/StatusTracker';
-import { Index, StreamingTapefile } from './tapefile';
-import { PrioritizedTask, BatchedTaskDispatcher, ITaskDispatcher, Task } from './tasks';
+  UUID,
+} from "@movici-flow-common/types";
+import type { DatasetDownloader } from "@movici-flow-common/utils/DatasetDownloader";
+import EventHandler from "@movici-flow-common/utils/EventHandler";
+import { PriorityQueue } from "@movici-flow-common/utils/queue";
+import type StatusTracker from "@movici-flow-common/utils/StatusTracker";
+import { Index, StreamingTapefile } from "./tapefile";
+import type { ITaskDispatcher, PrioritizedTask, Task } from "./tasks";
+import { BatchedTaskDispatcher } from "./tasks";
 interface TapefileStoreConfig {
   onData?: (ts: number) => void;
   onReady?: () => void;
@@ -33,7 +34,7 @@ export class TapefileStore {
       onReady: () => {
         config?.onReady?.();
         this.startIdleTasks();
-      }
+      },
     });
     this.statusTrackers = new Map();
     this.currentProgress = new Map();
@@ -61,7 +62,7 @@ export class TapefileStore {
   }
   getTapefile<T>(params: {
     entityGroup: string;
-    attributes: ComponentProperty[];
+    attributes: DataAttribute[];
     store: DatasetDownloader;
     status?: StatusTracker;
   }): StreamingTapefile<T> {
@@ -71,10 +72,10 @@ export class TapefileStore {
     entityGroup,
     attributes,
     store,
-    status
+    status,
   }: {
     entityGroup: string;
-    attributes: ComponentProperty[];
+    attributes: DataAttribute[];
     store: DatasetDownloader;
     status?: StatusTracker;
   }): StreamingTapefile<T>[] {
@@ -97,9 +98,9 @@ export class TapefileStore {
         },
         onError: (error: unknown, task: string) => {
           this.reportError(newTapefiles, task, error);
-        }
-      }).then(tasks => {
-        tasks.forEach(t => this.tasks.push(t));
+        },
+      }).then((tasks) => {
+        tasks.forEach((t) => this.tasks.push(t));
       });
       for (const tapefile of newTapefiles) {
         this.currentProgress.set(tapefile, { initData: 0, updates: 0 });
@@ -107,7 +108,7 @@ export class TapefileStore {
     }
     if (status) {
       for (const tf of tapefiles) {
-        const id = status.register(['initData', 'updates']);
+        const id = status.register(["initData", "updates"]);
         let trackers = this.statusTrackers.get(tf);
         if (!trackers) {
           trackers = [];
@@ -163,7 +164,7 @@ async function getMultipleTapefilesTasks({
   tapefiles,
   store,
   onError,
-  onProgress
+  onProgress,
 }: {
   entityGroup: string;
   tapefiles: StreamingTapefile<unknown>[];
@@ -172,7 +173,7 @@ async function getMultipleTapefilesTasks({
   onProgress?: (val: number, task: string) => void;
 }): Promise<PrioritizedTask<unknown>[]> {
   const tasks: PrioritizedTask<unknown>[] = [];
-  const attributes: ComponentProperty[] = tapefiles.map(t => {
+  const attributes: DataAttribute[] = tapefiles.map((t) => {
     return { name: t.attribute, component: null };
   });
   tasks.push(
@@ -181,14 +182,14 @@ async function getMultipleTapefilesTasks({
       entityGroup,
       attributes,
       tapefiles,
-      onError: (err: unknown) => onError?.(err, 'initData'),
-      onDone: () => onProgress?.(100, 'initData')
+      onError: (err: unknown) => onError?.(err, "initData"),
+      onDone: () => onProgress?.(100, "initData"),
     })
   );
   const updates = await store.getUpdateList(),
     total = updates.length;
   if (!total) {
-    onProgress?.(100, 'updates');
+    onProgress?.(100, "updates");
     return tasks;
   }
   let tasksDone = 0;
@@ -201,10 +202,10 @@ async function getMultipleTapefilesTasks({
         entityGroup,
         attributes,
         tapefiles,
-        onError: (err: unknown) => onError?.(err, 'updates'),
+        onError: (err: unknown) => onError?.(err, "updates"),
         onDone: () => {
-          onProgress?.((++tasksDone / total) * 100, 'updates');
-        }
+          onProgress?.((++tasksDone / total) * 100, "updates");
+        },
       })
     );
   }
@@ -217,11 +218,11 @@ function getInitDataTask({
   attributes,
   tapefiles,
   onError,
-  onDone
+  onDone,
 }: {
   store: DatasetDownloader;
   entityGroup: string;
-  attributes: ComponentProperty[];
+  attributes: DataAttribute[];
   tapefiles: StreamingTapefile<unknown>[];
   onError?: (err: unknown) => void;
   onDone?: () => void;
@@ -231,9 +232,9 @@ function getInitDataTask({
       return Promise.all([
         store.getInitialData<EntityGroupData<unknown>>({
           entityGroup,
-          properties: attributes
+          properties: attributes,
         }),
-        store.getSpecialValues(entityGroup)
+        store.getSpecialValues(entityGroup),
       ]);
     },
     onDone([initialData, specialValues]: [EntityGroupData<unknown>, EntityGroupSpecialValues]) {
@@ -241,7 +242,7 @@ function getInitDataTask({
       for (const tapefile of tapefiles) {
         tapefile.initialize({
           index,
-          initialData
+          initialData,
         });
         tapefile.setSpecialValue(specialValues[tapefile.attribute]);
       }
@@ -251,7 +252,7 @@ function getInitDataTask({
       onError ? onError(err) : console.error(err);
       onDone?.();
     },
-    priority: -1
+    priority: -1,
   };
 }
 
@@ -263,13 +264,13 @@ function getUpdateDataTask({
   attributes,
   tapefiles,
   onError,
-  onDone
+  onDone,
 }: {
   update: Update;
   sequenceNumber: number;
   store: DatasetDownloader;
   entityGroup: string;
-  attributes: ComponentProperty[];
+  attributes: DataAttribute[];
   tapefiles: StreamingTapefile<unknown>[];
   onError?: (err: unknown) => void;
   onDone?: () => void;
@@ -285,7 +286,7 @@ function getUpdateDataTask({
           {
             timestamp: upd.timestamp,
             iteration: upd.iteration,
-            data
+            data,
           },
           sequenceNumber
         );
@@ -296,21 +297,21 @@ function getUpdateDataTask({
       onError ? onError(err) : console.error(err);
       onDone?.();
     },
-    priority: update.timestamp
+    priority: update.timestamp,
   };
 }
 
-export class TapefileStoreCollection extends EventHandler<'data' | 'ready', number> {
+export class TapefileStoreCollection extends EventHandler<"data" | "ready", number> {
   private tapefileStores: Record<UUID, TapefileStore>;
   constructor() {
     super();
     this.tapefileStores = {};
   }
   ensure(scenarioUUID?: UUID | null): TapefileStore {
-    scenarioUUID = scenarioUUID ?? '';
+    scenarioUUID = scenarioUUID ?? "";
     this.tapefileStores[scenarioUUID] ??= new TapefileStore({
-      onData: (ts: number) => this.invokeCallbacks('data', ts),
-      onReady: () => this.invokeCallbacks('ready', Number.MAX_SAFE_INTEGER)
+      onData: (ts: number) => this.invokeCallbacks("data", ts),
+      onReady: () => this.invokeCallbacks("ready", Number.MAX_SAFE_INTEGER),
     });
     return this.tapefileStores[scenarioUUID];
   }

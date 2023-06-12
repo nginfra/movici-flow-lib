@@ -1,10 +1,10 @@
-import { RGBAColor } from './colors';
-import { ComponentProperty } from './schema';
-import { Coordinate, TopologyLayerData } from './geometry';
-import { LayerProps } from '@deck.gl/core/lib/layer';
-import { PopupEventCallback } from './popup';
-import { LayerConstructor } from './general';
-import {
+import type { RGBAColor } from "./colors";
+import type { DataAttribute } from "./schema";
+import type { Coordinate, TopologyLayerData } from "./geometry";
+import type { LayerProps } from "@deck.gl/core/lib/layer";
+import type { PopupEventCallback } from "./popup";
+import type { LayerConstructor } from "./general";
+import type {
   ViewMode,
   DrawPolygonMode,
   DrawLineStringMode,
@@ -14,16 +14,21 @@ import {
   ModifyMode,
   MeasureDistanceMode,
   MeasureAreaMode,
-  MeasureAngleMode
-} from '@nebula.gl/edit-modes';
-import { PickInfo } from 'deck.gl';
-import { BaseVisualizerInfo } from '@movici-flow-common/visualizers/VisualizerInfo';
-import { FetchRequestOptions } from './backend';
-import { ITopologyGetter } from '@movici-flow-common/visualizers/geometry';
+  MeasureAngleMode,
+} from "@nebula.gl/edit-modes";
+import type { PickInfo } from "deck.gl";
+import type { FetchRequestOptions } from "./backend";
+import type { ITopologyGetter } from "@movici-flow-common/types";
 
-import { DeckMouseEvent } from './deck';
+import type { DeckMouseEvent } from "./deck";
 
-export interface CameraOptions {
+export interface IVisualizerInfo {
+  id: string;
+  errors: Record<string, string>;
+  setError: (key: string, value: string) => void;
+  unsetError: (key: string) => void;
+}
+export interface ViewState {
   longitude: number;
   latitude: number;
   zoom: number;
@@ -65,18 +70,18 @@ export type NebulaMode =
   | MeasureAngleMode;
 
 export enum LayerKind {
-  STATIC_COLOR = 'static_color',
-  HEAT_MAP = 'heat_map',
-  COLOR_MAP = 'color_map',
-  ACTIVE_ENTITY = 'active_entity',
-  UNKNOWN = 'unknown'
+  STATIC_COLOR = "static_color",
+  HEAT_MAP = "heat_map",
+  COLOR_MAP = "color_map",
+  ACTIVE_ENTITY = "active_entity",
+  UNKNOWN = "unknown",
 }
 
 export type ColorMapping = [number, RGBAColor][];
 export type AdvColorMapping = [string | number, RGBAColor][];
 
 export interface IVisualizer {
-  setInfo(info: BaseVisualizerInfo): void;
+  setInfo(info: IVisualizerInfo): void;
   setOrder(ord: number): void;
   baseID: string;
   order: number;
@@ -86,7 +91,7 @@ export interface IVisualizer {
 export interface IMapVisualizer<Coord extends Coordinate> {
   topologyGetter: ITopologyGetter<Coord>;
   forceRender(): void;
-  requestTapefile: (attribute: ComponentProperty, onLoad: (t: ITapefile<unknown>) => void) => void;
+  requestTapefile: (attribute: DataAttribute, onLoad: (t: ITapefile<unknown>) => void) => void;
   onClick: PopupEventCallback;
   onHover: PopupEventCallback;
   getFetchRequest<T extends keyof FetchRequestOptions>(
@@ -115,7 +120,7 @@ export interface ITapefile<T> {
 }
 
 export enum RenderOrderType {
-  DISABLED = 'disabled',
-  NORMAL = 'normal',
-  REVERSED = 'reversed'
+  DISABLED = "disabled",
+  NORMAL = "normal",
+  REVERSED = "reversed",
 }

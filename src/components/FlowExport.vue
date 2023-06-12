@@ -1,25 +1,28 @@
 <template>
   <div class="modal-card">
-    <div class="box has-background-white p-4">
+    <div v-if="scenario && timelineInfo && store.datasets" class="box has-background-white p-4">
       <div class="is-flex is-flex is-align-items-center mb-3">
         <h1 class="is-size-6 has-text-black text-ellipsis">
-          {{ $t('flow.export.modalTitle') }} {{ currentScenario.display_name }}
+          {{ $t("flow.export.modalTitle") }} {{ scenario?.display_name ?? "" }}
         </h1>
       </div>
       <div class="columns mt-2">
         <div class="column is-one-third">
-          <label class="label is-size-7">{{ $t('flow.export.filterData') }}</label>
-          <ExportLayerPicker :layers="visualizers" @selectLayer="selectedCVI = $event" />
+          <label class="label is-size-7">{{ $t("flow.export.filterData") }}</label>
+          <ExportLayerPicker
+            :modelValue="parsedView.visualizerInfos"
+            @selectInfo="localValue = $event"
+          />
         </div>
         <div class="column">
-          <div v-if="currentScenario">
+          <div>
             <ExportForm
-              :value="selectedCVI"
+              v-model="exportConfig"
+              :info="localValue"
               :validator="validator"
-              :scenario-uuid="currentScenario.uuid"
-              :timestamp="timestamp"
-              :timeline-info="timelineInfo"
-              @exportConfig="exportConfig = $event"
+              :timestamp="parsedView.timestamp"
+              :timelineInfo="timelineInfo"
+              :datasets="store.datasets"
             />
           </div>
         </div>
@@ -31,7 +34,7 @@
           class="mr-2 has-text-weight-bold"
           @click="$emit('close')"
         >
-          {{ $t('actions.cancel') }}
+          {{ $t("actions.cancel") }}
         </o-button>
         <o-button
           size="small"
@@ -39,84 +42,77 @@
           class="is-primary has-text-weight-bold"
           @click="exportData"
         >
-          {{ $t('flow.export.label') }}
+          {{ $t("flow.export.label") }}
         </o-button>
       </div>
       <div class="is-clearfix"></div>
     </div>
+    <o-loading :active="loading" icon-size="large" />
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import { TimeOrientedSimulationInfo } from '../types';
-import FlowContainer from './FlowContainer.vue';
-import FlowLayerPicker from './widgets/FlowLayerPicker.vue';
-import ScenarioInfoBox from './info_box/ScenarioInfoBox.vue';
-import ExportForm from './export/ExportForm.vue';
-import ExportLayerPicker from './export/ExportLayerPicker.vue';
-import { ComposableVisualizerInfo } from '../visualizers/VisualizerInfo';
-import ValidationProvider from '../mixins/ValidationProvider';
-import FormValidator from '../utils/FormValidator';
-import { flowStore, flowVisualizationStore } from '../store/store-accessor';
+<script setup lang="ts">
+import { exportFromConfig } from "@movici-flow-common/utils/DataExporter";
+import { useScenario } from "@movici-flow-common/composables/useScenario";
+import { useValidator } from "@movici-flow-common/composables/useValidator";
+import { useFlowStore } from "@movici-flow-common/stores/flow";
+import { useParsedViewStore } from "@movici-flow-common/stores/parsedView";
+import { onMounted, ref } from "vue";
+import type { ExportFormConfig, ShortDataset } from "../types";
+import { FormValidator } from "../utils/FormValidator";
+import type { ComposableVisualizerInfo } from "../visualizers/VisualizerInfo";
+import ExportForm from "./ExportForm.vue";
+import ExportLayerPicker from "./ExportLayerPicker.vue";
 
-@Component({
-  name: 'FlowExport',
-  components: {
-    FlowLayerPicker,
-    FlowContainer,
-    ScenarioInfoBox,
-    ExportForm,
-    ExportLayerPicker
-  }
-})
-export default class FlowExport extends Mixins(ValidationProvider) {
-  @Prop({ type: Object, default: null }) readonly value!: ComposableVisualizerInfo | null;
-  selectedCVI: ComposableVisualizerInfo | null = null;
-  exportConfig: { datasetName: string; entityGroup: string; timestamp: number } | null = null;
-  validator: FormValidator | null = null;
+const parsedView = useParsedViewStore();
+const props = defineProps<{
+  modelValue?: ComposableVisualizerInfo;
+}>();
 
-  // mapVis vars
-  get visualizers() {
-    return flowVisualizationStore.visualizers;
-  }
+const localValue = ref<ComposableVisualizerInfo | undefined>(props.modelValue);
+const validator = new FormValidator();
+const { hasErrors } = useValidator(validator);
 
-  get currentScenario() {
-    return flowStore.scenario;
+const exportConfig = ref<ExportFormConfig>();
+const { scenario, timelineInfo } = useScenario();
+
+const store = useFlowStore();
+onMounted(async () => await store.loadDatasets());
+
+const loading = ref(false);
+async function exportData() {
+  validator.validate();
+
+  if (hasErrors.value) {
+    return;
   }
 
-  get timestamp() {
-    return flowVisualizationStore.timestamp;
-  }
+  if (
+    exportConfig.value &&
+    scenario.value &&
+    store.datasets &&
+    store.project &&
+    timelineInfo.value &&
+    store.backend
+  ) {
+    loading.value = true;
+    const datasetsByName = store.datasets.reduce<Record<string, ShortDataset>>((obj, curr) => {
+      obj[curr.name] = curr;
+      return obj;
+    }, {});
 
-  // Map Vis getters
-  get timelineInfo(): TimeOrientedSimulationInfo | null {
-    return flowStore.timelineInfo;
-  }
-
-  async exportData() {
-    this.validator?.validate();
-
-    if (this.hasErrors) {
-      return;
-    }
-
-    if (this.exportConfig) {
-      await flowStore.exportFromConfig(this.exportConfig);
-    }
-  }
-
-  @Watch('value', { immediate: true })
-  setValueAsSelected(value: ComposableVisualizerInfo | null) {
-    this.selectedCVI = value;
-  }
-
-  setupValidator() {
-    this.validator = new FormValidator();
-  }
-
-  created() {
-    this.setupValidator();
+    await exportFromConfig({
+      config: {
+        dataset: datasetsByName[exportConfig.value.datasetName] ?? null,
+        projectName: store.project.display_name,
+        scenario: scenario.value,
+        entityName: exportConfig.value.entityGroup,
+        timestamp: exportConfig.value.timestamp,
+      },
+      timelineInfo: timelineInfo.value,
+      backend: store.backend,
+    });
+    loading.value = false;
   }
 }
 </script>
@@ -125,12 +121,10 @@ export default class FlowExport extends Mixins(ValidationProvider) {
 .modal-card {
   width: inherit;
 }
-::v-deep {
-  .group-picker .header .label {
-    max-width: 200px;
-  }
-  .label {
-    color: $black !important;
-  }
+:deep(.group-picker .header .label) {
+  max-width: 200px;
+}
+:deep(.label) {
+  color: $black !important;
 }
 </style>

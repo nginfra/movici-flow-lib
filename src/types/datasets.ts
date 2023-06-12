@@ -1,13 +1,13 @@
-import {
+import type {
   Coordinate,
   GridCellPoints,
   Line3DCoordinate,
   LineCoordinate,
   PolygonCoordinate,
-  TopologyLayerData
-} from './geometry';
-import { ArrayValues, UUID } from './general';
-import { ImportantAttribute } from './schema';
+  TopologyLayerData,
+} from "./geometry";
+import type { ArrayValues, UUID } from "./general";
+import type { ImportantAttribute } from "./schema";
 
 export interface DatasetCollection {
   datasets: Dataset[];
@@ -17,30 +17,21 @@ export interface ShortDataset {
   name: string;
   uuid: UUID;
   type: string;
+  has_data: boolean;
+  display_name: string | null;
+  created_on: number | null;
+  last_modified: number;
 }
-export class Dataset implements ShortDataset {
+export interface Dataset extends ShortDataset {
   name: string;
-  display_name?: string | null;
+  display_name: string | null;
   uuid: UUID;
   type: string;
   has_data: boolean;
-  status: string;
   epsg_code?: number;
-  created_on?: number | null;
-  last_modified?: number;
+  created_on: number;
+  last_modified: number;
   general?: GeneralSection;
-  constructor(config?: Partial<Dataset>) {
-    this.name = config?.name ?? 'unknown_dataset';
-    this.display_name = config?.display_name || null;
-    this.uuid = config?.uuid ?? '<unknown_uuid>';
-    this.type = config?.type ?? 'unknown';
-    this.has_data = config?.has_data ?? false;
-    this.status = this.has_data ? 'Done' : 'Empty';
-    this.epsg_code = config?.epsg_code;
-    this.created_on = config?.created_on;
-    this.last_modified = config?.last_modified;
-    this.general = config?.general;
-  }
 }
 export interface GeneralSection {
   special?: RawSpecialValues;
@@ -80,12 +71,8 @@ export interface EntityUpdate<T> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class DatasetWithData<T = any> extends Dataset {
+export interface DatasetWithData<T = any> extends Dataset {
   data?: DatasetData<T>;
-  constructor(config: Partial<DatasetWithData<T>>) {
-    super(config);
-    this.data = config.data ?? {};
-  }
 }
 export interface DatasetData<T> {
   [entityGroup: string]: EntityGroupData<T>;
@@ -95,38 +82,34 @@ export interface BaseEntityGroup {
   id: number[];
 }
 
-interface EntityGroupProperties<T> {
-  [componentProperty: string]: ComponentData<T> | T[];
+interface EntityGroupAttributes<T> {
+  [attribute: string]: T[];
 }
-export type EntityGroupData<T> = BaseEntityGroup & EntityGroupProperties<T>;
+export type EntityGroupData<T> = BaseEntityGroup & EntityGroupAttributes<T>;
 
-export interface ComponentData<T> {
-  [property: string]: T[];
+interface PointGeometryAttributes extends EntityGroupData<number> {
+  "geometry.x": number[];
+  "geometry.y": number[];
 }
+export type PointGeometryData = BaseEntityGroup & PointGeometryAttributes;
 
-interface PointGeometryProperties extends EntityGroupData<number> {
-  'geometry.x': number[];
-  'geometry.y': number[];
+interface LineGeometryAttributes extends EntityGroupAttributes<LineCoordinate | Line3DCoordinate> {
+  "geometry.linestring_2d": LineCoordinate[];
+  "geometry.linestring_3d": Line3DCoordinate[];
 }
-export type PointGeometryData = BaseEntityGroup & PointGeometryProperties;
+export type LineGeometryData = BaseEntityGroup & LineGeometryAttributes;
 
-interface LineGeometryProperties extends EntityGroupProperties<LineCoordinate | Line3DCoordinate> {
-  'geometry.linestring_2d': LineCoordinate[];
-  'geometry.linestring_3d': Line3DCoordinate[];
+interface PolygonGeometryAttributes extends EntityGroupAttributes<PolygonCoordinate> {
+  "geometry.polygon_3d": PolygonCoordinate[];
+  "geometry.polygon_2d": PolygonCoordinate[];
+  "geometry.polygon": PolygonCoordinate[];
 }
-export type LineGeometryData = BaseEntityGroup & LineGeometryProperties;
+export type PolygonGeometryData = BaseEntityGroup & PolygonGeometryAttributes;
 
-interface PolygonGeometryProperties extends EntityGroupProperties<PolygonCoordinate> {
-  'geometry.polygon_3d': PolygonCoordinate[];
-  'geometry.polygon_2d': PolygonCoordinate[];
-  'geometry.polygon': PolygonCoordinate[];
+interface GridCellAttributes extends EntityGroupAttributes<GridCellPoints> {
+  "grid.grid_points": GridCellPoints[];
 }
-export type PolygonGeometryData = BaseEntityGroup & PolygonGeometryProperties;
-
-interface GridCellProperties extends EntityGroupProperties<GridCellPoints> {
-  'grid.grid_points': GridCellPoints[];
-}
-export type GridCellGeometryData = BaseEntityGroup & GridCellProperties;
+export type GridCellGeometryData = BaseEntityGroup & GridCellAttributes;
 
 export type ImportantAttributeData = Record<ImportantAttribute, string>;
 

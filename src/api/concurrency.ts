@@ -24,14 +24,18 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
  */
 
-import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import type {
+  AxiosInstance,
+  AxiosResponse,
+  InternalAxiosRequestConfig as AxiosRequestConfig,
+} from "axios";
 
 interface RequestHandler {
   request: AxiosRequestConfig;
   resolver: (value: AxiosRequestConfig) => void;
 }
 export const ConcurrencyManager = (axios: AxiosInstance, MAX_CONCURRENT = 10) => {
-  if (MAX_CONCURRENT < 1) throw 'Concurrency Manager Error: minimun concurrent requests is 1';
+  if (MAX_CONCURRENT < 1) throw "Concurrency Manager Error: minimun concurrent requests is 1";
   const instance = {
     queue: [] as RequestHandler[],
     running: [] as RequestHandler[],
@@ -56,8 +60,8 @@ export const ConcurrencyManager = (axios: AxiosInstance, MAX_CONCURRENT = 10) =>
       }
     },
     // Use as interceptor. Queue outgoing requests
-    requestHandler: (req: AxiosRequestConfig): Promise<AxiosRequestConfig> => {
-      return new Promise(resolve => {
+    requestHandler: (req: AxiosRequestConfig) => {
+      return new Promise<AxiosRequestConfig>((resolve) => {
         instance.push({ request: req, resolver: resolve });
         return req;
       });
@@ -73,14 +77,14 @@ export const ConcurrencyManager = (axios: AxiosInstance, MAX_CONCURRENT = 10) =>
     },
     interceptors: {
       request: -1,
-      response: -1
+      response: -1,
     },
     detach: () => {
       axios.interceptors.request.eject(instance.interceptors.request);
       axios.interceptors.response.eject(instance.interceptors.response);
-    }
+    },
   };
-  // queue concurrent requests
+
   instance.interceptors.request = axios.interceptors.request.use(instance.requestHandler);
   instance.interceptors.response = axios.interceptors.response.use(
     instance.responseHandler,

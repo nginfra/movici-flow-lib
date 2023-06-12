@@ -1,12 +1,12 @@
-import 'vue';
+import "vue";
 
-declare module '*.vue' {
-  import Vue from 'vue';
+declare module "*.vue" {
+  import Vue from "vue";
   export default Vue;
 }
 
-declare module 'vue/types/vue' {
-  import { Route } from 'vue-router';
+declare module "vue/types/vue" {
+  import type { Route } from "vue-router";
   interface Vue {
     $flow: {
       snackbar: typeof snackbar;

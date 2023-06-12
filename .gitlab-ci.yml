@@ -16,7 +16,7 @@ variables:
 
 .testing:
   stage: test
-  image: node:14
+  image: node:19
   only:
     - master
     - merge_requests

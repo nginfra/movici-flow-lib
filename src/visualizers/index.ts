@@ -1,5 +1,5 @@
-import { FlowVisualizerType, Nullable } from '../types';
-import { BaseVisualizerInfo, ComposableVisualizerInfo } from './VisualizerInfo';
+import { FlowVisualizerType, type Nullable } from "../types";
+import { BaseVisualizerInfo, ComposableVisualizerInfo } from "./VisualizerInfo";
 import {
   ComposableArcVisualizer,
   ComposableFloodingGridVisualizer,
@@ -8,8 +8,8 @@ import {
   ComposableLineVisualizer,
   ComposablePointVisualizer,
   ComposablePolygonVisualizer,
-  ComposableVisualizerContext
-} from './composableVisualizers';
+  type ComposableVisualizerContext,
+} from "./composableVisualizers";
 
 export type Visualizer =
   | ComposablePointVisualizer

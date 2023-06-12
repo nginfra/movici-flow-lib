@@ -22,7 +22,7 @@ export default class StatusTracker {
   constructor({
     tasks,
     onProgress,
-    onError
+    onError,
   }: {
     tasks: Record<string, number>;
     onProgress: (val: number) => void;
@@ -81,7 +81,7 @@ export default class StatusTracker {
     }
   }
 
-  private calculateProgress(): number {
+  calculateProgress(): number {
     const totalWeight = Object.values(this.weights).reduce((prev, curr) => prev + curr, 0);
     if (totalWeight === 0) return 100;
     let progress = 0;

@@ -1,2 +1,2 @@
-export * from './base';
-export * as uri from './uri';
+export * from "./base";
+export * as uri from "./uri";

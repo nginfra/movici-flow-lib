@@ -1,4 +1,4 @@
-import {
+import type {
   Coordinate,
   ITapefile,
   LayerParams,
@@ -8,11 +8,11 @@ import {
   IMapVisualizer,
   PopupContentItem,
   DeckMouseEvent,
-  PickingHandler
-} from '@movici-flow-common/types';
-import isEqual from 'lodash/isEqual';
-import { PickInfo } from '@deck.gl/core/lib/deck';
-import { VisualizerModule, VisualizerModuleParams } from '../visualizerModules/common';
+  PickingHandler,
+} from "@movici-flow-common/types";
+import isEqual from "lodash/isEqual";
+import type { PickInfo } from "@deck.gl/core/lib/deck";
+import { VisualizerModule, type VisualizerModuleParams } from "../visualizerModules/common";
 
 export default class PopupModule<
   Coord extends Coordinate,
@@ -41,7 +41,7 @@ export default class PopupModule<
       params.props.onHover = accessor;
       params.props.onClick = accessor;
     }
-    this.setUpdateTriggers(params, ['onHover', 'onClick'], this.currentSettings);
+    this.setUpdateTriggers(params, ["onHover", "onClick"], this.currentSettings);
 
     return params;
   }
@@ -75,16 +75,16 @@ export default class PopupModule<
 
     const accessor = new PopupContentAccessor(clause);
     for (const [idx, item] of clause.items.entries()) {
-      visualizer.requestTapefile(item.attribute, t => {
+      visualizer.requestTapefile(item.attribute, (t) => {
         accessor.setTapefile(t as ITapefile<unknown>, idx);
       });
     }
     const onHover = clause.onHover;
 
     return (info: PickInfo<LData>, ev?: DeckMouseEvent) => {
-      const when = ev?.type === 'click' ? 'onClick' : 'onHover';
+      const when = ev?.type === "click" ? "onClick" : "onHover";
 
-      if (when === 'onHover' && !onHover) {
+      if (when === "onHover" && !onHover) {
         return false;
       }
 
@@ -110,7 +110,7 @@ export class PopupContentAccessor {
 
   setTapefile(tapefile: ITapefile<unknown>, index: number) {
     if (index >= this.tapefiles.length) {
-      throw new Error('Tapefile assignment out of bounds');
+      throw new Error("Tapefile assignment out of bounds");
     }
     this.tapefiles[index] = tapefile;
   }
@@ -123,7 +123,7 @@ export class PopupContentAccessor {
     const { title, dynamicTitle, items } = this.popup;
 
     return {
-      index,
+      entityIndex: index,
       title,
       pickInfo,
       dynamicTitle,
@@ -131,7 +131,7 @@ export class PopupContentAccessor {
         const rv: PopupContentItem = {
           name: item.name,
           attribute: item.attribute,
-          tapefile: this.tapefiles[idx]
+          tapefile: this.tapefiles[idx],
         };
 
         if (item.attribute.enum_name) {
@@ -139,7 +139,7 @@ export class PopupContentAccessor {
         }
 
         return rv;
-      })
+      }),
     };
   }
 }

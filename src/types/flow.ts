@@ -1,32 +1,30 @@
-export enum FlowSectionItem {
-  PROJECT = 'project',
-  DATASETS = 'datasets',
-  SCENARIO = 'scenario',
-  VISUALIZATION = 'visualization',
-  EXPORT = 'export'
-}
-interface BaseFlowSection {
-  name: FlowSectionItem;
+import type { UUID } from "./general";
+
+export type FlowStep =
+  | "project"
+  | "workspace"
+  | "dataset"
+  | "scenario"
+  | "visualization"
+  | "export";
+
+export type ExtendedFlowStep = FlowStep | "workspace" | "datasets";
+
+export interface FlowSection {
+  step: FlowStep;
   label: string;
   icon?: string;
   iconPack?: string;
   enabled: boolean;
-  type: 'route' | 'callback';
+  activate?: () => void;
 }
 
-interface RouteFlowSection extends BaseFlowSection {
-  type: 'route';
-  to: string;
-}
-interface CallbackFlowSection extends BaseFlowSection {
-  type: 'callback';
-  callback: () => void;
-}
-
-export type FlowSection = RouteFlowSection | CallbackFlowSection;
-
-export interface FlowSectionCollection {
-  [key: string]: FlowSection;
+export interface FlowLocation {
+  step: ExtendedFlowStep;
+  projectName?: string | null;
+  scenarioName?: string | null;
+  datasetUUID?: UUID | null;
+  viewUUID?: UUID | null;
 }
 
 export interface FlowStoreConfig {

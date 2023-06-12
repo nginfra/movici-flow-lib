@@ -1,13 +1,13 @@
-import IdleWorker from '@movici-flow-common/utils/IdleWorker';
-import { heapPop, heapPush } from '@movici-flow-common/utils/queue';
-import { range } from 'lodash';
-import {
-  ComponentProperty,
+import IdleWorker from "@movici-flow-common/utils/IdleWorker";
+import { heapPop, heapPush } from "@movici-flow-common/utils/queue";
+import range from "lodash/range";
+import type {
+  DataAttribute,
   EntityGroupData,
   EntityGroupSpecialValues,
   EntityUpdate,
-  ITapefile
-} from '../types';
+  ITapefile,
+} from "../types";
 export interface TapefileUpdate<T> {
   timestamp: number;
   length: number;
@@ -28,7 +28,7 @@ export class TapefileWriter<T> {
     this.attribute = attribute;
   }
   initializeTapefile() {
-    if (this.tapefile.updates.length) throw new Error('Can only initialize empty tapefile');
+    if (this.tapefile.updates.length) throw new Error("Can only initialize empty tapefile");
 
     const length = this.tapefile.state.length;
     this.tapefile.updates.push({
@@ -36,7 +36,7 @@ export class TapefileWriter<T> {
       timestamp: 0,
       version: 0,
       indices: range(length),
-      data: getEmptyArray(length)
+      data: getEmptyArray(length),
     });
   }
   /**
@@ -54,7 +54,7 @@ export class TapefileWriter<T> {
     }
     const lastUpdate = updates[updates.length - 1];
     if (lastUpdate && update.timestamp < lastUpdate.timestamp) {
-      throw new Error('Cannot append updates that have a lower timestamp than current latest');
+      throw new Error("Cannot append updates that have a lower timestamp than current latest");
     }
 
     if (update.timestamp === lastUpdate?.timestamp) {
@@ -98,16 +98,11 @@ export class TapefileWriter<T> {
       length: dataArray.length,
       version: 1,
       indices,
-      data: dataArray
+      data: dataArray,
     };
   }
   private getDataArray(data: EntityGroupData<T>): T[] {
-    const result = data[this.attribute] ?? [];
-    if (!Array.isArray(result)) {
-      // todo: remove when components are fully removed
-      throw new Error('Cannot deal with components');
-    }
-    return result;
+    return data[this.attribute] ?? [];
   }
   private mergeUpdates<T>(first: TapefileUpdate<T>, second: TapefileUpdate<T>) {
     const updateMap: Map<number, T> = new Map();
@@ -123,7 +118,7 @@ export class TapefileWriter<T> {
       length: updateMap.size,
       version: first.version + 1,
       data: new Array(updateMap.size),
-      indices: new Array(updateMap.size)
+      indices: new Array(updateMap.size),
     };
     if (first.fullRollback) {
       rv.rollback = first.rollback;
@@ -173,7 +168,7 @@ export abstract class BaseTapefile<T> implements ITapefile<T> {
  * state with `SinglePropertyTapefile.getState()`
  */
 export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
-  componentProperty: ComponentProperty;
+  componentProperty: DataAttribute;
   state: PropertyState<T>;
   updates: TapefileUpdate<T>[];
   currentUpdateIdx: number | null;
@@ -185,9 +180,9 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
     componentProperty,
     length,
     updates,
-    specialValue
+    specialValue,
   }: {
-    componentProperty: ComponentProperty;
+    componentProperty: DataAttribute;
     length: number;
     updates?: TapefileUpdate<T>[];
     specialValue?: T;
@@ -282,7 +277,7 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
 
   stepForward() {
     if (this.currentUpdateIdx === null || this.currentUpdateIdx >= this.updates.length - 1) {
-      throw RangeError('Requested step out of bounds');
+      throw RangeError("Requested step out of bounds");
     }
     this.currentUpdateIdx++;
     const newUpdate = this.updates[this.currentUpdateIdx];
@@ -294,7 +289,7 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
 
   stepBackward() {
     if (this.currentUpdateIdx === null || this.currentUpdateIdx === 0) {
-      throw new RangeError('Requested step out of bounds');
+      throw new RangeError("Requested step out of bounds");
     }
     const currentUpdate = this.updates[this.currentUpdateIdx];
     this.state.rollbackUpdate(currentUpdate);
@@ -404,15 +399,15 @@ export class StreamingTapefile<T> extends BaseTapefile<T> {
       index = new Index(initialData.id);
     }
     this.inner = new SinglePropertyTapefile({
-      componentProperty: { name: this.attribute, component: null },
-      length: index.length
+      componentProperty: { name: this.attribute },
+      length: index.length,
     });
     this.writer = new TapefileWriter(index, this.inner, this.attribute);
     this.addUpdate(
       {
         timestamp: 0,
         iteration: -1,
-        data: initialData
+        data: initialData,
       },
       -1
     );
@@ -519,7 +514,7 @@ class PropertyState<T> {
     } else if (update.rollback) {
       return this.setUpdateData(update.indices, update.rollback);
     } else {
-      throw new Error('Update has no rollback');
+      throw new Error("Update has no rollback");
     }
   }
   private setFullState(data: T[]) {
@@ -553,7 +548,7 @@ function getDataForIndices<T>(data: Array<T>, indices: number[]) {
  * This function is now a only used in testing as a helper function to create tapefiles
  */
 export function createTapefileFromStateAndUpdates<T>(
-  componentProperty: ComponentProperty,
+  componentProperty: DataAttribute,
   initialState: EntityGroupData<T>,
   updates: EntityUpdate<T>[],
   specialValues?: EntityGroupSpecialValues<T>
@@ -563,12 +558,12 @@ export function createTapefileFromStateAndUpdates<T>(
     tapefile = new SinglePropertyTapefile({
       componentProperty,
       length: index.length,
-      specialValue
+      specialValue,
     }),
     writer = new TapefileWriter(index, tapefile, componentProperty.name);
   writer.appendUpdate({
     timestamp: 0,
-    data: initialState
+    data: initialState,
   });
   tapefile.calculateNextRollback();
   for (const update of updates) {

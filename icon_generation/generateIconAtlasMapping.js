@@ -1,9 +1,9 @@
-const { createCanvas, loadImage } = require('canvas'),
-  fs = require('fs-extra'),
-  args = require('minimist')(process.argv.slice(2)), // slicing args
-  imgOutputDir = args['img-output-dir'], // img output directory
-  jsonOutputDir = args['json-output-dir'], // json output directory
-  padding = args['padding'] ?? 20, // padding for the icons
+const { createCanvas, loadImage } = require("canvas"),
+  fs = require("fs-extra"),
+  args = require("minimist")(process.argv.slice(2)), // slicing args
+  imgOutputDir = args["img-output-dir"], // img output directory
+  jsonOutputDir = args["json-output-dir"], // json output directory
+  padding = args["padding"] ?? 20, // padding for the icons
   srcs = args._; // list of sources
 
 // returns the number of tiles of both sides of a square that can acommodate n icons
@@ -26,13 +26,13 @@ function getMaxImageSize(images) {
 // load images with canvas loadImage function
 function getImages(files, sourcePath) {
   return Promise.all(
-    files.map(async name => [name.split('.')[0], await loadImage(sourcePath + name)])
+    files.map(async (name) => [name.split(".")[0], await loadImage(sourcePath + name)])
   );
 }
 
 // where dreams come true
 async function generateIconMapAndAtlas(src) {
-  const sourcePath = __dirname + '/' + src + '/',
+  const sourcePath = __dirname + "/" + src + "/",
     // read source folder
     files = fs.readdirSync(sourcePath);
 
@@ -42,7 +42,7 @@ async function generateIconMapAndAtlas(src) {
 
   const images = await getImages(files, sourcePath),
     // get biggest size to be tile size
-    tileSize = padding + getMaxImageSize(images.map(img => img[1])),
+    tileSize = padding + getMaxImageSize(images.map((img) => img[1])),
     // number of tiles from number of files to make look like a square
     tilesPerSide = getTilesPerSide(files.length),
     // totalSize = tileSize * tilesPerSide
@@ -50,7 +50,7 @@ async function generateIconMapAndAtlas(src) {
     // create canvas
     iconAtlasCanvas = createCanvas(totalSize, totalSize),
     // get canvas context aka iconAtlas
-    iconAtlas = iconAtlasCanvas.getContext('2d'),
+    iconAtlas = iconAtlasCanvas.getContext("2d"),
     // json output for icon mapping
     iconMapping = {};
 
@@ -83,7 +83,7 @@ async function generateIconMapAndAtlas(src) {
 }
 
 // run the script for each src
-srcs.forEach(src => {
+srcs.forEach((src) => {
   try {
     generateIconMapAndAtlas(src);
   } catch (error) {

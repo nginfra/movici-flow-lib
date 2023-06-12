@@ -1,4 +1,4 @@
-import {
+import type {
   User,
   Dataset,
   DatasetWithData,
@@ -6,7 +6,7 @@ import {
   Scenario,
   ShortScenario,
   DatasetSummary,
-  ComponentProperty,
+  DataAttribute,
   Update,
   UpdateWithData,
   UUID,
@@ -14,23 +14,20 @@ import {
   ViewCrudResponse,
   GeocodeSearchQuery,
   GeocodeSearchResult,
-  GeocodeSuggestion
-} from '@movici-flow-common/types';
+  GeocodeSuggestion,
+  ViewPayload,
+} from "@movici-flow-common/types";
 
 export interface ViewService {
-  create(scenarioUUID: UUID, view: View): Promise<ViewCrudResponse | null>;
+  create(scenarioUUID: UUID, view: ViewPayload): Promise<ViewCrudResponse | null>;
   list(scenarioUUID: UUID): Promise<View[] | null>;
   get(viewUUID: UUID): Promise<View | null>;
-  update(viewUUID: UUID, view: View): Promise<ViewCrudResponse | null>;
+  update(viewUUID: UUID, view: ViewPayload): Promise<ViewCrudResponse | null>;
   delete(viewUUID: UUID): Promise<ViewCrudResponse | null>;
 }
 
 export interface UpdatesService {
-  get(
-    uuid: UUID,
-    entityGroup: string,
-    properties: ComponentProperty[]
-  ): Promise<UpdateWithData | null>;
+  get(uuid: UUID, entityGroup: string, properties: DataAttribute[]): Promise<UpdateWithData | null>;
 
   list(uuid: string): Promise<Update[] | null>;
 }
@@ -50,29 +47,32 @@ export interface ProjectService {
 }
 
 export interface GeocodeService {
+  upstreamEPSG(): Promise<number>;
   resolveSuggestion(suggestion: GeocodeSuggestion): Promise<GeocodeSearchResult | null>;
   getSuggestions(query: GeocodeSearchQuery): Promise<GeocodeSuggestion[] | null>;
   getResults(query: GeocodeSearchQuery): Promise<GeocodeSearchResult[] | null>;
 }
+export interface GetDataParams {
+  datasetUUID: UUID;
+  entityGroup?: string;
+  properties?: DataAttribute[];
+}
 
+export interface GetStateParams {
+  datasetUUID: UUID;
+  scenarioUUID: UUID;
+  entityGroup: string;
+  timestamp?: number;
+  properties?: DataAttribute[];
+}
 export interface DatasetService {
   list(project_uuid?: UUID): Promise<Dataset[]>;
 
-  getData<T>(params: {
-    datasetUUID: UUID;
-    entityGroup?: string;
-    properties?: ComponentProperty[];
-  }): Promise<DatasetWithData<T> | null>;
+  getData<T>(params: GetDataParams): Promise<DatasetWithData<T> | null>;
 
-  getState<T>(params: {
-    datasetUUID: UUID;
-    scenarioUUID: UUID;
-    entityGroup: string;
-    properties?: ComponentProperty[];
-    timestamp?: number;
-  }): Promise<DatasetWithData<T> | null>;
+  getState<T>(params: GetStateParams): Promise<DatasetWithData<T> | null>;
 
-  getMetaData?: (datasetUUID: UUID) => Promise<Dataset | null>;
+  getMetaData: (datasetUUID: UUID) => Promise<Dataset | null>;
 }
 
 export interface UserService {
@@ -90,8 +90,9 @@ export interface FetchRequestService {
   ): { url: string; options: RequestInit };
 }
 
+export type BackendCapability = "projects" | "geocode" | "user";
 export interface Backend {
-  getCapabilities(): string[];
+  getCapabilities(): BackendCapability[];
   dataset: DatasetService;
   geocode: GeocodeService;
   project: ProjectService;

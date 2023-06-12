@@ -1,11 +1,11 @@
-import isEqual from 'lodash/isEqual';
-import isError from 'lodash/isError';
+import isEqual from "lodash/isEqual";
+import isError from "lodash/isError";
 
-import { determineChanges } from '../components/map/mapVisHelpers';
-import { BaseVisualizerInfo } from './VisualizerInfo';
-import { Backend } from '../types/backend';
-import { TapefileStoreCollection } from './TapefileStore';
-import { IVisualizer } from '@movici-flow-common/types';
+import type { IVisualizer } from "@movici-flow-common/types";
+import { getVisualizerType, type VisualizerConstructor } from ".";
+import type { Backend } from "../types/backend";
+import type { TapefileStoreCollection } from "./TapefileStore";
+import type { BaseVisualizerInfo } from "./VisualizerInfo";
 
 type VMCallback<I extends BaseVisualizerInfo, V extends IVisualizer> = (
   params: CallbackPayload<I, V>
@@ -18,7 +18,7 @@ interface CallbackPayload<I extends BaseVisualizerInfo, V extends IVisualizer> {
   error?: Error | unknown;
   timestamp?: number | null;
 }
-type CallbackEvent = 'success' | 'create' | 'delete' | 'error' | 'data';
+type CallbackEvent = "success" | "create" | "delete" | "error" | "data";
 
 /**
  * The VisualizerManager creates and maintains `Visualizers` for the `MapVis.vue` component
@@ -65,24 +65,24 @@ export default class VisualizerManager<I extends BaseVisualizerInfo, V extends I
       delete: [],
       success: [],
       error: [],
-      data: []
+      data: [],
     };
-    if (config.onSuccess) this.on('success', config.onSuccess);
-    if (config.onError) this.on('error', config.onError);
-    if (config.onCreate) this.on('create', config.onCreate);
-    if (config.onDelete) this.on('delete', config.onDelete);
-    if (config.onData) this.on('data', config.onData);
+    if (config.onSuccess) this.on("success", config.onSuccess);
+    if (config.onError) this.on("error", config.onError);
+    if (config.onCreate) this.on("create", config.onCreate);
+    if (config.onDelete) this.on("delete", config.onDelete);
+    if (config.onData) this.on("data", config.onData);
   }
 
   private configureTapefileStoreCallbacks(store: TapefileStoreCollection) {
     const cb = (ts: number) => {
-      this.invokeCallbacks('data', {
+      this.invokeCallbacks("data", {
         manager: this,
-        timestamp: ts
+        timestamp: ts,
       });
     };
-    store.on('data', cb);
-    store.on('ready', cb);
+    store.on("data", cb);
+    store.on("ready", cb);
   }
 
   getVisualizers(): V[] {
@@ -113,10 +113,12 @@ export default class VisualizerManager<I extends BaseVisualizerInfo, V extends I
         // After we catch an error, we need to check whether we've tried the latest desired
         // state. If the latest desired state has changed, we may try again. We only call the
         // error callbacks once we're done trying
+
         if (!isEqual(thisInfos, this.desiredInfos)) {
           continue;
         }
         this.finalize(e);
+        console.error(e);
         return;
       }
     }
@@ -127,51 +129,54 @@ export default class VisualizerManager<I extends BaseVisualizerInfo, V extends I
     const [layersToAdd, layersToRemove] = determineChanges(infos, this.currentInfos);
     this.removeVisualizers(layersToRemove);
     this.createVisualizers(layersToAdd);
-    infos.forEach((info, idx) => {
-      this.visualizers?.[info.id].setInfo(info);
-      this.visualizers?.[info.id].setOrder(idx);
-    });
+    for (const [idx, info] of infos.entries()) {
+      const visualizer = this.visualizers[info.id];
+      if (visualizer) {
+        visualizer.setInfo(info);
+        visualizer.setOrder(idx);
+      }
+    }
 
     await this.reloadVisualizers();
     this.currentInfos = infos;
   }
 
   private removeVisualizers(layers: I[]): void {
-    layers.forEach(info => {
+    layers.forEach((info) => {
       delete this.visualizers[info.id];
-      this.invokeCallbacks('delete', { manager: this, info });
+      this.invokeCallbacks("delete", { manager: this, info });
     });
   }
 
   private createVisualizers(infos: I[]) {
-    infos.forEach(info => {
-      info.unsetError('create');
+    infos.forEach((info) => {
+      info.unsetError("create");
+      if (Object.keys(info.errors).length) return;
+
       let visualizer: V;
       try {
         visualizer = this.createVisualizer(info, this);
       } catch (e) {
         if (isError(e)) {
-          info.setError('create', e.message);
+          info.setError("create", e.message);
         }
         console.error(e);
         return;
       }
-      if (visualizer) {
-        this.visualizers[visualizer.baseID] = visualizer;
-        this.invokeCallbacks('create', { manager: this, info });
-      }
+      this.visualizers[visualizer.baseID] = visualizer;
+      this.invokeCallbacks("create", { manager: this, info });
     });
   }
 
   private async reloadVisualizers(): Promise<void[]> {
-    return await Promise.all(Object.values(this.visualizers).map(viz => viz.load()));
+    return await Promise.all(Object.values(this.visualizers).map((viz) => viz.load()));
   }
 
   private finalize(error?: unknown) {
     if (error) {
-      this.invokeCallbacks('error', { manager: this, error });
+      this.invokeCallbacks("error", { manager: this, error });
     } else {
-      this.invokeCallbacks('success', { manager: this });
+      this.invokeCallbacks("success", { manager: this });
     }
     this.loading = false;
   }
@@ -185,4 +190,60 @@ export default class VisualizerManager<I extends BaseVisualizerInfo, V extends I
       }
     }
   }
+}
+
+function compareItems<T, K>(oldItems: T[], newItems: T[], key: (i: T) => K): [T[], T[], T[]] {
+  const oldKeys = new Set(oldItems.map(key));
+  const newKeys = new Set(newItems.map(key));
+  const toCreate = newItems.filter((l) => !oldKeys.has(key(l)));
+  const toDiscard = oldItems.filter((l) => !newKeys.has(key(l)));
+  const toKeep = newItems.filter((l) => oldKeys.has(key(l)));
+  return [toCreate, toDiscard, toKeep];
+}
+
+function determineChanges<I extends BaseVisualizerInfo>(
+  newLayers: I[],
+  oldLayers: I[]
+): [I[], I[]] {
+  const [toCreate, toDiscard, toKeep] = determineChangedIDs(newLayers, oldLayers);
+  const [moreToCreate, moreToDiscard] = determineChangedVisualizers(toKeep, oldLayers);
+
+  return [
+    [...toCreate, ...moreToCreate],
+    [...toDiscard, ...moreToDiscard],
+  ];
+}
+
+function determineChangedIDs<I extends { id: string }>(
+  newLayers: I[],
+  oldLayers: I[]
+): [I[], I[], I[]] {
+  return compareItems(oldLayers, newLayers, (l) => l.id);
+}
+
+function determineChangedVisualizers<I extends BaseVisualizerInfo>(
+  newLayers: I[],
+  oldLayers: I[]
+): [I[], I[], I[]] {
+  const oldLayerVisualizerTypes = oldLayers.reduce(
+    (obj: Record<string, VisualizerConstructor | null>, l) => {
+      obj[l.id] = getVisualizerType(l);
+      return obj;
+    },
+    {}
+  );
+  const oldLayersByID = oldLayers.reduce((obj: Record<string, I>, l) => {
+    obj[l.id] = l;
+    return obj;
+  }, {});
+  const [toCreate, toDiscard, toKeep]: I[][] = [[], [], []];
+  for (const layer of newLayers) {
+    if (getVisualizerType(layer) === oldLayerVisualizerTypes[layer.id]) {
+      toKeep.push(layer);
+    } else {
+      toCreate.push(layer);
+      toDiscard.push(oldLayersByID[layer.id]);
+    }
+  }
+  return [toCreate, toDiscard, toKeep];
 }

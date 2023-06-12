@@ -1,13 +1,19 @@
-import { ShortDataset } from './datasets';
-import { UUID } from './general';
+import type { UUID } from "./general";
 
 export type AnalysisTemplate = Record<string, unknown>;
+export interface ScenarioStub {
+  name: string;
+  display_name: string;
+  version: 4;
+  description: string;
+  models: [];
+  datasets: [];
+}
 export interface ShortScenario {
   uuid: UUID;
   name: string;
   display_name: string;
   status?: string;
-  has_simulation?: boolean;
   version: number;
   created_on: number;
   has_timeline?: boolean;
@@ -29,8 +35,8 @@ export interface ScenarioModel {
   [key: string]: unknown;
 }
 export enum SimulationMode {
-  TIME_ORIENTED = 'time_oriented',
-  EVENT_ORIENTED = 'event_oriented'
+  TIME_ORIENTED = "time_oriented",
+  EVENT_ORIENTED = "event_oriented",
 }
 
 export interface TimeOrientedSimulationInfo {
@@ -48,8 +54,10 @@ export interface EventOrientedSimulationInfo {
 }
 export type SimulationInfo = TimeOrientedSimulationInfo | EventOrientedSimulationInfo;
 
-export interface ScenarioDataset extends ShortDataset {
-  display_name?: string;
+export interface ScenarioDataset {
+  name: string;
+  uuid: UUID;
+  type: string;
 }
 export interface Simulation {
   scenario_uuid: UUID;

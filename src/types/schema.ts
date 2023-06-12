@@ -1,12 +1,11 @@
-import { UUID } from './general';
-import { Dataset } from './datasets';
-import { Scenario, ScenarioDataset, ShortScenario } from './scenarios';
-import { BoundingBox } from '@mapbox/geo-viewport';
+import type { ShortDataset } from "./datasets";
+import type { UUID } from "./general";
+import type { Scenario, ShortScenario } from "./scenarios";
 
 export enum ImportantAttribute {
-  DIPLAY_NAME = 'display_name',
-  NAME = 'name',
-  REFERENCE = 'reference'
+  DIPLAY_NAME = "display_name",
+  NAME = "name",
+  REFERENCE = "reference",
 }
 
 export const IMPORTANT_ATTRIBUTES = Object.values(ImportantAttribute);
@@ -14,7 +13,7 @@ export const IMPORTANT_ATTRIBUTES = Object.values(ImportantAttribute);
 export interface DatasetSummary {
   count: number;
   entity_groups: EntityGroupSummary[];
-  bounding_box?: BoundingBox;
+  bounding_box?: [number, number, number, number];
   epsg_code?: number;
   general?: {
     enum?: Record<string, string[]>;
@@ -22,39 +21,38 @@ export interface DatasetSummary {
 }
 
 export enum DatasetFormat {
-  ENTITY_BASED = 'entity_based',
-  UNSTRUCTURED = 'unstructured',
-  BINARY = 'binary'
+  ENTITY_BASED = "entity_based",
+  UNSTRUCTURED = "unstructured",
+  BINARY = "binary",
 }
 
 export interface DatasetSchema {
   dataset_types: DatasetType[];
   entity_types: EntityType[];
-  property_types: PropertyType[];
+  property_types: AttributeType[];
 }
 
 export interface DatasetType {
-  uuid?: UUID;
+  uuid: UUID;
   name: string;
   format: DatasetFormat;
 }
 
 export interface EntityType {
-  uuid?: UUID;
+  uuid: UUID;
   name: string;
 }
 
 export interface EntityGroupSummary {
   name: string;
   count: number;
-  properties: PropertySummary[];
+  properties: AttributeSummary[];
 }
-export interface ComponentProperty {
-  component: string | null;
+export interface DataAttribute {
   name: string;
 }
-export interface PropertyType extends ComponentProperty {
-  uuid?: UUID;
+export interface AttributeType extends DataAttribute {
+  uuid: UUID;
   data_type: string;
   description?: string;
   unit?: string;
@@ -62,13 +60,15 @@ export interface PropertyType extends ComponentProperty {
 }
 
 export interface ExportConfig {
-  dataset: Dataset | ScenarioDataset | null;
+  dataset: ShortDataset | null;
   projectName: string;
   entityName: string;
   scenario?: ShortScenario | Scenario;
   timestamp?: number;
 }
-export interface PropertySummary extends PropertyType {
+export interface AttributeSummary extends AttributeType {
   min_val: number | null;
   max_val: number | null;
 }
+
+export type SimpleAttributeSummary = Omit<AttributeSummary, "uuid">;

@@ -22,6 +22,7 @@
     "save": "Opslaan",
     "saveAsNew": "Opslaan als nieuw",
     "saveAndGenerate": "Opslaan en genereren",
+    "saveAndEdit": "Opslaan & bewerken",
     "search": "Zoeken",
     "select": "Selecteren",
     "selectAll": "Selecteer alles",
@@ -31,14 +32,13 @@
     "close": "Sluiten"
   },
   "dataset": {
-    "addNew": "@:(resources.dataset) @:(actions.add)",
-    "duration": "Verwerkingsduur (sec)",
-    "edit": "@:(resources.dataset) @:(actions.edit)",
+    "addNew": "Dataset toevoegen",
+    "edit": "Dataset bewerken",
     "initData": "Init data",
-    "invalid": "Ongeldige @:(resources.dataset)",
-    "nonAvailable": "Geen @:(resources.datasets) beschikbaar",
-    "select": "Selecteer een @:(resources.dataset)",
-    "selectRequiredTypes": "Selecteer benodige :@(resources.dataset) types"
+    "invalid": "Ongeldige dataset",
+    "nonAvailable": "Geen datasets beschikbaar",
+    "select": "Selecteer een dataset",
+    "selectRequiredTypes": "Selecteer benodige dataset types"
   },
   "flow": {
     "errors": {
@@ -55,32 +55,31 @@
       "summaryEntityGroupNotFound": "Entiteitgroep {entityGroup} bestaat niet in dataset {datasetName}"
     },
     "datasets": {
-      "addDataset": "@:(dataset.addNew)",
-      "dataPreview": "Data preview",
+      "dataPreview": "Data voorbeeld",
       "details": {
         "created_on": "Gemaakt op",
-        "last_updated": "Laatst gewijzigd op",
+        "last_modified": "Laatst gewijzigd op",
         "source": "Bron",
         "tags": "Tags"
       },
       "entitySummary": "Entiteitensamenvatting",
-      "label": "@:(resources.dataset)s",
-      "resume": "Samenvatting",
-      "selectPlaceholder": "@:(dataset.select)",
+      "label": "Datasets",
+      "summary": "Samenvatting",
+      "searchPlaceholder": "Datasets zoeken...",
       "usage": "Gebruik",
       "zeroEntities": "Deze dataset kan niet worden weergegeven :("
     },
     "entityGroup": {
-      "select": "Selecteer een @:(resources.entityGroup)"
+      "select": "Selecteer een entiteitengroep"
     },
     "export": {
-      "custom": "Custom",
-      "filterData": "Filter data",
-      "format": "Export format",
-      "formatPlaceholder": "Choose a format",
-      "label": "Export",
-      "modalTitle": "Export data for scenario ",
-      "resetTimestamp": "Reset timestamp to original value"
+      "custom": "Aanpassen",
+      "filterData": "data filteren",
+      "format": "Export formaat",
+      "formatPlaceholder": "Kies een formaat",
+      "label": "Exporteren",
+      "modalTitle": "Exporteer data uit dit scenario",
+      "resetTimestamp": "Tijdstip terugzetten"
     },
     "leftMenu": {
       "actions": "Acties",
@@ -93,27 +92,27 @@
     },
     "mainView": {
       "noDatasetText": "Selecteer een dataset om te bekijken",
-      "noProjectText": "Kies een @:(resources.project) om uw data te bekijken en scenarios te configureren",
-      "noProjectTitle": "U heeft nog geen @:(resources.project) gekozen!",
+      "noProjectText": "Kies een werkruimte om uw data te bekijken en scenarios te configureren",
+      "noProjectTitle": "U heeft nog geen werkruimte gekozen!",
       "noScenarioText": "Selecteer een scenario om te bekijken"
     },
     "projects": {
       "details": {
         "created_on": "Gemaakt op",
-        "dataset_count": "@:(resources.dataset)s",
+        "dataset_count": "Datasets",
         "last_updated": "Laatst gewijzigd op",
-        "scenario_count": "@:(resources.scenario)s",
+        "scenario_count": "Scenarios",
         "tags": "Tags"
       },
-      "label": "@:(resources.project)",
-      "selectPlaceholder": "@:(project.select)"
+      "label": "Werkruimte",
+      "selectPlaceholder": "Selecteer een werkruimte..."
     },
     "scenarios": {
       "configAssistant": "Configuratie-assistant",
-      "label": "@:(resources.scenario)s",
+      "label": "Scenarios",
       "models": "Modellen",
       "rawConfig": "Ruwe config",
-      "selectPlaceholder": "@:(scenario.select)",
+      "selectPlaceholder": "Selecteer een scenario...",
       "usedInScenario": "Gebruikt in scenario",
       "widgetDashboard": "Widget Dashboard"
     },
@@ -145,9 +144,7 @@
         "colors": "Kleuren",
         "gradient": "Gradient",
         "palette": "Kleurenpalet",
-
         "type": "Kleurenpalet-type",
-
         "invertColors": "Kleurvolgorde omkeren",
 
         "advanced": {
@@ -214,7 +211,7 @@
         "noViewToDelete": "Er is geen View om te verwijderen",
         "selectView": "View selecteren",
         "unsavedChanges": "<b>Wijzigingen zijn niet opgeslagen!</b> <br>Weet je zeker dat je de Configurator wilt sluiten?",
-        "unsavedView": "<b>Wijzigingen zijn niet opgeslagen!</b> <br>Weet je zeker dat je de Visualisatie wilt verlaten?",
+        "unsavedView": "<b>Wijzigingen zijn niet opgeslagen!</b> <br>Weet je zeker dat je deze pagina wilt verlaten?",
         "leaveView": "Weet je zeker dat je de Visualisatie wilt verlaten?? <br>Je zult de View opnieuw moeten laden.",
         "viewCreateSuccess": "View succesvol opgeslagen",
         "viewDeleteSuccess": "View succesvol verwijderd",
@@ -274,7 +271,7 @@
       "visualiserDisplayName": "Visualiser weergavenaam"
     },
     "visualizerGroup": {
-      "select": "Selecteer een @:(resources.visualizerGroup)"
+      "select": "Selecteer een visualizer groep"
     },
     "basemap": {
       "light": "licht",
@@ -308,7 +305,7 @@
     "currentTime": "Huidige tijd",
     "data": "Data",
     "data_type": "Data Type",
-    "dataset_format": " @:(resources.dataset) Formaat",
+    "dataset_format": "Dataset formaat",
     "description": "Beschrijving",
     "displayName": "Weergavenaam",
     "duration": "Duur",
@@ -329,49 +326,46 @@
     "timeScale": "Tijdschaal",
     "type": "Type",
     "unit": "Eenheid",
-    "username": "Gebruikersnaam / @:(properties.email)",
+    "username": "Gebruikersnaam / E-mail",
     "zip_code": "Postcode"
   },
   "resources": {
-    "analysis": "Analyse",
     "dataset": "Dataset",
-    "dataset_type": "Dataset Type",
-    "dataset_types": "@:(resources.dataset_type)s",
-    "datasets": "@:(resources.dataset)s",
+    "datasets": "Datasets",
+    "dataset_generator": "Dataset Generator",
+    "dataset_generators": "Dataset Generatoren",
+    "dataset_type": "Dataset type",
+    "dataset_types": "Dataset types",
     "entity": "Entiteit",
     "entity_type": "Entiteitstype",
-    "entity_types": "@:(resources.entity_type)s",
-    "entityGroup": "Entiteitsgroep",
+    "entity_types": "Entiteitstypes",
+    "entityGroup": "Entiteitgroep",
     "impactIndicator": "Impact indicator",
     "model": "Model",
     "model_type": "Model type",
     "model_types": "Model types",
     "models": "Modellen",
     "organisation": "Organisatie",
-    "organisations": "@:(resources.organisation)s",
+    "organisations": "Organisaties",
     "profile": "Profiel",
-    "project": "Workspace",
-    "projects": "@:(resources.project)s",
-    "property_type": "Property Type",
-    "property_types": "@:(resources.property_type)s",
+    "project": "Werkruimte",
+    "projects": "Werkruimtes",
+    "attribute_type": "Attribuut type",
+    "attribute_types": "Attribuut types",
     "region": "Regio",
+    "role": "Rol",
+    "roles": "Rollen",
     "scenario": "Scenario",
-    "scenarios": "@:(resources.scenario)s",
+    "scenarios": "Scenarios",
     "schema": "Dataset Schema",
     "scope": "Scope",
-    "scopes": "@:(resources.scope)s",
+    "scopes": "Scopes",
     "timeline": "Tijdlijn",
     "user": "Gebruiker",
-    "users": "@:(resources.user)s",
+    "users": "Gebruikers",
     "view": "View",
-    "views": "@:(resources.view)s",
+    "views": "Views",
     "visualizerGroup": "Visualizer groep"
-  },
-  "settings": {
-    "dataEngineVersion": "Data Engine versie",
-    "language": "Taal",
-    "selectDataEngineVersion": "@:(settings.dataEngineVersion) @:(actions.select) ",
-    "selectLanguage": "@:(settings.language) @:(actions.select)"
   },
   "time": {
     "days": "Dagen",
@@ -381,8 +375,8 @@
   },
   "units": {
     "meter": "meter",
-    "meters": "@:(units.meter)s",
+    "meters": "meters",
     "pixel": "pixel",
-    "pixels": "@:(units.pixel)s"
+    "pixels": "pixels"
   }
 }

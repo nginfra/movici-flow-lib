@@ -19,7 +19,7 @@ https://github.com/buefy/buefy/blob/a92edafb1b5eaf3e01f73b18aebdd995535e68be/src
         size,
         closeType,
         { 'is-rounded': rounded },
-        closeIcon ? 'has-delete-icon' : 'is-delete'
+        closeIcon ? 'has-delete-icon' : 'is-delete',
       ]"
       @click="close"
       @keyup.delete.prevent="close"
@@ -36,7 +36,7 @@ https://github.com/buefy/buefy/blob/a92edafb1b5eaf3e01f73b18aebdd995535e68be/src
   </div>
   <span v-else class="tag" :class="[type, size, { 'is-rounded': rounded }]">
     <o-icon v-if="icon" :icon="icon" :size="size" :variant="iconVariant" :pack="iconPack" />
-    <span :class="{ 'has-ellipsis': ellipsis }" @click="click">
+    <span :class="{ 'has-ellipsis': ellipsis }">
       <slot />
     </span>
 
@@ -56,7 +56,7 @@ https://github.com/buefy/buefy/blob/a92edafb1b5eaf3e01f73b18aebdd995535e68be/src
 
 <script>
 export default {
-  name: 'BTag',
+  name: "BTag",
   props: {
     attached: Boolean,
     closable: Boolean,
@@ -67,7 +67,7 @@ export default {
     ellipsis: Boolean,
     tabstop: {
       type: Boolean,
-      default: true
+      default: true,
     },
     ariaCloseLabel: String,
     icon: String,
@@ -76,18 +76,18 @@ export default {
     closeVariant: String,
     closeIcon: String,
     closeIconPack: String,
-    closeIconVariant: String
+    closeIconVariant: String,
   },
   computed: {
     closeType() {
-      return this.closeVariant ? 'is-' + this.closeVariant : '';
+      return this.closeVariant ? "is-" + this.closeVariant : "";
     },
     type() {
-      return this.variant ? 'is-' + this.variant : '';
+      return this.variant ? "is-" + this.variant : "";
     },
     sizeClass() {
-      return this.size ? 'is-' + this.size : '';
-    }
+      return this.size ? "is-" + this.size : "";
+    },
   },
   methods: {
     /**
@@ -96,15 +96,15 @@ export default {
      */
     close(event) {
       if (this.disabled) return;
-      this.$emit('close', event);
+      this.$emit("close", event);
     },
     /**
      * Emit click event when tag is clicked.
      */
     click(event) {
       if (this.disabled) return;
-      this.$emit('click', event);
-    }
-  }
+      this.$emit("click", event);
+    },
+  },
 };
 </script>

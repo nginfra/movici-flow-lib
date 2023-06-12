@@ -1,10 +1,10 @@
-import ColorModule from './ColorModule';
-import PopupModule from './PopupModule';
-import { IconModule, ShapeModule } from './ShapeIconModule';
-import SizeModule from './SizeModule';
-import VisibilityModule from './VisibilityModule';
-import RenderOrderModule from './RenderOrderModule';
-import { VisualizerModule } from './common';
+import ColorModule from "./ColorModule";
+import PopupModule from "./PopupModule";
+import { IconModule, ShapeModule } from "./ShapeIconModule";
+import SizeModule from "./SizeModule";
+import VisibilityModule from "./VisibilityModule";
+import RenderOrderModule from "./RenderOrderModule";
+import { VisualizerModule } from "./common";
 
 export {
   ColorModule,
@@ -14,5 +14,5 @@ export {
   IconModule,
   ShapeModule,
   VisibilityModule,
-  RenderOrderModule
+  RenderOrderModule,
 };

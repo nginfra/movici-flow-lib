@@ -1,8 +1,9 @@
+import { vi } from "vitest";
 module.exports = {
-  Map: jest.fn(() => ({
-    on: jest.fn(),
-    addControl: jest.fn(),
-    jumpTo: jest.fn()
+  Map: vi.fn(() => ({
+    on: vi.fn(),
+    addControl: vi.fn(),
+    jumpTo: vi.fn(),
   })),
-  NavigationControl: jest.fn(() => {})
+  NavigationControl: vi.fn(() => {}),
 };

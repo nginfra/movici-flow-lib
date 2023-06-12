@@ -1,62 +1,63 @@
-import FormValidator, { FormValidatorConfig } from '@movici-flow-common/utils/FormValidator';
+import { FormValidator, type FormValidatorConfig } from "@movici-flow-common/utils/FormValidator";
+import { describe, it, expect, vi } from "vitest";
 
-describe('formValidator', () => {
-  function newValidator(validators?: FormValidatorConfig['validators']) {
-    const onValidate = jest.fn();
+describe("formValidator", () => {
+  function newValidator(validators?: FormValidatorConfig["validators"]) {
+    const onValidate = vi.fn();
     return { validator: new FormValidator({ validators: validators, onValidate }), onValidate };
   }
-  it('returns empty dictionary on no errors', () => {
+  it("returns empty dictionary on no errors", () => {
     const { validator, onValidate } = newValidator();
     validator.validate();
     expect(onValidate).toBeCalledWith({});
   });
 
-  it('can return multiple errors', () => {
+  it("can return multiple errors", () => {
     const { validator, onValidate } = newValidator({
-      a: () => 'error a',
-      b: () => 'error b'
+      a: () => "error a",
+      b: () => "error b",
     });
     validator.validate();
-    expect(onValidate).toBeCalledWith({ a: 'error a', b: 'error b' });
+    expect(onValidate).toBeCalledWith({ a: "error a", b: "error b" });
   });
 
-  it('can spawn a child validator', () => {
+  it("can spawn a child validator", () => {
     const validator = new FormValidator();
-    expect(validator.child('child')).toBeInstanceOf(FormValidator);
+    expect(validator.child("child")).toBeInstanceOf(FormValidator);
   });
 
-  it('reuses spawned child', () => {
+  it("reuses spawned child", () => {
     const validator = new FormValidator();
-    expect(validator.child('child')).toBe(validator.child('child'));
+    expect(validator.child("child")).toBe(validator.child("child"));
   });
 
-  it('Child can be configured', () => {
-    const child = new FormValidator().child('child');
-    const onValidate = jest.fn();
+  it("Child can be configured", () => {
+    const child = new FormValidator().child("child");
+    const onValidate = vi.fn();
     child.configure({
       validators: {
-        a: () => 'error'
+        a: () => "error",
       },
-      onValidate
+      onValidate,
     });
     child.validate();
-    expect(onValidate).toBeCalledWith({ a: 'error' });
+    expect(onValidate).toBeCalledWith({ a: "error" });
   });
 
-  it('Child reports errors back to parent', () => {
+  it("Child reports errors back to parent", () => {
     const { validator, onValidate } = newValidator();
-    const child = validator.child('child');
+    const child = validator.child("child");
     child.configure({
       validators: {
-        a: () => 'error'
-      }
+        a: () => "error",
+      },
     });
     validator.validate();
-    expect(onValidate).toHaveBeenLastCalledWith({ 'child.a': 'error' });
+    expect(onValidate).toHaveBeenLastCalledWith({ "child.a": "error" });
   });
 
-  it('removing clears all validators, errors and callbacks', () => {
-    const validate = jest.fn();
+  it("removing clears all validators, errors and callbacks", () => {
+    const validate = vi.fn();
     const { validator, onValidate } = newValidator({ a: validate });
     validator.reset();
     validate.mockReset();
@@ -67,67 +68,67 @@ describe('formValidator', () => {
     expect(validate).not.toBeCalled();
   });
 
-  it('can remove a child', () => {
+  it("can remove a child", () => {
     const validator = new FormValidator();
-    const child = validator.child('child');
-    const onValidate = jest.fn();
+    const child = validator.child("child");
+    const onValidate = vi.fn();
     child.configure({ onValidate });
-    validator.removeChild('child');
+    validator.removeChild("child");
     onValidate.mockReset();
     validator.validate();
     expect(onValidate).not.toBeCalled();
   });
 
-  it('removing a child clears errors', () => {
+  it("removing a child clears errors", () => {
     const { validator, onValidate } = newValidator();
-    const child = validator.child('child');
+    const child = validator.child("child");
     child.configure({
       validators: {
-        a: () => 'error'
-      }
+        a: () => "error",
+      },
     });
     validator.validate();
-    expect(onValidate).toHaveBeenLastCalledWith({ 'child.a': 'error' });
-    validator.removeChild('child');
+    expect(onValidate).toHaveBeenLastCalledWith({ "child.a": "error" });
+    validator.removeChild("child");
     expect(onValidate).toHaveBeenLastCalledWith({});
   });
 
-  it('only calls onValidate once after removing child', () => {
-    const onValidate = jest.fn();
+  it("only calls onValidate once after removing child", () => {
+    const onValidate = vi.fn();
     const validator = new FormValidator({ onValidate });
-    const child = validator.child('child');
-    child.child('grandchild');
+    const child = validator.child("child");
+    child.child("grandchild");
     expect(onValidate).toBeCalledTimes(0);
 
-    validator.removeChild('child');
+    validator.removeChild("child");
     expect(onValidate).toBeCalledTimes(1);
   });
 
-  it('resets errors on touch', () => {
+  it("resets errors on touch", () => {
     const { validator, onValidate } = newValidator({
-      a: () => 'error'
+      a: () => "error",
     });
     validator.validate();
-    expect(onValidate).toBeCalledWith({ a: 'error' });
-    validator.touch('a');
+    expect(onValidate).toBeCalledWith({ a: "error" });
+    validator.touch("a");
     expect(onValidate).toBeCalledWith({});
   });
 
-  it('can have dependent validators that are reset on touch', () => {
+  it("can have dependent validators that are reset on touch", () => {
     const { validator, onValidate } = newValidator({
       c: () => {},
       b: {
-        depends: ['c'],
-        validator: () => 'error b'
+        depends: ["c"],
+        validator: () => "error b",
       },
       a: {
-        depends: ['b'],
-        validator: () => 'error a'
-      }
+        depends: ["b"],
+        validator: () => "error a",
+      },
     });
     validator.validate();
-    expect(onValidate).toBeCalledWith({ a: 'error a', b: 'error b' });
-    validator.touch('c');
+    expect(onValidate).toBeCalledWith({ a: "error a", b: "error b" });
+    validator.touch("c");
     expect(onValidate).toBeCalledWith({});
   });
 });

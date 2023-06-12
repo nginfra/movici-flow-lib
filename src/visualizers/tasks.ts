@@ -1,5 +1,5 @@
-import { hasOwnProperty } from '@movici-flow-common/utils';
-import { IQueue, Queue } from '@movici-flow-common/utils/queue';
+import { hasOwnProperty } from "@movici-flow-common/utils";
+import { type IQueue, Queue } from "@movici-flow-common/utils/queue";
 
 export interface Task<T> {
   getTask(): Promise<T>;
@@ -21,7 +21,7 @@ export class TaskDispatcher<T extends Task<unknown> = Task<unknown>> implements 
   constructor({
     MAX_CONCURRENT = 10,
     queue,
-    onReady
+    onReady,
   }: {
     MAX_CONCURRENT?: number;
     queue?: IQueue<T>;
@@ -46,12 +46,12 @@ export class TaskDispatcher<T extends Task<unknown> = Task<unknown>> implements 
     if (task) {
       task
         .getTask()
-        .then(obj => {
+        .then((obj) => {
           this.running--;
           this.next();
           task.onDone?.(obj);
         })
-        .catch(err => {
+        .catch((err) => {
           this.running--;
           this.next();
           task.onError?.(err);
@@ -74,7 +74,7 @@ export class BatchedTaskDispatcher<T extends Task<unknown> = Task<unknown>>
   constructor({
     BATCH_SIZE = 10,
     queue,
-    onReady
+    onReady,
   }: {
     BATCH_SIZE?: number;
     queue?: IQueue<T>;
@@ -101,16 +101,16 @@ export class BatchedTaskDispatcher<T extends Task<unknown> = Task<unknown>>
     if (tasks.length) {
       this.running = true;
       Promise.all(
-        tasks.map(t =>
-          t.getTask().catch(e => {
+        tasks.map((t) =>
+          t.getTask().catch((e) => {
             return { _catchError: e };
           })
         )
       )
-        .then(results => {
+        .then((results) => {
           for (let i = 0; i < tasks.length; i++) {
             const result = results[i];
-            if (hasOwnProperty(result, '_catchError')) {
+            if (hasOwnProperty(result, "_catchError")) {
               tasks[i].onError?.(result._catchError);
             } else {
               tasks[i].onDone?.(result);

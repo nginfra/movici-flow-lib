@@ -1,4 +1,4 @@
-import { Mapper } from '@movici-flow-common/types';
+import type { Mapper } from "@movici-flow-common/types";
 
 interface NumberMapConfig<T> {
   mapping: [number, T][];
@@ -38,8 +38,8 @@ export default class NumberMapper<T> implements Mapper<number | null, T> {
     this.specialResult = config.specialResult;
     this.undefined = null;
     this.undefinedResult = config.undefinedResult;
-    this.values = config.mapping.map(m => m[0]);
-    this.results = config.mapping.map(m => m[1]);
+    this.values = config.mapping.map((m) => m[0]);
+    this.results = config.mapping.map((m) => m[1]);
     this.cache = new Map();
   }
 
@@ -72,7 +72,7 @@ export default class NumberMapper<T> implements Mapper<number | null, T> {
         return this.results[i];
       }
     }
-    throw new Error('Programming error while calculating color');
+    throw new Error("Programming error while calculating color");
   }
 
   isUndefined(value: number | null): value is null {

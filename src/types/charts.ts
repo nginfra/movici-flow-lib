@@ -1,5 +1,5 @@
-import { RGBAColor } from 'deck.gl';
-import { ChartDataset, ChartOptions } from 'chart.js';
+import type { ChartDataset, ChartOptions } from "chart.js";
+import type { RGBAColor } from "./colors";
 
 export interface FlowChartConfig {
   title: string;

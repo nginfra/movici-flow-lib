@@ -1,19 +1,19 @@
-import {
+import type {
   ColorClause,
   Coordinate,
+  IMapVisualizer,
   LayerParams,
   TopologyLayerData,
-  IMapVisualizer,
-  RenderOrderType
-} from '@movici-flow-common/types';
-import isEqual from 'lodash/isEqual';
-import { SinglePropertyTapefile } from '../tapefile';
+} from "@movici-flow-common/types";
+import { RenderOrderType } from "@movici-flow-common/types";
+import isEqual from "lodash/isEqual";
+import orderedRendering from "../layers/orderedRendering";
+import type { SinglePropertyTapefile } from "../tapefile";
 import {
   TapefileAccessor,
   VisualizerModule,
-  VisualizerModuleParams
-} from '../visualizerModules/common';
-import orderedRendering from '../layers/orderedRendering';
+  type VisualizerModuleParams,
+} from "../visualizerModules/common";
 
 type RawValueAccessor<D> = (d: D) => number;
 
@@ -41,7 +41,7 @@ export default class RenderOrderModule<
       params.type = orderedRendering(params.type);
       params.props.getOrderingValue = accessor;
       params.props.filterRanges = filterRanges;
-      this.setUpdateTriggers(params, 'getOrderingValue', this.currentSettings);
+      this.setUpdateTriggers(params, "getOrderingValue", this.currentSettings);
     }
 
     // If we change from filtered to non-filtered, we need to tell deck.gl to fully
@@ -81,13 +81,13 @@ export default class RenderOrderModule<
     clause: ColorClause | undefined,
     visualizer: IMapVisualizer<Coord>
   ): RawValueAccessor<LData> | undefined {
-    if (clause?.byValue?.attribute && clause?.byValue.type === 'buckets') {
+    if (clause?.byValue?.attribute && clause?.byValue.type === "buckets") {
       const accessor = new TapefileAccessor({
         getValue: (v: number) => {
           return v;
-        }
+        },
       });
-      visualizer.requestTapefile(clause.byValue.attribute, t => {
+      visualizer.requestTapefile(clause.byValue.attribute, (t) => {
         accessor.setTapefile(t as SinglePropertyTapefile<number>);
       });
       return (d: LData) => {
@@ -102,7 +102,7 @@ export default class RenderOrderModule<
     const order = backwardsCompatibleOrder(this.currentSettings.advanced?.renderOrder);
     if (order === RenderOrderType.DISABLED) return null;
 
-    const values = this.currentSettings.byValue.colors.map(pair => pair[0]);
+    const values = this.currentSettings.byValue.colors.map((pair) => pair[0]);
     if (values.length < 2) return null;
     // the first color is rendered for any value until the second value in the colormap (the first
     // value doesn't actually play a role in the color calculation) so the filter range starts at

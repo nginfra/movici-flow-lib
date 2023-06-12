@@ -1,44 +1,30 @@
 {
-  "compilerOptions": {
-    "target": "es2019",
-    "module": "esnext",
-    "strict": true,
-    "jsx": "preserve",
-    "importHelpers": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": false,
-    "experimentalDecorators": true,
-    "declaration": true,
-    "baseUrl": "./",
-    "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules/@danmarshall/deckgl-typings"
-    ],
-    "paths": {
-      "@movici-flow-common/*": [
-        "../src/*"
-      ]
-    },
-    "allowJs": true,
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
-  },
+  "extends": "@vue/tsconfig/tsconfig.web.json",
   "include": [
+    "env.d.ts",
     "../src/**/*.ts",
     "../src/**/*.tsx",
     "../src/**/*.vue",
+    "../src/**/*.json",
     "tests/**/*.ts",
     "tests/**/*.js"
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "compilerOptions": {
+    "allowJs": true,
+    "composite": true,
+    "baseUrl": ".",
+    "lib": ["esnext"],
+    "types": ["node", "jsdom"],
+    "paths": {
+      "@movici-flow-common/*": ["../src/*"],
+      "@movici-flow-common": ["../src/index.ts"]
+    }
+  },
+  "vueCompilerOptions": {
+    "jsxTemplates": true,
+    "experimentalRfc436": true
+  }
 }

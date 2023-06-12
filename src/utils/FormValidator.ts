@@ -59,7 +59,7 @@ export interface IFormValidator {
  * with a dictionary containing the keys and string output of all validators that produced an
  * error. This callback can be used to synchronize a Vue component attribute.
  *
- * You can create child validators by calling `FormValidator.spawn`. This function takes a single
+ * You can create child validators by calling `FormValidator.child`. This function takes a single
  * `name` argument to identify the child Validator by. The child validator can be used as a
  * standalone form validator. However, whenever `validate` is called on the parent, `validate` is
  * also called on the child. The child validator has its own onValidate to report errors from the
@@ -67,10 +67,9 @@ export interface IFormValidator {
  * validator. These errors are then also reported in the parent's `onValidate` callback, where they
  * are prefixed by the child validators name and a `.`, such as `child.validator-key`
  *
- * see also `mixins/ValidationProvider.vue` for an example usage
  */
 
-export default class FormValidator implements IFormValidator {
+export class FormValidator implements IFormValidator {
   private errors!: NestedErrorDict;
   private children!: Record<string, IFormValidator>;
   private validators!: Record<string, ValidatorFunc>;
@@ -100,12 +99,12 @@ export default class FormValidator implements IFormValidator {
 
   private processValidators(validators: Record<string, ValidatorFunc | SingleValidatorConfig>) {
     for (const [key, val] of Object.entries(validators)) {
-      if (typeof val === 'function') {
+      if (typeof val === "function") {
         this.validators[key] = val;
         continue;
       }
       let depends = val.depends ?? [];
-      if (typeof depends === 'string') {
+      if (typeof depends === "string") {
         depends = [depends];
       }
       for (const dep of depends) {
@@ -145,7 +144,7 @@ export default class FormValidator implements IFormValidator {
 
     for (const [name, validator] of Object.entries(this.validators)) {
       const result = this.getValidationResult(validator);
-      if (typeof result === 'string') {
+      if (typeof result === "string") {
         this.errors[name] ??= result;
       }
     }
@@ -180,13 +179,13 @@ export default class FormValidator implements IFormValidator {
 
   child(name: string): IFormValidator {
     if (!name) {
-      throw new Error('Validator name cannot be empty');
+      throw new Error("Validator name cannot be empty");
     }
 
     this.children[name] ??= new FormValidator({
       parentCallback: (e: ErrorDict) => {
         this.processChildErrors(name, e);
-      }
+      },
     });
     return this.children[name];
   }
@@ -222,14 +221,14 @@ export default class FormValidator implements IFormValidator {
   }
 }
 
-function flatten(errors: NestedErrorDict, path = '', result: ErrorDict | null = null) {
+function flatten(errors: NestedErrorDict, path = "", result: ErrorDict | null = null) {
   result = result || {};
 
   for (const [key, val] of Object.entries(errors)) {
-    if (typeof val === 'string') {
+    if (typeof val === "string") {
       result[path + key] = val;
     } else {
-      flatten(val, path + key + '.', result);
+      flatten(val, path + key + ".", result);
     }
   }
   return result;
@@ -237,11 +236,11 @@ function flatten(errors: NestedErrorDict, path = '', result: ErrorDict | null = 
 
 export class ValidationError extends Error {}
 
-export function required(value: unknown, resource = 'Input') {
+export function required(value: unknown, resource = "Input") {
   ``;
   if (value === undefined || value === null) return `${resource} is required.`;
 }
 
-export function isPositive(value: unknown, resource = 'Input') {
-  if (!(typeof value === 'number') || value < 0) return `${resource} must be at least 0.`;
+export function isPositive(value: unknown, resource = "Input") {
+  if (!(typeof value === "number") || value < 0) return `${resource} must be at least 0.`;
 }

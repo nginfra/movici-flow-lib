@@ -1,15 +1,16 @@
-import StatusTracker from '@movici-flow-common/utils/StatusTracker';
-import { ChartDataset, ChartOptions } from 'chart.js';
-import {
+import type StatusTracker from "@movici-flow-common/utils/StatusTracker";
+import type { ChartDataset, ChartOptions } from "chart.js";
+import type {
   DatasetSummary,
   FlowChartConfig,
   FlowVisualizerConfig,
   FlowVisualizerOptions,
   RGBAColor,
+  ScenarioDataset,
   ShortDataset,
   ShortScenario,
-  UUID
-} from '../types';
+  UUID,
+} from "../types";
 
 export abstract class BaseVisualizerInfo {
   id: string;
@@ -45,7 +46,7 @@ export abstract class BaseVisualizerInfo {
     this.errors = Object.assign({}, this.errors);
   }
 
-  abstract resolveDatasets(datasets: Record<string, ShortDataset>): void;
+  abstract resolveDatasets(datasets: Record<string, ScenarioDataset>): void;
 
   forceReset() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -53,7 +54,7 @@ export abstract class BaseVisualizerInfo {
       ...this,
       status: undefined,
       errors: {},
-      id: randomID()
+      id: randomID(),
     }) as typeof this;
   }
 }
@@ -70,9 +71,9 @@ export class ComposableVisualizerInfo extends BaseVisualizerInfo {
   summary: DatasetSummary | null;
   constructor(config?: Partial<ComposableVisualizerInfo>) {
     super(config);
-    this.datasetName = config?.datasetName ?? '';
+    this.datasetName = config?.datasetName ?? "";
     this.datasetUUID = config?.datasetUUID ?? null;
-    this.entityGroup = config?.entityGroup ?? '';
+    this.entityGroup = config?.entityGroup ?? "";
     this.additionalEntityGroups = config?.additionalEntityGroups;
     this.visible = config?.visible ?? true;
     this.name = config?.name || this.datasetName;
@@ -95,7 +96,7 @@ export class ComposableVisualizerInfo extends BaseVisualizerInfo {
   static fromVisualizerConfig({
     config,
     datasets,
-    scenario
+    scenario,
   }: {
     config: FlowVisualizerConfig;
     datasets: Record<string, string>;
@@ -109,7 +110,7 @@ export class ComposableVisualizerInfo extends BaseVisualizerInfo {
       entityGroup: config.entity_group,
       additionalEntityGroups: config.additional_entity_groups,
       visible: config.visible,
-      settings: config.settings
+      settings: config.settings,
     });
   }
 
@@ -120,7 +121,7 @@ export class ComposableVisualizerInfo extends BaseVisualizerInfo {
       dataset_name: this.datasetName,
       entity_group: this.entityGroup,
       visible: this.visible,
-      settings: this.settings
+      settings: this.settings,
     };
 
     if (this.additionalEntityGroups) {
@@ -143,9 +144,9 @@ export class ChartVisualizerInfo extends BaseVisualizerInfo {
 
   constructor(config?: Partial<ChartVisualizerInfo>) {
     super(config);
-    this.attribute = config?.attribute ?? '';
+    this.attribute = config?.attribute ?? "";
     this.items = config?.items ?? [];
-    this.title = config?.title ?? '';
+    this.title = config?.title ?? "";
     this.settings = config?.settings ?? {};
   }
 
@@ -153,19 +154,19 @@ export class ChartVisualizerInfo extends BaseVisualizerInfo {
     return new ChartVisualizerInfo({ ...this, items: [...this.items, item] });
   }
 
-  resolveDatasets(datasets: Record<string, ShortDataset>) {
+  resolveDatasets(datasets: Record<string, ScenarioDataset>) {
     for (const item of this.items) {
       item.resolveDatasets(datasets);
     }
   }
 
-  toVisualizerConfig(): FlowChartConfig {
-    if (!this.attribute) throw new Error(`No settings defined for ${this.title}`);
+  toChartConfig(): FlowChartConfig {
+    if (!this.attribute) throw new Error(`No attribute defined for ${this.title}`);
     const rv: FlowChartConfig = {
       title: this.title,
       attribute: this.attribute,
-      scenarioUUID: this.scenarioUUID ?? '',
-      items: this.items.map(i => {
+      scenarioUUID: this.scenarioUUID ?? "",
+      items: this.items.map((i) => {
         return {
           datasetName: i.datasetName,
           datasetUUID: i.datasetUUID,
@@ -175,10 +176,10 @@ export class ChartVisualizerInfo extends BaseVisualizerInfo {
           attribute: i.attribute,
           name: i.name,
           color: i.color,
-          settings: i.settings
+          settings: i.settings,
         };
       }),
-      settings: this.settings
+      settings: this.settings,
     };
 
     return rv;
@@ -197,23 +198,26 @@ export class ChartVisualizerItem {
   settings?: Partial<ChartDataset>;
 
   constructor(config?: Partial<ChartVisualizerItem>) {
-    this.datasetName = config?.datasetName ?? '';
+    this.datasetName = config?.datasetName ?? "";
     this.datasetUUID = config?.datasetUUID ?? null;
-    this.entityGroup = config?.entityGroup ?? '';
+    this.entityGroup = config?.entityGroup ?? "";
     this.entityId = config?.entityId ?? 0;
     this.entityIdx = config?.entityIdx ?? 0;
-    this.attribute = config?.attribute ?? '';
-    this.name = config?.name ?? '';
+    this.attribute = config?.attribute ?? "";
+    this.name = config?.name ?? "";
     this.color = config?.color ?? [0, 0, 0];
     this.settings = config?.settings ?? {};
   }
 
-  resolveDatasets(datasets: Record<string, ShortDataset>) {
+  resolveDatasets(datasets: Record<string, ScenarioDataset>) {
     this.datasetUUID = getDatasetUUIDOrThrow(this.datasetName, datasets);
   }
 }
 
-function getDatasetUUIDOrThrow(datasetName: string, datasets: Record<string, ShortDataset>): UUID {
+function getDatasetUUIDOrThrow(
+  datasetName: string,
+  datasets: Record<string, ScenarioDataset>
+): UUID {
   const dataset = datasets[datasetName];
   if (!dataset) {
     throw new Error(`Unknown dataset '${datasetName}'`);

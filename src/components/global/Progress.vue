@@ -17,41 +17,41 @@ https://github.com/buefy/buefy/blob/52b18bb0776cff5eb06ea5f1851e9abdabef5b61/src
 
 <script>
 export default {
-  name: 'MovProgress',
+  name: "MovProgress",
   props: {
     variant: {
       type: String,
-      default: 'darkgrey'
+      default: "darkgrey",
     },
     size: String,
     rounded: {
       type: Boolean,
-      default: true
+      default: true,
     },
     value: {
       type: Number,
-      default: undefined
+      default: undefined,
     },
     max: {
       type: Number,
-      default: 100
+      default: 100,
     },
 
     format: {
       type: String,
-      default: 'raw',
-      validator: value => {
-        return ['raw', 'percent'].indexOf(value) >= 0;
-      }
+      default: "raw",
+      validator: (value) => {
+        return ["raw", "percent"].indexOf(value) >= 0;
+      },
     },
     precision: {
       type: Number,
-      default: 2
+      default: 2,
     },
     keepTrailingZeroes: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     isIndeterminate() {
@@ -60,15 +60,15 @@ export default {
     newType() {
       return [
         this.size,
-        'is-' + this.variant,
+        "is-" + this.variant,
         {
-          'is-more-than-half': this.value && this.value > this.max / 2
-        }
+          "is-more-than-half": this.value && this.value > this.max / 2,
+        },
       ];
     },
     newValue() {
       return this.calculateValue(this.value);
-    }
+    },
   },
   watch: {
     /**
@@ -79,13 +79,13 @@ export default {
       this.$nextTick(() => {
         if (this.$refs.progress) {
           if (indeterminate) {
-            this.$refs.progress.removeAttribute('value');
+            this.$refs.progress.removeAttribute("value");
           } else {
-            this.$refs.progress.setAttribute('value', this.value);
+            this.$refs.progress.setAttribute("value", this.value);
           }
         }
       });
-    }
+    },
   },
   methods: {
     calculateValue(value) {
@@ -95,19 +95,19 @@ export default {
 
       const minimumFractionDigits = this.keepTrailingZeroes ? this.precision : 0;
       const maximumFractionDigits = this.precision;
-      if (this.format === 'percent') {
+      if (this.format === "percent") {
         return new Intl.NumberFormat(undefined, {
-          style: 'percent',
+          style: "percent",
           minimumFractionDigits: minimumFractionDigits,
-          maximumFractionDigits: maximumFractionDigits
+          maximumFractionDigits: maximumFractionDigits,
         }).format(value / this.max);
       }
 
       return new Intl.NumberFormat(undefined, {
         minimumFractionDigits: minimumFractionDigits,
-        maximumFractionDigits: maximumFractionDigits
+        maximumFractionDigits: maximumFractionDigits,
       }).format(value);
-    }
-  }
+    },
+  },
 };
 </script>

@@ -6,13 +6,6 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-
-@Component({ name: 'MovActionMenu' })
-export default class MovActionMenu extends Vue {}
-</script>
-
 <style scoped lang="scss">
 .action-menu {
   display: block;

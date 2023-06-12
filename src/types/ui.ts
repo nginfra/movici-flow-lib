@@ -1,29 +1,27 @@
-import { Vue } from 'vue-property-decorator';
+import type { Component } from "vue";
 
-export enum MovActionType {
-  ADD = 'add',
-  VIEW = 'view',
-  EDIT = 'edit',
-  DELETE = 'delete',
-  DUPLICATE = 'duplicate',
-  DOWNLOAD = 'download',
-  GENERATE = 'generate',
-  PLAY = 'play',
-  RESET = 'reset',
-  CANCEL = 'cancel',
-  INVITE = 'invite',
-  LOGS = 'logs'
-}
+export type ActionType =
+  | "add"
+  | "view"
+  | "edit"
+  | "delete"
+  | "duplicate"
+  | "download"
+  | "generate"
+  | "play"
+  | "reset"
+  | "cancel"
+  | "invite"
+  | "logs";
 
-export interface ActionItem {
+export interface ButtonItem {
   icon?: string;
   iconPack?: string;
   label: string;
   event: string;
   variant?: string;
   isDisabled?: boolean;
-  component?: typeof Vue;
 }
-
-export type ButtonItem = ActionItem;
-export type ActionMenuItem = ActionItem;
+export interface ActionItem extends ButtonItem {
+  component?: Component;
+}

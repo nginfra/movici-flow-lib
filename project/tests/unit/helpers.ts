@@ -1,11 +1,11 @@
-import Vue, { VueConstructor } from 'vue';
-import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
-import merge from 'lodash/merge';
-import Vuex, { StoreOptions } from 'vuex';
-import { VueClass } from 'vue-class-component/lib/declarations';
-import VueI18n from 'vue-i18n';
-import defaultStore from '@movici-flow-common/store';
-import VueRouter from 'vue-router';
+import defaultStore from "@movici-flow-common/stores-old";
+import { createLocalVue, mount, shallowMount } from "@vue/test-utils";
+import merge from "lodash/merge";
+import { VueConstructor } from "vue";
+import { VueClass } from "vue-class-component/lib/declarations";
+import VueI18n from "vue-i18n";
+import VueRouter from "vue-router";
+import Vuex, { StoreOptions } from "vuex";
 
 type wrapperOpts = {
   mountOptions?: Record<string, unknown>;
@@ -21,16 +21,16 @@ export function createComponentWrapper(
   const localVue = getLocalVue({ mountOptions }),
     defaultMountingOptions = {
       localVue,
-      i18n: new VueI18n({ locale: 'en' }),
-      stubs: ['router-view', 'router-link'],
+      i18n: new VueI18n({ locale: "en" }),
+      stubs: ["router-view", "router-link"],
       mocks: {
         $t: (val: string) => val,
         $flow: {
           successMessage: jest.fn(),
-          failMessage: jest.fn()
-        }
+          failMessage: jest.fn(),
+        },
       },
-      store: storeOpts ? new Vuex.Store(storeOpts) : defaultStore
+      store: storeOpts ? new Vuex.Store(storeOpts) : defaultStore,
     };
 
   let options: Record<string, unknown> = defaultMountingOptions;

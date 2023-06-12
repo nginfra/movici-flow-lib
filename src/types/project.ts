@@ -1,4 +1,4 @@
-import { UUID } from './general';
+import type { UUID } from "./general";
 
 export type ProjectCollection = {
   projects: Project[];

@@ -1,11 +1,11 @@
-import { TimeOrientedSimulationInfo } from '@movici-flow-common/types';
-import { StreamingTapefile, TapefileUpdate } from '../tapefile';
+import type { TimeOrientedSimulationInfo } from "@movici-flow-common/types";
+import type { StreamingTapefile, TapefileUpdate } from "../tapefile";
 
 export function buildStreamingChartData({
   idx,
   tapefile,
   onInitial,
-  onUpdate
+  onUpdate,
 }: {
   idx: number;
   tapefile: StreamingTapefile<number>;
@@ -43,7 +43,7 @@ function getDataFromUpdates<T>(
   }
   return {
     data,
-    pos
+    pos,
   };
 }
 function getValueFromUpdate<T>(upd: TapefileUpdate<T>, idx: number): T | null {
@@ -71,7 +71,7 @@ export function applyChartData(
   const toAdd: ChartDataPoint[] = data.map(([ts, val]) => {
     return {
       x: ts,
-      y: val
+      y: Number(val),
     };
   });
 
@@ -87,7 +87,7 @@ export function applyChartData(
       currentData.push({
         x: timeline.duration,
         y: currentData[currentData.length - 1].y,
-        isFinal: true
+        isFinal: true,
       });
     }
   }

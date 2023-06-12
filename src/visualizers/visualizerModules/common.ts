@@ -1,13 +1,13 @@
-import { SinglePropertyTapefile } from '../tapefile';
-import {
+import type { SinglePropertyTapefile } from "../tapefile";
+import type {
   Coordinate,
   LayerParams,
   Mapper,
   TopologyLayerData,
   ITapefile,
-  IMapVisualizer
-} from '@movici-flow-common/types';
-import { ComposableVisualizerInfo } from '../VisualizerInfo';
+  IMapVisualizer,
+} from "@movici-flow-common/types";
+import type { ComposableVisualizerInfo } from "../VisualizerInfo";
 
 export type VisualizerModuleParams = { info: ComposableVisualizerInfo };
 
@@ -73,7 +73,7 @@ export class TapefileAccessor<In, Out> {
   }
 
   getValue(index: number): Out {
-    if (!this.tapefile) throw new Error('No tapefile defined for accessor');
+    if (!this.tapefile) throw new Error("No tapefile defined for accessor");
 
     return this.mapping.getValue(this.tapefile.data[index]);
   }

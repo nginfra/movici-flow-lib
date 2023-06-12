@@ -1,6 +1,6 @@
-import { UUID } from './general';
+import type { UUID } from "./general";
 
-export type Language = 'nl' | 'en';
+export type Language = "nl" | "en";
 
 export interface User {
   active: boolean;

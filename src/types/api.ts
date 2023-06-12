@@ -1,5 +1,20 @@
-import { UUID } from './general';
+import type { UUID } from "./general";
+import type { AxiosProgressEvent, AxiosRequestConfig, AxiosResponse } from "axios";
+import type { ErrorHandlingConfig } from "../api/client";
+import type { BaseRequest } from "@movici-flow-common/api";
 
+export type ProgressHandler = (e: AxiosProgressEvent) => void;
+
+export interface IRequest<Resp> {
+  generateConfig(client: IClient): AxiosRequestConfig;
+  makeResponse(resp: AxiosResponse): Resp;
+}
+export interface IClient {
+  baseURL: string;
+  apiToken: string | null;
+  request<Resp>(req: IRequest<Resp>, onError?: ErrorHandlingConfig): Promise<Resp | null>;
+  asFetchRequest(request: BaseRequest<unknown>): { url: string; options: RequestInit };
+}
 export interface CrudResponse {
   result: string;
   message: string;
@@ -33,7 +48,7 @@ export interface EntityTypeCrudResponse extends CrudResponse {
   entity_type_uuid: UUID;
 }
 
-export interface PropertyTypeCrudResponse extends CrudResponse {
+export interface AttributeTypeCrudResponse extends CrudResponse {
   property_type_uuid: UUID;
 }
 

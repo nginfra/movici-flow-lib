@@ -11,15 +11,15 @@ export function formatValueByDataType(
 ): string {
   const dt_tokens = parseDataType(dataType);
   const rows = formatValueRecursive(value, dt_tokens, formatters);
-  return typeof rows === 'string' ? rows : formatRows(rows);
+  return typeof rows === "string" ? rows : formatRows(rows);
 }
 
 function parseDataType(dataType: string): string[] {
-  const tokens = dataType.replaceAll('>', '').replaceAll('<', ',').toUpperCase().split(',');
+  const tokens = dataType.replaceAll(">", "").replaceAll("<", ",").toUpperCase().split(",");
   let dimensions = 0;
   for (const tok of tokens) {
-    if ((tok === 'TUPLE' || tok === 'LIST') && ++dimensions > 2) {
-      throw new Error('Unsupported data type, too many dimensions');
+    if ((tok === "TUPLE" || tok === "LIST") && ++dimensions > 2) {
+      throw new Error("Unsupported data type, too many dimensions");
     }
   }
 
@@ -35,21 +35,21 @@ function formatValueRecursive(
 ): NestedRows | string {
   if (value == null) {
     // catches both null and undefined
-    return formatters?.NULL?.(value, dataType) ?? 'null';
+    return formatters?.NULL?.(value, dataType) ?? "null";
   }
   const customFormatter = formatters ? formatters[dataType[0]] : null;
   if (customFormatter) return customFormatter(value, dataType.splice(1), formatters);
 
   switch (dataType[0]) {
-    case 'BOOLEAN':
+    case "BOOLEAN":
       return formatBool(value);
-    case 'INT':
+    case "INT":
       return formatInt(value, dataType, formatters?.ENUM);
-    case 'FLOAT':
-    case 'DOUBLE':
+    case "FLOAT":
+    case "DOUBLE":
       return formatFloat(value);
-    case 'LIST':
-    case 'TUPLE':
+    case "LIST":
+    case "TUPLE":
       return formatList(value, dataType.splice(1), formatters);
     default:
       return String(value);
@@ -62,7 +62,7 @@ function formatInt(value: unknown, dataType: string[], formatEnum?: Formatter): 
 }
 
 function formatBool(value: unknown): string {
-  return value ? 'true' : 'false';
+  return value ? "true" : "false";
 }
 
 function formatFloat(value: unknown): string {
@@ -70,8 +70,8 @@ function formatFloat(value: unknown): string {
   if (num !== 0) {
     if (Math.abs(num) < 1e-3 || Math.abs(num) > 1e6) {
       // if value is very small or very big, then show as scientific notation
-      const [base, exp] = num.toExponential().replaceAll('+', '').split('e');
-      return Number(base).toFixed(3) + 'e' + exp;
+      const [base, exp] = num.toExponential().replaceAll("+", "").split("e");
+      return Number(base).toFixed(3) + "e" + exp;
     } else {
       // float numbers show 3 decimals tops
       // check if decimals are non 0
@@ -90,15 +90,15 @@ function formatList(
   if (!Array.isArray(value)) {
     value = [value];
   }
-  return (value as unknown[]).map(v => formatValueRecursive(v, nestedType, formatters));
+  return (value as unknown[]).map((v) => formatValueRecursive(v, nestedType, formatters));
 }
 
-const BRACKET_OPEN = '[';
-const BRACKET_CLOSE = ']';
-const SPACE = ' ';
-const NEWLINE = '\n';
-const COMMA = ',';
-const TRUNCATE = '...';
+const BRACKET_OPEN = "[";
+const BRACKET_CLOSE = "]";
+const SPACE = " ";
+const NEWLINE = "\n";
+const COMMA = ",";
+const TRUNCATE = "...";
 
 // Estimate the average character width in number of spaces. Obtained by trial and error. Used
 // for right-aligned indentation to determine the (max) line width in number of spaces
@@ -110,18 +110,18 @@ function formatRows(rows: NestedRows): string {
 }
 
 function generateLines(rows: NestedRows): string[] {
-  if (!rows.length || typeof rows[0] === 'string') {
+  if (!rows.length || typeof rows[0] === "string") {
     return [generateInnerLine(rows as string[])];
   }
 
-  let lines = rows.flatMap(r => generateLines(r as NestedRows)).map(line => line + COMMA);
+  let lines = rows.flatMap((r) => generateLines(r as NestedRows)).map((line) => line + COMMA);
   let truncated = false;
   if (lines.length > 5) {
     lines = lines.slice(0, 4);
     truncated = true;
   }
 
-  const maxLen = Math.max(...lines.map(l => l.length));
+  const maxLen = Math.max(...lines.map((l) => l.length));
   const trailingSpaces = Math.floor(maxLen * REL_CHAR_WIDTH);
   if (truncated) {
     lines.push(TRUNCATE + SPACE.repeat(Math.floor(trailingSpaces - 3 * REL_CHAR_WIDTH)));
@@ -129,7 +129,7 @@ function generateLines(rows: NestedRows): string[] {
   return [
     BRACKET_OPEN + SPACE.repeat(trailingSpaces),
     ...lines,
-    BRACKET_CLOSE + SPACE.repeat(trailingSpaces)
+    BRACKET_CLOSE + SPACE.repeat(trailingSpaces),
   ];
 }
 
@@ -142,7 +142,7 @@ function generateInnerLine(row: string[]): string {
 
 function countDecimals(value: number, max?: number) {
   if (Math.floor(value) === value) return 0;
-  let rv = value.toString().split('.')[1].length || 0;
+  let rv = value.toString().split(".")[1].length || 0;
   if (max !== undefined) {
     rv = Math.min(rv, max);
   }

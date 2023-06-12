@@ -1,4 +1,5 @@
-import { heapPop, heapPush } from '@movici-flow-common/utils/queue';
+import { heapPop, heapPush } from "@movici-flow-common/utils/queue";
+import { describe, it, expect } from "vitest";
 
 function getRandomInt(minOrMax: number, max?: number): number {
   let min = minOrMax;
@@ -42,28 +43,28 @@ function heapOrdered<T>(heap: T[], comparator: (a: T, b: T) => number, parentIdx
   }
   return true;
 }
-describe('heapOrdered', () => {
+describe("heapOrdered", () => {
   it.each([
     [[]],
     [[5, 4, 3]],
     [[5, 4, 5]],
     [[5, 4, 3, 4, 4, 3, 3]],
-    [[5, 4, 3, 3, 4, 3]]
-  ] as number[][][])('checks for ordered heap', heap => {
+    [[5, 4, 3, 3, 4, 3]],
+  ] as number[][][])("checks for ordered heap", (heap) => {
     heap;
     expect(heapOrdered<number>(heap, (a, b) => b - a)).toBeTruthy();
   });
   it.each([[[5, 6]], [[5, 5, 6]], [[5, 5, 4, 5, 6]], [[5, 4, 4, 4, 4, 4, 5]]] as number[][][])(
-    'finds unordered heaps',
-    heap => {
+    "finds unordered heaps",
+    (heap) => {
       heap;
       expect(heapOrdered<number>(heap, (a, b) => b - a)).toBeFalsy();
     }
   );
 });
 
-describe('heapPush', () => {
-  it.each(getTestParams())('from array: %p it creates an ordered heap', arr => {
+describe("heapPush", () => {
+  it.each(getTestParams())("from array: %p it creates an ordered heap", (arr) => {
     const comparator = (a: number, b: number) => a - b;
     const heap = arr.reduce((heap, item) => {
       heapPush(heap, item, comparator);
@@ -73,8 +74,8 @@ describe('heapPush', () => {
   });
 });
 
-describe('heapPop', () => {
-  it.each(getTestParams())('from array: %p it pops items in the right order', arr => {
+describe("heapPop", () => {
+  it.each(getTestParams())("from array: %p it pops items in the right order", (arr) => {
     // b-a signifies MaxHeap
     const comparator = (a: number, b: number) => b - a;
 

@@ -1,7 +1,7 @@
 <template>
   <o-field :class="fieldClasses">
     <o-input
-      class="numberinput"
+      class="has-text-centered"
       type="number"
       ref="input"
       v-model="computedValue"
@@ -19,70 +19,66 @@
   </o-field>
 </template>
 
-<script>
+<script lang="ts">
+// use normal <script> to declare options
 export default {
-  name: 'MovNumberinput',
   inheritAttrs: false,
-  props: {
-    value: Number,
-    min: {
-      type: [Number, String]
-    },
-    max: [Number, String],
-    disabled: Boolean,
-    variant: {
-      type: String,
-      default: 'primary'
-    },
-    expanded: Boolean,
-    size: String,
-    placeholder: [Number, String]
-  },
-  computed: {
-    computedValue: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        // Parses the number, so that "0" => 0, and "invalid" => null
-        let newValue = Number(value) === 0 ? 0 : Number(value) || null;
-        if (value === '' || value === undefined || value === null) {
-          if (this.minNumber !== undefined) {
-            newValue = this.minNumber;
-          } else {
-            newValue = null;
-          }
-        }
-        if (newValue === null) {
-          this.$emit('input', newValue);
-        } else if (!isNaN(newValue) && newValue !== '-0') {
-          this.$emit('input', Number(newValue));
-        }
-        this.$nextTick(() => {
-          if (this.$refs.input) {
-            this.$refs.input.checkHtml5Validity();
-          }
-        });
-      }
-    },
-
-    fieldClasses() {
-      return [{ 'is-expanded': this.expanded }];
-    },
-
-    minNumber() {
-      return typeof this.min === 'string' ? parseFloat(this.min) : this.min;
-    },
-    maxNumber() {
-      return typeof this.max === 'string' ? parseFloat(this.max) : this.max;
-    }
-  }
 };
 </script>
-<style lang="scss" scoped>
-::v-deep {
-  .numberinput .input {
-    text-align: center;
+
+<script setup lang="ts">
+import { computed, ref } from "vue";
+
+const props = withDefaults(
+  defineProps<{
+    modelValue: number | null;
+    min?: number | string;
+    max?: number | string;
+    disabled?: boolean;
+    variant?: string;
+    size?: string;
+    expanded?: boolean;
+    placeholder?: number | string;
+  }>(),
+  {
+    variant: "primary",
   }
+);
+const emit = defineEmits<{
+  (e: "update:modelValue", val: number | null): void;
+}>();
+const input = ref<HTMLElement | null>(null);
+
+const computedValue = computed({
+  get: () => props.modelValue,
+  set: (value: number | null | string) => {
+    // Parses the number, so that "0" => 0, and "invalid" => null
+    let newValue = Number(value) === 0 ? 0 : Number(value) || null;
+    if (value === "" || value === undefined || value === null) {
+      if (minNumber.value !== undefined) {
+        newValue = minNumber.value;
+      } else {
+        newValue = null;
+      }
+    }
+    if (newValue === null) {
+      emit("update:modelValue", newValue);
+    } else if (!isNaN(newValue)) {
+      emit("update:modelValue", Number(newValue));
+    }
+  },
+});
+
+const fieldClasses = computed(() => {
+  return [{ "is-expanded": props.expanded }];
+});
+
+const minNumber = computed(() => {
+  return typeof props.min === "string" ? parseFloat(props.min) : props.min;
+});
+</script>
+<style lang="scss" scoped>
+:deep(.control) {
+  line-height: 1.5rem;
 }
 </style>

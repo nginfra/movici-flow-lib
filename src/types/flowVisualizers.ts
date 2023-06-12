@@ -1,18 +1,18 @@
-import { RGBAColor } from './colors';
-import { PropertySummary } from './schema';
-import { CameraOptions } from './visualization';
-import { RenderOrderType, UUID } from '.';
-import { PopupItem } from './popup';
-import { FlowChartConfig } from './charts';
+import type { RGBAColor } from "./colors";
+import type { AttributeSummary } from "./schema";
+import type { ViewState } from "./visualization";
+import type { RenderOrderType, UUID } from ".";
+import type { PopupItem } from "./popup";
+import type { FlowChartConfig } from "./charts";
 
 export enum FlowVisualizerType {
-  POINTS = 'points',
-  LINES = 'lines',
-  POLYGONS = 'polygons',
-  ARCS = 'arcs',
-  ICONS = 'icons',
-  GRID = 'grid',
-  FLOODING_GRID = 'floodingGrid'
+  POINTS = "points",
+  LINES = "lines",
+  POLYGONS = "polygons",
+  ARCS = "arcs",
+  ICONS = "icons",
+  GRID = "grid",
+  FLOODING_GRID = "floodingGrid",
 }
 
 export interface CommonVisualizerOptions {
@@ -62,17 +62,19 @@ export type FlowVisualizerOptions =
   | FloodingGridVisualizerOptions;
 
 export interface LegendOptions {
-  title?: string;
   labels?: string[];
 }
+export interface ByValueClause {
+  attribute: AttributeSummary | null;
+}
+type ValueMapping<T> = [number, T][];
 export interface StaticColorClause {
   color: RGBAColor;
 }
 
-export interface ByValueColorClause {
-  type: 'buckets' | 'gradient';
-  attribute: PropertySummary | null;
-  colors: [number, RGBAColor][];
+export interface ByValueColorClause extends ByValueClause {
+  type: "buckets" | "gradient";
+  colors: ValueMapping<RGBAColor>;
   maxValue?: number;
   semiTransparent?: boolean;
 }
@@ -101,9 +103,8 @@ export interface IconClause {
 export interface StaticIconClause {
   icon: string;
 }
-export interface ByValueIconClause {
-  attribute: PropertySummary | null;
-  icons: [number, string][];
+export interface ByValueIconClause extends ByValueClause {
+  icons: ValueMapping<string>;
 }
 
 export interface SizeClause {
@@ -112,17 +113,16 @@ export interface SizeClause {
   dashed?: boolean;
 }
 
-type SizeUnits = 'pixels' | 'meters';
+export type SizeUnit = "pixels" | "meters";
 export interface StaticSizeClause {
   size: number;
-  units: SizeUnits;
+  units: SizeUnit;
   minPixels?: number;
   maxPixels?: number;
 }
-export interface ByValueSizeClause {
-  attribute: PropertySummary | null;
-  sizes: [number, number][]; // [value, sizeInUnits][]
-  units: SizeUnits;
+export interface ByValueSizeClause extends ByValueClause {
+  sizes: ValueMapping<number>;
+  units: SizeUnit;
   minPixels?: number;
   maxPixels?: number;
 }
@@ -135,20 +135,13 @@ export interface PopupClause {
   items: PopupItem[];
 }
 
-export interface GeometryClause {
-  attribute: PropertySummary | null;
-}
-
 export interface FloodingGridClause {
-  heightMapDataset: string; // filtered select with datasets
+  heightMapDataset: string;
   heightMapDatasetUUID?: UUID;
 }
 
-export type VisibilityMapping = [boolean | number, boolean][];
-
-export interface ByValueVisibilityClause {
-  attribute: PropertySummary;
-  mapping: VisibilityMapping;
+export interface ByValueVisibilityClause extends ByValueClause {
+  mapping: ValueMapping<boolean>;
   maxValue?: number;
 }
 export interface VisibilityClause {
@@ -159,18 +152,20 @@ export interface Mapper<In, Out> {
   getValue(input: In): Out;
 }
 
-export interface View {
-  uuid?: string;
-  scenario_uuid?: string;
+export interface ViewPayload {
   name: string;
   config: FlowViewConfig;
+}
+export interface View extends ViewPayload {
+  uuid: string;
+  scenario_uuid: string;
 }
 
 export interface FlowViewConfig {
   version: number;
   visualizers: FlowVisualizerConfig[];
   charts?: FlowChartConfig[];
-  camera?: CameraOptions;
+  camera?: ViewState;
   timestamp?: number;
 }
 

@@ -1,4 +1,4 @@
-import { Mapper, Nullable } from '@movici-flow-common/types';
+import type { Mapper, Nullable } from "@movici-flow-common/types";
 
 type SizeMapConfig = {
   sizes: [number, number][];
@@ -23,8 +23,8 @@ export class NumberSizeMap implements Mapper<number | null, number> {
   sizes: number[];
 
   constructor(config: SizeMapConfig) {
-    this.values = config.sizes.map(c => c[0]);
-    this.sizes = config.sizes.map(c => c[1]);
+    this.values = config.sizes.map((c) => c[0]);
+    this.sizes = config.sizes.map((c) => c[1]);
     this.cache = new Map();
   }
 
@@ -59,7 +59,7 @@ export class NumberSizeMap implements Mapper<number | null, number> {
         );
       }
     }
-    throw new Error('Programming error while calculating sizes');
+    throw new Error("Programming error while calculating sizes");
   }
 }
 

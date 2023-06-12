@@ -1,14 +1,15 @@
-import { Layer } from '@deck.gl/core';
-import { PickInfo } from '@deck.gl/core/lib/deck';
+import type { Layer } from "@deck.gl/core";
+import type { PickInfo } from "deck.gl";
+import type { DeckEntityObject } from "./datasets";
 
-export type DeckEvent = 'click' | 'error';
+export type DeckEvent = "click" | "error";
 
-export interface DeckEventCallback {
-  (opts: DeckEventPayload): void;
+export interface DeckEventCallback<D = unknown> {
+  (opts: DeckEventPayload<D>): void;
 }
 
-export interface DeckEventPayload {
-  pickInfo?: PickInfo<unknown>;
+export interface DeckEventPayload<D = unknown> {
+  pickInfo?: PickInfo<DeckEntityObject<D>>;
   ev?: DeckMouseEvent;
   error?: Error;
   layer?: Layer<unknown>;

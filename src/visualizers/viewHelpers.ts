@@ -1,20 +1,20 @@
-import {
-  CameraOptions,
+import type {
+  ViewState,
   ColorClause,
-  ComponentProperty,
+  DataAttribute,
   DatasetSummary,
   EntityGroupSummary,
-  FlowVisualizerType,
   PopupClause,
-  SizeClause
-} from '../types';
-import { isGrid, isLines, isPoints, isPolygons } from './geometry';
-import { propertyString } from '../utils';
-import { ChartVisualizerInfo, ComposableVisualizerInfo } from './VisualizerInfo';
+  SizeClause,
+} from "../types";
+import { FlowVisualizerType } from "../types";
+import { isGrid, isLines, isPoints, isPolygons } from "./geometry";
+import { attributeString } from "../utils";
+import type { ChartVisualizerInfo, ComposableVisualizerInfo } from "./VisualizerInfo";
 
 export function visualizerSettingsValidator(summary: EntityGroupSummary) {
   return ({ settings }: ComposableVisualizerInfo) => {
-    if (!settings) throw new Error('Visualizer has no settings configured');
+    if (!settings) throw new Error("Visualizer has no settings configured");
 
     const validator = {
       [FlowVisualizerType.POINTS]: isPoints,
@@ -23,7 +23,7 @@ export function visualizerSettingsValidator(summary: EntityGroupSummary) {
       [FlowVisualizerType.POLYGONS]: isPolygons,
       [FlowVisualizerType.ICONS]: isPoints,
       [FlowVisualizerType.GRID]: isGrid,
-      [FlowVisualizerType.FLOODING_GRID]: isGrid
+      [FlowVisualizerType.FLOODING_GRID]: isGrid,
     }[settings.type];
 
     if (!validator) {
@@ -67,30 +67,29 @@ export function chartVisualizerValidator(summary: EntityGroupSummary) {
 
 export function validateAttribute(
   summary: EntityGroupSummary,
-  attribute?: ComponentProperty | string | null
+  attribute?: DataAttribute | string | null
 ) {
   if (!attribute) {
     throw new Error(`No attribute defined`);
   }
 
-  const attrName = typeof attribute === 'string' ? attribute : attribute.name,
-    attrComponent = typeof attribute === 'string' ? null : attribute.component;
+  const attrName = typeof attribute === "string" ? attribute : attribute.name;
 
   for (const attr of summary.properties) {
-    if (attrName === attr.name && (!attrComponent || attrComponent === attr.component)) {
+    if (attrName === attr.name) {
       return attr;
     }
   }
-  throw new Error(`Unknown property ${propertyString(attribute)}`);
+  throw new Error(`Unknown property ${attributeString(attribute)}`);
 }
 
-export function simplifiedCamera(camera: CameraOptions): CameraOptions {
+export function simplifiedCamera(camera: ViewState): ViewState {
   return {
     longitude: camera.longitude,
     latitude: camera.latitude,
     zoom: camera.zoom,
     pitch: camera.pitch,
-    bearing: camera.bearing
+    bearing: camera.bearing,
   };
 }
 
@@ -101,7 +100,7 @@ export function validateForContentErrors(
   if (!info.datasetUUID) {
     // might add errors here
     // or should the datasetUUID be mandatory on ComposableVisualizerInfo
-    throw new Error('No dataset UUID specified');
+    throw new Error("No dataset UUID specified");
   }
   if (!summary) {
     return;
@@ -116,7 +115,7 @@ export function getEntitySummary(props: {
   summary: DatasetSummary;
 }) {
   const { info, summary } = props,
-    index = summary.entity_groups.map(e => e.name).indexOf(info.entityGroup);
+    index = summary.entity_groups.map((e) => e.name).indexOf(info.entityGroup);
 
   if (index === -1) {
     throw new Error(`Invalid entity group '${info.entityGroup}`);

@@ -1,17 +1,18 @@
-import { lineString, point } from '@turf/helpers';
-import nearestPointOnLine from '@turf/nearest-point-on-line';
-import { PickInfo } from 'deck.gl';
-import { PointCoordinate } from '@movici-flow-common/types';
+import { lineString, point } from "@turf/helpers";
+import nearestPointOnLine from "@turf/nearest-point-on-line";
+import type { PickInfo } from "deck.gl";
+import type { DeckEntityObject, PointCoordinate } from "@movici-flow-common/types";
+import type { CSSProperties } from "vue";
 
 export const ANCHOR_POSITIONING = {
   top: { x: 0.5, y: 0 },
-  'top-left': { x: 0, y: 0 },
-  'top-right': { x: 1, y: 0 },
+  "top-left": { x: 0, y: 0 },
+  "top-right": { x: 1, y: 0 },
   bottom: { x: 0.5, y: 1 },
-  'bottom-left': { x: 0, y: 1 },
-  'bottom-right': { x: 1, y: 1 },
+  "bottom-left": { x: 0, y: 1 },
+  "bottom-right": { x: 1, y: 1 },
   left: { x: 0, y: 0.5 },
-  right: { x: 1, y: 0.5 }
+  right: { x: 1, y: 0.5 },
 };
 
 export type ANCHOR_TYPE = keyof typeof ANCHOR_POSITIONING;
@@ -25,7 +26,7 @@ export interface DynamicPositionOpts {
   selfWidth: number;
   selfHeight: number;
   anchorType: ANCHOR_TYPE;
-  borderPadding?: { top: number; right: number; bottom: number; left: number };
+  borderPadding?: { top?: number; right?: number; bottom?: number; left?: number };
 }
 
 /**
@@ -53,7 +54,7 @@ export function getDynamicPosition({
   selfHeight,
   anchorType,
   padding,
-  borderPadding
+  borderPadding,
 }: DynamicPositionOpts): ANCHOR_TYPE {
   const paddingTop = padding + (borderPadding?.top ?? 0);
   const paddingBottom = padding + (borderPadding?.bottom ?? 0);
@@ -132,19 +133,19 @@ export function getContainerStyle({
   selfWidth,
   selfHeight,
   padding,
-  anchorType
-}: Omit<DynamicPositionOpts, 'borderPadding'>) {
+  anchorType,
+}: Omit<DynamicPositionOpts, "borderPadding">) {
   const z = 0,
     directionMap = {
-      left: anchorType.includes('left'),
-      right: anchorType.includes('right'),
-      top: anchorType.includes('top'),
-      bottom: anchorType.includes('bottom')
+      left: anchorType.includes("left"),
+      right: anchorType.includes("right"),
+      top: anchorType.includes("top"),
+      bottom: anchorType.includes("bottom"),
     };
 
-  let style: Partial<CSSStyleDeclaration> = {};
+  let style: CSSProperties = {};
 
-  const pixelRatio = (typeof window !== 'undefined' && window.devicePixelRatio) || 1,
+  const pixelRatio = (typeof window !== "undefined" && window.devicePixelRatio) || 1,
     crispPixel = (size: number) => Math.round(size * pixelRatio) / pixelRatio,
     crispPercentage = (origSize: number, percentage: number) => {
       return (crispPixel((percentage / 100) * origSize) / origSize) * 100;
@@ -159,13 +160,12 @@ export function getContainerStyle({
     yPercentage = crispPercentage(selfHeight, -anchorPosition.y * 100);
 
   style = {
-    position: 'absolute',
+    position: "absolute",
     transform: `
         translate(${xPercentage}%, ${yPercentage}%)
         translate(${crispPixel(left)}px, ${crispPixel(top)}px)
       `,
     display: String(),
-    zIndex: String()
   };
 
   if (!sortByDepth) {
@@ -174,26 +174,26 @@ export function getContainerStyle({
 
   if (z > 1 || z < -1 || x < 0 || x > width || y < 0 || y > height) {
     // clipped
-    style.display = 'none';
+    style.display = "none";
   } else {
     // use z-index to rearrange components
-    style.zIndex = String(Math.floor(((1 - z) / 2) * 100000));
+    style.zIndex = Math.floor(((1 - z) / 2) * 100000);
   }
 
   return style;
 }
 
-export function getNearestPointOnLine(pickInfo: PickInfo<unknown>) {
+export function getNearestPointOnLine(pickInfo: PickInfo<DeckEntityObject<unknown>>) {
   return nearestPointOnLine(
     lineString((pickInfo.object as { coordinates: PointCoordinate[] }).coordinates),
     point(pickInfo.coordinate as PointCoordinate)
   ).geometry.coordinates;
 }
 
-export function getPointCenter(pickInfo: PickInfo<unknown>) {
+export function getPointCenter(pickInfo: PickInfo<DeckEntityObject<unknown>>) {
   return (pickInfo.object as { coordinates: PointCoordinate }).coordinates;
 }
 
-export function getClickPosition(pickInfo: PickInfo<unknown>) {
+export function getClickPosition(pickInfo: PickInfo<DeckEntityObject<unknown>>) {
   return pickInfo.coordinate as PointCoordinate;
 }

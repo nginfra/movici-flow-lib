@@ -1,4 +1,4 @@
-import { Layer } from '@deck.gl/core';
+import type { Layer } from "@deck.gl/core";
 
 export type Nullable<T> = T | null;
 export type UUID = string;

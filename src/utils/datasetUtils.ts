@@ -1,4 +1,8 @@
-import { GeneralSection, RawSpecialValues, DatasetSpecialValues } from '@movici-flow-common/types';
+import type {
+  GeneralSection,
+  RawSpecialValues,
+  DatasetSpecialValues,
+} from "@movici-flow-common/types";
 
 export function specialValues(generalSection: GeneralSection): DatasetSpecialValues {
   if (generalSection.special !== undefined) {
@@ -13,9 +17,9 @@ export function specialValues(generalSection: GeneralSection): DatasetSpecialVal
 function readSpecialSection(section: RawSpecialValues): DatasetSpecialValues {
   const rv: DatasetSpecialValues = {};
   for (const [key, value] of Object.entries(section)) {
-    const [entityGroup, ...attr] = key.split('.');
+    const [entityGroup, ...attr] = key.split(".");
     rv[entityGroup] ??= {};
-    rv[entityGroup][attr.join('.')] = value;
+    rv[entityGroup][attr.join(".")] = value;
   }
   return rv;
 }

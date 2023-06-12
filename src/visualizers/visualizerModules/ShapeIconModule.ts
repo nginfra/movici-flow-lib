@@ -1,4 +1,4 @@
-import {
+import type {
   ByValueIconClause,
   Coordinate,
   IconClause,
@@ -6,17 +6,17 @@ import {
   LayerParams,
   StaticIconClause,
   TopologyLayerData,
-  IMapVisualizer
-} from '@movici-flow-common/types';
-import isEqual from 'lodash/isEqual';
-import NumberMapper from '../maps/NumberMapper';
-import { TapefileAccessor, VisualizerModule, VisualizerModuleParams } from './common';
-import { MAPPED_ICONS } from './iconCommon';
+  IMapVisualizer,
+} from "@movici-flow-common/types";
+import isEqual from "lodash/isEqual";
+import NumberMapper from "../maps/NumberMapper";
+import { TapefileAccessor, VisualizerModule, type VisualizerModuleParams } from "./common";
+import { MAPPED_ICONS } from "./iconCommon";
 
 type IconAccessor<D> = ((d: D) => string) | string;
 
-const DEFAULT_SPECIAL_UNDEFINED_ICON = 'question';
-const DEFAULT_SPECIAL_UNDEFINED_SHAPE = 'map-marker';
+const DEFAULT_SPECIAL_UNDEFINED_ICON = "question";
+const DEFAULT_SPECIAL_UNDEFINED_SHAPE = "map-marker";
 
 abstract class ShapeIconModule<
   Coord extends Coordinate,
@@ -35,7 +35,7 @@ abstract class ShapeIconModule<
 
     const accessor = this.updateAccessor(changed, visualizer);
 
-    if (params.type.layerName === 'ShapeIconLayer') {
+    if (params.type.layerName === "ShapeIconLayer") {
       this.updateParams(params, accessor);
     }
 
@@ -70,14 +70,14 @@ abstract class ShapeIconModule<
       const iconMap = new NumberMapper<string>({
         mapping: clause.byValue.icons,
         specialResult: this.fallbackIcon,
-        undefinedResult: this.fallbackIcon
+        undefinedResult: this.fallbackIcon,
       });
 
       const accessor = new TapefileAccessor(iconMap);
-      visualizer.requestTapefile(clause.byValue.attribute, t => {
+      visualizer.requestTapefile(clause.byValue.attribute, (t) => {
         accessor.setTapefile(t as ITapefile<number | null>);
         iconMap.setSpecialValue((t as ITapefile<number>).specialValue);
-        t.onSpecialValue(val => iconMap.setSpecialValue(val as number));
+        t.onSpecialValue((val) => iconMap.setSpecialValue(val as number));
       });
       return (d: LData) => accessor.getValue(d.idx);
     }
@@ -108,7 +108,7 @@ export class IconModule<
     params.props.getIcon = accessor;
     params.props.iconAtlas = `/static/icons/icons.png`;
     params.props.iconMapping = MAPPED_ICONS.icons;
-    this.setUpdateTriggers(params, ['hasIcon', 'getIcon'], this.currentSettings);
+    this.setUpdateTriggers(params, ["hasIcon", "getIcon"], this.currentSettings);
   }
 }
 
@@ -125,6 +125,6 @@ export class ShapeModule<
     params.props.getShape = accessor;
     params.props.shapeAtlas = `/static/icons/shapes.png`;
     params.props.shapeMapping = MAPPED_ICONS.shapes;
-    this.setUpdateTriggers(params, ['hasShape', 'getShape'], this.currentSettings);
+    this.setUpdateTriggers(params, ["hasShape", "getShape"], this.currentSettings);
   }
 }

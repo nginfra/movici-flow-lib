@@ -1,27 +1,25 @@
-import Vue_ from 'vue';
-import MovSnackBarProgramatic from './utils/snackbar';
-import { registerComponent, registerInNamespace } from './plugins';
-import * as components from './components';
+import type { App } from "vue";
+import * as components from "./components";
+import { useMoviciSettings } from "./baseComposables/useMoviciSettings";
+
+import type { RouteLocationRaw } from "vue-router";
+import orugaConfig from "./orugaConfig";
+
+function registerComponent(Vue: App, component: typeof Vue, name: string) {
+  Vue.component(name, component);
+}
 
 interface FlowPluginOptions {
-  homeRoute: string;
+  homeRoute: RouteLocationRaw;
 }
-export default (() => {
-  const Flow_ = {
-    install(Vue: typeof Vue_, options?: Partial<FlowPluginOptions>) {
-      Object.entries(components).forEach(([name, component]) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        registerComponent(Vue, component as any, name);
-      });
+export default {
+  install(Vue: App, options?: Partial<FlowPluginOptions>) {
+    Object.entries(components).forEach(([name, component]) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      registerComponent(Vue, component as any, name);
+    });
+    options && useMoviciSettings().updateSettings(options);
+  },
+};
 
-      registerInNamespace(Vue, 'snackbar', MovSnackBarProgramatic);
-      registerInNamespace(Vue, 'settings', {
-        homeRoute: options?.homeRoute ?? ''
-      });
-    }
-  };
-
-  return Flow_;
-})();
-
-// export { orugaConfig };
+export { orugaConfig };

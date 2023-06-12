@@ -1,53 +1,67 @@
 <template>
   <o-modal
+    content-class="modal-content"
     :active="active"
-    @close="$emit('close')"
+    @update:active="$emit('update:active', $event)"
+    @close="close"
     trap-focus
     aria-role="dialog"
     aria-modal
     :can-cancel="cancelOpts"
     :width="width"
   >
-    <template>
-      <ModalContent :title="title" :hasCancelX="hasCancelX" @close="$emit('close')">
-        <template v-slot:header>
-          <slot name="header" />
-        </template>
-        <template v-slot:content>
-          <slot name="content" />
-        </template>
-        <template v-if="$slots.footer" v-slot:footer>
-          <slot name="footer" />
-        </template>
-      </ModalContent>
-    </template>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <slot name="header">
+          <p class="modal-card-title">{{ title }}</p>
+          <button v-if="hasCancelX" type="button" class="delete" @click.stop="close" />
+        </slot>
+      </header>
+      <section class="modal-card-body" :class="{ 'border-round': !hasFooter }">
+        <slot name="content" />
+      </section>
+      <footer class="modal-card-foot" v-if="hasFooter">
+        <slot name="footer" />
+      </footer>
+    </div>
   </o-modal>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import ModalContent from './ModalContent.vue';
+<script setup lang="ts">
+import { computed, useSlots } from "vue";
 
-@Component({
-  name: 'MovModal',
-  components: { ModalContent }
-})
-export default class Modal extends Vue {
-  @Prop({ type: String, default: '' }) readonly title!: string;
-  @Prop({ type: Boolean, default: false }) readonly active!: boolean;
-  @Prop({ type: Number, default: 800 }) readonly width!: number;
-  @Prop({ type: [Array, Boolean], default: () => ['escape', 'x', 'outside', 'button'] })
-  readonly canCancel!: boolean | string[];
+const slots = useSlots();
+const hasFooter = computed(() => !!slots["footer"]);
 
-  get hasCancelX() {
-    return typeof this.canCancel === 'boolean' || this.canCancel.includes('x');
+const props = withDefaults(
+  defineProps<{
+    active?: boolean;
+    title?: string;
+    canCancel?: string[] | boolean;
+    width?: number | string;
+  }>(),
+  {
+    title: "",
   }
-  get cancelOpts() {
-    if (Array.isArray(this.canCancel)) {
-      return this.canCancel.filter(v => v !== 'x');
-    }
-    return this.canCancel;
-  }
+);
+const emit = defineEmits<{
+  (e: "update:active", val: boolean): void;
+  (e: "close"): void;
+}>();
+const allCancelOpts = computed(() =>
+  Array.isArray(props.canCancel)
+    ? props.canCancel
+    : props.canCancel
+    ? ["escape", "x", "outside", "button"]
+    : []
+);
+
+const hasCancelX = computed(() => allCancelOpts.value.includes("x"));
+const cancelOpts = computed(() => allCancelOpts.value.filter((v) => v !== "x"));
+
+function close() {
+  emit("update:active", false);
+  emit("close");
 }
 </script>
 

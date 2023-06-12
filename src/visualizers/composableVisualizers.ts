@@ -1,51 +1,51 @@
-import { ComposableVisualizerInfo } from './VisualizerInfo';
-import { Layer } from '@deck.gl/core';
+import type { Layer } from "@deck.gl/core";
 import {
-  ComponentProperty,
+  ArcLayer,
+  PathLayer,
+  PolygonLayer,
+  ScatterplotLayer,
+  SolidPolygonLayer,
+} from "@deck.gl/layers";
+import type { DatasetDownloader } from "@movici-flow-common/utils/DatasetDownloader";
+import isError from "lodash/isError";
+import type {
   Coordinate,
+  DataAttribute,
+  FetchRequestOptions,
+  IMapVisualizer,
   ITapefile,
   LayerConstructor,
   LayerParams,
   LineCoordinate,
   PointCoordinate,
   PolygonCoordinate,
-  TopologyLayerData,
-  IMapVisualizer,
   PopupEventCallback,
-  FetchRequestOptions
-} from '../types';
-import { parsePropertyString, propertyString } from '..//utils';
-import {
-  ArcLayer,
-  PathLayer,
-  PolygonLayer,
-  ScatterplotLayer,
-  SolidPolygonLayer
-} from '@deck.gl/layers';
-import ShapeIconLayer from './layers/ShapeIconLayer';
-import { BaseVisualizer, VisualizerContext } from './visualizers';
+  TopologyLayerData,
+} from "../types";
+import { parseattributeString, attributeString } from "../utils";
+import { ComposableVisualizerInfo } from "./VisualizerInfo";
 import {
   GridTopologyGetter,
-  ITopologyGetter,
   LineTopologyGetter,
   PointTopologyGetter,
-  PolygonTopologyGetter
-} from './geometry';
+  PolygonTopologyGetter,
+  type ITopologyGetter,
+} from "./geometry";
+import GridLayer from "./layers/GridLayer";
+import ShapeIconLayer from "./layers/ShapeIconLayer";
 import {
   ColorModule,
+  IconModule,
   PopupModule,
+  RenderOrderModule,
   ShapeModule,
-  VisualizerModule,
   SizeModule,
   VisibilityModule,
-  IconModule,
-  RenderOrderModule
-} from './visualizerModules';
-import { isError } from 'lodash';
-import GridLayer from './layers/GridLayer';
-import FloodingGridModule from './visualizerModules/FloodingGridModule';
-import GridColorModule from './visualizerModules/GridColorModule';
-import { DatasetDownloader } from '@movici-flow-common/utils/DatasetDownloader';
+  VisualizerModule,
+} from "./visualizerModules";
+import FloodingGridModule from "./visualizerModules/FloodingGridModule";
+import GridColorModule from "./visualizerModules/GridColorModule";
+import { BaseVisualizer, type VisualizerContext } from "./visualizers";
 
 export interface ComposableVisualizerContext extends VisualizerContext<ComposableVisualizerInfo> {
   datasetStore: DatasetDownloader;
@@ -111,7 +111,7 @@ abstract class ComposableVisualizer<
   }
 
   protected compose(): LayerParams<LData, Coord> | null {
-    this.info.unsetError('compose');
+    this.info.unsetError("compose");
 
     try {
       this.attributes = {};
@@ -122,7 +122,7 @@ abstract class ComposableVisualizer<
       }
       return params;
     } catch (e) {
-      this.info.setError('compose', isError(e) ? e.message : String(e));
+      this.info.setError("compose", isError(e) ? e.message : String(e));
       return null;
     }
   }
@@ -136,17 +136,17 @@ abstract class ComposableVisualizer<
 
   setInfo(info: ComposableVisualizerInfo) {
     if (!(info instanceof ComposableVisualizerInfo)) {
-      throw new Error('unsupported VisualizerInfo');
+      throw new Error("unsupported VisualizerInfo");
     }
     super.setInfo(info);
 
     if (this.modules) {
-      this.modules.forEach(m => m.setInfo(info));
+      this.modules.forEach((m) => m.setInfo(info));
     }
   }
 
-  requestTapefile(attribute: ComponentProperty, onLoad: (t: ITapefile<unknown>) => void) {
-    const key = propertyString(attribute);
+  requestTapefile(attribute: DataAttribute, onLoad: (t: ITapefile<unknown>) => void) {
+    const key = attributeString(attribute);
     if (!this.attributes[key]) {
       this.attributes[key] = [];
     }
@@ -154,13 +154,13 @@ abstract class ComposableVisualizer<
   }
 
   ensureTapefiles() {
-    const toDownload = Object.keys(this.attributes).filter(attr => !this.tapefiles[attr]);
+    const toDownload = Object.keys(this.attributes).filter((attr) => !this.tapefiles[attr]);
     if (toDownload.length) {
       const tapefiles = this.tapefileStore.getTapefiles<unknown>({
         store: this.datasetStore,
         entityGroup: this.info.entityGroup,
-        attributes: toDownload.map(s => parsePropertyString(s)),
-        status: this.info.status
+        attributes: toDownload.map((s) => parseattributeString(s)),
+        status: this.info.status,
       });
       for (const [idx, key] of toDownload.entries()) {
         this.tapefiles[key] = tapefiles[idx];
@@ -171,9 +171,9 @@ abstract class ComposableVisualizer<
         });
       }
     } else if (this.info.status) {
-      const id = this.info.status.register(['initData', 'updates']);
-      this.info.status.updateProgress(id, 'initData', 100);
-      this.info.status.updateProgress(id, 'updates', 100);
+      const id = this.info.status.register(["initData", "updates"]);
+      this.info.status.updateProgress(id, "initData", 100);
+      this.info.status.updateProgress(id, "updates", 100);
     }
   }
 
@@ -222,21 +222,21 @@ abstract class ComposableVisualizer<
       layerParams = this.appendUpdateTriggers({
         params: this.layerParams,
         value: timestamp,
-        copy: true
+        copy: true,
       });
       this.appendUpdateTriggers({ params: layerParams, value: this.forceUpdateTriggerCounter });
     } else {
       layerParams = this.removeUpdateTriggers({ params: this.layerParams, copy: true });
     }
 
-    layerParams.props.id += ':' + this.forceRenderCounter;
+    layerParams.props.id += ":" + this.forceRenderCounter;
     return new layerParams.type(layerParams.props) as unknown as Layer_;
   }
 
   appendUpdateTriggers({
     params,
     value,
-    copy = false
+    copy = false,
   }: {
     params: LayerParams<LData, Coord>;
     value: unknown;
@@ -245,7 +245,7 @@ abstract class ComposableVisualizer<
     if (copy) {
       params = {
         type: params.type,
-        props: { ...params.props }
+        props: { ...params.props },
       };
     }
     params.props.updateTriggers = Object.entries(params.props.updateTriggers).reduce(
@@ -259,7 +259,7 @@ abstract class ComposableVisualizer<
   }
   removeUpdateTriggers({
     params,
-    copy = false
+    copy = false,
   }: {
     params: LayerParams<LData, Coord>;
     copy?: boolean;
@@ -267,7 +267,7 @@ abstract class ComposableVisualizer<
     if (copy) {
       params = {
         type: params.type,
-        props: { ...params.props }
+        props: { ...params.props },
       };
     }
     if (params.props.updateTriggers) {
@@ -309,10 +309,10 @@ export class ComposablePointVisualizer extends ComposableVisualizer<
         getPosition: (d: TopologyLayerData<PointCoordinate>) => d.coordinates,
         pickable: true,
         parameters: {
-          depthTest: false
+          depthTest: false,
         },
-        updateTriggers: {}
-      }
+        updateTriggers: {},
+      },
     };
   }
 }
@@ -329,13 +329,13 @@ export class ComposableIconVisualizer extends ComposableVisualizer<
           new PopupModule<PointCoordinate, TopologyLayerData<PointCoordinate>>({ info: this.info }),
           new SizeModule<PointCoordinate, TopologyLayerData<PointCoordinate>>({ info: this.info }),
           new VisibilityModule<PointCoordinate, TopologyLayerData<PointCoordinate>>({
-            info: this.info
+            info: this.info,
           }),
           new IconModule<PointCoordinate, TopologyLayerData<PointCoordinate>>({ info: this.info }),
           new ShapeModule<PointCoordinate, TopologyLayerData<PointCoordinate>>({ info: this.info }),
           new RenderOrderModule<PointCoordinate, TopologyLayerData<PointCoordinate>>({
-            info: this.info
-          })
+            info: this.info,
+          }),
         ]
       : [];
   }
@@ -354,10 +354,10 @@ export class ComposableIconVisualizer extends ComposableVisualizer<
         getPosition: (d: TopologyLayerData<PointCoordinate>) => d.coordinates,
         pickable: true,
         parameters: {
-          depthTest: false
+          depthTest: false,
         },
-        updateTriggers: {}
-      }
+        updateTriggers: {},
+      },
     };
   }
 }
@@ -389,10 +389,10 @@ export class ComposableLineVisualizer extends ComposableVisualizer<
         getPath: (d: TopologyLayerData<LineCoordinate>) => d.coordinates,
         pickable: true,
         parameters: {
-          depthTest: false
+          depthTest: false,
         },
-        updateTriggers: {}
-      }
+        updateTriggers: {},
+      },
     };
   }
 }
@@ -423,10 +423,10 @@ export class ComposablePolygonVisualizer extends ComposableVisualizer<
         getPolygon: (d: TopologyLayerData<PolygonCoordinate>) => d.coordinates,
         pickable: true,
         parameters: {
-          depthTest: false
+          depthTest: false,
         },
-        updateTriggers: {}
-      }
+        updateTriggers: {},
+      },
     };
   }
 }
@@ -446,17 +446,17 @@ export class ComposableArcVisualizer extends ComposableLineVisualizer {
         },
         pickable: true,
         parameters: {
-          depthTest: false
+          depthTest: false,
         },
-        updateTriggers: {}
-      }
+        updateTriggers: {},
+      },
     };
   }
 }
 
 export class ComposableGridVisualizer extends ComposablePolygonVisualizer {
   get topologyGetter(): ITopologyGetter<PolygonCoordinate> {
-    const points = this.info.additionalEntityGroups?.['points'];
+    const points = this.info.additionalEntityGroups?.["points"];
     if (!points) {
       throw new Error("Grid topology requires additional 'point' entities");
     }
@@ -472,10 +472,10 @@ export class ComposableGridVisualizer extends ComposablePolygonVisualizer {
         getPolygon: (d: TopologyLayerData<PolygonCoordinate>) => d.coordinates,
         pickable: true,
         parameters: {
-          depthTest: false
+          depthTest: false,
         },
-        updateTriggers: {}
-      }
+        updateTriggers: {},
+      },
     };
   }
 }
@@ -491,7 +491,7 @@ export class ComposableFloodingGridVisualizer extends ComposableVisualizer<
   any
 > {
   get topologyGetter(): ITopologyGetter<PolygonCoordinate> {
-    const points = this.info.additionalEntityGroups?.['points'];
+    const points = this.info.additionalEntityGroups?.["points"];
     if (!points) {
       throw new Error("Grid topology requires additional 'point' entities");
     }
@@ -505,7 +505,7 @@ export class ComposableFloodingGridVisualizer extends ComposableVisualizer<
     }
     return [
       new GridColorModule<PolygonCoordinate, TopologyLayerData<PolygonCoordinate>>({ info }),
-      new FloodingGridModule<PolygonCoordinate, TopologyLayerData<PolygonCoordinate>>({ info })
+      new FloodingGridModule<PolygonCoordinate, TopologyLayerData<PolygonCoordinate>>({ info }),
     ];
   }
 
@@ -518,10 +518,10 @@ export class ComposableFloodingGridVisualizer extends ComposableVisualizer<
         visible: this.info.visible,
         getPolygon: (d: TopologyLayerData<PolygonCoordinate>) => d.coordinates,
         parameters: {
-          depthTest: false
+          depthTest: false,
         },
-        updateTriggers: {}
-      }
+        updateTriggers: {},
+      },
     };
   }
 }
@@ -534,6 +534,6 @@ function getCommonModules<Coord extends Coordinate, LData extends TopologyLayerD
     new PopupModule<Coord, LData>({ info }),
     new SizeModule<Coord, LData>({ info }),
     new VisibilityModule<Coord, LData>({ info }),
-    new RenderOrderModule<Coord, LData>({ info })
+    new RenderOrderModule<Coord, LData>({ info }),
   ];
 }

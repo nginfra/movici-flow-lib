@@ -1,14 +1,14 @@
 // import JSZip from 'jszip';
-import { Backend, EntityGroupData, ExportConfig, TimeOrientedSimulationInfo } from '../types';
-import { entityGroupToCSV, objectToCSV } from './csvUtils';
-import { DatasetDownloader } from './DatasetDownloader';
+import type { Backend, EntityGroupData, ExportConfig, TimeOrientedSimulationInfo } from "../types";
+import { entityGroupToCSV, objectToCSV } from "./csvUtils";
+import { DatasetDownloader } from "./DatasetDownloader";
 
 export function downloadAsFile(data: Blob, filename: string) {
   const url = window.URL.createObjectURL(data);
 
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = url;
-  link.setAttribute('download', filename);
+  link.setAttribute("download", filename);
   document.body.appendChild(link);
   link.click();
   link.remove();
@@ -17,7 +17,7 @@ export function downloadAsFile(data: Blob, filename: string) {
 export async function exportFromConfig({
   timelineInfo,
   backend,
-  config
+  config,
 }: {
   timelineInfo: TimeOrientedSimulationInfo;
   backend: Backend;
@@ -55,8 +55,8 @@ export default class DataExporter {
       data = await this.exportData(config);
 
     return {
-      blob: new Blob([header, data], { type: 'text/csv' }),
-      filename: this.fileName(config)
+      blob: new Blob([header, data], { type: "text/csv" }),
+      filename: this.fileName(config),
     };
   }
 
@@ -65,9 +65,9 @@ export default class DataExporter {
       unixTime_ = this.unixTime(timestamp) ?? 0,
       obj: Record<string, unknown> = {
         project: projectName,
-        dataset: dataset?.display_name ?? dataset?.name ?? '-',
-        scenario: scenario?.display_name ?? scenario?.name ?? '-',
-        timestamp: this.currentFormattedTime(unixTime_)
+        dataset: dataset?.display_name ?? dataset?.name ?? "-",
+        scenario: scenario?.display_name ?? scenario?.name ?? "-",
+        timestamp: this.currentFormattedTime(unixTime_),
       };
 
     return objectToCSV(obj);
@@ -77,12 +77,12 @@ export default class DataExporter {
     const { dataset, scenario, entityName, timestamp } = config,
       store = new DatasetDownloader({
         backend: this.backend,
-        datasetUUID: dataset?.uuid ?? 'unknown',
-        scenarioUUID: scenario?.uuid || undefined
+        datasetUUID: dataset?.uuid ?? "unknown",
+        scenarioUUID: scenario?.uuid || undefined,
       }),
       data = await store.getDatasetState<EntityGroupData<unknown>>({
         entityGroup: entityName,
-        timestamp
+        timestamp,
       });
 
     return entityGroupToCSV(data);
@@ -91,30 +91,30 @@ export default class DataExporter {
   fileName(config: ExportConfig): string {
     const { dataset, entityName, timestamp } = config;
 
-    let rv = dataset?.display_name ?? dataset?.name ?? 'unknown_dataset';
+    let rv = dataset?.display_name ?? dataset?.name ?? "unknown_dataset";
     if (entityName) {
-      rv += '-' + entityName;
+      rv += "-" + entityName;
     }
     if (timestamp) {
-      rv += '-' + this.fileNameTime(timestamp);
+      rv += "-" + this.fileNameTime(timestamp);
     }
-    return rv + '.csv';
+    return rv + ".csv";
   }
 
   fileNameTime(timestamp: number): string {
-    const leadingZero = (val: number): string => ('0' + val).slice(-2);
-    if (!this.unixTime) return '-';
+    const leadingZero = (val: number): string => ("0" + val).slice(-2);
+    if (!this.unixTime) return "-";
     const date = new Date(this.unixTime(timestamp) ?? 0);
 
     return [
       date.getFullYear(),
       leadingZero(date.getMonth() + 1),
       leadingZero(date.getDate()),
-      '-',
+      "-",
       leadingZero(date.getHours()),
       leadingZero(date.getMinutes()),
-      leadingZero(date.getSeconds())
-    ].join('');
+      leadingZero(date.getSeconds()),
+    ].join("");
   }
 
   unixTime(timestamp: number): number | null {
@@ -124,6 +124,6 @@ export default class DataExporter {
   }
 
   currentFormattedTime(unixTime: number): string {
-    return unixTime ? new Date(unixTime).toLocaleString('NL-nl') : '-';
+    return unixTime ? new Date(unixTime).toLocaleString("NL-nl") : "-";
   }
 }

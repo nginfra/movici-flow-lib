@@ -1,5 +1,5 @@
-import { RGBAColor } from '../types';
-import { MoviciColors, hexToColorTriple } from '@movici-flow-common/visualizers/maps/colorMaps';
+import type { RGBAColor } from "../types";
+import { MoviciColors, hexToColorTriple } from "@movici-flow-common/visualizers/maps/colorMaps";
 
 export const DEFAULT_SPECIAL_COLOR_TRIPLE = hexToColorTriple(MoviciColors.VERY_DARK_GREY);
 export const DEFAULT_UNDEFINED_COLOR_TRIPLE = hexToColorTriple(MoviciColors.VERY_DARK_GREY);
@@ -34,10 +34,10 @@ export function interpolateColorMapping(
 
 function interpolateColor(a: RGBAColor, b: RGBAColor, step: number, nSteps: number): RGBAColor {
   if (nSteps <= 0) {
-    throw new Error('must have positive number of steps');
+    throw new Error("must have positive number of steps");
   }
   if (step < 0 || step >= nSteps) {
-    throw new Error('Step not in between 0 and nSteps');
+    throw new Error("Step not in between 0 and nSteps");
   }
 
   if (a.length === 4) {
