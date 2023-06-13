@@ -24,7 +24,9 @@
 import { Deck as DeckGL, Layer } from "@deck.gl/core";
 import type { ControllerOptions } from "@deck.gl/core/controllers/controller";
 import type { DeckProps, PickInfo } from "@deck.gl/core/lib/deck";
-import { viewport, type BoundingBox } from "@mapbox/geo-viewport";
+import type { BoundingBox } from "@movici-flow-common/crs";
+import { viewport } from "@placemarkio/geo-viewport";
+
 import { useMoviciSettings } from "@movici-flow-common/baseComposables/useMoviciSettings";
 import { useSnackbar } from "@movici-flow-common/baseComposables/useSnackbar";
 import type {
@@ -51,10 +53,9 @@ function getViewportFromBBOX(
       bounding_box,
       // we set the ratio 1/3 as we want the viewport to occupy 1/3 of the map screen
       dimensions.map((side) => side * ratio) as [number, number],
-      undefined, // min zoom, default 0
-      undefined, // max zoom, default 20
-      undefined, // tileSize, default 256
-      true // allow float for zoom
+      {
+        allowFloat: true,
+      }
     ),
     [longitude, latitude] = center;
 
@@ -243,8 +244,6 @@ onMounted(() => {
   });
 });
 onBeforeUnmount(() => {
-  // todo: destroy children before removing map
-  // this.$children.forEach((child) => child.$destroy());
   map.value?.remove();
   deck.value?.canvas.remove();
 });

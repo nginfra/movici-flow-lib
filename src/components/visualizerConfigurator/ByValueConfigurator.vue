@@ -52,7 +52,7 @@
   </div>
 </template>
 
-<script setup lang="ts" generic="T extends unknown">
+<script setup lang="ts" generic="T">
 import type { AttributeSummary } from "@movici-flow-common/types";
 import { computed, inject, onMounted, shallowRef, watch } from "vue";
 import ByValueList from "./ByValueList.vue";

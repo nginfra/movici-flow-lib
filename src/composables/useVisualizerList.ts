@@ -25,6 +25,10 @@ export function useVisualizerList<T>({
 }) {
   const { openDialog } = useDialog();
 
+  // openVal Indicates the index of the open Visualizer
+  // Special values are
+  // -1: Creates a new Visualizer
+  // -2: The configurator is closed
   const open = ref(-2);
   const editing = computed(() => open.value > -2);
   function close() {

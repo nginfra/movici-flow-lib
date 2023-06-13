@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BoundingBox } from "@mapbox/geo-viewport";
+import type { BoundingBox } from "@movici-flow-common/crs";
 import { useMoviciSettings } from "@movici-flow-common/baseComposables/useMoviciSettings";
 import { useReactiveSummary } from "@movici-flow-common/composables/useReactiveSummary";
 import { ensureProjection, transformBBox } from "@movici-flow-common/crs";

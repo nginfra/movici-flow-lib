@@ -10,7 +10,8 @@ import type {
   PointCoordinate,
 } from "./types";
 
-type BoundingBox = [number, number, number, number];
+export type BoundingBox = [number, number, number, number];
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type GeoJSON = any;
 export const DEFAULT_CRS = "EPSG:28992";

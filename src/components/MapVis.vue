@@ -29,9 +29,9 @@
 
 <script setup lang="ts">
 import type { Layer } from "@deck.gl/core";
-import type { BoundingBox } from "@mapbox/geo-viewport";
-import { useDeckGL } from "@movici-flow-common/composables/useDeckGL";
+import type { BoundingBox } from "@movici-flow-common/crs";
 import { useMoviciSettings } from "@movici-flow-common/baseComposables/useMoviciSettings";
+import { useDeckGL } from "@movici-flow-common/composables/useDeckGL";
 import { useFlowStore } from "@movici-flow-common/stores/flow";
 import { useSummaryStore } from "@movici-flow-common/stores/summary";
 import type { DeckMouseEvent, PopupContent, ViewState } from "@movici-flow-common/types";
