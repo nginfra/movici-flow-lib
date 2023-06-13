@@ -40,7 +40,7 @@ import { getVisualizer, type Visualizer } from "@movici-flow-common/visualizers"
 import { TapefileStoreCollection } from "@movici-flow-common/visualizers/TapefileStore";
 import type { ComposableVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
 import VisualizerManager from "@movici-flow-common/visualizers/VisualizerManager";
-import { computed, ref, watch } from "vue";
+import { computed, markRaw, ref, watch } from "vue";
 import Deck from "./Deck.vue";
 import Buildings from "./mapControls//MapLayerBuildings.vue";
 import DeckErrorHandling from "./mapControls/DeckErrorHandling.vue";
@@ -162,7 +162,7 @@ function updateLayers() {
       return v.getLayer(props.timestamp);
     })
     .filter((l) => l !== null) as Layer<unknown>[];
-  layers.value = newLayers;
+  layers.value = markRaw(newLayers);
 }
 watch(() => props.timestamp, updateLayers);
 

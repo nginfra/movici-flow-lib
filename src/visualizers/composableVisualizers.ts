@@ -22,7 +22,7 @@ import type {
   PopupEventCallback,
   TopologyLayerData,
 } from "../types";
-import { parseattributeString, attributeString } from "../utils";
+import { attributeString, parseattributeString } from "../utils";
 import { ComposableVisualizerInfo } from "./VisualizerInfo";
 import {
   GridTopologyGetter,
