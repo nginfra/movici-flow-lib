@@ -96,7 +96,7 @@ export default class DataExporter {
     let rv = dataset?.display_name ?? dataset?.name ?? "unknown_dataset";
     if (entityName) {
       rv += "-" + entityName;
-    }gi
+    }
     if (timestamp != undefined) {
       rv += "-" + this.fileNameTime(timestamp);
     }
