@@ -6,27 +6,14 @@
           {{ $t("flow.export.modalTitle") }} {{ scenario?.display_name ?? "" }}
         </h1>
       </div>
-      <div class="columns mt-2">
-        <div class="column is-one-third">
-          <label class="label is-size-7">{{ $t("flow.export.filterData") }}</label>
-          <ExportLayerPicker
-            :modelValue="parsedView.visualizerInfos"
-            @selectInfo="localValue = $event"
-          />
-        </div>
-        <div class="column">
-          <div>
-            <ExportForm
-              v-model="exportConfig"
-              :info="localValue"
-              :validator="validator"
-              :timestamp="parsedView.timestamp"
-              :timelineInfo="timelineInfo"
-              :datasets="store.datasets"
-            />
-          </div>
-        </div>
-      </div>
+      <ExportForm
+        v-model="exportConfig"
+        :info="localValue"
+        :validator="validator"
+        :timestamp="parsedView.timestamp"
+        :timelineInfo="timelineInfo"
+        :datasets="scenario.datasets"
+      />
       <div class="bottom is-pulled-right">
         <o-button
           size="small"
@@ -52,17 +39,16 @@
 </template>
 
 <script setup lang="ts">
-import { exportFromConfig } from "@movici-flow-common/utils/DataExporter";
 import { useScenario } from "@movici-flow-common/composables/useScenario";
 import { useValidator } from "@movici-flow-common/composables/useValidator";
 import { useFlowStore } from "@movici-flow-common/stores/flow";
 import { useParsedViewStore } from "@movici-flow-common/stores/parsedView";
+import { exportFromConfig } from "@movici-flow-common/utils/DataExporter";
 import { onMounted, ref } from "vue";
 import type { ExportFormConfig, ShortDataset } from "../types";
 import { FormValidator } from "../utils/FormValidator";
 import type { ComposableVisualizerInfo } from "../visualizers/VisualizerInfo";
 import ExportForm from "./ExportForm.vue";
-import ExportLayerPicker from "./ExportLayerPicker.vue";
 
 const parsedView = useParsedViewStore();
 const props = defineProps<{
@@ -77,6 +63,7 @@ const exportConfig = ref<ExportFormConfig>();
 const { scenario, timelineInfo } = useScenario();
 
 const store = useFlowStore();
+
 onMounted(async () => await store.loadDatasets());
 
 const loading = ref(false);

@@ -65,8 +65,10 @@ export default class DataExporter {
       unixTime_ = this.unixTime(timestamp) ?? 0,
       obj: Record<string, unknown> = {
         project: projectName,
-        dataset: dataset?.display_name ?? dataset?.name ?? "-",
-        scenario: scenario?.display_name ?? scenario?.name ?? "-",
+        dataset: dataset?.name ?? "-",
+        "dataset display name": dataset?.display_name ?? "-",
+        scenario: scenario?.name ?? "-",
+        "scenario display name": scenario?.display_name ?? "-",
         timestamp: this.currentFormattedTime(unixTime_),
       };
 
@@ -94,8 +96,8 @@ export default class DataExporter {
     let rv = dataset?.display_name ?? dataset?.name ?? "unknown_dataset";
     if (entityName) {
       rv += "-" + entityName;
-    }
-    if (timestamp) {
+    }gi
+    if (timestamp != undefined) {
       rv += "-" + this.fileNameTime(timestamp);
     }
     return rv + ".csv";
