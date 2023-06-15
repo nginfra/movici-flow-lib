@@ -16,12 +16,12 @@
     <template #content>
       <o-field v-if="views.length">
         <o-select
-          v-model="selectedView"
+          v-model="selectedViewUUID"
           size="small"
           expanded
           :placeholder="t('flow.visualization.dialogs.selectViewPlaceholder')"
         >
-          <option v-for="(view, index) in views" :value="view" :key="index">
+          <option v-for="view in views" :value="view.uuid" :key="view.uuid">
             {{ view.name }}
           </option>
         </o-select>
@@ -36,7 +36,7 @@
           size="small"
           @click.stop="emitAndClose"
           variant="primary"
-          :disabled="!selectedView"
+          :disabled="!selectedViewUUID"
         >
           {{ $t("flow.visualization.dialogs.loadView") }}
         </o-button>
@@ -61,9 +61,9 @@ const emit = defineEmits<{
   (e: "loadView", val: UUID): void;
 }>();
 
-const selectedView = ref<View>();
+const selectedViewUUID = ref<UUID>();
 function emitAndClose() {
-  emit("loadView", selectedView.value!.uuid!);
+  emit("loadView", selectedViewUUID.value!);
   emit("update:active", false);
 }
 </script>
