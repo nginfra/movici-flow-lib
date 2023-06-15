@@ -41,7 +41,7 @@
       <o-button
         size="small"
         v-if="uiStore.collapserEnabled"
-        :icon-left="uiStore.collapse ? 'angle-rigEht' : 'angle-left'"
+        :icon-left="uiStore.collapse ? 'angle-right' : 'angle-left'"
         @click.stop="uiStore.collapse = !uiStore.collapse"
       ></o-button>
     </o-tooltip>

@@ -50,7 +50,7 @@ function doGetTitle(val: T): string {
   if (typeof displayName === "string") {
     return displayName;
   }
-  return ''
+  return "";
 }
 
 function getDisplayName(val: T): string | T {

@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow visualizer-list is-flex is-flex-direction-column">
+  <div class="visualizer-list is-flex is-flex-direction-column">
     <Draggable
       :modelValue="modelValue"
       item-key="id"

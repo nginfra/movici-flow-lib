@@ -69,7 +69,7 @@
             </span>
           </div>
         </header>
-        <o-tabs class="flow-tabs uppercase mt-2" value="rawConfig">
+        <o-tabs class="flow-tabs uppercase mt-2" modelValue="rawConfig">
           <o-tab-item
             disabled
             value="widgetDashboard"
@@ -128,7 +128,8 @@ watch(
   async () => {
     if (!store.scenario) return;
     scenario.value = await store.backend?.scenario.get(store.scenario.uuid);
-  }
+  },
+  { immediate: true }
 );
 </script>
 

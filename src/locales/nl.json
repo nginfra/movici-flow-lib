@@ -210,6 +210,7 @@
         "noViewsForScenario": "Er zijn geen opgeslagen Views voor dit Scenario",
         "noViewToDelete": "Er is geen View om te verwijderen",
         "selectView": "View selecteren",
+        "selectViewPlaceholder": "Selecteer een View...",
         "unsavedChanges": "<b>Wijzigingen zijn niet opgeslagen!</b> <br>Weet je zeker dat je de Configurator wilt sluiten?",
         "unsavedView": "<b>Wijzigingen zijn niet opgeslagen!</b> <br>Weet je zeker dat je deze pagina wilt verlaten?",
         "leaveView": "Weet je zeker dat je de Visualisatie wilt verlaten?? <br>Je zult de View opnieuw moeten laden.",

@@ -1,4 +1,4 @@
-@import './variables';
+@import "./variables";
 
 // block for the movici flow components
 .flow {
@@ -71,11 +71,12 @@
     }
     .tab-content {
       margin: 0;
-      height: calc(100% - 43px);
       padding: 0;
       .tab-item {
-        height: 100%;
-        width: 100%;
+        max-height: calc(100vh - 288px);
+        overflow: auto;
+        margin: 0.5rem -0.25rem 0.5rem 0;
+        padding-right: 0.25rem;
       }
     }
   }
@@ -151,7 +152,8 @@
   }
 }
 
-.b-radio.is-small, .b-checkbox.is-small {
+.b-radio.is-small,
+.b-checkbox.is-small {
   height: 30px;
 }
 

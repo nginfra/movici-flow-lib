@@ -15,7 +15,12 @@
     </template>
     <template #content>
       <o-field v-if="views.length">
-        <o-select v-model="selectedView" size="small" expanded>
+        <o-select
+          v-model="selectedView"
+          size="small"
+          expanded
+          :placeholder="t('flow.visualization.dialogs.selectViewPlaceholder')"
+        >
           <option v-for="(view, index) in views" :value="view" :key="index">
             {{ view.name }}
           </option>
@@ -43,7 +48,9 @@
 <script setup lang="ts">
 import type { UUID, View } from "@movici-flow-common/types";
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 defineProps<{
   active?: boolean;
   views: View[];

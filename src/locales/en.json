@@ -210,6 +210,7 @@
         "noViewsForScenario": "No saved Views for this Scenario.",
         "noViewToDelete": "There is no current view to delete",
         "selectView": "Select a View",
+        "selectViewPlaceholder": "Please select a View...",
         "unsavedChanges": "<b>You have unsaved changes!</b> <br>Do you want to close the Configurator?",
         "unsavedView": "<b>You have an unsaved changes!</b> <br>Do you want to leave this page?",
         "leaveView": "Do you want to leave the Visualisation? <br>You will need to reload the view.",
