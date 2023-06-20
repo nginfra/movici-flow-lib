@@ -1,9 +1,9 @@
 <template>
   <div class="export-content">
     <div class="columns multiline mb-0">
-      <div class="column is-flex is-half-desktop is-full-tablet">
+      <div class="column is-half-desktop is-full-tablet">
         <o-field
-          class="is-flex-grow-1 mr-2"
+          class="mr-2"
           :label="$t('resources.dataset')"
           :message="errors['currentDatasetName'] || ''"
           :variant="errors['currentDatasetName'] && 'danger'"
@@ -20,10 +20,9 @@
           </o-select>
         </o-field>
       </div>
-      <div class="column is-flex is-half-desktop is-full-tablet">
+      <div class="column is-half-desktop is-full-tablet">
         <o-field
-          class="is-flex-grow-1"
-          v-if="entityGroups || currentEntityName"
+          :disabled="!entityGroups"
           :label="$t('resources.entityGroup')"
           :message="errors['currentEntityName'] || ''"
           :variant="errors['currentEntityName'] && 'danger'"
@@ -42,7 +41,7 @@
         </o-field>
       </div>
     </div>
-    <div class="columns mb-0">
+    <div class="columns mb-0" v-if="timelineInfo">
       <div class="column is-full-desktop is-full-tablet">
         <o-field :label="$t('misc.timestamp')">
           <TimeSlider v-model="currentTimestamp" :timeline-info="timelineInfo" />
@@ -94,8 +93,8 @@ import TimeSlider from "./TimeSlider.vue";
 const props = withDefaults(
   defineProps<{
     modelValue?: ExportFormConfig;
-    timelineInfo: TimeOrientedSimulationInfo;
     datasets: (ScenarioDataset | ShortDataset)[];
+    timelineInfo?: TimeOrientedSimulationInfo | null;
     info?: ComposableVisualizerInfo;
     timestamp?: number;
     validator: IFormValidator;
@@ -173,7 +172,7 @@ watchEffect(() => {
     emit("update:modelValue", {
       datasetName: currentDatasetName.value,
       entityGroup: currentEntityName.value,
-      timestamp: currentTimestamp.value,
+      timestamp: props.timelineInfo ? currentTimestamp.value : undefined,
     });
   }
 });

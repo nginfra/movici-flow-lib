@@ -63,7 +63,7 @@ export interface ExportConfig {
   dataset: ShortDataset | null;
   projectName: string;
   entityName: string;
-  scenario?: ShortScenario | Scenario;
+  scenario?: ShortScenario | Scenario | null;
   timestamp?: number;
 }
 export interface AttributeSummary extends AttributeType {

@@ -78,13 +78,14 @@ describe("useFlowSidebar", () => {
       true,
     ],
   ] as [string, Parameters<typeof useFlowSidebar>[0], boolean][])(
-    "has dataset and scenario section %s",
+    "has dataset scenario and export section %s",
     (_, args, expected) => {
       const { sections } = useFlowSidebar({
         ...args,
       });
       expect(findSection(sections, "dataset")?.enabled).toBe(expected);
       expect(findSection(sections, "scenario")?.enabled).toBe(expected);
+      expect(findSection(sections, "export")?.enabled).toBe(expected);
     }
   );
   it("enables dataset and scenario section when a project is selected", async () => {
@@ -97,6 +98,7 @@ describe("useFlowSidebar", () => {
     expect(findSection(sections, "dataset")?.enabled).toBe(true);
     expect(findSection(sections, "scenario")?.enabled).toBe(true);
   });
+
   it("enables visualization section when a scenario is selected", async () => {
     const location = ref<FlowLocation>({ step: "scenario", projectName: "someProject" });
     const { sections } = useFlowSidebar({ location, hasProjectCapability: true });
@@ -109,21 +111,5 @@ describe("useFlowSidebar", () => {
     };
     expect(findSection(sections, "visualization")?.enabled).toBe(true);
   });
-  it("enables export section when a view is selected", async () => {
-    const location = ref<FlowLocation>({
-      step: "visualization",
-      projectName: "some_project",
-      scenarioName: "some_scenario",
-    });
-    const { sections } = useFlowSidebar({ location, hasProjectCapability: true });
-    expect(findSection(sections, "export")?.enabled).toBe(false);
 
-    location.value = {
-      step: "visualization",
-      projectName: "some_project",
-      scenarioName: "some_scenario",
-      viewUUID: "view-uuid",
-    };
-    expect(findSection(sections, "export")?.enabled).toBe(true);
-  });
 });

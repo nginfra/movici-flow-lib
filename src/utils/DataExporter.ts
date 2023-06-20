@@ -19,11 +19,11 @@ export async function exportFromConfig({
   backend,
   config,
 }: {
-  timelineInfo: TimeOrientedSimulationInfo;
+  timelineInfo?: TimeOrientedSimulationInfo | null;
   backend: Backend;
   config: ExportConfig;
 }): Promise<void> {
-  const exportModule = new DataExporter(timelineInfo, backend);
+  const exportModule = new DataExporter(timelineInfo ?? null, backend);
   const res = await exportModule.config2blob(config);
   return downloadAsFile(res.blob, res.filename);
 }

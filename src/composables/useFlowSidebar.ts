@@ -18,7 +18,7 @@ export function useFlowSidebar({
     const datasetEnabled = !hasProjectCapability || !!location?.projectName;
     const scenarioEnabled = datasetEnabled;
     const visualizationEnabled = scenarioEnabled && !!location?.scenarioName;
-    const exportEnabled = visualizationEnabled && !!location.viewUUID;
+    const exportEnabled = datasetEnabled;
 
     if (hasProjectCapability) {
       sections.push({

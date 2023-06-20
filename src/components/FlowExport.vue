@@ -1,6 +1,6 @@
 <template>
-  <div class="modal-card">
-    <div v-if="scenario && timelineInfo && store.datasets" class="box has-background-white p-4">
+  <div class="modal-card" style="width: 600px">
+    <div v-if="store.datasets" class="box has-background-white p-4">
       <div class="is-flex is-flex is-align-items-center mb-3">
         <h1 class="is-size-6 has-text-black text-ellipsis">
           {{ $t("flow.export.modalTitle") }} {{ scenario?.display_name ?? "" }}
@@ -12,7 +12,7 @@
         :validator="validator"
         :timestamp="parsedView.timestamp"
         :timelineInfo="timelineInfo"
-        :datasets="scenario.datasets"
+        :datasets="availableDatasets"
       />
       <div class="bottom is-pulled-right">
         <o-button
@@ -44,8 +44,8 @@ import { useValidator } from "@movici-flow-common/composables/useValidator";
 import { useFlowStore } from "@movici-flow-common/stores/flow";
 import { useParsedViewStore } from "@movici-flow-common/stores/parsedView";
 import { exportFromConfig } from "@movici-flow-common/utils/DataExporter";
-import { onMounted, ref } from "vue";
-import type { ExportFormConfig, ShortDataset } from "../types";
+import { computed, onMounted, ref } from "vue";
+import type { ExportFormConfig, ScenarioDataset, ShortDataset } from "../types";
 import { FormValidator } from "../utils/FormValidator";
 import type { ComposableVisualizerInfo } from "../visualizers/VisualizerInfo";
 import ExportForm from "./ExportForm.vue";
@@ -66,7 +66,12 @@ const store = useFlowStore();
 
 onMounted(async () => await store.loadDatasets());
 
+const availableDatasets = computed<(ShortDataset | ScenarioDataset)[]>(() => {
+  return scenario.value?.datasets ?? store.datasets;
+});
+
 const loading = ref(false);
+
 async function exportData() {
   validator.validate();
 
@@ -74,32 +79,28 @@ async function exportData() {
     return;
   }
 
-  if (
-    exportConfig.value &&
-    scenario.value &&
-    store.datasets &&
-    store.project &&
-    timelineInfo.value &&
-    store.backend
-  ) {
+  if (exportConfig.value && store.datasets && store.project && store.backend) {
     loading.value = true;
-    const datasetsByName = store.datasets.reduce<Record<string, ShortDataset>>((obj, curr) => {
-      obj[curr.name] = curr;
-      return obj;
-    }, {});
+    try {
+      const datasetsByName = store.datasets.reduce<Record<string, ShortDataset>>((obj, curr) => {
+        obj[curr.name] = curr;
+        return obj;
+      }, {});
 
-    await exportFromConfig({
-      config: {
-        dataset: datasetsByName[exportConfig.value.datasetName] ?? null,
-        projectName: store.project.display_name,
-        scenario: scenario.value,
-        entityName: exportConfig.value.entityGroup,
-        timestamp: exportConfig.value.timestamp,
-      },
-      timelineInfo: timelineInfo.value,
-      backend: store.backend,
-    });
-    loading.value = false;
+      await exportFromConfig({
+        config: {
+          dataset: datasetsByName[exportConfig.value.datasetName] ?? null,
+          projectName: store.project.display_name,
+          scenario: scenario.value,
+          entityName: exportConfig.value.entityGroup,
+          timestamp: exportConfig.value.timestamp,
+        },
+        timelineInfo: timelineInfo.value,
+        backend: store.backend,
+      });
+    } finally {
+      loading.value = false;
+    }
   }
 }
 </script>
