@@ -71,12 +71,11 @@
     }
     .tab-content {
       margin: 0;
+      height: calc(100% - 43px);
       padding: 0;
       .tab-item {
-        max-height: calc(100vh - 288px);
-        overflow: auto;
-        margin: 0.5rem -0.25rem 0.5rem 0;
-        padding-right: 0.25rem;
+        height: 100%;
+        width: 100%;
       }
     }
   }

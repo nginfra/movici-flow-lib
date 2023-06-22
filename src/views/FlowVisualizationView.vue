@@ -466,4 +466,15 @@ function exportData(info: ComposableVisualizerInfo) {
 .box-width-100 {
   width: 100%;
 }
+
+.tab-content {
+  margin: 0;
+  padding: 0;
+  .tab-item {
+    max-height: calc(100vh - 288px);
+    overflow: auto;
+    margin: 0.5rem -0.25rem 0.5rem 0;
+    padding-right: 0.25rem;
+  }
+}
 </style>
