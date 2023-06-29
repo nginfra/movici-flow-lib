@@ -45,15 +45,15 @@ export const useFlowStore = defineStore("flow", () => {
   }
 
   async function loadScenarios() {
-    if (backend.value && project.value) {
-      scenarios.value = (await backend.value.scenario.list(project.value.uuid)) ?? [];
-    }
+    if (!backend.value) return;
+    if (hasCapability("projects") && !project.value) return;
+    scenarios.value = (await backend.value.scenario.list(project.value?.uuid)) ?? [];
   }
 
   async function loadDatasets() {
-    if (backend.value && project.value) {
-      datasets.value = await backend.value.dataset.list(project.value.uuid);
-    }
+    if (!backend.value) return;
+    if (hasCapability("projects") && !project.value) return;
+    datasets.value = await backend.value.dataset.list(project.value?.uuid);
   }
 
   async function loadViews() {
@@ -84,6 +84,9 @@ export const useFlowStore = defineStore("flow", () => {
   async function enterStep(location: FlowLocation) {
     switch (location.step) {
       case "project":
+        if (!hasCapability("projects")) {
+          throw new FlowRedirect({ ...location, step: "dataset" });
+        }
         return await enterProjectStep();
       case "dataset":
         return await enterDatasetStep(location);
@@ -188,7 +191,12 @@ export const useFlowStore = defineStore("flow", () => {
   }
 
   async function resolveViewLocation(location: FlowLocation) {
-    if (location.viewUUID && location.projectName && location.scenarioName) return;
+    if (
+      location.viewUUID &&
+      (location.projectName || !hasCapability("projects")) &&
+      location.scenarioName
+    )
+      return;
     if (!location.viewUUID) return;
 
     const view = await backend.value?.view.get(location.viewUUID);
@@ -198,11 +206,11 @@ export const useFlowStore = defineStore("flow", () => {
     if (!scenario) throw new FlowRedirect({ step: "project" });
 
     const project = projects.value.find((p) => p.name == scenario.project_name);
-    if (!project) throw new FlowRedirect({ step: "project" });
+    if (hasCapability("projects") && !project) throw new FlowRedirect({ step: "project" });
 
     throw new FlowRedirect({
       step: "visualization",
-      projectName: project.name,
+      projectName: project?.name,
       scenarioName: scenario.name,
       viewUUID: location.viewUUID,
     });
