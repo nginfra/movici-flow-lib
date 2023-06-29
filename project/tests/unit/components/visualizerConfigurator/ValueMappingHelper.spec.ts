@@ -10,7 +10,7 @@ import {
   interpolateMinMax,
   type RecalculateMappingValueParams,
   MappingStrategy,
-} from "@movici-flow-common/components/visualizerConfigurator/ValueMappingHelper";
+} from "@movici-flow-lib/components/visualizerConfigurator/ValueMappingHelper";
 import { describe, it, expect, beforeEach } from "vitest";
 class DummyStrategy extends MappingStrategy<number> {
   nSteps: number;

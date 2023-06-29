@@ -36,8 +36,8 @@
 </template>
 
 <script setup lang="ts">
-import type { AttributeSummary, ByValueSizeClause, SizeClause } from "@movici-flow-common/types";
-import { FlowVisualizerType } from "@movici-flow-common/types";
+import type { AttributeSummary, ByValueSizeClause, SizeClause } from "@movici-flow-lib/types";
+import { FlowVisualizerType } from "@movici-flow-lib/types";
 import { computed, inject, reactive, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import ByValueConfigurator from "./ByValueConfigurator.vue";

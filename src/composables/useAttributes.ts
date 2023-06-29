@@ -1,4 +1,4 @@
-import type { AttributeSummary, AttributeType, RefLike } from "@movici-flow-common/types";
+import type { AttributeSummary, AttributeType, RefLike } from "@movici-flow-lib/types";
 import { computed, ref, unref } from "vue";
 
 export function useAttributes({

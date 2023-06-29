@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { upperFirst } from "@movici-flow-common/utils/filters";
+import { upperFirst } from "@movici-flow-lib/utils/filters";
 defineProps<{ isRight?: boolean; modelValue: string }>();
 const emit = defineEmits<{
   (e: "update:modelValue", val: string): void;

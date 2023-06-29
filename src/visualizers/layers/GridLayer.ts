@@ -5,8 +5,8 @@ import { SolidPolygonLayer, type SolidPolygonLayerProps } from "@deck.gl/layers/
 
 import { Texture2D } from "@luma.gl/webgl";
 import { Model } from "@luma.gl/engine";
-import type { RGBAColor } from "@movici-flow-common/types";
-import { ensureRGBAColorMap } from "@movici-flow-common/utils/colorUtils";
+import type { RGBAColor } from "@movici-flow-lib/types";
+import { ensureRGBAColorMap } from "@movici-flow-lib/utils/colorUtils";
 import isEqual from "lodash/isEqual";
 
 interface TextureInfo {

@@ -13,9 +13,9 @@
 
 <script setup lang="ts">
 import { Scatter } from "vue-chartjs";
-import { formatValueByDataType, type Formatter } from "@movici-flow-common/utils/format";
-import type { ChartVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
-import { MoviciColors } from "@movici-flow-common/visualizers/maps/colorMaps";
+import { formatValueByDataType, type Formatter } from "@movici-flow-lib/utils/format";
+import type { ChartVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
+import { MoviciColors } from "@movici-flow-lib/visualizers/maps/colorMaps";
 import type { ChartData, ChartEvent, ChartOptions, TooltipItem, ChartType } from "chart.js";
 import {
   Chart as ChartJS,

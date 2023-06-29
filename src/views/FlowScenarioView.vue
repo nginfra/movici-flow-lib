@@ -99,9 +99,9 @@
 </template>
 
 <script setup lang="ts">
-import ProjectInfoBox from "@movici-flow-common/components/ProjectInfoBox.vue";
-import ScenarioInfoBox from "@movici-flow-common/components/ScenarioInfoBox.vue";
-import { useFlowStore } from "@movici-flow-common/stores/flow";
+import ProjectInfoBox from "@movici-flow-lib/components/ProjectInfoBox.vue";
+import ScenarioInfoBox from "@movici-flow-lib/components/ScenarioInfoBox.vue";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import { computed, ref, watch } from "vue";
 import FlowContainer from "../components/FlowStep.vue";
 import type { Scenario } from "../types";

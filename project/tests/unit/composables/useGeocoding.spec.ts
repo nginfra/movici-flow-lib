@@ -1,4 +1,4 @@
-import { useGeocoding } from "@movici-flow-common/composables/useGeocoding";
+import { useGeocoding } from "@movici-flow-lib/composables/useGeocoding";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";

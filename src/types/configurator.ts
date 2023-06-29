@@ -2,8 +2,8 @@ import type {
   AttributeSummary,
   DatasetSummary,
   FlowVisualizerType,
-} from "@movici-flow-common/types";
-import type { FormValidator } from "@movici-flow-common/utils/FormValidator";
+} from "@movici-flow-lib/types";
+import type { FormValidator } from "@movici-flow-lib/utils/FormValidator";
 
 export interface VisualizerConfiguratorProps<T> {
   modelValue?: T;

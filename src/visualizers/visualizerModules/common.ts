@@ -6,7 +6,7 @@ import type {
   TopologyLayerData,
   ITapefile,
   IMapVisualizer,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 import type { ComposableVisualizerInfo } from "../VisualizerInfo";
 
 export type VisualizerModuleParams = { info: ComposableVisualizerInfo };

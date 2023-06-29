@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PopupInfo } from "@movici-flow-common/types";
+import type { PopupInfo } from "@movici-flow-lib/types";
 import { computed } from "vue";
 import DataViewContent from "./DataViewContent.vue";
 import WidgetContainer from "./WidgetContainer.vue";

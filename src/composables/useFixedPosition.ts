@@ -1,4 +1,4 @@
-import type { RefLike } from "@movici-flow-common/types";
+import type { RefLike } from "@movici-flow-lib/types";
 import type { CSSProperties, Ref } from "vue";
 import { ref, unref, watch } from "vue";
 

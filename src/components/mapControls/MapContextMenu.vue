@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import type { PickInfo } from "@deck.gl/core/lib/deck";
-import type { ActionItem, ViewState } from "@movici-flow-common/types";
+import type { ActionItem, ViewState } from "@movici-flow-lib/types";
 import type mapboxgl from "mapbox-gl";
 import { onMounted, ref, type Ref } from "vue";
 import DynamicDataView from "./DynamicDataView.vue";

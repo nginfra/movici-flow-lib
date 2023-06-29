@@ -1,4 +1,4 @@
-import type StatusTracker from "@movici-flow-common/utils/StatusTracker";
+import type StatusTracker from "@movici-flow-lib/utils/StatusTracker";
 import type { ChartDataset, ChartOptions } from "chart.js";
 import type {
   DatasetSummary,

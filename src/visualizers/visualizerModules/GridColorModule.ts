@@ -6,13 +6,13 @@ import type {
   ITapefile,
   ByValueColorClause,
   IMapVisualizer,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 import isEqual from "lodash/isEqual";
 import { TapefileAccessor, VisualizerModule, type VisualizerModuleParams } from "./common";
 
 import NumberToNumberMap from "../maps/NumberToNumberMap";
 import type { RGBAColor } from "deck.gl";
-import { interpolateColorMapping } from "@movici-flow-common/utils/colorUtils";
+import { interpolateColorMapping } from "@movici-flow-lib/utils/colorUtils";
 import isError from "lodash/isError";
 type NumberAccessor<D> = ((d: D) => number) | number;
 

@@ -1,4 +1,4 @@
-import type { RGBAColor } from "@movici-flow-common/types";
+import type { RGBAColor } from "@movici-flow-lib/types";
 import NumberMapper from "./NumberMapper";
 
 export const MoviciColors = {

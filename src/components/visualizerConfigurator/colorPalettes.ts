@@ -1,4 +1,4 @@
-import { hexToColorTriple, MoviciColors } from "@movici-flow-common/visualizers/maps/colorMaps";
+import { hexToColorTriple, MoviciColors } from "@movici-flow-lib/visualizers/maps/colorMaps";
 
 export interface ColorPaletteParams {
   name: string;

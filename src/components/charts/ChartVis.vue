@@ -59,11 +59,11 @@
 </template>
 
 <script setup lang="ts">
-import { useCharts } from "@movici-flow-common/composables/useCharts";
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import type { TimeOrientedSimulationInfo } from "@movici-flow-common/types";
-import type { TapefileStoreCollection } from "@movici-flow-common/visualizers/TapefileStore";
-import type { ChartVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
+import { useCharts } from "@movici-flow-lib/composables/useCharts";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import type { TimeOrientedSimulationInfo } from "@movici-flow-lib/types";
+import type { TapefileStoreCollection } from "@movici-flow-lib/visualizers/TapefileStore";
+import type { ChartVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import type { ChartData, Chart as ChartJS } from "chart.js";
 import { computed, nextTick, ref, unref, watch } from "vue";
 import AttributeChart from "./AttributeChart.vue";

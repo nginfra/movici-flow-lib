@@ -38,8 +38,8 @@
 </template>
 
 <script setup lang="ts">
-import { useClauseConfigurator } from "@movici-flow-common/composables/useClauseConfigurator";
-import type { ColorClause, RGBAColor } from "@movici-flow-common/types";
+import { useClauseConfigurator } from "@movici-flow-lib/composables/useClauseConfigurator";
+import type { ColorClause, RGBAColor } from "@movici-flow-lib/types";
 import { computed, inject, onMounted, onUnmounted } from "vue";
 import { useI18n } from "vue-i18n";
 import AttributeSelector from "../AttributeSelector.vue";

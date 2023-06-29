@@ -72,9 +72,9 @@
 </template>
 
 <script setup lang="ts">
-import AttributeSelector from "@movici-flow-common/components/AttributeSelector.vue";
-import { useClauseConfigurator } from "@movici-flow-common/composables/useClauseConfigurator";
-import type { ColorClause } from "@movici-flow-common/types";
+import AttributeSelector from "@movici-flow-lib/components/AttributeSelector.vue";
+import { useClauseConfigurator } from "@movici-flow-lib/composables/useClauseConfigurator";
+import type { ColorClause } from "@movici-flow-lib/types";
 import { computed, inject, onUnmounted, provide, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import ColorAdvSettingsConfigurator from "./ColorAdvSettingsConfigurator.vue";

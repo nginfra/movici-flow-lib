@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { useDraggable } from "@movici-flow-common/composables/useDraggable";
+import { useDraggable } from "@movici-flow-lib/composables/useDraggable";
 
 import {
   FlowVisualizerType,
@@ -78,11 +78,11 @@ import {
   type FlowVisualizerOptions,
   type RGBAColor,
   type ScenarioDataset,
-} from "@movici-flow-common/types";
-import { snakeToSpaces, upperFirst } from "@movici-flow-common/utils/filters";
-import { ComposableVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
-import { isGrid, isLines, isPoints, isPolygons } from "@movici-flow-common/visualizers/geometry";
-import { MoviciColors, hexToColorTriple } from "@movici-flow-common/visualizers/maps/colorMaps";
+} from "@movici-flow-lib/types";
+import { snakeToSpaces, upperFirst } from "@movici-flow-lib/utils/filters";
+import { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
+import { isGrid, isLines, isPoints, isPolygons } from "@movici-flow-lib/visualizers/geometry";
+import { MoviciColors, hexToColorTriple } from "@movici-flow-lib/visualizers/maps/colorMaps";
 import { computed, ref, watchEffect, type Ref, watch } from "vue";
 import Draggable from "vuedraggable";
 import GeometrySelector from "../GeometrySelector.vue";

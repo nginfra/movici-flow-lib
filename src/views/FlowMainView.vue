@@ -52,11 +52,11 @@
 </template>
 
 <script setup lang="ts">
-import { useFlowSidebar } from "@movici-flow-common/composables/useFlowSidebar";
-import { FlowRedirect } from "@movici-flow-common/errors";
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import { useUIStore } from "@movici-flow-common/stores/ui";
-import flowVersion from "@movici-flow-common/version";
+import { useFlowSidebar } from "@movici-flow-lib/composables/useFlowSidebar";
+import { FlowRedirect } from "@movici-flow-lib/errors";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import { useUIStore } from "@movici-flow-lib/stores/ui";
+import flowVersion from "@movici-flow-lib/version";
 import { computed, ref, toRef, watch } from "vue";
 import { useMoviciSettings } from "../baseComposables/useMoviciSettings";
 import type { FlowLocation, FlowStep } from "../types";
@@ -64,10 +64,10 @@ import FlowDatasetView from "./FlowDatasetView.vue";
 import FlowProjectView from "./FlowProjectView.vue";
 import FlowScenarioView from "./FlowScenarioView.vue";
 import FlowVisualizationView from "./FlowVisualizationView.vue";
-import { useDialog } from "@movici-flow-common/baseComposables/useDialog";
+import { useDialog } from "@movici-flow-lib/baseComposables/useDialog";
 import { useI18n } from "vue-i18n";
 import { useProgrammatic } from "@oruga-ui/oruga-next";
-import FlowExport from "@movici-flow-common/components/FlowExport.vue";
+import FlowExport from "@movici-flow-lib/components/FlowExport.vue";
 const { settings } = useMoviciSettings();
 const { openDialog } = useDialog();
 const store = useFlowStore();

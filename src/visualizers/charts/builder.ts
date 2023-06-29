@@ -1,4 +1,4 @@
-import type { TimeOrientedSimulationInfo } from "@movici-flow-common/types";
+import type { TimeOrientedSimulationInfo } from "@movici-flow-lib/types";
 import type { StreamingTapefile, TapefileUpdate } from "../tapefile";
 
 export function buildStreamingChartData({

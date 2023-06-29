@@ -46,10 +46,10 @@
 <script setup lang="ts">
 import Draggable from "vuedraggable";
 
-import { useDraggable } from "@movici-flow-common/composables/useDraggable";
-import { useVisualizerList } from "@movici-flow-common/composables/useVisualizerList";
-import type { Scenario } from "@movici-flow-common/types";
-import type { ComposableVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
+import { useDraggable } from "@movici-flow-lib/composables/useDraggable";
+import { useVisualizerList } from "@movici-flow-lib/composables/useVisualizerList";
+import type { Scenario } from "@movici-flow-lib/types";
+import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import { computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import VisualizerElement from "./VisualizerElement.vue";

@@ -1,4 +1,4 @@
-import { heapPop, heapPush } from "@movici-flow-common/utils/queue";
+import { heapPop, heapPush } from "@movici-flow-lib/utils/queue";
 import { describe, it, expect } from "vitest";
 
 function getRandomInt(minOrMax: number, max?: number): number {

@@ -1,6 +1,6 @@
 import { computed, reactive, unref, watchEffect, type Ref } from "vue";
 
-import type { ButtonItem, RefLike } from "@movici-flow-common/types";
+import type { ButtonItem, RefLike } from "@movici-flow-lib/types";
 
 type SupportedButton = "cancel" | "save" | "saveAndEdit" | "back" | "delete" | "refresh";
 

@@ -42,14 +42,14 @@
 </template>
 
 <script setup lang="ts">
-import { useGeocoding } from "@movici-flow-common/composables/useGeocoding";
-import { useFlowStore } from "@movici-flow-common/stores/flow";
+import { useGeocoding } from "@movici-flow-lib/composables/useGeocoding";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import type {
   ViewState,
   GeocodeSearchQuery,
   GeocodeSearchResult,
   GeocodeSuggestion,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 import mapboxgl from "mapbox-gl";
 import { nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";

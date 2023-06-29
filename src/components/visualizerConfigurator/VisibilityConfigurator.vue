@@ -42,10 +42,10 @@
 </template>
 
 <script setup lang="ts">
-import AttributeSelector from "@movici-flow-common/components/AttributeSelector.vue";
-import { useAttributes } from "@movici-flow-common/composables/useAttributes";
-import { useValidator } from "@movici-flow-common/composables/useValidator";
-import type { ByValueVisibilityClause, VisibilityClause } from "@movici-flow-common/types";
+import AttributeSelector from "@movici-flow-lib/components/AttributeSelector.vue";
+import { useAttributes } from "@movici-flow-lib/composables/useAttributes";
+import { useValidator } from "@movici-flow-lib/composables/useValidator";
+import type { ByValueVisibilityClause, VisibilityClause } from "@movici-flow-lib/types";
 import { computed, inject, onUnmounted, ref, watch, type Ref } from "vue";
 import { useI18n } from "vue-i18n";
 import SimpleCheckbox from "./SimpleCheckbox.vue";

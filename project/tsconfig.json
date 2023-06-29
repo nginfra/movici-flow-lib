@@ -19,8 +19,8 @@
     "lib": ["esnext"],
     "types": ["node", "jsdom"],
     "paths": {
-      "@movici-flow-common/*": ["../src/*"],
-      "@movici-flow-common": ["../src/index.ts"]
+      "@movici-flow-lib/*": ["../src/*"],
+      "@movici-flow-lib": ["../src/index.ts"]
     }
   },
   "vueCompilerOptions": {

@@ -34,9 +34,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useValidator } from "@movici-flow-common/composables/useValidator";
-import type { SizeUnit } from "@movici-flow-common/types";
-import { isPositive } from "@movici-flow-common/utils/FormValidator";
+import { useValidator } from "@movici-flow-lib/composables/useValidator";
+import type { SizeUnit } from "@movici-flow-lib/types";
+import { isPositive } from "@movici-flow-lib/utils/FormValidator";
 import { computed, inject, onUnmounted } from "vue";
 import { validatorInjection } from "./injectionKeys";
 

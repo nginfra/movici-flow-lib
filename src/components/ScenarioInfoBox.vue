@@ -35,8 +35,8 @@
 </template>
 
 <script setup lang="ts">
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import { getClassFromStatus } from "@movici-flow-common/utils";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import { getClassFromStatus } from "@movici-flow-lib/utils";
 
 const store = useFlowStore();
 defineProps<{ editable?: boolean }>();

@@ -1,6 +1,6 @@
 import { CompositeLayer, LayerExtension } from "@deck.gl/core";
 import { DataFilterExtension } from "@deck.gl/extensions";
-import type { LayerConstructor } from "@movici-flow-common/types";
+import type { LayerConstructor } from "@movici-flow-lib/types";
 import type { LayerProps } from "@deck.gl/core/lib/layer";
 import type { CompositeLayerProps } from "@deck.gl/core/lib/composite-layer";
 

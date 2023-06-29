@@ -1,6 +1,6 @@
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import { SimulationMode } from "@movici-flow-common/types";
-import type { Scenario, ScenarioDataset, ShortDataset } from "@movici-flow-common/types";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import { SimulationMode } from "@movici-flow-lib/types";
+import type { Scenario, ScenarioDataset, ShortDataset } from "@movici-flow-lib/types";
 import { computed, ref, watch, type Ref } from "vue";
 
 export function useScenario(params?: { datasets?: Ref<(ScenarioDataset | ShortDataset)[]> }) {

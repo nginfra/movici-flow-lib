@@ -4,7 +4,7 @@ import type {
   GeocodeSearchResult,
   GeocodeSuggestion,
   RefLike,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 import { ref, unref, type Ref, watch } from "vue";
 import { reverseTransform, transform } from "../crs";
 

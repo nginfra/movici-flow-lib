@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import type { IconClause } from "@movici-flow-common/types";
-import type { IconMapping } from "@movici-flow-common/visualizers/layers/ShapeIconLayer";
+import type { IconClause } from "@movici-flow-lib/types";
+import type { IconMapping } from "@movici-flow-lib/visualizers/layers/ShapeIconLayer";
 import { computed } from "vue";
 import IconSelector from "./IconSelector.vue";
 

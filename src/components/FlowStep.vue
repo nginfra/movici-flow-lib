@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { useUIStore } from "@movici-flow-common/stores/ui";
+import { useUIStore } from "@movici-flow-lib/stores/ui";
 import { computed } from "vue";
 const store = useUIStore();
 const collapsedClass = computed(() => {

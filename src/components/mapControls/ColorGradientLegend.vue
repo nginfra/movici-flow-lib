@@ -13,8 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import type { ColorLegendItem } from "@movici-flow-common/types";
-import { colorTripleToHex } from "@movici-flow-common/visualizers/maps/colorMaps";
+import type { ColorLegendItem } from "@movici-flow-lib/types";
+import { colorTripleToHex } from "@movici-flow-lib/visualizers/maps/colorMaps";
 
 defineProps<{
   modelValue: ColorLegendItem;

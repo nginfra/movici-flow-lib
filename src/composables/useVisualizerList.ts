@@ -1,4 +1,4 @@
-import { useDialog } from "@movici-flow-common/baseComposables/useDialog";
+import { useDialog } from "@movici-flow-lib/baseComposables/useDialog";
 import { computed, nextTick, ref, type Ref } from "vue";
 
 export type FunctionOrString<T> = string | ((item?: T) => string);

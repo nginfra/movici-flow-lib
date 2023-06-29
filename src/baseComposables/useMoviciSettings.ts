@@ -1,4 +1,4 @@
-import type { ViewState } from "@movici-flow-common/types";
+import type { ViewState } from "@movici-flow-lib/types";
 import merge from "lodash/merge";
 import { reactive } from "vue";
 import type { RouteLocationRaw } from "vue-router";

@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import { Sketch } from "@ckpack/vue-color";
-import type { RGBAColor } from "@movici-flow-common/types";
-import { DEFAULT_UNDEFINED_COLOR_TRIPLE } from "@movici-flow-common/utils/colorUtils";
+import type { RGBAColor } from "@movici-flow-lib/types";
+import { DEFAULT_UNDEFINED_COLOR_TRIPLE } from "@movici-flow-lib/utils/colorUtils";
 import { computed, nextTick, ref, watch } from "vue";
 
 const props = withDefaults(

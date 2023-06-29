@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ButtonItem } from "@movici-flow-common/types";
+import type { ButtonItem } from "@movici-flow-lib/types";
 
 const emit = defineEmits<{
   (e: "action", action: string): void;

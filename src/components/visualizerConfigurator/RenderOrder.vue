@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { RenderOrderType } from "@movici-flow-common/types";
+import { RenderOrderType } from "@movici-flow-lib/types";
 import { computed, onMounted } from "vue";
 
 const props = defineProps<{

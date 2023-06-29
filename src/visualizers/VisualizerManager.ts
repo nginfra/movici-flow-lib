@@ -1,7 +1,7 @@
 import isEqual from "lodash/isEqual";
 import isError from "lodash/isError";
 
-import type { IVisualizer } from "@movici-flow-common/types";
+import type { IVisualizer } from "@movici-flow-lib/types";
 import { getVisualizerType, type VisualizerConstructor } from ".";
 import type { Backend } from "../types/backend";
 import type { TapefileStoreCollection } from "./TapefileStore";

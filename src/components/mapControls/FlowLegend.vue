@@ -59,8 +59,8 @@ import {
   type IconClause,
   IconStaticLegendItem,
   IconByValueLegendItem,
-} from "@movici-flow-common/types";
-import type { ComposableVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
+} from "@movici-flow-lib/types";
+import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import ColorBucketLegend from "./ColorBucketLegend.vue";
 import IconLegend from "./IconLegend.vue";
 import ColorGradientLegend from "./ColorGradientLegend.vue";

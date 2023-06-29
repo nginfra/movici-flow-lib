@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ViewState } from "@movici-flow-common/types";
+import type { ViewState } from "@movici-flow-lib/types";
 import { computed } from "vue";
 
 const props = defineProps<{

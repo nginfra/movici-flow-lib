@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import type { PickInfo } from "@deck.gl/core/lib/deck";
-import type { DeckEntityObject, ViewState } from "@movici-flow-common/types";
+import type { DeckEntityObject, ViewState } from "@movici-flow-lib/types";
 import {
   getClickPosition,
   getContainerStyle,
@@ -17,7 +17,7 @@ import {
   getNearestPointOnLine,
   getPointCenter,
   type ANCHOR_TYPE,
-} from "@movici-flow-common/utils/canvasPositioning";
+} from "@movici-flow-lib/utils/canvasPositioning";
 import { computed } from "@vue/reactivity";
 import inRange from "lodash/inRange";
 import type mapboxgl from "mapbox-gl";

@@ -1,4 +1,4 @@
-import { formatValueByDataType } from "@movici-flow-common/utils/format";
+import { formatValueByDataType } from "@movici-flow-lib/utils/format";
 import { describe, it, expect } from "vitest";
 
 function rightIndented(text: string, indentation: number) {

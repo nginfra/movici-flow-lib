@@ -1,7 +1,7 @@
 import { lineString, point } from "@turf/helpers";
 import nearestPointOnLine from "@turf/nearest-point-on-line";
 import type { PickInfo } from "deck.gl";
-import type { DeckEntityObject, PointCoordinate } from "@movici-flow-common/types";
+import type { DeckEntityObject, PointCoordinate } from "@movici-flow-lib/types";
 import type { CSSProperties } from "vue";
 
 export const ANCHOR_POSITIONING = {

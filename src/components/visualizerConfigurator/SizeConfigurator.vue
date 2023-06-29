@@ -77,8 +77,8 @@
 </template>
 
 <script setup lang="ts">
-import { useClauseConfigurator } from "@movici-flow-common/composables/useClauseConfigurator";
-import { FlowVisualizerType, type SizeClause } from "@movici-flow-common/types";
+import { useClauseConfigurator } from "@movici-flow-lib/composables/useClauseConfigurator";
+import { FlowVisualizerType, type SizeClause } from "@movici-flow-lib/types";
 import { computed, inject, onUnmounted, provide, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import AttributeSelector from "../AttributeSelector.vue";

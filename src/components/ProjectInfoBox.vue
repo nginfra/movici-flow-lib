@@ -29,8 +29,8 @@
 </template>
 
 <script setup lang="ts">
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import type { Project } from "@movici-flow-common/types";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import type { Project } from "@movici-flow-lib/types";
 
 const store = useFlowStore();
 defineProps<{ edit?: boolean }>();

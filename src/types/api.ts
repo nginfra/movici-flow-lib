@@ -1,7 +1,7 @@
 import type { UUID } from "./general";
 import type { AxiosProgressEvent, AxiosRequestConfig, AxiosResponse } from "axios";
 import type { ErrorHandlingConfig } from "../api/client";
-import type { BaseRequest } from "@movici-flow-common/api";
+import type { BaseRequest } from "@movici-flow-lib/api";
 
 export type ProgressHandler = (e: AxiosProgressEvent) => void;
 

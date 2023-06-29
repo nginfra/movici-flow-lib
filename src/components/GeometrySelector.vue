@@ -49,8 +49,8 @@
 </template>
 
 <script setup lang="ts">
-import { type DataAttribute, FlowVisualizerType } from "@movici-flow-common/types";
-import { isGrid, isLines, isPoints, isPolygons } from "@movici-flow-common/visualizers/geometry";
+import { type DataAttribute, FlowVisualizerType } from "@movici-flow-lib/types";
+import { isGrid, isLines, isPoints, isPolygons } from "@movici-flow-lib/visualizers/geometry";
 import { computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 

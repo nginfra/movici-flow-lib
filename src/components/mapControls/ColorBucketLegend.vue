@@ -29,8 +29,8 @@
 </template>
 
 <script setup lang="ts">
-import { ColorLegendItem, FlowVisualizerType, type RGBAColor } from "@movici-flow-common/types";
-import { colorTripleToHex } from "@movici-flow-common/visualizers/maps/colorMaps";
+import { ColorLegendItem, FlowVisualizerType, type RGBAColor } from "@movici-flow-lib/types";
+import { colorTripleToHex } from "@movici-flow-lib/visualizers/maps/colorMaps";
 import { computed } from "vue";
 
 const props = defineProps<{

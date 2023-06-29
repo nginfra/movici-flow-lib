@@ -1,4 +1,4 @@
-import { FormValidator, type FormValidatorConfig } from "@movici-flow-common/utils/FormValidator";
+import { FormValidator, type FormValidatorConfig } from "@movici-flow-lib/utils/FormValidator";
 import { describe, it, expect, vi } from "vitest";
 
 describe("formValidator", () => {

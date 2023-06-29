@@ -2,7 +2,7 @@ import {
   createTapefileFromStateAndUpdates,
   SinglePropertyTapefile,
   type TapefileUpdate,
-} from "@movici-flow-common/visualizers/tapefile";
+} from "@movici-flow-lib/visualizers/tapefile";
 import omit from "lodash/omit";
 import { describe, it, expect, beforeEach } from "vitest";
 

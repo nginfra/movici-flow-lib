@@ -1,5 +1,5 @@
-import { hexToColorTriple } from "@movici-flow-common/visualizers/maps/colorMaps";
-import NumberMapper from "@movici-flow-common/visualizers/maps/NumberMapper";
+import { hexToColorTriple } from "@movici-flow-lib/visualizers/maps/colorMaps";
+import NumberMapper from "@movici-flow-lib/visualizers/maps/NumberMapper";
 import { describe, it, expect } from "vitest";
 
 const mapping = new NumberMapper({

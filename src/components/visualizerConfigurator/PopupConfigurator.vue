@@ -118,10 +118,10 @@
 </template>
 
 <script setup lang="ts">
-import { useDraggable } from "@movici-flow-common/composables/useDraggable";
-import { useValidator } from "@movici-flow-common/composables/useValidator";
-import type { AttributeSummary, PopupClause, PopupItem } from "@movici-flow-common/types";
-import { attributeString } from "@movici-flow-common/utils";
+import { useDraggable } from "@movici-flow-lib/composables/useDraggable";
+import { useValidator } from "@movici-flow-lib/composables/useValidator";
+import type { AttributeSummary, PopupClause, PopupItem } from "@movici-flow-lib/types";
+import { attributeString } from "@movici-flow-lib/utils";
 import { computed, inject, onUnmounted, reactive, toRaw, toRef, watch } from "vue";
 import Draggable from "vuedraggable";
 import AttributeSuggestions from "./AttributeSuggestions.vue";

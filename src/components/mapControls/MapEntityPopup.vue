@@ -19,8 +19,8 @@
 </template>
 
 <script setup lang="ts">
-import { useUIStore } from "@movici-flow-common/stores/ui";
-import type { PopupInfo, ViewState } from "@movici-flow-common/types";
+import { useUIStore } from "@movici-flow-lib/stores/ui";
+import type { PopupInfo, ViewState } from "@movici-flow-lib/types";
 import type mapboxgl from "mapbox-gl";
 import { computed } from "vue";
 import DataViewContent from "./DataViewContent.vue";

@@ -1,11 +1,11 @@
-import { useReactiveSummary } from "@movici-flow-common/composables/useReactiveSummary";
-import { useFlowStore } from "@movici-flow-common/stores/flow";
+import { useReactiveSummary } from "@movici-flow-lib/composables/useReactiveSummary";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import type {
   DatasetSummary,
   EntityGroupSummary,
   AttributeSummary,
   ShortDataset,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 import { createPinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useFakeBackend } from "../backend";

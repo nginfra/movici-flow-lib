@@ -4,8 +4,8 @@ import type {
   FlowVisualizerOptions,
   FlowVisualizerType,
   ScenarioDataset,
-} from "@movici-flow-common/types";
-import type { IFormValidator } from "@movici-flow-common/utils/FormValidator";
+} from "@movici-flow-lib/types";
+import type { IFormValidator } from "@movici-flow-lib/utils/FormValidator";
 import type { InjectionKey, Ref } from "vue";
 
 type ReactiveInjectionKey<T> = InjectionKey<Ref<T>>;

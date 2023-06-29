@@ -1,6 +1,6 @@
 import type { ControllerOptions } from "@deck.gl/core/controllers/controller";
-import type { BoundingBox } from "@movici-flow-common/crs";
-import { usePopupStore } from "@movici-flow-common/stores/popup";
+import type { BoundingBox } from "@movici-flow-lib/crs";
+import { usePopupStore } from "@movici-flow-lib/stores/popup";
 import type { Layer } from "deck.gl";
 import { ref, type Ref } from "vue";
 

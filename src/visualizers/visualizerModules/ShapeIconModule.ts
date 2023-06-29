@@ -7,7 +7,7 @@ import type {
   StaticIconClause,
   TopologyLayerData,
   IMapVisualizer,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 import isEqual from "lodash/isEqual";
 import NumberMapper from "../maps/NumberMapper";
 import { TapefileAccessor, VisualizerModule, type VisualizerModuleParams } from "./common";

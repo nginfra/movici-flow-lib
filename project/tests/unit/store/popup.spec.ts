@@ -1,5 +1,5 @@
-import { usePopupStore } from "@movici-flow-common/stores/popup";
-import type { PopupContent, PopupInfo } from "@movici-flow-common/types";
+import { usePopupStore } from "@movici-flow-lib/stores/popup";
+import type { PopupContent, PopupInfo } from "@movici-flow-lib/types";
 import { createPinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 

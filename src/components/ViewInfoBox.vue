@@ -35,8 +35,8 @@
 </template>
 
 <script setup lang="ts">
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import type { ActionItem } from "@movici-flow-common/types";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import type { ActionItem } from "@movici-flow-lib/types";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import ViewLoaderModal from "./ViewLoaderModal.vue";

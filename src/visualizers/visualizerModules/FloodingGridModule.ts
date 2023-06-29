@@ -4,7 +4,7 @@ import type {
   IMapVisualizer,
   LayerParams,
   TopologyLayerData,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 
 import { VisualizerModule } from "./common";
 

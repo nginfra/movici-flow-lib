@@ -45,13 +45,13 @@
 </template>
 
 <script setup lang="ts">
-import type { AdvColorMapping, AdvancedColorSettings, RGBAColor } from "@movici-flow-common/types";
-import { RenderOrderType } from "@movici-flow-common/types";
+import type { AdvColorMapping, AdvancedColorSettings, RGBAColor } from "@movici-flow-lib/types";
+import { RenderOrderType } from "@movici-flow-lib/types";
 import {
   DEFAULT_POLYGON_FILL_OPACITY,
   DEFAULT_SPECIAL_COLOR_TRIPLE,
   DEFAULT_UNDEFINED_COLOR_TRIPLE,
-} from "@movici-flow-common/utils/colorUtils";
+} from "@movici-flow-lib/utils/colorUtils";
 import isEqual from "lodash/isEqual";
 import { computed, inject, reactive, ref, watch } from "vue";
 import AdvColorList from "./AdvColorList.vue";

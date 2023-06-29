@@ -1,5 +1,5 @@
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
-import type { IClient } from "@movici-flow-common/types";
+import type { IClient } from "@movici-flow-lib/types";
 
 export abstract class BaseRequest<Resp> {
   abstract makeRequest(): AxiosRequestConfig;

@@ -29,17 +29,17 @@
 
 <script setup lang="ts">
 import type { Layer } from "@deck.gl/core";
-import type { BoundingBox } from "@movici-flow-common/crs";
-import { useMoviciSettings } from "@movici-flow-common/baseComposables/useMoviciSettings";
-import { useDeckGL } from "@movici-flow-common/composables/useDeckGL";
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import { useSummaryStore } from "@movici-flow-common/stores/summary";
-import type { DeckMouseEvent, PopupContent, ViewState } from "@movici-flow-common/types";
-import { DatasetDownloader } from "@movici-flow-common/utils/DatasetDownloader";
-import { getVisualizer, type Visualizer } from "@movici-flow-common/visualizers";
-import { TapefileStoreCollection } from "@movici-flow-common/visualizers/TapefileStore";
-import type { ComposableVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
-import VisualizerManager from "@movici-flow-common/visualizers/VisualizerManager";
+import type { BoundingBox } from "@movici-flow-lib/crs";
+import { useMoviciSettings } from "@movici-flow-lib/baseComposables/useMoviciSettings";
+import { useDeckGL } from "@movici-flow-lib/composables/useDeckGL";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import { useSummaryStore } from "@movici-flow-lib/stores/summary";
+import type { DeckMouseEvent, PopupContent, ViewState } from "@movici-flow-lib/types";
+import { DatasetDownloader } from "@movici-flow-lib/utils/DatasetDownloader";
+import { getVisualizer, type Visualizer } from "@movici-flow-lib/visualizers";
+import { TapefileStoreCollection } from "@movici-flow-lib/visualizers/TapefileStore";
+import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
+import VisualizerManager from "@movici-flow-lib/visualizers/VisualizerManager";
 import { computed, markRaw, ref, watch } from "vue";
 import Deck from "./Deck.vue";
 import Buildings from "./mapControls//MapLayerBuildings.vue";

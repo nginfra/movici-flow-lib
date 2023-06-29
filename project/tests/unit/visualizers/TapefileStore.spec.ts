@@ -1,4 +1,4 @@
-import { Index, StreamingTapefile } from "@movici-flow-common/visualizers/tapefile";
+import { Index, StreamingTapefile } from "@movici-flow-lib/visualizers/tapefile";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("StreamingTapefile", () => {

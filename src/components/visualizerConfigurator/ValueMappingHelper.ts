@@ -1,4 +1,4 @@
-import type { AttributeSummary, SimpleAttributeSummary } from "@movici-flow-common/types";
+import type { AttributeSummary, SimpleAttributeSummary } from "@movici-flow-lib/types";
 
 export type ValueMapping<T> = [number, T][];
 export type MappingMode = "enum" | "buckets" | "boolean" | "number" | "continuous";

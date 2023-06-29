@@ -6,7 +6,7 @@ import {
   ScatterplotLayer,
   SolidPolygonLayer,
 } from "@deck.gl/layers";
-import type { DatasetDownloader } from "@movici-flow-common/utils/DatasetDownloader";
+import type { DatasetDownloader } from "@movici-flow-lib/utils/DatasetDownloader";
 import isError from "lodash/isError";
 import type {
   Coordinate,

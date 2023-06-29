@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ActionItem } from "@movici-flow-common/types";
+import type { ActionItem } from "@movici-flow-lib/types";
 
 defineProps<{
   modelValue: ActionItem;

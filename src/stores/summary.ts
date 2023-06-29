@@ -1,10 +1,10 @@
-import { SummaryNotFound } from "@movici-flow-common/errors";
-import type { DatasetSummary, UUID } from "@movici-flow-common/types";
+import { SummaryNotFound } from "@movici-flow-lib/errors";
+import type { DatasetSummary, UUID } from "@movici-flow-lib/types";
 import { defineStore } from "pinia";
 import { watch } from "vue";
 import { useFlowStore } from "./flow";
-import HashMap from "@movici-flow-common/utils/HashMap";
-import PromiseStore from "@movici-flow-common/utils/PromiseStore";
+import HashMap from "@movici-flow-lib/utils/HashMap";
+import PromiseStore from "@movici-flow-lib/utils/PromiseStore";
 
 type ScenarioDatasetUUID = {
   scenarioUUID?: UUID | null;

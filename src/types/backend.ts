@@ -16,7 +16,7 @@ import type {
   GeocodeSearchResult,
   GeocodeSuggestion,
   ViewPayload,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 
 export interface ViewService {
   create(scenarioUUID: UUID, view: ViewPayload): Promise<ViewCrudResponse | null>;

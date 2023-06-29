@@ -1,4 +1,4 @@
-import type { ViewState } from "@movici-flow-common/types";
+import type { ViewState } from "@movici-flow-lib/types";
 
 export default {
   viewState(): ViewState {

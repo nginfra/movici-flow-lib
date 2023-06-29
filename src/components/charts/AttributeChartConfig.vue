@@ -123,17 +123,17 @@
 </template>
 
 <script setup lang="ts">
-import ColorInput from "@movici-flow-common/components/ColorInput.vue";
-import { useButtons } from "@movici-flow-common/composables/useButtons";
-import { useDraggable } from "@movici-flow-common/composables/useDraggable";
-import { MoviciError } from "@movici-flow-common/errors";
-import type { RGBAColor } from "@movici-flow-common/types";
-import { excludeKeys } from "@movici-flow-common/utils";
-import { snakeToSpaces, upperFirst } from "@movici-flow-common/utils/filters";
+import ColorInput from "@movici-flow-lib/components/ColorInput.vue";
+import { useButtons } from "@movici-flow-lib/composables/useButtons";
+import { useDraggable } from "@movici-flow-lib/composables/useDraggable";
+import { MoviciError } from "@movici-flow-lib/errors";
+import type { RGBAColor } from "@movici-flow-lib/types";
+import { excludeKeys } from "@movici-flow-lib/utils";
+import { snakeToSpaces, upperFirst } from "@movici-flow-lib/utils/filters";
 import {
   ChartVisualizerInfo,
   ChartVisualizerItem,
-} from "@movici-flow-common/visualizers/VisualizerInfo";
+} from "@movici-flow-lib/visualizers/VisualizerInfo";
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
 import { computed, ref, watch, type Ref } from "vue";

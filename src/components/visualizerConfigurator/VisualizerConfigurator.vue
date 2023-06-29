@@ -135,9 +135,9 @@
 </template>
 
 <script setup lang="ts">
-import { useDialog } from "@movici-flow-common/baseComposables/useDialog";
-import { useReactiveSummary } from "@movici-flow-common/composables/useReactiveSummary";
-import { useValidator } from "@movici-flow-common/composables/useValidator";
+import { useDialog } from "@movici-flow-lib/baseComposables/useDialog";
+import { useReactiveSummary } from "@movici-flow-lib/composables/useReactiveSummary";
+import { useValidator } from "@movici-flow-lib/composables/useValidator";
 import type {
   Dataset,
   DatasetSummary,
@@ -146,13 +146,13 @@ import type {
   Scenario,
   ScenarioDataset,
   SizeClause,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 
-import { FlowVisualizerType } from "@movici-flow-common/types";
-import { attributeString, excludeKeys } from "@movici-flow-common/utils";
-import { FormValidator } from "@movici-flow-common/utils/FormValidator";
-import { snakeToFriendly } from "@movici-flow-common/utils/filters";
-import { ComposableVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
+import { FlowVisualizerType } from "@movici-flow-lib/types";
+import { attributeString, excludeKeys } from "@movici-flow-lib/utils";
+import { FormValidator } from "@movici-flow-lib/utils/FormValidator";
+import { snakeToFriendly } from "@movici-flow-lib/utils/filters";
+import { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
 import { computed, provide, ref, toRaw, watch, type Component, type Ref } from "vue";

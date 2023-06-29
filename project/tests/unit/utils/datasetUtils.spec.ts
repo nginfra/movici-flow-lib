@@ -1,4 +1,4 @@
-import { specialValues } from "@movici-flow-common/utils/datasetUtils";
+import { specialValues } from "@movici-flow-lib/utils/datasetUtils";
 import { describe, it, expect } from "vitest";
 
 describe("specialValues", () => {

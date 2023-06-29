@@ -1,4 +1,4 @@
-import type { Mapper } from "@movici-flow-common/types";
+import type { Mapper } from "@movici-flow-lib/types";
 
 interface NumberMapConfig<T> {
   mapping: [number, T][];

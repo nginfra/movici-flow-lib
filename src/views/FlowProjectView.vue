@@ -54,13 +54,13 @@
 </template>
 
 <script setup lang="ts">
-import MapControlBaseMap from "@movici-flow-common/components/mapControls/MapControlBaseMap.vue";
-import MapControlNavigation from "@movici-flow-common/components/mapControls/MapControlNavigation.vue";
-import MapControlSearchBar from "@movici-flow-common/components/mapControls/MapControlSearchBar.vue";
-import MapVis from "@movici-flow-common/components/MapVis.vue";
-import { useMoviciSettings } from "@movici-flow-common/baseComposables/useMoviciSettings";
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import { dateString } from "@movici-flow-common/utils/filters";
+import MapControlBaseMap from "@movici-flow-lib/components/mapControls/MapControlBaseMap.vue";
+import MapControlNavigation from "@movici-flow-lib/components/mapControls/MapControlNavigation.vue";
+import MapControlSearchBar from "@movici-flow-lib/components/mapControls/MapControlSearchBar.vue";
+import MapVis from "@movici-flow-lib/components/MapVis.vue";
+import { useMoviciSettings } from "@movici-flow-lib/baseComposables/useMoviciSettings";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import { dateString } from "@movici-flow-lib/utils/filters";
 import { computed, ref } from "vue";
 import FlowStep from "../components/FlowStep.vue";
 import ProjectInfoBox from "../components/ProjectInfoBox.vue";
