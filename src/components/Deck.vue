@@ -24,11 +24,11 @@
 import { Deck as DeckGL, Layer } from "@deck.gl/core";
 import type { ControllerOptions } from "@deck.gl/core/controllers/controller";
 import type { DeckProps, PickInfo } from "@deck.gl/core/lib/deck";
-import type { BoundingBox } from "@movici-flow-common/crs";
+import type { BoundingBox } from "@movici-flow-lib/crs";
 import { viewport } from "@placemarkio/geo-viewport";
 
-import { useMoviciSettings } from "@movici-flow-common/baseComposables/useMoviciSettings";
-import { useSnackbar } from "@movici-flow-common/baseComposables/useSnackbar";
+import { useMoviciSettings } from "@movici-flow-lib/baseComposables/useMoviciSettings";
+import { useSnackbar } from "@movici-flow-lib/baseComposables/useSnackbar";
 import type {
   CursorCallback,
   DeckEntityObject,
@@ -37,7 +37,7 @@ import type {
   DeckEventPayload,
   DeckMouseEvent,
   ViewState,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";

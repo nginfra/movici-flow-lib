@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { useButtons as useButtons_ } from "@movici-flow-common/composables/useButtons";
+import { useButtons as useButtons_ } from "@movici-flow-lib/composables/useButtons";
 import { nextTick, reactive, ref } from "vue";
 
 function useButtons(disabled?: Parameters<typeof useButtons_>[0]) {

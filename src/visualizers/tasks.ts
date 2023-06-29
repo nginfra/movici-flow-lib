@@ -1,5 +1,5 @@
-import { hasOwnProperty } from "@movici-flow-common/utils";
-import { type IQueue, Queue } from "@movici-flow-common/utils/queue";
+import { hasOwnProperty } from "@movici-flow-lib/utils";
+import { type IQueue, Queue } from "@movici-flow-lib/utils/queue";
 
 export interface Task<T> {
   getTask(): Promise<T>;

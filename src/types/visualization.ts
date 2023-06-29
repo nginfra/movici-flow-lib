@@ -18,7 +18,7 @@ import type {
 } from "@nebula.gl/edit-modes";
 import type { PickInfo } from "deck.gl";
 import type { FetchRequestOptions } from "./backend";
-import type { ITopologyGetter } from "@movici-flow-common/types";
+import type { ITopologyGetter } from "@movici-flow-lib/types";
 
 import type { DeckMouseEvent } from "./deck";
 

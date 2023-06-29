@@ -11,9 +11,9 @@
 </template>
 
 <script setup lang="ts">
-import ColorInput from "@movici-flow-common/components/ColorInput.vue";
-import type { ColorClause, RGBAColor } from "@movici-flow-common/types";
-import { MoviciColors, hexToColorTriple } from "@movici-flow-common/visualizers/maps/colorMaps";
+import ColorInput from "@movici-flow-lib/components/ColorInput.vue";
+import type { ColorClause, RGBAColor } from "@movici-flow-lib/types";
+import { MoviciColors, hexToColorTriple } from "@movici-flow-lib/visualizers/maps/colorMaps";
 import { computed, onMounted } from "vue";
 
 const props = defineProps<{

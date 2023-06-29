@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import type { AttributeSummary, PopupItem } from "@movici-flow-common/types";
-import { sortByKeys } from "@movici-flow-common/utils";
+import type { AttributeSummary, PopupItem } from "@movici-flow-lib/types";
+import { sortByKeys } from "@movici-flow-lib/utils";
 import { computed, inject } from "vue";
 import { attributesInjection } from "./injectionKeys";
 

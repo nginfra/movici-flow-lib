@@ -1,6 +1,6 @@
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import { useSummaryStore } from "@movici-flow-common/stores/summary";
-import type { DatasetSummary, ShortScenario } from "@movici-flow-common/types";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import { useSummaryStore } from "@movici-flow-lib/stores/summary";
+import type { DatasetSummary, ShortScenario } from "@movici-flow-lib/types";
 import { createPinia } from "pinia";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { markRaw } from "vue";

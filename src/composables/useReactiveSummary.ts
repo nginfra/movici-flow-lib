@@ -1,11 +1,11 @@
-import { useSummaryStore } from "@movici-flow-common/stores/summary";
+import { useSummaryStore } from "@movici-flow-lib/stores/summary";
 import type {
   DatasetSummary,
   Dataset,
   ScenarioDataset,
   UUID,
   ShortDataset,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 import { computed, ref, watch, type Ref } from "vue";
 
 export function useReactiveSummary() {

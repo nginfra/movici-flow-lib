@@ -67,9 +67,9 @@
 </template>
 
 <script setup lang="ts">
-import { useClauseConfigurator } from "@movici-flow-common/composables/useClauseConfigurator";
-import type { IconClause } from "@movici-flow-common/types";
-import { MAPPED_ICONS } from "@movici-flow-common/visualizers/visualizerModules/iconCommon";
+import { useClauseConfigurator } from "@movici-flow-lib/composables/useClauseConfigurator";
+import type { IconClause } from "@movici-flow-lib/types";
+import { MAPPED_ICONS } from "@movici-flow-lib/visualizers/visualizerModules/iconCommon";
 import { computed, inject, onUnmounted, provide, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import AttributeSelector from "../AttributeSelector.vue";
@@ -79,7 +79,7 @@ import IconStaticConfigurator from "./IconStaticConfigurator.vue";
 import LegendLabelsConfigurator from "./LegendLabelsConfigurator.vue";
 import { MappingStrategy } from "./ValueMappingHelper";
 import { attributesInjection, validatorInjection } from "./injectionKeys";
-import type { IconMapping } from "@movici-flow-common/visualizers/layers/ShapeIconLayer";
+import type { IconMapping } from "@movici-flow-lib/visualizers/layers/ShapeIconLayer";
 
 class IconMappingStrategy extends MappingStrategy<string> {
   mapping: IconMapping;

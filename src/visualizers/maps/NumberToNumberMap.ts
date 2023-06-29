@@ -1,4 +1,4 @@
-import type { Mapper } from "@movici-flow-common/types";
+import type { Mapper } from "@movici-flow-lib/types";
 
 export default class NumberToNumberMap implements Mapper<number | null, number> {
   special: number;

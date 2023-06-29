@@ -1,4 +1,4 @@
-import type { Mapper, Nullable } from "@movici-flow-common/types";
+import type { Mapper, Nullable } from "@movici-flow-lib/types";
 
 type SizeMapConfig = {
   sizes: [number, number][];

@@ -1,6 +1,6 @@
-import type { Backend } from "@movici-flow-common/types";
-import { parseattributeString } from "@movici-flow-common/utils";
-import { DatasetDownloader } from "@movici-flow-common/utils/DatasetDownloader";
+import type { Backend } from "@movici-flow-lib/types";
+import { parseattributeString } from "@movici-flow-lib/utils";
+import { DatasetDownloader } from "@movici-flow-lib/utils/DatasetDownloader";
 import type { ChartOptions } from "chart.js";
 import merge from "lodash/merge";
 import { colorTripleToHex, MoviciColors } from "../maps/colorMaps";

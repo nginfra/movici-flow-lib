@@ -2,7 +2,7 @@ import type {
   GeneralSection,
   RawSpecialValues,
   DatasetSpecialValues,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 
 export function specialValues(generalSection: GeneralSection): DatasetSpecialValues {
   if (generalSection.special !== undefined) {

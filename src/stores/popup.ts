@@ -1,4 +1,4 @@
-import type { PopupAccent, PopupContent, PopupInfo } from "@movici-flow-common/types";
+import type { PopupAccent, PopupContent, PopupInfo } from "@movici-flow-lib/types";
 import { defineStore } from "pinia";
 import { computed, ref, type Ref } from "vue";
 

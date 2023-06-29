@@ -1,4 +1,4 @@
-import StatusTracker from "@movici-flow-common/utils/StatusTracker";
+import StatusTracker from "@movici-flow-lib/utils/StatusTracker";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
 describe("StatusTracker", () => {

@@ -1,4 +1,4 @@
-import { entityGroupToCSV } from "@movici-flow-common/utils/csvUtils";
+import { entityGroupToCSV } from "@movici-flow-lib/utils/csvUtils";
 import { describe, it, expect } from "vitest";
 
 describe("convertToCSV", () => {

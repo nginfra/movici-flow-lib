@@ -1,4 +1,4 @@
-import { useFlowStore } from "@movici-flow-common/stores/flow";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import { createPinia } from "pinia";
 import { beforeEach, describe, expect, it, type Mock } from "vitest";
 import { markRaw } from "vue";
@@ -10,8 +10,8 @@ import type {
   ShortDataset,
   ShortScenario,
   View,
-} from "@movici-flow-common/types";
-import { FlowRedirect } from "@movici-flow-common/errors";
+} from "@movici-flow-lib/types";
+import { FlowRedirect } from "@movici-flow-lib/errors";
 describe("useFlowStore.initialize", () => {
   let store: ReturnType<typeof useFlowStore>;
   beforeEach(() => {

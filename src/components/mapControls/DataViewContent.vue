@@ -31,8 +31,8 @@
 </template>
 
 <script setup lang="ts">
-import type { AttributeType, PopupContent } from "@movici-flow-common/types";
-import { formatValueByDataType, type Formatter } from "@movici-flow-common/utils/format";
+import type { AttributeType, PopupContent } from "@movici-flow-lib/types";
+import { formatValueByDataType, type Formatter } from "@movici-flow-lib/utils/format";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();

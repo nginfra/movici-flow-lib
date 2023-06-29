@@ -1,4 +1,4 @@
-import type { BackendCapability } from "@movici-flow-common/types";
+import type { BackendCapability } from "@movici-flow-lib/types";
 import { vi } from "vitest";
 export function useFakeBackend(capabilities?: BackendCapability[]) {
   return {

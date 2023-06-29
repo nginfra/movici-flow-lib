@@ -3,10 +3,10 @@ import {
   type ByValueColorClause,
   type StaticColorClause,
   type LayerConstructor,
-} from "@movici-flow-common/types";
-import { ComposableVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
-import { createTapefileFromStateAndUpdates } from "@movici-flow-common/visualizers/tapefile";
-import { ColorModule } from "@movici-flow-common/visualizers/visualizerModules/";
+} from "@movici-flow-lib/types";
+import { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
+import { createTapefileFromStateAndUpdates } from "@movici-flow-lib/visualizers/tapefile";
+import { ColorModule } from "@movici-flow-lib/visualizers/visualizerModules/";
 import { describe, expect, it, vi } from "vitest";
 
 const ScatterplotLayer = {

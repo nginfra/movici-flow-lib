@@ -19,7 +19,7 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: "@movici-flow-common",
+        find: "@movici-flow-lib",
         replacement: fileURLToPath(new URL("../src", import.meta.url)),
       },
       {

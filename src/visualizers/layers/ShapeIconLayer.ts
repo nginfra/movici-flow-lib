@@ -1,8 +1,8 @@
 import { CompositeLayer } from "@deck.gl/core";
 import { IconLayer } from "@deck.gl/layers";
 import type { CompositeLayerProps } from "@deck.gl/core/lib/composite-layer";
-import type { PointCoordinate, RGBAColor, TopologyLayerData } from "@movici-flow-common/types";
-import { getContrastingColor } from "@movici-flow-common/utils/colorUtils";
+import type { PointCoordinate, RGBAColor, TopologyLayerData } from "@movici-flow-lib/types";
+import { getContrastingColor } from "@movici-flow-lib/utils/colorUtils";
 import type { IconPackName } from "../visualizerModules/iconCommon";
 
 const FALLBACK_ICON = "question",

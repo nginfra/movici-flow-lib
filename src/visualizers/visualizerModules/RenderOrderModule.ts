@@ -4,8 +4,8 @@ import type {
   IMapVisualizer,
   LayerParams,
   TopologyLayerData,
-} from "@movici-flow-common/types";
-import { RenderOrderType } from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
+import { RenderOrderType } from "@movici-flow-lib/types";
 import isEqual from "lodash/isEqual";
 import orderedRendering from "../layers/orderedRendering";
 import type { SinglePropertyTapefile } from "../tapefile";

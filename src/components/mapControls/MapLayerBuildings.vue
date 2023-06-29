@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useMapLayer } from "@movici-flow-common/composables/useMapLayer";
+import { useMapLayer } from "@movici-flow-lib/composables/useMapLayer";
 import type mapboxgl from "mapbox-gl";
 import { onBeforeUnmount, onMounted, toRef } from "vue";
 

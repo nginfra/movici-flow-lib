@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { transform, transformArray, transformGeoJsonToCRS } from "@movici-flow-common/crs";
-import { ValidationError } from "@movici-flow-common/errors";
+import { transform, transformArray, transformGeoJsonToCRS } from "@movici-flow-lib/crs";
+import { ValidationError } from "@movici-flow-lib/errors";
 import { describe, expect, it } from "vitest";
 
 describe("crs.ts", () => {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Layer } from "@deck.gl/core";
-import type { DeckEvent, DeckEventCallback } from "@movici-flow-common/types";
-import type { ComposableVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
+import type { DeckEvent, DeckEventCallback } from "@movici-flow-lib/types";
+import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import { watch } from "vue";
 
 const props = withDefaults(

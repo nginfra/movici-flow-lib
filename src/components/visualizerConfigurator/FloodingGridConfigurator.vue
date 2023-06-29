@@ -34,8 +34,8 @@
 </template>
 
 <script setup lang="ts">
-import { useValidator } from "@movici-flow-common/composables/useValidator";
-import type { ColorClause, FloodingGridClause, ScenarioDataset } from "@movici-flow-common/types";
+import { useValidator } from "@movici-flow-lib/composables/useValidator";
+import type { ColorClause, FloodingGridClause, ScenarioDataset } from "@movici-flow-lib/types";
 import { computed, inject, onUnmounted, provide, ref } from "vue";
 import FloodingColorConfigurator from "./FloodingColorConfigurator.vue";
 import { datasetsInjection, validatorInjection } from "./injectionKeys";

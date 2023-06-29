@@ -111,14 +111,14 @@
 </template>
 
 <script setup lang="ts">
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import { sortByKeys } from "@movici-flow-common/utils";
-import { dateString } from "@movici-flow-common/utils/filters";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import { sortByKeys } from "@movici-flow-lib/utils";
+import { dateString } from "@movici-flow-lib/utils/filters";
 import { computed, ref } from "vue";
 import FlowContainer from "../components/FlowStep.vue";
 import type { ShortDataset } from "../types";
-import ProjectInfoBox from "@movici-flow-common/components/ProjectInfoBox.vue";
-import DatasetViewer from "@movici-flow-common/components/DatasetViewer.vue";
+import ProjectInfoBox from "@movici-flow-lib/components/ProjectInfoBox.vue";
+import DatasetViewer from "@movici-flow-lib/components/DatasetViewer.vue";
 
 const store = useFlowStore();
 

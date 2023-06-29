@@ -41,8 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { upperFirst } from "@movici-flow-common/utils/filters";
-import type { IconMapping } from "@movici-flow-common/visualizers/layers/ShapeIconLayer";
+import { upperFirst } from "@movici-flow-lib/utils/filters";
+import type { IconMapping } from "@movici-flow-lib/visualizers/layers/ShapeIconLayer";
 import { computed } from "vue";
 const props = withDefaults(
   defineProps<{

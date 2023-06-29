@@ -1,5 +1,5 @@
-import type { AttributeSummary, ByValueClause } from "@movici-flow-common/types";
-import type { IFormValidator } from "@movici-flow-common/utils/FormValidator";
+import type { AttributeSummary, ByValueClause } from "@movici-flow-lib/types";
+import type { IFormValidator } from "@movici-flow-lib/utils/FormValidator";
 import isEqual from "lodash/isEqual";
 import { reactive, ref, watch, type Ref } from "vue";
 import { useAttributes } from "./useAttributes";

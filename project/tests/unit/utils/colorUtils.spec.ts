@@ -1,5 +1,5 @@
-import { interpolateColorMapping } from "@movici-flow-common/utils/colorUtils";
-import type { RGBAColor } from "@movici-flow-common/types";
+import { interpolateColorMapping } from "@movici-flow-lib/utils/colorUtils";
+import type { RGBAColor } from "@movici-flow-lib/types";
 import { describe, it, expect } from "vitest";
 describe("interpolateColorMapping", () => {
   it("trivially return on 0 steps", () => {

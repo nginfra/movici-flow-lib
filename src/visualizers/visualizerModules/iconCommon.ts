@@ -1,5 +1,5 @@
-import SOLID_ICONS from "@movici-flow-common/assets/icons/icons.json";
-import SHAPE_ICONS from "@movici-flow-common/assets/icons/shapes.json";
+import SOLID_ICONS from "@movici-flow-lib/assets/icons/icons.json";
+import SHAPE_ICONS from "@movici-flow-lib/assets/icons/shapes.json";
 import ICON_OVERRIDES_ from "./icon_overrides.json";
 import type { IconMapping, IconMappingItem, IconMappingOverrides } from "../layers/ShapeIconLayer";
 

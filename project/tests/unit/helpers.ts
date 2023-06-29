@@ -1,4 +1,4 @@
-import defaultStore from "@movici-flow-common/stores-old";
+import defaultStore from "@movici-flow-lib/stores-old";
 import { createLocalVue, mount, shallowMount } from "@vue/test-utils";
 import merge from "lodash/merge";
 import { VueConstructor } from "vue";

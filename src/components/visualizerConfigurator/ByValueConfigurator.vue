@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts" generic="T">
-import type { AttributeSummary } from "@movici-flow-common/types";
+import type { AttributeSummary } from "@movici-flow-lib/types";
 import { computed, inject, onMounted, shallowRef, watch } from "vue";
 import ByValueList from "./ByValueList.vue";
 import { MappingStrategy, createValueMappingHelper, type MappingMode } from "./ValueMappingHelper";

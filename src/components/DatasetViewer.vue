@@ -44,13 +44,13 @@
 </template>
 
 <script setup lang="ts">
-import type { BoundingBox } from "@movici-flow-common/crs";
-import { useMoviciSettings } from "@movici-flow-common/baseComposables/useMoviciSettings";
-import { useReactiveSummary } from "@movici-flow-common/composables/useReactiveSummary";
-import { ensureProjection, transformBBox } from "@movici-flow-common/crs";
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import type { ShortDataset, ViewState } from "@movici-flow-common/types";
-import type { ComposableVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
+import type { BoundingBox } from "@movici-flow-lib/crs";
+import { useMoviciSettings } from "@movici-flow-lib/baseComposables/useMoviciSettings";
+import { useReactiveSummary } from "@movici-flow-lib/composables/useReactiveSummary";
+import { ensureProjection, transformBBox } from "@movici-flow-lib/crs";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import type { ShortDataset, ViewState } from "@movici-flow-lib/types";
+import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import { computed } from "@vue/reactivity";
 import { ref, watch, type Ref } from "vue";
 import EntitySelector from "./mapControls/EntitySelector.vue";

@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AdvColorMapping, RGBAColor } from "@movici-flow-common/types";
+import type { AdvColorMapping, RGBAColor } from "@movici-flow-lib/types";
 import { computed } from "vue";
 import ColorInput from "../ColorInput.vue";
 

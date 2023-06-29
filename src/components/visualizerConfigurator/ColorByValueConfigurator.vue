@@ -49,14 +49,14 @@
 </template>
 
 <script setup lang="ts">
-import ColorInput from "@movici-flow-common/components/ColorInput.vue";
+import ColorInput from "@movici-flow-lib/components/ColorInput.vue";
 import type {
   AttributeSummary,
   ByValueColorClause,
   ColorClause,
   ColorMapping,
-} from "@movici-flow-common/types";
-import { colorTripleToHex } from "@movici-flow-common/visualizers/maps/colorMaps";
+} from "@movici-flow-lib/types";
+import { colorTripleToHex } from "@movici-flow-lib/visualizers/maps/colorMaps";
 import { computed, ref, watch, type Ref } from "vue";
 import ByValueConfigurator from "./ByValueConfigurator.vue";
 import ColorPaletteSelector from "./ColorPaletteSelector.vue";

@@ -1,5 +1,5 @@
 import type { RGBAColor } from "../types";
-import { MoviciColors, hexToColorTriple } from "@movici-flow-common/visualizers/maps/colorMaps";
+import { MoviciColors, hexToColorTriple } from "@movici-flow-lib/visualizers/maps/colorMaps";
 
 export const DEFAULT_SPECIAL_COLOR_TRIPLE = hexToColorTriple(MoviciColors.VERY_DARK_GREY);
 export const DEFAULT_UNDEFINED_COLOR_TRIPLE = hexToColorTriple(MoviciColors.VERY_DARK_GREY);

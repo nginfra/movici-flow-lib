@@ -1,4 +1,4 @@
-import type { FlowLocation, FlowSection, FlowStep, RefLike } from "@movici-flow-common/types";
+import type { FlowLocation, FlowSection, FlowStep, RefLike } from "@movici-flow-lib/types";
 import { computed, unref } from "vue";
 
 export function useFlowSidebar({

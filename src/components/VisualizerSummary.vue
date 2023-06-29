@@ -66,9 +66,9 @@
 </template>
 
 <script setup lang="ts">
-import type { ComposableVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
-import { colorTripleToHex } from "@movici-flow-common/visualizers/maps/colorMaps";
-import { FlowVisualizerType, type RGBAColor } from "@movici-flow-common/types";
+import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
+import { colorTripleToHex } from "@movici-flow-lib/visualizers/maps/colorMaps";
+import { FlowVisualizerType, type RGBAColor } from "@movici-flow-lib/types";
 import { computed } from "vue";
 
 const props = withDefaults(

@@ -38,18 +38,18 @@
 </template>
 
 <script setup lang="ts">
-import type { AttributeSummary, AttributeType, DeckEntityObject } from "@movici-flow-common/types";
-import { IMPORTANT_ATTRIBUTES } from "@movici-flow-common/types";
-import { FormValidator } from "@movici-flow-common/utils/FormValidator";
+import type { AttributeSummary, AttributeType, DeckEntityObject } from "@movici-flow-lib/types";
+import { IMPORTANT_ATTRIBUTES } from "@movici-flow-lib/types";
+import { FormValidator } from "@movici-flow-lib/utils/FormValidator";
 import AttributeSelector from "../AttributeSelector.vue";
 
-import { useButtonArray } from "@movici-flow-common/composables/useButtons";
-import { useReactiveSummary } from "@movici-flow-common/composables/useReactiveSummary";
-import { useValidator } from "@movici-flow-common/composables/useValidator";
+import { useButtonArray } from "@movici-flow-lib/composables/useButtons";
+import { useReactiveSummary } from "@movici-flow-lib/composables/useReactiveSummary";
+import { useValidator } from "@movici-flow-lib/composables/useValidator";
 import {
   ChartVisualizerInfo,
   ChartVisualizerItem,
-} from "@movici-flow-common/visualizers/VisualizerInfo";
+} from "@movici-flow-lib/visualizers/VisualizerInfo";
 import { computed } from "@vue/reactivity";
 import { ref, watch } from "vue";
 

@@ -38,11 +38,11 @@
 </template>
 
 <script setup lang="ts">
-import { useValidator } from "@movici-flow-common/composables/useValidator";
-import type { EntityGroupSummary } from "@movici-flow-common/types";
-import { EntityGeometry, FlowVisualizerType } from "@movici-flow-common/types";
-import { upperFirst } from "@movici-flow-common/utils/filters";
-import { isGrid, isLines, isPoints, isPolygons } from "@movici-flow-common/visualizers/geometry";
+import { useValidator } from "@movici-flow-lib/composables/useValidator";
+import type { EntityGroupSummary } from "@movici-flow-lib/types";
+import { EntityGeometry, FlowVisualizerType } from "@movici-flow-lib/types";
+import { upperFirst } from "@movici-flow-lib/utils/filters";
+import { isGrid, isLines, isPoints, isPolygons } from "@movici-flow-lib/visualizers/geometry";
 import { computed, inject, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { geometryInjection, summaryInjection, validatorInjection } from "./injectionKeys";

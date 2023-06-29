@@ -1,4 +1,4 @@
-import { NumberSizeMap } from "@movici-flow-common/visualizers/maps/sizeMaps";
+import { NumberSizeMap } from "@movici-flow-lib/visualizers/maps/sizeMaps";
 import { describe, it, expect } from "vitest";
 
 const mapping = new NumberSizeMap({

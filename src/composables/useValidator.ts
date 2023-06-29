@@ -1,5 +1,5 @@
-import type { RefLike } from "@movici-flow-common/types";
-import type { ErrorDict, IFormValidator } from "@movici-flow-common/utils/FormValidator";
+import type { RefLike } from "@movici-flow-lib/types";
+import type { ErrorDict, IFormValidator } from "@movici-flow-lib/utils/FormValidator";
 import { computed, ref, unref, watch } from "vue";
 
 export function useValidator(validator: RefLike<IFormValidator>) {

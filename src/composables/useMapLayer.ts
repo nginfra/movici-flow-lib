@@ -1,4 +1,4 @@
-import type { RefLike } from "@movici-flow-common/types";
+import type { RefLike } from "@movici-flow-lib/types";
 import type mapboxgl from "mapbox-gl";
 import { ref, unref, type Ref } from "vue";
 

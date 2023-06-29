@@ -59,9 +59,9 @@
 </template>
 
 <script setup lang="ts">
-import type { ActionItem } from "@movici-flow-common/types";
-import StatusTracker from "@movici-flow-common/utils/StatusTracker";
-import { ComposableVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
+import type { ActionItem } from "@movici-flow-lib/types";
+import StatusTracker from "@movici-flow-lib/utils/StatusTracker";
+import { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import { computed, ref, watch } from "vue";
 import VisualizerSummary from "./VisualizerSummary.vue";
 

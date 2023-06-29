@@ -1,5 +1,5 @@
-import IdleWorker from "@movici-flow-common/utils/IdleWorker";
-import { heapPop, heapPush } from "@movici-flow-common/utils/queue";
+import IdleWorker from "@movici-flow-lib/utils/IdleWorker";
+import { heapPop, heapPush } from "@movici-flow-lib/utils/queue";
 import range from "lodash/range";
 import type {
   DataAttribute,

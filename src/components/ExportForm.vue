@@ -77,16 +77,16 @@
 </template>
 
 <script setup lang="ts">
-import { useReactiveSummary } from "@movici-flow-common/composables/useReactiveSummary";
-import { useValidator } from "@movici-flow-common/composables/useValidator";
+import { useReactiveSummary } from "@movici-flow-lib/composables/useReactiveSummary";
+import { useValidator } from "@movici-flow-lib/composables/useValidator";
 import type {
   ExportFormConfig,
   ScenarioDataset,
   ShortDataset,
   TimeOrientedSimulationInfo,
-} from "@movici-flow-common/types";
-import type { IFormValidator } from "@movici-flow-common/utils/FormValidator";
-import type { ComposableVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
+} from "@movici-flow-lib/types";
+import type { IFormValidator } from "@movici-flow-lib/utils/FormValidator";
+import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import { ref, watch, watchEffect } from "vue";
 import TimeSlider from "./TimeSlider.vue";
 

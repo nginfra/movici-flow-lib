@@ -1,5 +1,5 @@
-import { useFlowSidebar } from "@movici-flow-common/composables/useFlowSidebar";
-import type { FlowLocation, FlowSection, FlowStep, RefLike } from "@movici-flow-common/types";
+import { useFlowSidebar } from "@movici-flow-lib/composables/useFlowSidebar";
+import type { FlowLocation, FlowSection, FlowStep, RefLike } from "@movici-flow-lib/types";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ref, unref } from "vue";
 

@@ -1,4 +1,4 @@
-import { FlowRedirect } from "@movici-flow-common/errors";
+import { FlowRedirect } from "@movici-flow-lib/errors";
 import type {
   Backend,
   BackendCapability,
@@ -8,8 +8,8 @@ import type {
   ShortDataset,
   ShortScenario,
   User,
-} from "@movici-flow-common/types";
-import type { View } from "@movici-flow-common/types/flowVisualizers";
+} from "@movici-flow-lib/types";
+import type { View } from "@movici-flow-lib/types/flowVisualizers";
 import { defineStore } from "pinia";
 import { ref, type Ref } from "vue";
 

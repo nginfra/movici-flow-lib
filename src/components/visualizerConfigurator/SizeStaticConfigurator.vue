@@ -38,10 +38,10 @@
 </template>
 
 <script setup lang="ts">
-import { useValidator } from "@movici-flow-common/composables/useValidator";
-import type { SizeClause, StaticSizeClause } from "@movici-flow-common/types";
-import { FlowVisualizerType } from "@movici-flow-common/types";
-import { isPositive } from "@movici-flow-common/utils/FormValidator";
+import { useValidator } from "@movici-flow-lib/composables/useValidator";
+import type { SizeClause, StaticSizeClause } from "@movici-flow-lib/types";
+import { FlowVisualizerType } from "@movici-flow-lib/types";
+import { isPositive } from "@movici-flow-lib/utils/FormValidator";
 import { computed, inject, onUnmounted, reactive, watch } from "vue";
 import MinMaxPixels from "./MinMaxPixels.vue";
 import { geometryInjection, validatorInjection } from "./injectionKeys";

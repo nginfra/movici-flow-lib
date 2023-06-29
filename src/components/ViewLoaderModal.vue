@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import type { UUID, View } from "@movici-flow-common/types";
+import type { UUID, View } from "@movici-flow-lib/types";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 

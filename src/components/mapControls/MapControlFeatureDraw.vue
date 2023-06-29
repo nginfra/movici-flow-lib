@@ -53,8 +53,8 @@ import type {
   FeatureDrawOption,
   NebulaMode,
   RGBAColor,
-} from "@movici-flow-common/types";
-import { sortByKeys } from "@movici-flow-common/utils";
+} from "@movici-flow-lib/types";
+import { sortByKeys } from "@movici-flow-lib/utils";
 import {
   DrawLineStringMode,
   DrawPointMode,

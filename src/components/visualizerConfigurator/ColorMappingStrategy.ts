@@ -1,7 +1,7 @@
-import type { RGBAColor } from "@movici-flow-common/types";
+import type { RGBAColor } from "@movici-flow-lib/types";
 import { MappingStrategy } from "./ValueMappingHelper";
 import type ColorPalette from "./colorPalettes";
-import { MoviciColors, hexToColorTriple } from "@movici-flow-common/visualizers/maps/colorMaps";
+import { MoviciColors, hexToColorTriple } from "@movici-flow-lib/visualizers/maps/colorMaps";
 
 export default class ColorMappingStrategy extends MappingStrategy<RGBAColor> {
   palette: ColorPalette | null;

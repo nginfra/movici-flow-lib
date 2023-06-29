@@ -21,8 +21,8 @@
 </template>
 
 <script setup lang="ts">
-import type { RGBAColor } from "@movici-flow-common/types";
-import { colorTripleToHex, MoviciColors } from "@movici-flow-common/visualizers/maps/colorMaps";
+import type { RGBAColor } from "@movici-flow-lib/types";
+import { colorTripleToHex, MoviciColors } from "@movici-flow-lib/visualizers/maps/colorMaps";
 import FlowColorPicker from "./FlowColorPicker.vue";
 import { computed, ref } from "vue";
 

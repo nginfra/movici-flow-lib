@@ -8,13 +8,13 @@ import type {
   TopologyLayerData,
   IMapVisualizer,
   ITapefile,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 import isEqual from "lodash/isEqual";
 import NumberMapper from "../maps/NumberMapper";
 import {
   DEFAULT_POLYGON_FILL_OPACITY,
   interpolateColorMapping,
-} from "@movici-flow-common/utils/colorUtils";
+} from "@movici-flow-lib/utils/colorUtils";
 import {
   TapefileAccessor,
   VisualizerModule,

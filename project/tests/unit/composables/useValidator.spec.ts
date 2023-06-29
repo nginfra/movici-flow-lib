@@ -1,5 +1,5 @@
-import { useValidator } from "@movici-flow-common/composables/useValidator";
-import type { FormValidator } from "@movici-flow-common/utils/FormValidator";
+import { useValidator } from "@movici-flow-lib/composables/useValidator";
+import type { FormValidator } from "@movici-flow-lib/utils/FormValidator";
 import { describe, expect, it, vitest, type Mock } from "vitest";
 import { nextTick, ref } from "vue";
 

@@ -1,4 +1,4 @@
-import { sortByKeys } from "@movici-flow-common/utils";
+import { sortByKeys } from "@movici-flow-lib/utils";
 import { describe, it, expect } from "vitest";
 
 const item0 = { id: 0, name: "finn" },

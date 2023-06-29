@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AttributeType } from "@movici-flow-common/types";
+import type { AttributeType } from "@movici-flow-lib/types";
 
 defineProps<{
   modelValue?: AttributeType;

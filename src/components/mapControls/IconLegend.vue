@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IconShapeLegendItem } from "@movici-flow-common/types";
+import type { IconShapeLegendItem } from "@movici-flow-lib/types";
 import { computed } from "vue";
 
 const props = defineProps<{

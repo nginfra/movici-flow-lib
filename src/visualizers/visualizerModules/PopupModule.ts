@@ -9,7 +9,7 @@ import type {
   PopupContentItem,
   DeckMouseEvent,
   PickingHandler,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 import isEqual from "lodash/isEqual";
 import type { PickInfo } from "@deck.gl/core/lib/deck";
 import { VisualizerModule, type VisualizerModuleParams } from "../visualizerModules/common";

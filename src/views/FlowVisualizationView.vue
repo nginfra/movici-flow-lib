@@ -150,20 +150,20 @@
 
 <script setup lang="ts">
 import type { PickInfo } from "@deck.gl/core/lib/deck";
-import { useDialog } from "@movici-flow-common/baseComposables/useDialog";
-import { useSnackbar } from "@movici-flow-common/baseComposables/useSnackbar";
-import TimeSlider from "@movici-flow-common/components/TimeSlider.vue";
-import FlowChartPicker from "@movici-flow-common/components/charts/FlowChartPicker.vue";
-import FlowLegend from "@movici-flow-common/components/mapControls/FlowLegend.vue";
-import FlowExport from "@movici-flow-common/components/FlowExport.vue";
-import { useMapVis } from "@movici-flow-common/composables/useMapVis";
-import { useReactiveSummary } from "@movici-flow-common/composables/useReactiveSummary";
-import { useScenario } from "@movici-flow-common/composables/useScenario";
-import { useViews } from "@movici-flow-common/composables/useViews";
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import type { Visualizer } from "@movici-flow-common/visualizers";
-import type VisualizerManager from "@movici-flow-common/visualizers/VisualizerManager";
-import { MoviciColors, hexToColorTriple } from "@movici-flow-common/visualizers/maps/colorMaps";
+import { useDialog } from "@movici-flow-lib/baseComposables/useDialog";
+import { useSnackbar } from "@movici-flow-lib/baseComposables/useSnackbar";
+import TimeSlider from "@movici-flow-lib/components/TimeSlider.vue";
+import FlowChartPicker from "@movici-flow-lib/components/charts/FlowChartPicker.vue";
+import FlowLegend from "@movici-flow-lib/components/mapControls/FlowLegend.vue";
+import FlowExport from "@movici-flow-lib/components/FlowExport.vue";
+import { useMapVis } from "@movici-flow-lib/composables/useMapVis";
+import { useReactiveSummary } from "@movici-flow-lib/composables/useReactiveSummary";
+import { useScenario } from "@movici-flow-lib/composables/useScenario";
+import { useViews } from "@movici-flow-lib/composables/useViews";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import type { Visualizer } from "@movici-flow-lib/visualizers";
+import type VisualizerManager from "@movici-flow-lib/visualizers/VisualizerManager";
+import { MoviciColors, hexToColorTriple } from "@movici-flow-lib/visualizers/maps/colorMaps";
 import { useProgrammatic } from "@oruga-ui/oruga-next";
 import isError from "lodash/isError";
 import { computed, ref, watch } from "vue";

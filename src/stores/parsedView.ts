@@ -1,9 +1,9 @@
-import { useMoviciSettings } from "@movici-flow-common/baseComposables/useMoviciSettings";
-import type { ViewState } from "@movici-flow-common/types";
+import { useMoviciSettings } from "@movici-flow-lib/baseComposables/useMoviciSettings";
+import type { ViewState } from "@movici-flow-lib/types";
 import type {
   ChartVisualizerInfo,
   ComposableVisualizerInfo,
-} from "@movici-flow-common/visualizers/VisualizerInfo";
+} from "@movici-flow-lib/visualizers/VisualizerInfo";
 import { defineStore } from "pinia";
 import { ref, type Ref } from "vue";
 

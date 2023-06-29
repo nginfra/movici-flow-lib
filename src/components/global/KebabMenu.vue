@@ -29,8 +29,8 @@
 </template>
 
 <script setup lang="ts">
-import { useFixedPosition } from "@movici-flow-common/composables/useFixedPosition";
-import type { ActionItem } from "@movici-flow-common/types";
+import { useFixedPosition } from "@movici-flow-lib/composables/useFixedPosition";
+import type { ActionItem } from "@movici-flow-lib/types";
 
 defineProps<{
   modelValue: ActionItem[];

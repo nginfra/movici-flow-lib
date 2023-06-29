@@ -1,6 +1,6 @@
-import { ImportantAttribute } from "@movici-flow-common/types";
-import type { DatasetDownloader } from "@movici-flow-common/utils/DatasetDownloader";
-import { LineTopologyGetter, PointTopologyGetter } from "@movici-flow-common/visualizers/geometry";
+import { ImportantAttribute } from "@movici-flow-lib/types";
+import type { DatasetDownloader } from "@movici-flow-lib/utils/DatasetDownloader";
+import { LineTopologyGetter, PointTopologyGetter } from "@movici-flow-lib/visualizers/geometry";
 import { describe, expect, it, vi } from "vitest";
 
 function newFakeStore(datasetData: unknown): DatasetDownloader {

@@ -1,4 +1,4 @@
-import { expandColorMap } from "@movici-flow-common/visualizers/layers/GridLayer";
+import { expandColorMap } from "@movici-flow-lib/visualizers/layers/GridLayer";
 import { describe, it, expect } from "vitest";
 
 type colorMap = [number, [number, number, number]][];

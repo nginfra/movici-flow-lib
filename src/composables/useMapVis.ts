@@ -1,6 +1,6 @@
-import { useSummaryStore } from "@movici-flow-common/stores/summary";
-import type { ComposableVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
-import { validateForContentErrors } from "@movici-flow-common/visualizers/viewHelpers";
+import { useSummaryStore } from "@movici-flow-lib/stores/summary";
+import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
+import { validateForContentErrors } from "@movici-flow-lib/visualizers/viewHelpers";
 import isError from "lodash/isError";
 import { ref, watch, type Ref } from "vue";
 

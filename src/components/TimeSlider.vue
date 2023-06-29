@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import type { TimeOrientedSimulationInfo } from "@movici-flow-common/types";
+import type { TimeOrientedSimulationInfo } from "@movici-flow-lib/types";
 
 const props = withDefaults(
   defineProps<{

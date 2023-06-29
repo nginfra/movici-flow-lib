@@ -6,7 +6,7 @@ import type {
   LayerParams,
   TopologyLayerData,
   VisibilityClause,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 import isEqual from "lodash/isEqual";
 import NumberMapper from "../maps/NumberMapper";
 import {

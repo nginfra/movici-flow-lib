@@ -39,11 +39,11 @@
 </template>
 
 <script setup lang="ts">
-import { useScenario } from "@movici-flow-common/composables/useScenario";
-import { useValidator } from "@movici-flow-common/composables/useValidator";
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import { useParsedViewStore } from "@movici-flow-common/stores/parsedView";
-import { exportFromConfig } from "@movici-flow-common/utils/DataExporter";
+import { useScenario } from "@movici-flow-lib/composables/useScenario";
+import { useValidator } from "@movici-flow-lib/composables/useValidator";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import { useParsedViewStore } from "@movici-flow-lib/stores/parsedView";
+import { exportFromConfig } from "@movici-flow-lib/utils/DataExporter";
 import { computed, onMounted, ref } from "vue";
 import type { ExportFormConfig, ScenarioDataset, ShortDataset } from "../types";
 import { FormValidator } from "../utils/FormValidator";

@@ -44,10 +44,10 @@
 <script setup lang="ts">
 import Draggable from "vuedraggable";
 import AttributeChartConfig from "./AttributeChartConfig.vue";
-import { useDraggable } from "@movici-flow-common/composables/useDraggable";
-import { useVisualizerList } from "@movici-flow-common/composables/useVisualizerList";
-import type { ActionItem } from "@movici-flow-common/types";
-import type { ChartVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
+import { useDraggable } from "@movici-flow-lib/composables/useDraggable";
+import { useVisualizerList } from "@movici-flow-lib/composables/useVisualizerList";
+import type { ActionItem } from "@movici-flow-lib/types";
+import type { ChartVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import { computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
 

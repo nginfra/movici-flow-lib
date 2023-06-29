@@ -1,12 +1,12 @@
-import { useFlowStore } from "@movici-flow-common/stores/flow";
-import { useParsedViewStore } from "@movici-flow-common/stores/parsedView";
-import type { RefLike, Scenario, UUID, ViewPayload, ViewState } from "@movici-flow-common/types";
+import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import { useParsedViewStore } from "@movici-flow-lib/stores/parsedView";
+import type { RefLike, Scenario, UUID, ViewPayload, ViewState } from "@movici-flow-lib/types";
 import {
   ChartVisualizerInfo,
   ChartVisualizerItem,
   ComposableVisualizerInfo,
-} from "@movici-flow-common/visualizers/VisualizerInfo";
-import { simplifiedCamera } from "@movici-flow-common/visualizers/viewHelpers";
+} from "@movici-flow-lib/visualizers/VisualizerInfo";
+import { simplifiedCamera } from "@movici-flow-lib/visualizers/viewHelpers";
 import isEqual from "lodash/isEqual";
 import { computed, ref, unref, watch } from "vue";
 import { useMoviciSettings } from "../baseComposables/useMoviciSettings";

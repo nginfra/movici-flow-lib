@@ -7,7 +7,7 @@ import type {
   SizeClause,
   TopologyLayerData,
   IMapVisualizer,
-} from "@movici-flow-common/types";
+} from "@movici-flow-lib/types";
 import isEqual from "lodash/isEqual";
 import { NumberSizeMap } from "../maps/sizeMaps";
 import type { SinglePropertyTapefile } from "../tapefile";

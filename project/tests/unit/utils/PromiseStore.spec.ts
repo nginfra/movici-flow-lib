@@ -1,4 +1,4 @@
-import PromiseStore from "@movici-flow-common/utils/PromiseStore";
+import PromiseStore from "@movici-flow-lib/utils/PromiseStore";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 describe("PromiseStore", () => {

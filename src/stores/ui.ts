@@ -1,4 +1,4 @@
-import type { FlowLocation } from "@movici-flow-common/types";
+import type { FlowLocation } from "@movici-flow-lib/types";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 

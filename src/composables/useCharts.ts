@@ -1,17 +1,17 @@
-import type { Backend, TimeOrientedSimulationInfo } from "@movici-flow-common/types";
-import type { TapefileStoreCollection } from "@movici-flow-common/visualizers/TapefileStore";
-import type { ChartVisualizerInfo } from "@movici-flow-common/visualizers/VisualizerInfo";
-import VisualizerManager from "@movici-flow-common/visualizers/VisualizerManager";
+import type { Backend, TimeOrientedSimulationInfo } from "@movici-flow-lib/types";
+import type { TapefileStoreCollection } from "@movici-flow-lib/visualizers/TapefileStore";
+import type { ChartVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
+import VisualizerManager from "@movici-flow-lib/visualizers/VisualizerManager";
 import type {
   ChartConfig,
   DatasetConfig,
-} from "@movici-flow-common/visualizers/charts/ChartVisualizer";
-import ChartVisualizer from "@movici-flow-common/visualizers/charts/ChartVisualizer";
+} from "@movici-flow-lib/visualizers/charts/ChartVisualizer";
+import ChartVisualizer from "@movici-flow-lib/visualizers/charts/ChartVisualizer";
 import {
   applyChartData,
   buildStreamingChartData,
   type ChartDataPoint,
-} from "@movici-flow-common/visualizers/charts/builder";
+} from "@movici-flow-lib/visualizers/charts/builder";
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { markRaw, ref, shallowRef, watch, type Ref } from "vue";
 

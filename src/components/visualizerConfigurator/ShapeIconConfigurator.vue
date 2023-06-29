@@ -22,8 +22,8 @@
 </template>
 
 <script setup lang="ts">
-import { useValidator } from "@movici-flow-common/composables/useValidator";
-import type { IconClause } from "@movici-flow-common/types";
+import { useValidator } from "@movici-flow-lib/composables/useValidator";
+import type { IconClause } from "@movici-flow-lib/types";
 import { inject, provide } from "vue";
 import IconConfigurator from "./IconConfigurator.vue";
 import { validatorInjection } from "./injectionKeys";

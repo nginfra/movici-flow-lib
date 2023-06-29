@@ -2,8 +2,8 @@ import {
   applyChartData,
   buildStreamingChartData,
   ChartDataPoint,
-} from "@movici-flow-common/visualizers/charts/builder";
-import { StreamingTapefile } from "@movici-flow-common/visualizers/tapefile";
+} from "@movici-flow-lib/visualizers/charts/builder";
+import { StreamingTapefile } from "@movici-flow-lib/visualizers/tapefile";
 import { describe, it, expect, beforeEach } from "vitest";
 
 describe("buildStreamingChartData", () => {
