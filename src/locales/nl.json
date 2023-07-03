@@ -155,7 +155,8 @@
           "disabled": "Uitgeschakeld (betere prestaties)",
           "normal": "Normaal",
           "reversed": "Omgekeerd",
-          "advColours": "Geavanceerde kleuren"
+          "advColours": "Geavanceerde kleuren",
+          "noSettingsAvailable": "Er zijn geen geavanceerde instellingen beschikbaar"
         }
       },
       "iconConfig": {

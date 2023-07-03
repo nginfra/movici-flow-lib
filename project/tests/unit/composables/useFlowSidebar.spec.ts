@@ -111,5 +111,4 @@ describe("useFlowSidebar", () => {
     };
     expect(findSection(sections, "visualization")?.enabled).toBe(true);
   });
-
 });

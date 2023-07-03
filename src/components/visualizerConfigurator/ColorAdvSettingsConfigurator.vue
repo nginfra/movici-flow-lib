@@ -12,7 +12,7 @@
         </label>
       </span>
     </template>
-    <div class="columns mt-4 is-multiline">
+    <div v-if="hasAdvancedColors" class="columns mt-4 is-multiline">
       <div class="column py-0 is-two-thirds-desktop">
         <AdvColorList :modelValue="advColors" @setColor="updateColor" />
       </div>
@@ -20,13 +20,13 @@
         <slot name="legend-labels" />
       </div>
     </div>
-    <div class="columns is-multiline">
+    <div v-if="hasRenderOrder" class="columns is-multiline">
       <div class="column pb-1 is-half">
-        <RenderOrder v-if="hasRenderOrder" v-model="localValue.renderOrder" />
+        <RenderOrder v-model="localValue.renderOrder" />
       </div>
     </div>
-    <div class="columns mb-2 is-multiline">
-      <div class="column py-1 is-2" v-if="hasFillOpacity">
+    <div v-if="hasFillOpacity" class="columns mb-2 is-multiline">
+      <div class="column py-1 is-2">
         <o-field :label="$t('flow.visualization.colorConfig.advanced.fillOpacity')">
           <span class="is-flex-grow-1 mr-2">
             <o-input
@@ -41,6 +41,9 @@
         </o-field>
       </div>
     </div>
+    <p v-if="!(hasAdvancedColors || hasRenderOrder || hasFillOpacity)" class="is-size-6-half">
+      {{ $t("flow.visualization.colorConfig.advanced.noSettingsAvailable") }}
+    </p>
   </o-collapse>
 </template>
 
@@ -57,6 +60,7 @@ import { computed, inject, reactive, ref, watch } from "vue";
 import AdvColorList from "./AdvColorList.vue";
 import RenderOrder from "./RenderOrder.vue";
 import { geometryInjection } from "./injectionKeys";
+import isEmpty from "lodash/isEmpty";
 
 const defaultSettings = {
   specialColor: DEFAULT_SPECIAL_COLOR_TRIPLE,
@@ -67,16 +71,11 @@ const defaultSettings = {
 
 const geometry = inject(geometryInjection);
 
-const props = withDefaults(
-  defineProps<{
-    modelValue?: AdvancedColorSettings;
-    fillType?: "buckets" | "gradient";
-    clauseType?: "static" | "byValue";
-  }>(),
-  {
-    fillType: "buckets",
-  }
-);
+const props = defineProps<{
+  modelValue?: AdvancedColorSettings;
+  fillType?: "buckets" | "gradient";
+  clauseType?: "static" | "byValue";
+}>();
 
 const emit = defineEmits<{
   (e: "update:modelValue", val: AdvancedColorSettings): void;
@@ -87,9 +86,12 @@ function hasDefaultSettings() {
 }
 
 const isOpen = ref(!(!props.modelValue || hasDefaultSettings()));
-const localValue = reactive(defaultSettings);
+const localValue = reactive({ ...defaultSettings });
 
-const hasRenderOrder = computed(() => props.fillType === "buckets");
+const hasAdvancedColors = computed(() => props.clauseType === "byValue");
+const hasRenderOrder = computed(
+  () => props.clauseType === "byValue" && props.fillType === "buckets"
+);
 const hasFillOpacity = computed(() => geometry?.value === "polygons");
 const advColors = computed<AdvColorMapping>(() => [
   [-9999, localValue.specialColor],
@@ -114,7 +116,7 @@ function finalizeValue() {
     "renderOrder",
     "fillOpacity",
   ];
-  const payload: AdvancedColorSettings = { ...localValue };
+  const payload: AdvancedColorSettings = { ...props.modelValue, ...localValue };
   for (const key of keys) {
     if (isEqual(defaultSettings[key], localValue[key])) {
       delete payload[key];
@@ -126,7 +128,7 @@ function finalizeValue() {
   if (!hasFillOpacity.value) {
     delete payload.fillOpacity;
   }
-  return { ...props.modelValue, ...payload };
+  return payload;
 }
 watch(
   localValue,
@@ -139,6 +141,7 @@ watch(
 watch(
   () => props.modelValue,
   (value) => {
+    if (isEmpty(value)) return;
     Object.assign(localValue, value);
   },
   { immediate: true }
