@@ -6,6 +6,30 @@ on:
     branches:
     - main
 jobs:
+  check_version_upgrade:
+    runs-on: ubuntu-latest
+    stage: verify
+    image: alpine/git
+    only:
+      refs:
+      - merge_requests
+      changes:
+      - public/**/*
+      - src/**/*
+      - icon_generation/**/*
+    except:
+      refs:
+      - /^dependabot\/.*$/
+    variables:
+      VERSION_FILES: "VERSION"
+    script:
+    - git fetch origin master
+    - |-
+      if [[ -z $(git diff origin/master --name-only ${VERSION_FILES}) ]]; then
+        echo "All merge requests require a version upgrade. Please update your version"
+        exit 1
+      fi
+
   testing:
     runs-on: ubuntu-latest
     steps:
