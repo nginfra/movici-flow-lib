@@ -1,0 +1,21 @@
+name: Pull Requests
+
+on:
+  pull_request:
+    paths:
+    - "public/**/*"
+    - "src/**/*"
+    - "icon_generation/**/*"
+
+jobs:
+  check_version_upgrade:
+    runs-on: ubuntu-latest
+    env:
+      VERSION_FILES: "VERSION"
+    steps:
+    - run: |
+        git fetch origin master
+        if [[ -z $(git diff origin/master --name-only ${VERSION_FILES}) ]]; then
+          echo "All merge requests require a version upgrade. Please update your version"
+          exit 1
+        fi
