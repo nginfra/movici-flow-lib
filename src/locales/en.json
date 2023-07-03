@@ -146,7 +146,6 @@
         "palette": "Colour palette",
         "type": "Colour type",
         "invertColors": "Invert color order",
-
         "advanced": {
           "title": "Advanced settings",
           "fillOpacity": "Fill Opacity",
@@ -155,7 +154,8 @@
           "disabled": "Disabled (better performance)",
           "normal": "Normal",
           "reversed": "Reversed",
-          "advColours": "Advanced Colours"
+          "advColours": "Advanced Colours",
+          "noSettingsAvailable": "There are currently no advanced settings to configure"
         }
       },
       "iconConfig": {
