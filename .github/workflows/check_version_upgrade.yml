@@ -1,4 +1,4 @@
-name: Pull Requests
+name: Check version upgrade
 
 on:
   pull_request:
@@ -13,9 +13,10 @@ jobs:
     env:
       VERSION_FILES: "VERSION"
     steps:
+    - uses: actions/checkout@v3
     - run: |
-        git fetch origin master
-        if [[ -z $(git diff origin/master --name-only ${VERSION_FILES}) ]]; then
+        git fetch origin main --depth 1
+        if [[ -z $(git diff origin/main --name-only ${VERSION_FILES}) ]]; then
           echo "All merge requests require a version upgrade. Please update your version"
           exit 1
         fi
