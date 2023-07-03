@@ -1,0 +1,24 @@
+name: Check version upgrade
+
+on:
+  pull_request:
+    paths:
+    - "public/**/*"
+    - "src/**/*"
+    - "icon_generation/**/*"
+
+jobs:
+  check_version_upgrade:
+    runs-on: ubuntu-latest
+    env:
+      VERSION_FILES: "VERSION src/version.ts"
+    steps:
+    - uses: actions/checkout@v3
+    - run: |
+        git fetch origin main --depth 1
+        if [[ -z $(git diff origin/main --name-only ${VERSION_FILES}) ]]; then
+          echo "All merge requests require a version upgrade. Please update your version"
+          exit 1
+        else
+          echo "A version change was detected, success!"
+        fi
