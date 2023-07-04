@@ -15,7 +15,7 @@
       <slot name="control-bottom" v-bind="slotProps" />
     </div>
     <template v-if="loaded">
-      <slot name="map" :map="map" :view-state="modelValue" />
+      <slot name="map" :map="map" :view-state="camera" />
     </template>
   </div>
 </template>
@@ -38,11 +38,10 @@ import type {
   DeckMouseEvent,
   ViewState,
 } from "@movici-flow-lib/types";
+import isEqual from "lodash/isEqual";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import cloneDeep from "lodash/cloneDeep";
-import isEqual from "lodash/isEqual";
 const DEFAULT_VIEWSTATE = useMoviciSettings().settings.defaultViewState;
 
 function parseViewState(camera?: DeckCamera, map?: mapboxgl.Map): ViewState {
@@ -88,7 +87,7 @@ function getCanvasDimensions(map: mapboxgl.Map): [number, number] {
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: DeckCamera;
+    camera?: DeckCamera;
     basemap?: string;
     accessToken?: string;
     controller?: ControllerOptions;
@@ -102,7 +101,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: "update:modelValue", val: DeckCamera): void;
+  (e: "update:camera", val: DeckCamera): void;
 }>();
 const map = ref<mapboxgl.Map>();
 const deck = ref<DeckGL>();
@@ -150,7 +149,7 @@ function updateViewState(viewState: ViewState) {
     pitch: viewState.pitch,
   });
 
-  emit("update:modelValue", { viewState });
+  emit("update:camera", { viewState });
 }
 
 function resetContextPickInfo() {
@@ -180,11 +179,11 @@ watch(
 );
 
 watch(
-  () => props.modelValue,
+  () => props.camera,
   (newVal, oldVal) => {
     if (isEqual(newVal, oldVal)) return;
     newVal && updateCamera(newVal);
-  },
+  }
 );
 
 function initDeck(viewState: ViewState) {
@@ -238,13 +237,13 @@ function initMapBox(viewState: ViewState) {
   });
 }
 onMounted(() => {
-  const initialViewState = props.modelValue?.viewState || DEFAULT_VIEWSTATE;
+  const initialViewState = props.camera?.viewState || DEFAULT_VIEWSTATE;
   map.value = initMapBox(initialViewState);
   map.value.on("load", () => {
     map.value?.resize();
     deck.value = initDeck(initialViewState);
-    if (props.modelValue) {
-      updateCamera(props.modelValue);
+    if (props.camera) {
+      updateCamera(props.camera);
     }
     loaded.value = true;
   });

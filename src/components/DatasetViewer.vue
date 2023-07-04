@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { useMoviciSettings } from "@movici-flow-lib/baseComposables/useMoviciSettings";
 import { useReactiveSummary } from "@movici-flow-lib/composables/useReactiveSummary";
-import { ensureProjection, transformBBox } from "@movici-flow-lib/crs";
+import { transformBBox } from "@movici-flow-lib/crs";
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import type { DeckCamera, ShortDataset } from "@movici-flow-lib/types";
 import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
@@ -83,17 +83,14 @@ watch(
 
 watch(summary, (summary) => {
   if (summary?.bounding_box) {
-    const bounding_box = summary.bounding_box;
-    ensureProjection(summary.epsg_code).then(() => {
-      const newCamera = {
-        bbox: {
-          coords: transformBBox(bounding_box, summary.epsg_code),
-          fillRatio: 0.5,
-        },
-      };
-      camera.value = newCamera;
-      centerCamera.value = newCamera;
-    });
+    const newCamera = {
+      bbox: {
+        coords: transformBBox(summary.bounding_box, summary.epsg_code),
+        fillRatio: 1 / 3,
+      },
+    };
+    camera.value = newCamera;
+    centerCamera.value = newCamera;
   }
 });
 </script>

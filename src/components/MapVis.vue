@@ -1,7 +1,7 @@
 <template>
   <Deck
-    :modelValue="camera"
-    @update:modelValue="updateCamera($event)"
+    :camera="camera"
+    @update:camera="updateCamera($event)"
     :layers="layers"
     :basemap="basemap"
   >
