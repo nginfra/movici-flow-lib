@@ -94,7 +94,7 @@
             v-if="store.hasCapability('geocode')"
             :map="map"
             :camera="parsedView.camera"
-            @update:view-state="onViewstateChange($event)"
+            @update:camera="onViewstateChange($event)"
           />
           <MapControlNavigation
             :modelValue="parsedView.camera"

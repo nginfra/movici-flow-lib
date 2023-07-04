@@ -25,7 +25,7 @@
       />
       <o-button
         class="is-border-transparent mapboxgl-ctrl-compass"
-        title="Reset View"
+        title="Reset north"
         @click.stop="updateViewState({ bearing: 0, pitch: 0, transitionDuration: 300 })"
       >
         <span

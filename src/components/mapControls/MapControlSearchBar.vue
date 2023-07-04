@@ -45,14 +45,13 @@
 import { useGeocoding } from "@movici-flow-lib/composables/useGeocoding";
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import type {
-  ViewState,
+  DeckCamera,
   GeocodeSearchQuery,
   GeocodeSearchResult,
   GeocodeSuggestion,
-  DeckCamera,
 } from "@movici-flow-lib/types";
 import mapboxgl from "mapbox-gl";
-import { nextTick, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
@@ -68,14 +67,13 @@ const emit = defineEmits<{
 const autocomplete = ref<HTMLElement | null>(null);
 const marker = ref<mapboxgl.Marker | null>(null);
 const expand = ref(false);
-
+const viewState = computed(() => props.camera.viewState);
 function makeQuery(text: string): GeocodeSearchQuery | null {
-  const viewState = props.camera.viewState;
-  if (!text || !viewState) return null;
+  if (!text || !viewState.value) return null;
 
   return {
     query: text,
-    nearby_location: [viewState.longitude, viewState.latitude],
+    nearby_location: [viewState.value.longitude, viewState.value.latitude],
   };
 }
 
@@ -116,8 +114,8 @@ function onResult(result: GeocodeSearchResult | null) {
       latitude: result.location[1],
       zoom: 11,
       transitionDuration: 300,
-      pitch: props.camera.viewState?.pitch ?? 0,
-      bearing: props.camera.viewState?.bearing ?? 0,
+      pitch: viewState.value?.pitch ?? 0,
+      bearing: viewState.value?.bearing ?? 0,
     },
   });
 }

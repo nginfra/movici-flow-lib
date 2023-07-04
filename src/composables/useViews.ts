@@ -1,3 +1,4 @@
+import { ensureProjection, transformBBox } from "@movici-flow-lib/crs";
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import { useParsedViewStore } from "@movici-flow-lib/stores/parsedView";
 import type {
@@ -7,7 +8,6 @@ import type {
   Scenario,
   UUID,
   ViewPayload,
-  ViewState,
 } from "@movici-flow-lib/types";
 import {
   ChartVisualizerInfo,
@@ -18,7 +18,6 @@ import { simplifiedCamera } from "@movici-flow-lib/visualizers/viewHelpers";
 import isEqual from "lodash/isEqual";
 import { computed, ref, unref, watch } from "vue";
 import { useMoviciSettings } from "../baseComposables/useMoviciSettings";
-import { ensureProjection, transformBBox } from "@movici-flow-lib/crs";
 
 export function useViews({
   initialViewName,
@@ -148,7 +147,7 @@ export function useViews({
     if (crs) {
       await ensureProjection(crs);
     }
-    return { bbox: { coords: transformBBox(bbox, crs), fillRatio: 0.5} };
+    return { bbox: { coords: transformBBox(bbox, crs), fillRatio: 0.5 } };
   }
 
   watch(() => [store.view, unref(scenario)], parseView, { immediate: true });

@@ -19,7 +19,7 @@
         v-if="hasGeocodeCapabilities"
         :map="map"
         :camera="camera"
-        @update:view-state="onViewstateChange($event)"
+        @update:camera="onViewstateChange($event)"
       />
       <MapControlNavigation
         :modelValue="camera"
@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { useMoviciSettings } from "@movici-flow-lib/baseComposables/useMoviciSettings";
 import { useReactiveSummary } from "@movici-flow-lib/composables/useReactiveSummary";
-import { transformBBox } from "@movici-flow-lib/crs";
+import { ensureProjection, transformBBox } from "@movici-flow-lib/crs";
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import type { DeckCamera, ShortDataset } from "@movici-flow-lib/types";
 import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
@@ -81,12 +81,13 @@ watch(
   { immediate: true }
 );
 
-watch(summary, (summary) => {
+watch(summary, async (summary) => {
   if (summary?.bounding_box) {
+    await ensureProjection(summary.epsg_code);
     const newCamera = {
       bbox: {
         coords: transformBBox(summary.bounding_box, summary.epsg_code),
-        fillRatio: 1 / 3,
+        fillRatio: 0.5,
       },
     };
     camera.value = newCamera;
