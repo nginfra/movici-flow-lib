@@ -1,6 +1,6 @@
 import type { RGBAColor } from "./colors";
 import type { AttributeSummary } from "./schema";
-import type { ViewState } from "./visualization";
+import type { ViewState } from "./deck";
 import type { RenderOrderType, UUID } from ".";
 import type { PopupItem } from "./popup";
 import type { FlowChartConfig } from "./charts";
