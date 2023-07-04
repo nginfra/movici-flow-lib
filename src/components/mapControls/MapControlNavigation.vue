@@ -16,10 +16,10 @@
         icon-pack="fal"
       />
       <o-button
-        v-if="centerCamera"
+        v-if="initialCamera"
         class="is-border-transparent"
-        title="Return to center of the view"
-        @click.stop="updateViewState({ ...centerCamera, transitionDuration: 300 })"
+        title="Reset the camera to its initial position"
+        @click.stop="resetCamera"
         icon-left="crosshairs"
         icon-pack="fal"
       />
@@ -39,35 +39,50 @@
 </template>
 
 <script setup lang="ts">
-import type { ViewState } from "@movici-flow-lib/types";
+import type { DeckCamera, ViewState } from "@movici-flow-lib/types";
 import { computed } from "vue";
 
 const props = defineProps<{
-  modelValue?: ViewState;
+  modelValue?: DeckCamera;
   isRight?: boolean;
-  centerCamera?: ViewState;
+  initialCamera?: DeckCamera;
 }>();
 const emit = defineEmits<{
-  (e: "update:modelValue", val: ViewState): void;
+  (e: "update:modelValue", val: DeckCamera): void;
 }>();
 
-const bearing = computed(() => props.modelValue?.bearing ?? 0);
+const viewState = computed(() => props.modelValue?.viewState);
+const bearing = computed(() => viewState.value?.bearing ?? 0);
 
 const DEFAULT_MIN_ZOOM = 0;
 const DEFAULT_MAX_ZOOM = 20;
 const zoom = computed({
-  get: () => props.modelValue?.zoom ?? 0,
+  get: () => props.modelValue?.viewState?.zoom ?? 0,
   set: (val) => {
-    const minZoom = props.modelValue?.minZoom ?? DEFAULT_MIN_ZOOM;
-    const maxZoom = props.modelValue?.maxZoom ?? DEFAULT_MAX_ZOOM;
+    const minZoom = viewState.value?.minZoom ?? DEFAULT_MIN_ZOOM;
+    const maxZoom = viewState.value?.maxZoom ?? DEFAULT_MAX_ZOOM;
     val = Math.min(Math.max(val, minZoom), maxZoom);
 
     updateViewState({ zoom: val });
   },
 });
-
+function resetCamera() {
+  if (props.initialCamera?.bbox) {
+    updateCamera(props.initialCamera);
+  } else {
+    updateCamera({
+      viewState: { ...(props.initialCamera?.viewState as ViewState), transitionDuration: 300 },
+    });
+  }
+}
 function updateViewState(viewState: Partial<ViewState>) {
-  emit("update:modelValue", Object.assign({}, props.modelValue, viewState));
+  updateCamera({
+    viewState: Object.assign({}, props.modelValue?.viewState, viewState),
+  });
+}
+
+function updateCamera(camera: DeckCamera) {
+  emit("update:modelValue", camera);
 }
 </script>
 

@@ -49,19 +49,20 @@ import type {
   GeocodeSearchQuery,
   GeocodeSearchResult,
   GeocodeSuggestion,
+  DeckCamera,
 } from "@movici-flow-lib/types";
 import mapboxgl from "mapbox-gl";
 import { nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
-  viewState: ViewState;
+  camera: DeckCamera;
   map?: mapboxgl.Map;
   isRight?: boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: "update:viewState", val: ViewState): void;
+  (e: "update:camera", val: DeckCamera): void;
 }>();
 
 const autocomplete = ref<HTMLElement | null>(null);
@@ -69,10 +70,12 @@ const marker = ref<mapboxgl.Marker | null>(null);
 const expand = ref(false);
 
 function makeQuery(text: string): GeocodeSearchQuery | null {
-  if (!text) return null;
+  const viewState = props.camera.viewState;
+  if (!text || !viewState) return null;
+
   return {
     query: text,
-    nearby_location: [props.viewState.longitude, props.viewState.latitude],
+    nearby_location: [viewState.longitude, viewState.latitude],
   };
 }
 
@@ -107,11 +110,15 @@ function onResult(result: GeocodeSearchResult | null) {
 
   if (!result) return;
 
-  updateViewState({
-    longitude: result.location[0],
-    latitude: result.location[1],
-    zoom: 11,
-    transitionDuration: 300,
+  emit("update:camera", {
+    viewState: {
+      longitude: result.location[0],
+      latitude: result.location[1],
+      zoom: 11,
+      transitionDuration: 300,
+      pitch: props.camera.viewState?.pitch ?? 0,
+      bearing: props.camera.viewState?.bearing ?? 0,
+    },
   });
 }
 
@@ -131,10 +138,6 @@ function updateMarker(result: GeocodeSearchResult | null) {
 
     marker.value.togglePopup();
   }
-}
-
-function updateViewState(viewState: Partial<ViewState>) {
-  emit("update:viewState", { ...props.viewState, ...viewState });
 }
 
 function expandAndFocus() {

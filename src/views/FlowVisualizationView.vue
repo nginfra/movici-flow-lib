@@ -56,9 +56,9 @@
     <template #mainView>
       <MapVis
         ref="mapVis"
-        v-if="parsedView.viewState"
+        v-if="parsedView.camera"
         :visualizerInfos="visualizersWithSummary"
-        v-model:viewState="parsedView.viewState"
+        v-model:camera="parsedView.camera"
         v-model:timestamp="parsedView.timestamp"
         buildings
         scale
@@ -70,7 +70,7 @@
             v-if="contextPickInfo"
             :modelValue="(contextPickInfo as PickInfo<unknown>)"
             :map="map"
-            :view-state="parsedView.viewState"
+            :camera="parsedView.camera"
             :actions="contextMenuActions"
             @add-chart="openChart(contextPickInfo, visualizers)"
             @close="resetContextPickInfo"
@@ -82,7 +82,7 @@
               :key="i"
               :map="map"
               :timestamp="parsedView.timestamp"
-              :view-state="parsedView.viewState"
+              :camera="parsedView.camera"
               @toggle="popup.toggleLocation(p)"
               @close="popup.remove(p)"
               @click="popup.moveToBottom(p)"
@@ -93,13 +93,13 @@
           <MapControlSearchBar
             v-if="store.hasCapability('geocode')"
             :map="map"
-            :view-state="parsedView.viewState"
+            :camera="parsedView.camera"
             @update:view-state="onViewstateChange($event)"
           />
           <MapControlNavigation
-            :modelValue="parsedView.viewState"
+            :modelValue="parsedView.camera"
             @update:modelValue="onViewstateChange($event)"
-            :centerCamera="parsedView.initialViewState"
+            :initialCamera="parsedView.initialCamera"
           />
           <MapControlBaseMap :modelValue="basemap" @update:modelValue="setBasemap" />
         </template>

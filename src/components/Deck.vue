@@ -28,9 +28,9 @@ import type { BoundingBox } from "@movici-flow-lib/crs";
 import { viewport } from "@placemarkio/geo-viewport";
 
 import { useMoviciSettings } from "@movici-flow-lib/baseComposables/useMoviciSettings";
-import { useSnackbar } from "@movici-flow-lib/baseComposables/useSnackbar";
 import type {
   CursorCallback,
+  DeckCamera,
   DeckEntityObject,
   DeckEvent,
   DeckEventCallback,
@@ -41,17 +41,36 @@ import type {
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
-
+import cloneDeep from "lodash/cloneDeep";
+import isEqual from "lodash/isEqual";
 const DEFAULT_VIEWSTATE = useMoviciSettings().settings.defaultViewState;
 
-function getViewportFromBBOX(
+function parseViewState(camera?: DeckCamera, map?: mapboxgl.Map): ViewState {
+  let result: ViewState = DEFAULT_VIEWSTATE;
+  if (camera?.bbox && map) {
+    result = {
+      ...getViewStateFromBBOX(
+        camera.bbox.coords,
+        getCanvasDimensions(map),
+        camera.bbox?.fillRatio ?? 1
+      ),
+      pitch: 0,
+      bearing: 0,
+      transitionDuration: 300,
+    };
+  } else if (camera?.viewState) {
+    result = camera.viewState;
+  }
+  return result;
+}
+
+function getViewStateFromBBOX(
   bounding_box: BoundingBox,
   dimensions: [number, number],
   ratio: number
 ) {
   const { center, zoom } = viewport(
       bounding_box,
-      // we set the ratio 1/3 as we want the viewport to occupy 1/3 of the map screen
       dimensions.map((side) => side * ratio) as [number, number],
       {
         allowFloat: true,
@@ -67,13 +86,9 @@ function getCanvasDimensions(map: mapboxgl.Map): [number, number] {
   return [dimensions.width, dimensions.height];
 }
 
-// type DeckSlots = "control-zero" | "control-left" | "control-right" | "control-bottom";
-
-const { failMessage } = useSnackbar();
-
 const props = withDefaults(
   defineProps<{
-    modelValue?: ViewState;
+    modelValue?: DeckCamera;
     basemap?: string;
     accessToken?: string;
     controller?: ControllerOptions;
@@ -87,7 +102,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: "update:modelValue", val: ViewState): void;
+  (e: "update:modelValue", val: DeckCamera): void;
 }>();
 const map = ref<mapboxgl.Map>();
 const deck = ref<DeckGL>();
@@ -122,23 +137,10 @@ function setCursorCallback(cb?: CursorCallback) {
   getCursor.value = cb || (() => null);
 }
 
-function zoomToBBox(bounding_box: BoundingBox, ratio = 1 / 3) {
-  try {
-    if (map.value) {
-      const viewstate = {
-        ...props.modelValue,
-        ...getViewportFromBBOX(bounding_box, getCanvasDimensions(map.value), ratio),
-        transitionDuration: 300,
-      };
-
-      updateViewState(viewstate as ViewState);
-    }
-  } catch (error) {
-    failMessage("Error when centering to BBOX");
-    console.error(error);
-  }
+function updateCamera(camera: DeckCamera) {
+  const viewState = parseViewState(camera, map.value);
+  updateViewState(viewState);
 }
-
 function updateViewState(viewState: ViewState) {
   deck.value?.setProps({ viewState });
   map.value?.jumpTo({
@@ -148,7 +150,7 @@ function updateViewState(viewState: ViewState) {
     pitch: viewState.pitch,
   });
 
-  emit("update:modelValue", viewState);
+  emit("update:modelValue", { viewState });
 }
 
 function resetContextPickInfo() {
@@ -160,9 +162,8 @@ const slotProps = computed(() => ({
   contextPickInfo: contextPickInfo.value,
   on: on,
   resetContextPickInfo,
-  onViewstateChange: updateViewState,
+  onViewstateChange: updateCamera,
   setCursorCallback,
-  zoomToBBox,
 }));
 
 watch(
@@ -180,17 +181,18 @@ watch(
 
 watch(
   () => props.modelValue,
-  (val) => {
-    val && updateViewState(val);
-  }
+  (newVal, oldVal) => {
+    if (isEqual(newVal, oldVal)) return;
+    newVal && updateCamera(newVal);
+  },
 );
 
-function initDeck(val: ViewState) {
+function initDeck(viewState: ViewState) {
   return new DeckGL({
     canvas: "deckgl-overlay",
     width: "100%",
     height: "100%",
-    initialViewState: val,
+    initialViewState: viewState,
 
     onClick: (info: PickInfo<DeckEntityObject<unknown>>, ev?: DeckMouseEvent) => {
       resetContextPickInfo();
@@ -236,10 +238,14 @@ function initMapBox(viewState: ViewState) {
   });
 }
 onMounted(() => {
-  map.value = initMapBox(props.modelValue || DEFAULT_VIEWSTATE);
+  const initialViewState = props.modelValue?.viewState || DEFAULT_VIEWSTATE;
+  map.value = initMapBox(initialViewState);
   map.value.on("load", () => {
     map.value?.resize();
-    deck.value = initDeck(props.modelValue || DEFAULT_VIEWSTATE);
+    deck.value = initDeck(initialViewState);
+    if (props.modelValue) {
+      updateCamera(props.modelValue);
+    }
     loaded.value = true;
   });
 });
@@ -247,8 +253,6 @@ onBeforeUnmount(() => {
   map.value?.remove();
   deck.value?.canvas.remove();
 });
-
-defineExpose({ zoomToBBox });
 </script>
 
 <style scoped lang="scss">
