@@ -45,34 +45,35 @@
 import { useGeocoding } from "@movici-flow-lib/composables/useGeocoding";
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import type {
-  ViewState,
+  DeckCamera,
   GeocodeSearchQuery,
   GeocodeSearchResult,
   GeocodeSuggestion,
 } from "@movici-flow-lib/types";
 import mapboxgl from "mapbox-gl";
-import { nextTick, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
-  viewState: ViewState;
+  camera: DeckCamera;
   map?: mapboxgl.Map;
   isRight?: boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: "update:viewState", val: ViewState): void;
+  (e: "update:camera", val: DeckCamera): void;
 }>();
 
 const autocomplete = ref<HTMLElement | null>(null);
 const marker = ref<mapboxgl.Marker | null>(null);
 const expand = ref(false);
-
+const viewState = computed(() => props.camera.viewState);
 function makeQuery(text: string): GeocodeSearchQuery | null {
-  if (!text) return null;
+  if (!text || !viewState.value) return null;
+
   return {
     query: text,
-    nearby_location: [props.viewState.longitude, props.viewState.latitude],
+    nearby_location: [viewState.value.longitude, viewState.value.latitude],
   };
 }
 
@@ -107,11 +108,15 @@ function onResult(result: GeocodeSearchResult | null) {
 
   if (!result) return;
 
-  updateViewState({
-    longitude: result.location[0],
-    latitude: result.location[1],
-    zoom: 11,
-    transitionDuration: 300,
+  emit("update:camera", {
+    viewState: {
+      longitude: result.location[0],
+      latitude: result.location[1],
+      zoom: 11,
+      transitionDuration: 300,
+      pitch: viewState.value?.pitch ?? 0,
+      bearing: viewState.value?.bearing ?? 0,
+    },
   });
 }
 
@@ -131,10 +136,6 @@ function updateMarker(result: GeocodeSearchResult | null) {
 
     marker.value.togglePopup();
   }
-}
-
-function updateViewState(viewState: Partial<ViewState>) {
-  emit("update:viewState", { ...props.viewState, ...viewState });
 }
 
 function expandAndFocus() {

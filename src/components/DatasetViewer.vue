@@ -1,5 +1,5 @@
 <template>
-  <MapVis ref="mapVis" :visualizer-infos="layers" v-model:view-state="viewState" scale>
+  <MapVis :visualizer-infos="layers" v-model:camera="camera" scale>
     <template #control-zero="{ map, popup }">
       <template v-if="popup.mapPopups.length && map">
         <MapEntityPopup
@@ -7,7 +7,7 @@
           :modelValue="p"
           :key="i"
           :map="map"
-          :view-state="viewState"
+          :camera="camera"
           @toggle="popup.toggleLocation(p)"
           @close="popup.remove(p)"
           @click="popup.moveToBottom(p)"
@@ -18,12 +18,12 @@
       <MapControlSearchBar
         v-if="hasGeocodeCapabilities"
         :map="map"
-        :view-state="viewState"
-        @update:view-state="onViewstateChange($event)"
+        :camera="camera"
+        @update:camera="onViewstateChange($event)"
       />
       <MapControlNavigation
-        :modelValue="viewState"
-        :centerCamera="centerCamera"
+        :modelValue="camera"
+        :initialCamera="centerCamera"
         @update:modelValue="onViewstateChange($event)"
       />
       <MapControlBaseMap :modelValue="basemap" @update:modelValue="setBasemap" />
@@ -44,17 +44,16 @@
 </template>
 
 <script setup lang="ts">
-import type { BoundingBox } from "@movici-flow-lib/crs";
 import { useMoviciSettings } from "@movici-flow-lib/baseComposables/useMoviciSettings";
 import { useReactiveSummary } from "@movici-flow-lib/composables/useReactiveSummary";
 import { ensureProjection, transformBBox } from "@movici-flow-lib/crs";
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
-import type { ShortDataset, ViewState } from "@movici-flow-lib/types";
+import type { DeckCamera, ShortDataset } from "@movici-flow-lib/types";
 import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import { computed } from "@vue/reactivity";
 import { ref, watch, type Ref } from "vue";
-import EntitySelector from "./mapControls/EntitySelector.vue";
 import MapVis from "./MapVis.vue";
+import EntitySelector from "./mapControls/EntitySelector.vue";
 import MapControlBaseMap from "./mapControls/MapControlBaseMap.vue";
 import MapControlNavigation from "./mapControls/MapControlNavigation.vue";
 import MapControlSearchBar from "./mapControls/MapControlSearchBar.vue";
@@ -67,11 +66,10 @@ const props = defineProps<{
 }>();
 
 const { summary, currentDataset } = useReactiveSummary();
-const mapVis = ref<{ zoomToBBox(bbox: BoundingBox, ratio?: number): void } | null>(null);
 const store = useFlowStore();
 const layers = ref([]) as Ref<ComposableVisualizerInfo[]>;
-const viewState = ref<ViewState>(DEFAULT_VIEWSTATE);
-const centerCamera = ref<ViewState>();
+const camera = ref<DeckCamera>({ viewState: DEFAULT_VIEWSTATE });
+const centerCamera = ref<DeckCamera>();
 
 const hasGeocodeCapabilities = computed(() => store.hasCapability("geocode"));
 
@@ -83,13 +81,17 @@ watch(
   { immediate: true }
 );
 
-watch(summary, (summary) => {
+watch(summary, async (summary) => {
   if (summary?.bounding_box) {
-    const bounding_box = summary.bounding_box;
-    ensureProjection(summary.epsg_code).then(() => {
-      mapVis.value?.zoomToBBox(transformBBox(bounding_box, summary.epsg_code));
-      centerCamera.value = viewState.value;
-    });
+    await ensureProjection(summary.epsg_code);
+    const newCamera = {
+      bbox: {
+        coords: transformBBox(summary.bounding_box, summary.epsg_code),
+        fillRatio: 0.5,
+      },
+    };
+    camera.value = newCamera;
+    centerCamera.value = newCamera;
   }
 });
 </script>

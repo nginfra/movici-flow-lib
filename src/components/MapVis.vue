@@ -1,8 +1,7 @@
 <template>
   <Deck
-    ref="deck"
-    :modelValue="viewState"
-    @update:modelValue="updateViewState($event)"
+    :camera="camera"
+    @update:camera="updateCamera($event)"
     :layers="layers"
     :basemap="basemap"
   >
@@ -29,12 +28,11 @@
 
 <script setup lang="ts">
 import type { Layer } from "@deck.gl/core";
-import type { BoundingBox } from "@movici-flow-lib/crs";
 import { useMoviciSettings } from "@movici-flow-lib/baseComposables/useMoviciSettings";
 import { useDeckGL } from "@movici-flow-lib/composables/useDeckGL";
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import { useSummaryStore } from "@movici-flow-lib/stores/summary";
-import type { DeckMouseEvent, PopupContent, ViewState } from "@movici-flow-lib/types";
+import type { DeckCamera, DeckMouseEvent, PopupContent } from "@movici-flow-lib/types";
 import { DatasetDownloader } from "@movici-flow-lib/utils/DatasetDownloader";
 import { getVisualizer, type Visualizer } from "@movici-flow-lib/visualizers";
 import { TapefileStoreCollection } from "@movici-flow-lib/visualizers/TapefileStore";
@@ -51,7 +49,7 @@ const { getSummary } = useSummaryStore();
 const props = withDefaults(
   defineProps<{
     visualizerInfos: ComposableVisualizerInfo[];
-    viewState?: ViewState;
+    camera?: DeckCamera;
     timestamp?: number;
     buildings?: boolean;
     scale?: boolean;
@@ -59,14 +57,14 @@ const props = withDefaults(
   {
     layerInfos: () => [],
     timestamp: 0,
-    viewState: () => useMoviciSettings().settings.defaultViewState,
+    camera: () => ({ viewState: useMoviciSettings().settings.defaultViewState }),
   }
 );
 const emit = defineEmits<{
   (e: "update:timestamp", val: number): void;
-  (e: "update:viewState", val: ViewState): void;
+  (e: "update:camera", val: DeckCamera): void;
 }>();
-const { basemap, layers, popup, deck } = useDeckGL();
+const { basemap, layers, popup } = useDeckGL();
 
 const tapefileStores: TapefileStoreCollection = new TapefileStoreCollection();
 const visualizers: VisualizerManager<ComposableVisualizerInfo, Visualizer> = new VisualizerManager<
@@ -166,15 +164,9 @@ function updateLayers() {
 }
 watch(() => props.timestamp, updateLayers);
 
-function updateViewState(viewState: ViewState) {
-  emit("update:viewState", viewState);
+function updateCamera(camera: DeckCamera) {
+  emit("update:camera", camera);
 }
-
-function zoomToBBox(bounding_box: BoundingBox, ratio?: number) {
-  deck.value?.zoomToBBox(bounding_box, ratio);
-}
-
-defineExpose({ zoomToBBox });
 
 function createComposableVisualizer(
   layerInfo: ComposableVisualizerInfo,

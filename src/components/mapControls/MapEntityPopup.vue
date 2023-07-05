@@ -20,21 +20,21 @@
 
 <script setup lang="ts">
 import { useUIStore } from "@movici-flow-lib/stores/ui";
-import type { PopupInfo, ViewState } from "@movici-flow-lib/types";
+import type { DeckCamera, PopupInfo, ViewState } from "@movici-flow-lib/types";
 import type mapboxgl from "mapbox-gl";
 import { computed } from "vue";
 import DataViewContent from "./DataViewContent.vue";
 import DynamicDataView from "./DynamicDataView.vue";
 
-defineProps<{
+const props = defineProps<{
   modelValue: PopupInfo;
   map: mapboxgl.Map;
-  viewState?: ViewState;
+  camera?: DeckCamera;
   timestamp?: number;
 }>();
 
 const uiStore = useUIStore();
-
+const viewState = computed(() => props.camera?.viewState);
 const popupBorderPadding = computed(() => {
   return {
     left: uiStore.collapse ? 0 : 300,

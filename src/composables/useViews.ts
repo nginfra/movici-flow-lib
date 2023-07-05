@@ -1,6 +1,14 @@
+import { ensureProjection, transformBBox } from "@movici-flow-lib/crs";
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import { useParsedViewStore } from "@movici-flow-lib/stores/parsedView";
-import type { RefLike, Scenario, UUID, ViewPayload, ViewState } from "@movici-flow-lib/types";
+import type {
+  DeckCamera,
+  FlowViewConfig,
+  RefLike,
+  Scenario,
+  UUID,
+  ViewPayload,
+} from "@movici-flow-lib/types";
 import {
   ChartVisualizerInfo,
   ChartVisualizerItem,
@@ -23,9 +31,9 @@ export function useViews({
   const viewName = ref(initialViewName);
   const parsedView = useParsedViewStore();
 
-  function reset() {
+  async function reset() {
     viewName.value = defaultViewName;
-    parsedView.reset();
+    parsedView.reset(await getInitialCamera());
   }
   async function createView() {
     const uuid = await doCreate();
@@ -73,11 +81,13 @@ export function useViews({
         charts: parsedView.chartInfos.length
           ? parsedView.chartInfos.map((info) => info.toChartConfig())
           : undefined,
-        camera: parsedView.viewState ? simplifiedCamera(parsedView.viewState) : undefined,
+        camera: parsedView.camera?.viewState
+          ? simplifiedCamera(parsedView.camera.viewState)
+          : undefined,
       },
     };
   }
-  function parseView() {
+  async function parseView() {
     if (!store.view || !unref(scenario)) {
       reset();
       return;
@@ -109,15 +119,37 @@ export function useViews({
         }),
       });
     });
-    const viewState: ViewState | undefined = config.camera ?? undefined;
-    parsedView.initialViewState = config.camera ?? useMoviciSettings().settings.defaultViewState;
+
+    parsedView.initialCamera = await getInitialCamera(config);
+    const viewState = parsedView.initialCamera.viewState;
+
     if (viewState) {
-      viewState.transitionDuration = 300;
-      parsedView.viewState = viewState;
+      parsedView.camera = {
+        viewState: {
+          ...viewState,
+          transitionDuration: 300,
+        },
+      };
+    } else {
+      parsedView.camera = parsedView.initialCamera;
     }
     parsedView.timestamp = config.timestamp ?? 0;
     viewName.value = store.view.name;
   }
+
+  async function getInitialCamera(config?: FlowViewConfig): Promise<DeckCamera> {
+    if (config?.camera) return { viewState: config.camera };
+    const scen = unref(scenario);
+    let bbox = scen?.bounding_box;
+    if (!bbox) return { viewState: useMoviciSettings().settings.defaultViewState };
+
+    const crs = scen?.epsg_code;
+    if (crs) {
+      await ensureProjection(crs);
+    }
+    return { bbox: { coords: transformBBox(bbox, crs), fillRatio: 0.5 } };
+  }
+
   watch(() => [store.view, unref(scenario)], parseView, { immediate: true });
   const serializedView = computed(dumpView);
   const hasPendingChanges = computed(() => {
