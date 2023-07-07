@@ -118,7 +118,7 @@ function finalizeValue() {
   ];
   const payload: AdvancedColorSettings = { ...props.modelValue, ...localValue };
   for (const key of keys) {
-    if (isEqual(defaultSettings[key], localValue[key])) {
+    if (!props.modelValue?.[key] && isEqual(defaultSettings[key], localValue[key])) {
       delete payload[key];
     }
   }
