@@ -65,7 +65,7 @@ const props = defineProps<{
   modelValue: ShortDataset;
 }>();
 
-const { summary, currentDataset } = useReactiveSummary();
+const { summary, currentDataset } = useReactiveSummary({ datasetOnly: true });
 const store = useFlowStore();
 const layers = ref([]) as Ref<ComposableVisualizerInfo[]>;
 const camera = ref<DeckCamera>({ viewState: DEFAULT_VIEWSTATE });
@@ -87,7 +87,7 @@ watch(summary, async (summary) => {
     const newCamera = {
       bbox: {
         coords: transformBBox(summary.bounding_box, summary.epsg_code),
-        fillRatio: 0.5,
+        fillRatio: 1 / 3,
       },
     };
     camera.value = newCamera;

@@ -8,7 +8,8 @@ import type {
 } from "@movici-flow-lib/types";
 import { computed, ref, watch, type Ref } from "vue";
 
-export function useReactiveSummary() {
+export function useReactiveSummary(options?: { datasetOnly?: boolean }) {
+  const datasetOnly = options?.datasetOnly;
   const store = useSummaryStore();
   const summary = ref<DatasetSummary>();
   const currentDataset = ref<ShortDataset | ScenarioDataset>();
@@ -45,7 +46,10 @@ export function useReactiveSummary() {
 
   async function getSummaryByUUID(uuid?: UUID) {
     if (uuid) {
-      summary.value = await store.getSummary({ datasetUUID: uuid });
+      summary.value = await store.getSummary({
+        datasetUUID: uuid,
+        scenarioUUID: datasetOnly ? null : undefined,
+      });
     } else {
       summary.value = undefined;
     }
