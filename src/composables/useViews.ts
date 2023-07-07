@@ -147,7 +147,7 @@ export function useViews({
     if (crs) {
       await ensureProjection(crs);
     }
-    return { bbox: { coords: transformBBox(bbox, crs), fillRatio: 0.5 } };
+    return { bbox: { coords: transformBBox(bbox, crs), fillRatio: 1 / 3 } };
   }
 
   watch(() => [store.view, unref(scenario)], parseView, { immediate: true });
