@@ -44,7 +44,8 @@ const currentIcon = computed(() => {
 });
 
 function updateIcon(icon: string | null) {
-  emit("update:modelValue", !icon ? {} : { static: { icon } });
+  icon = icon ?? ''
+  emit("update:modelValue", { static: { icon } });
 }
 </script>
 

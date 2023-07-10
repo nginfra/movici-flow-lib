@@ -125,7 +125,12 @@ const {
 onUnmounted(destroyValidator);
 
 const showLegend = ref(false);
-watch(showLegend, () => updateClause());
+watch(showLegend, () => {
+  if (showLegend) {
+    localClause.legend ??= {};
+  }
+  updateClause();
+});
 
 const fillType = computed<"buckets" | "gradient" | undefined>(() => {
   return localClause?.byValue?.type;

@@ -10,18 +10,25 @@ import type {
 
 export class LegendItem {
   title: string;
-  icon?: IconShapeLegendItem | null;
+  icon?: IconLegendItem | null;
+  shape?: IconLegendItem | null;
   color?: ColorLegendItem | null;
 
-  constructor({ title, icon, color }: Pick<LegendItem, "title" | "icon" | "color">) {
+  constructor({
+    title,
+    icon,
+    shape,
+    color,
+  }: Pick<LegendItem, "title" | "icon" | "shape" | "color">) {
     this.title = title;
     this.icon = icon;
+    this.shape = shape;
     this.color = color;
   }
 
   isSimpleLegend() {
     let found = 0;
-    const keys: (keyof this)[] = ["icon", "color"];
+    const keys: (keyof this)[] = ["icon", "shape", "color"];
     for (const key of keys) {
       if (this[key]) {
         found++;
@@ -29,40 +36,37 @@ export class LegendItem {
     }
     return found === 1;
   }
+
+  staticLegendItems(){
+
+  }
 }
 
-export type IconShapeLegendItem = {
-  icon?: IconLegendItem;
-  shape?: IconLegendItem;
-};
-
 export class IconLegendItem {
-  iconLegends: [string, string][];
-
-  constructor({ iconLegends }: IconLegendItem) {
-    this.iconLegends = iconLegends;
+  entries: [string, string][];
+  kind: "icon" | "shape";
+  constructor({ entries, kind }: IconLegendItem) {
+    this.entries = entries;
+    this.kind = kind;
   }
 }
 
 export class IconStaticLegendItem extends IconLegendItem {
-  constructor(static_?: StaticIconClause, legend?: LegendOptions) {
-    super({ iconLegends: [] });
-
-    if (static_ && legend) {
-      this.iconLegends = [["", static_.icon]];
-    }
+  constructor(clause: StaticIconClause, kind: "icon" | "shape") {
+    super({ entries: [["", clause.icon]], kind });
   }
 }
 
 export class IconByValueLegendItem extends IconLegendItem {
-  constructor(byValue?: ByValueIconClause, legend?: LegendOptions) {
-    super({ iconLegends: [] });
-
-    if (byValue && legend?.labels) {
-      this.iconLegends = legend.labels.map((label: string, idx: number) => {
-        return [label, byValue.icons[idx][1]] as [string, string];
-      });
-    }
+  constructor(clause: ByValueIconClause, kind: "icon" | "shape", legend?: LegendOptions) {
+    super({
+      entries: legend?.labels
+        ? legend.labels.map((label: string, idx: number) => {
+            return [label, clause.icons[idx][1]] as [string, string];
+          })
+        : [],
+      kind,
+    });
   }
 }
 

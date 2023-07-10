@@ -25,14 +25,14 @@ export function useClauseConfigurator<
   t: (val: string) => string;
   onEmit: (val: T) => void;
 }) {
-  const attribution = useAttributes({ attributes, supportedDataTypes, t });
+  const attributeHelper = useAttributes({ attributes, supportedDataTypes, t });
   const validation = useValidator(validator);
   validator.configure({
     validators: {
-      selectedAttribute: attribution.validateAttribute(() => clauseType.value === "byValue"),
+      selectedAttribute: attributeHelper.validateAttribute(() => clauseType.value === "byValue"),
     },
   });
-  validation.validated("selectedAttribute", attribution.selectedAttribute);
+  validation.validated("selectedAttribute", attributeHelper.selectedAttribute);
 
   const clauseType = ref<ClauseType>("static");
   const localClause = reactive({} as T);
@@ -42,7 +42,7 @@ export function useClauseConfigurator<
       if (!value) return;
       clauseType.value = value.byValue ? "byValue" : "static";
       Object.assign(localClause, value);
-      attribution.selectAttribute(value.byValue?.attribute);
+      attributeHelper.selectAttribute(value.byValue?.attribute);
     },
     { immediate: true }
   );
@@ -62,7 +62,7 @@ export function useClauseConfigurator<
     if (!isEqual(value, old)) {
       delete localClause.static;
       delete localClause.byValue;
-      attribution.selectAttribute();
+      attributeHelper.selectAttribute();
       clauseType.value = "static";
     }
   });
@@ -72,7 +72,7 @@ export function useClauseConfigurator<
   });
   return {
     ...validation,
-    ...attribution,
+    ...attributeHelper,
     clauseType,
     localClause,
     updateClause,
