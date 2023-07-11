@@ -88,7 +88,10 @@
       "returnToDashboard": "Return to dashboard"
     },
     "legend": {
-      "label": "Legend"
+      "label": "Legend",
+      "color": "Colour",
+      "icon": "Icon",
+      "shape": "Shape"
     },
     "mainView": {
       "noDatasetText": "Select a dataset to view it",

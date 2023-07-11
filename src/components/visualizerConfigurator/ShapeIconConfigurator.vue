@@ -7,7 +7,7 @@
     <IconConfigurator
       class="mt-2"
       :modelValue="props.modelValue.shape"
-      @update:modelValue="updateClause({ shape: $event })"
+      @update:modelValue="updateClause('shape', $event)"
       iconGroup="shapes"
     />
     <hr />
@@ -15,7 +15,7 @@
     <IconConfigurator
       class="mt-2"
       :modelValue="props.modelValue.icon"
-      @update:modelValue="updateClause({ icon: $event })"
+      @update:modelValue="updateClause('icon', $event)"
       iconGroup="icons"
     />
   </div>
@@ -56,8 +56,14 @@ validator.configure({
 const { errors, validated } = useValidator(validator);
 validated("shapeOrIcon", props);
 
-function updateClause(clause: Partial<ShapeIconClause>) {
-  emit("update:modelValue", { ...props.modelValue, ...clause });
+function updateClause(key: "icon" | "shape", value: IconClause | null) {
+  const toEmit = { ...props.modelValue };
+  if (value) {
+    toEmit[key] = value;
+  } else {
+    delete toEmit[key];
+  }
+  emit("update:modelValue", toEmit);
 }
 </script>
 

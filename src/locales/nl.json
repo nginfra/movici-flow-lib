@@ -88,7 +88,10 @@
       "returnToDashboard": "Terugkeren naar het dashboard"
     },
     "legend": {
-      "label": "Legenda"
+      "label": "Legenda",
+      "color": "Kleur",
+      "icon": "Icoon",
+      "shape": "Vorm"
     },
     "mainView": {
       "noDatasetText": "Selecteer een dataset om te bekijken",
