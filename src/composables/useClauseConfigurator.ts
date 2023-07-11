@@ -48,6 +48,7 @@ export function useClauseConfigurator<
   );
 
   function updateClause(clause?: Partial<T>) {
+    console.log(localClause, clause);
     Object.assign(localClause, clause);
     emitClause();
   }
@@ -57,6 +58,17 @@ export function useClauseConfigurator<
         ? { static: (localClause.static ?? {}) as Static }
         : { byValue: (localClause.byValue ?? {}) as ByValue };
     onEmit(toEmit as T);
+  }
+
+  function selectAttribute(attr?: AttributeSummary | null) {
+    if (!attr) {
+      return;
+    }
+    localClause.byValue ??= {} as any;
+    if (localClause.byValue) {
+      localClause.byValue.attribute = attr;
+    }
+    attributeHelper.selectAttribute(attr);
   }
   watch(attributes, (value, old) => {
     if (!isEqual(value, old)) {
@@ -70,11 +82,20 @@ export function useClauseConfigurator<
     validator.touch("selectedAttribute");
     emitClause();
   });
+  watch(attributeHelper.selectedAttribute, (attribute) => {
+    if (!attribute) return;
+    console.log("here", attribute);
+
+    localClause.byValue ??= {
+      attribute,
+    } as any;
+  });
   return {
     ...validation,
     ...attributeHelper,
     clauseType,
     localClause,
+    selectAttribute,
     updateClause,
   };
 }

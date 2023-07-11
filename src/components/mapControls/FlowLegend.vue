@@ -18,27 +18,43 @@
     </template>
     <template #collapse-content>
       <div
-        class="legend-container pr-2 overflow"
+        class="legend-container pr-2 mt-2 overflow"
         v-for="(legendItem, idx) in legendList"
         :key="idx"
       >
-        <div class="legend-header mb-1">
-          <label class="is-italic is-size-6-half" v-if="legendItem.title">
+        <div class="legend-header mb-2 is-flex">
+          <StaticLegendThumbnails :modelValue="legendItem" />
+          <label class="legend-title is-size-6-half" v-if="legendItem.title">
             {{ legendItem.title }}
           </label>
         </div>
-        <div class="legend-content">
-          <IconLegend v-if="legendItem.shape" :modelValue="legendItem.shape" />
-          <IconLegend v-if="legendItem.icon" :modelValue="legendItem.icon" />
-          <template v-if="legendItem.color">
-            <ColorBucketLegend
-              :modelValue="legendItem.color"
-              :isSimple="legendItem.isSimpleLegend()"
+        <div class="legend-content ml-4">
+          <BucketLegend
+            v-if="legendItem?.shape?.clauseType === 'byValue'"
+            :modelValue="legendItem.shape"
+            :visualizerType="legendItem.visualizerType"
+            :isSimple="legendItem.isSimpleByValueLegend()"
+            kind="shape"
+          />
+          <BucketLegend
+            v-if="legendItem.icon?.clauseType === 'byValue'"
+            :modelValue="legendItem.icon"
+            :visualizerType="legendItem.visualizerType"
+            :isSimple="legendItem.isSimpleByValueLegend()"
+            kind="icon"
+          />
+          <template v-if="legendItem.color?.clauseType === 'byValue'">
+            <BucketLegend
               v-if="isBuckets(legendItem.color)"
+              :modelValue="legendItem.color"
+              :visualizerType="legendItem.visualizerType"
+              :isSimple="legendItem.isSimpleByValueLegend()"
+              kind="color"
             />
             <ColorGradientLegend
-              :modelValue="legendItem.color"
               v-if="isGradient(legendItem.color)"
+              :modelValue="legendItem.color"
+              :isSimple="legendItem.isSimpleByValueLegend()"
             />
           </template>
         </div>
@@ -51,63 +67,70 @@
 <script setup lang="ts">
 import {
   ColorByValueLegendItem,
-  FlowVisualizerType,
-  ColorStaticLegendItem,
-  type ColorClause,
   ColorLegendItem,
-  LegendItem,
-  IconLegendItem,
-  type IconClause,
-  IconStaticLegendItem,
+  ColorStaticLegendItem,
   IconByValueLegendItem,
+  IconLegendItem,
+  IconStaticLegendItem,
+  VisualizerLegend,
+  type ColorClause,
+  type IconClause,
 } from "@movici-flow-lib/types";
 import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
-import ColorBucketLegend from "./ColorBucketLegend.vue";
-import IconLegend from "./IconLegend.vue";
-import ColorGradientLegend from "./ColorGradientLegend.vue";
-import WidgetContainer from "./WidgetContainer.vue";
 import { computed } from "vue";
+import BucketLegend from "./BucketLegend.vue";
+import ColorGradientLegend from "./ColorGradientLegend.vue";
+import StaticLegendThumbnails from "./StaticLegendThumbnails.vue";
+import WidgetContainer from "./WidgetContainer.vue";
 
 const props = defineProps<{
   modelValue: ComposableVisualizerInfo[];
 }>();
 
 function isBuckets(colorLegendItem: ColorLegendItem) {
-  return colorLegendItem.colorType === "buckets";
+  return (
+    (colorLegendItem instanceof ColorByValueLegendItem &&
+      colorLegendItem.colorType === "buckets") ||
+    colorLegendItem instanceof ColorStaticLegendItem
+  );
 }
 
 function isGradient(colorLegendItem: ColorLegendItem) {
-  return colorLegendItem.colorType === "gradient";
+  return (
+    colorLegendItem instanceof ColorByValueLegendItem && colorLegendItem.colorType === "gradient"
+  );
 }
 
 const legendList = computed(() => {
-  const rv: LegendItem[] = [];
+  const rv: VisualizerLegend[] = [];
   for (const { settings, name, visible } of props.modelValue) {
+    if (!(settings && visible)) continue;
+
     let color: ColorLegendItem | null = null,
       icon: IconLegendItem | null = null,
       shape: IconLegendItem | null = null;
-    if (visible) {
-      if (settings?.color?.legend) {
-        color = createColorLegendItem(settings.color, settings.type);
-      }
 
-      if (settings?.icon?.legend) {
-        icon = createIconLegendItem(settings.icon, "icon");
-      }
-      if (settings?.shape?.legend) {
-        shape = createIconLegendItem(settings.shape, "shape");
-      }
+    if (settings.color?.legend) {
+      color = createColorLegendItem(settings.color);
+    }
 
-      if (color || icon || shape) {
-        const legendItem = new LegendItem({
-          title: name,
-          color,
-          icon,
-          shape
-        });
+    if (settings.icon?.legend) {
+      icon = createIconLegendItem(settings.icon, "icon");
+    }
+    if (settings.shape?.legend) {
+      shape = createIconLegendItem(settings.shape, "shape");
+    }
 
-        rv.push(legendItem);
-      }
+    if (color || icon || shape) {
+      const legendItem = new VisualizerLegend({
+        title: name,
+        visualizerType: settings.type,
+        color,
+        icon,
+        shape,
+      });
+
+      rv.push(legendItem);
     }
   }
   return rv;
@@ -119,45 +142,25 @@ function createIconLegendItem(clause: IconClause, kind: "icon" | "shape"): IconL
   if (!legend) return null;
 
   if (clause?.static?.icon) {
-    return new IconStaticLegendItem(clause.static, kind);
+    return new IconStaticLegendItem(clause.static);
   }
   if (clause?.byValue) {
-    return new IconByValueLegendItem(clause.byValue, kind, legend);
+    return new IconByValueLegendItem(clause.byValue, legend);
   }
 
   return null;
 }
 
-function createColorLegendItem(
-  clause: ColorClause,
-  type: FlowVisualizerType
-): ColorLegendItem | null {
-  const legend = clause.legend,
-    baseConfig = {
-      visualizerType: type,
-      colorLegends: [],
-    };
+function createColorLegendItem(clause: ColorClause): ColorLegendItem | null {
+  const legend = clause.legend;
 
   if (!legend) return null;
 
   if (clause.byValue) {
-    return new ColorByValueLegendItem(
-      {
-        ...baseConfig,
-        colorType: clause.byValue.type,
-      },
-      clause.byValue,
-      legend
-    );
+    return new ColorByValueLegendItem(clause.byValue, clause.byValue.type, legend);
   }
   if (clause.static) {
-    return new ColorStaticLegendItem(
-      {
-        ...baseConfig,
-        colorType: "buckets",
-      },
-      clause.static
-    );
+    return new ColorStaticLegendItem(clause.static);
   }
   throw new Error("Unknown clause type");
 }
@@ -166,5 +169,10 @@ function createColorLegendItem(
 <style scoped lang="scss">
 hr {
   margin: 0.25em 0;
+}
+.legend-title {
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 </style>

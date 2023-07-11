@@ -82,6 +82,7 @@ import ColorByValueConfigurator from "./ColorByValueConfigurator.vue";
 import ColorStaticConfigurator from "./ColorStaticConfigurator.vue";
 import LegendLabelsConfigurator from "./LegendLabelsConfigurator.vue";
 import { attributesInjection, validatorInjection } from "./injectionKeys";
+import cloneDeep from "lodash/cloneDeep";
 const { t } = useI18n();
 
 const props = defineProps<{
@@ -112,6 +113,7 @@ const {
   t,
   modelValue: computed(() => props.modelValue),
   onEmit: (toEmit) => {
+    console.log(cloneDeep(toEmit));
     if (localClause.advanced) {
       toEmit.advanced = localClause.advanced;
     }
@@ -123,8 +125,7 @@ const {
 });
 
 onUnmounted(destroyValidator);
-
-const showLegend = ref(false);
+const showLegend = ref(!!props.modelValue?.legend);
 watch(showLegend, () => {
   if (showLegend) {
     localClause.legend ??= {};
