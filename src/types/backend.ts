@@ -40,6 +40,7 @@ export interface SummaryService {
 export interface ScenarioService {
   get(scenario_uuid: UUID): Promise<Scenario | null>;
   list(project_uuid?: UUID): Promise<ShortScenario[] | null>;
+  updateConfig(scenario_uuid: UUID, config: string): Promise<{result: string, message: string} | null>;
 }
 
 export interface ProjectService {
