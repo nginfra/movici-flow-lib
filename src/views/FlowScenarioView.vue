@@ -178,14 +178,14 @@ const hasConfigChanges = computed(() => {
 });
 
 // Validate JSON and update error state
-const validateConfig = () => {
+const validatedConfig = () => {
   try {
-    JSON.parse(editableConfigData.value);
+    const result = JSON.parse(editableConfigData.value);
     configError.value = '';
-    return true;
+    return result;
   } catch (error) {
     configError.value = `Invalid JSON: ${error instanceof Error ? error.message : 'Unknown error'}`;
-    return false;
+    return null;
   }
 };
 
@@ -193,7 +193,9 @@ const validateConfig = () => {
 const saveConfig = async () => {
   if (!store.scenario?.uuid) return;
   
-  if (!validateConfig()) {
+  const result = validatedConfig();
+  
+  if (!result) {
     return;
   }
   
@@ -201,7 +203,7 @@ const saveConfig = async () => {
   saveMessage.value = null;
   
   try {
-    await store.backend?.scenario.updateConfig(store.scenario.uuid, editableConfigData.value);
+    await store.backend?.scenario.update(store.scenario.uuid, result);
     originalConfigData.value = editableConfigData.value;
     
     // Refresh scenario data
@@ -244,7 +246,7 @@ watch(
 // Validate JSON on input change
 watch(editableConfigData, () => {
   if (editableConfigData.value.trim()) {
-    validateConfig();
+    validatedConfig();
   }
 });
 </script>
