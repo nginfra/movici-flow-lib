@@ -3,7 +3,7 @@
     <span v-if="errors['shapeOrIcon']" class="error is-block is-size-7 has-text-danger mb-2">
       {{ errors["shapeOrIcon"] }}
     </span>
-    <label class="label is-size-6">{{ $t("flow.visualization.iconConfig.shape") }}</label>
+    <label class="label is-size-6">{{ t("flow.visualization.iconConfig.shape") }}</label>
     <IconConfigurator
       class="mt-2"
       :modelValue="props.modelValue.shape"
@@ -11,7 +11,7 @@
       iconGroup="shapes"
     />
     <hr />
-    <label class="label is-size-6">{{ $t("flow.visualization.iconConfig.icon") }}</label>
+    <label class="label is-size-6">{{ t("flow.visualization.iconConfig.icon") }}</label>
     <IconConfigurator
       class="mt-2"
       :modelValue="props.modelValue.icon"
@@ -27,6 +27,9 @@ import type { IconClause } from "@movici-flow-lib/types";
 import { inject, provide } from "vue";
 import IconConfigurator from "./IconConfigurator.vue";
 import { validatorInjection } from "./injectionKeys";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 interface ShapeIconClause {
   shape?: IconClause;

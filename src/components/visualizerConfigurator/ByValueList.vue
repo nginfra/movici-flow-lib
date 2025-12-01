@@ -96,7 +96,7 @@
       icon-left="plus-circle"
       size="small"
     >
-      {{ $t("flow.visualization.byValueConfig.addRow") }}
+      {{ t("flow.visualization.byValueConfig.addRow") }}
     </o-button>
   </div>
 </template>

@@ -8,7 +8,7 @@
           :icon-left="open ? 'angle-down' : 'angle-up'"
         />
         <label class="is-size-6-half ml-1">
-          {{ $t("flow.visualization.colorConfig.advanced.title") }}
+          {{ t("flow.visualization.colorConfig.advanced.title") }}
         </label>
       </span>
     </template>
@@ -27,7 +27,7 @@
     </div>
     <div class="columns mb-2 is-multiline">
       <div class="column py-1 is-2" v-if="hasFillOpacity">
-        <o-field :label="$t('flow.visualization.colorConfig.advanced.fillOpacity')">
+        <o-field :label="t('flow.visualization.colorConfig.advanced.fillOpacity')">
           <span class="is-flex-grow-1 mr-2">
             <o-input
               size="small"
@@ -57,6 +57,9 @@ import { computed, inject, reactive, ref, watch } from "vue";
 import AdvColorList from "./AdvColorList.vue";
 import RenderOrder from "./RenderOrder.vue";
 import { geometryInjection } from "./injectionKeys";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const defaultSettings = {
   specialColor: DEFAULT_SPECIAL_COLOR_TRIPLE,

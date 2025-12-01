@@ -1,5 +1,5 @@
 <template>
-  <o-field class="is-flex-grow-1 ml-2" :label="$t('flow.visualization.colorConfig.palette')">
+  <o-field class="is-flex-grow-1 ml-2" :label="t('flow.visualization.colorConfig.palette')">
     <o-dropdown
       :modelValue="modelValue"
       @update:modelValue="$emit('update:modelValue', $event)"
@@ -43,6 +43,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type ColorPalette from "./colorPalettes";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{

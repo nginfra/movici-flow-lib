@@ -5,13 +5,13 @@
         class="is-flex-direction-row-reverse is-align-content-space-between is-flex is-align-items-center is-clickable"
       >
         <o-icon
-          :title="$t('flow.datasets.entitySummary')"
+          :title="t('flow.datasets.entitySummary')"
           class="collapsed-icon"
           pack="far"
           :icon="collapsed ? 'stream' : 'minus-square'"
         />
         <label class="label is-flex-grow-1 mb-0" v-show="!collapsed">
-          {{ $t("flow.datasets.entitySummary") }}
+          {{ t("flow.datasets.entitySummary") }}
         </label>
       </div>
     </template>
@@ -57,7 +57,7 @@
               </template>
             </Draggable>
             <li class="zero-results has-text-danger" v-else>
-              {{ $t("flow.datasets.zeroEntities") }}
+              {{ t("flow.datasets.zeroEntities") }}
             </li>
           </ul>
         </o-field>
@@ -87,6 +87,9 @@ import { computed, ref, watchEffect, type Ref, watch } from "vue";
 import Draggable from "vuedraggable";
 import GeometrySelector from "../GeometrySelector.vue";
 import WidgetContainer from "./WidgetContainer.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 interface TypedEntityGroupSummary extends EntityGroupSummary {
   type?: FlowVisualizerType;

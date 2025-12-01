@@ -3,7 +3,7 @@
     <div class="is-flex is-flex-direction-row-reverse" :disabled="charts.length">
       <span @click="toggleExpand" :class="{ expanded }">
         <o-icon
-          :title="$t('flow.visualization.graph.showCharts')"
+          :title="t('flow.visualization.graph.showCharts')"
           class="collapsed-icon"
           pack="far"
           :icon="expanded ? 'minus-square' : 'chart-line'"
@@ -28,7 +28,7 @@
                 icon-left="edit"
                 size="small"
                 class="ml-2 mr-0 is-borderless has-text-primary"
-                :title="$t('actions.edit')"
+                :title="t('actions.edit')"
                 @click="$emit('openConfig', i)"
               />
               <o-button
@@ -36,7 +36,7 @@
                 icon-left="trash"
                 size="small"
                 class="mx-0 is-borderless has-text-primary"
-                :title="$t('actions.delete')"
+                :title="t('actions.delete')"
                 @click="removeChart(i)"
               />
             </div>
@@ -67,6 +67,9 @@ import type { ChartVisualizerInfo } from "@movici-flow-lib/visualizers/Visualize
 import type { ChartData, Chart as ChartJS } from "chart.js";
 import { computed, nextTick, ref, unref, watch } from "vue";
 import AttributeChart from "./AttributeChart.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{

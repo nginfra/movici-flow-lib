@@ -10,7 +10,7 @@
       :label="header"
     >
       <template #options-side>
-        <o-field :label="$t('flow.visualization.displayAs')">
+        <o-field :label="t('flow.visualization.displayAs')">
           <o-radio
             v-model="local.units"
             :disabled="noSizeInMeter"
@@ -18,10 +18,10 @@
             size="small"
             class="mr-4"
           >
-            {{ $t("units.meters") }}
+            {{ t("units.meters") }}
           </o-radio>
           <o-radio v-model="local.units" native-value="pixels" size="small">
-            {{ $t("units.pixels") }}
+            {{ t("units.pixels") }}
           </o-radio>
         </o-field>
       </template>

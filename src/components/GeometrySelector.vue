@@ -12,7 +12,7 @@
         <o-tooltip
           v-for="(c, idx) in choices"
           :key="c.geometry"
-          :label="$t(`flow.visualization.type.${c.geometry}`)"
+          :label="t(`flow.visualization.type.${c.geometry}`)"
           variant="black"
           position="top"
           :class="{ 'mr-2': idx !== choices.length - 1 }"
@@ -41,7 +41,7 @@
           class="is-flex"
           size="small"
         >
-          {{ $t(`flow.visualization.type.${c.geometry}`) }}
+          {{ t(`flow.visualization.type.${c.geometry}`) }}
         </o-radio>
       </template>
     </div>

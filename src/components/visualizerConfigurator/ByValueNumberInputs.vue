@@ -19,7 +19,7 @@
         <o-button
           v-if="hasRemoveButton"
           @click="$emit('removeRow', index)"
-          :title="$t('flow.visualization.byValueConfig.removeRow')"
+          :title="t('flow.visualization.byValueConfig.removeRow')"
           :disabled="removeButtonDisabled"
           class="ml-1 is-transparent has-hover-bg is-borderless has-text-danger"
           icon-pack="far"
@@ -33,6 +33,9 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 const props = defineProps<{
   modelValue: number[];
   hasRemoveButton?: boolean;

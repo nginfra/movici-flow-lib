@@ -21,7 +21,7 @@
           :class="{ 'ml-2': isStatic }"
           v-if="!isSimple && idx == 0"
         >
-          {{ $t("flow.visualization.colorConfig.color") }}
+          {{ t("flow.visualization.colorConfig.color") }}
         </label>
       </div>
     </li>
@@ -32,6 +32,9 @@
 import { ColorLegendItem, FlowVisualizerType, type RGBAColor } from "@movici-flow-lib/types";
 import { colorTripleToHex } from "@movici-flow-lib/visualizers/maps/colorMaps";
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   modelValue: ColorLegendItem;

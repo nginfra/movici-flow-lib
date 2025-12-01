@@ -4,7 +4,7 @@
       <div class="column is-two-thirds-desktop is-full-tablet">
         <o-field>
           <o-checkbox :modelValue="showVisiblity" @update:modelValue="toggleVisiblity" size="small">
-            {{ $t("flow.visualization.byValue") }}
+            {{ t("flow.visualization.byValue") }}
           </o-checkbox>
         </o-field>
       </div>
@@ -14,7 +14,7 @@
         <div class="column is-two-thirds-desktop is-full-tablet">
           <o-field
             required
-            :label="$t('flow.visualization.basedOn')"
+            :label="t('flow.visualization.basedOn')"
             :message="errors['selectedAttribute']"
             :variant="errors['selectedAttribute'] && 'danger'"
           >
@@ -34,7 +34,7 @@
         :selectedAttribute="selectedAttribute"
         :strategy="strategy"
         :component="SimpleCheckbox"
-        :label="$t('flow.visualization.visibilityConfig.visible')"
+        :label="t('flow.visualization.visibilityConfig.visible')"
         buckets
       />
     </template>

@@ -5,12 +5,12 @@
         <div class="is-flex">
           <o-field
             class="mb-0"
-            :label="$t('flow.visualization.sizeConfig.size')"
+            :label="t('flow.visualization.sizeConfig.size')"
             :variant="errors['size'] && 'danger'"
           >
             <MovNumberinput v-model="local.size" size="small" />
           </o-field>
-          <o-field class="is-flex-grow-1 ml-4" :label="$t('flow.visualization.displayAs')">
+          <o-field class="is-flex-grow-1 ml-4" :label="t('flow.visualization.displayAs')">
             <o-radio
               v-model="local.units"
               :disabled="noSizeInMeter"
@@ -18,10 +18,10 @@
               size="small"
               class="mr-4"
             >
-              {{ $t("units.meters") }}
+              {{ t("units.meters") }}
             </o-radio>
             <o-radio v-model="local.units" native-value="pixels" size="small">
-              {{ $t("units.pixels") }}
+              {{ t("units.pixels") }}
             </o-radio>
           </o-field>
         </div>
@@ -45,6 +45,9 @@ import { isPositive } from "@movici-flow-lib/utils/FormValidator";
 import { computed, inject, onUnmounted, reactive, watch } from "vue";
 import MinMaxPixels from "./MinMaxPixels.vue";
 import { geometryInjection, validatorInjection } from "./injectionKeys";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   modelValue?: SizeClause;

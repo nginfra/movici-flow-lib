@@ -1,13 +1,13 @@
 <template>
   <o-field>
     <template #label>
-      {{ $t("flow.visualization.colorConfig.advanced.renderOrder") }}
+      {{ t("flow.visualization.colorConfig.advanced.renderOrder") }}
       <o-icon
         size="small"
         variant="info"
         icon-pack="far"
         icon="info-circle"
-        :title="$t('flow.visualization.colorConfig.advanced.renderOrderInfo')"
+        :title="t('flow.visualization.colorConfig.advanced.renderOrderInfo')"
       />
     </template>
     <div class="is-flex is-flex-direction-column">
@@ -20,7 +20,7 @@
         :native-value="label"
         type="is-success is-outlined"
       >
-        <span>{{ $t("flow.visualization.colorConfig.advanced." + label) }}</span>
+        <span>{{ t("flow.visualization.colorConfig.advanced." + label) }}</span>
       </o-radio>
     </div>
   </o-field>
@@ -29,6 +29,9 @@
 <script setup lang="ts">
 import { RenderOrderType } from "@movici-flow-lib/types";
 import { computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   modelValue: RenderOrderType;

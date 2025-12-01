@@ -2,7 +2,7 @@
   <div>
     <div v-if="modelValue">
       <span class="is-flex">
-        <label class="label is-flex-grow-1">{{ $t("flow.visualization.legendLabel") }}</label>
+        <label class="label is-flex-grow-1">{{ t("flow.visualization.legendLabel") }}</label>
         <MovKebabMenu
           :modelValue="actions"
           @resetLegends="resetLegends"

@@ -12,7 +12,7 @@
         >
           <o-icon :pack="pinProps.iconClass" icon="thumbtack" />
         </span>
-        <span class="close is-clickable" :title="$t('actions.close')" @click.stop="$emit('close')">
+        <span class="close is-clickable" :title="t('actions.close')" @click.stop="$emit('close')">
           <o-icon pack="far" icon="times" />
         </span>
       </template>

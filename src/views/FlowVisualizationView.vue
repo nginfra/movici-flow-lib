@@ -38,7 +38,7 @@
         class="flow-tabs uppercase field is-flex-grow-0 is-flex-shrink-2"
         :style="tabHeight"
       >
-        <o-tab-item :label="$t('flow.visualization.tabs.visualizers')" :value="0">
+        <o-tab-item :label="t('flow.visualization.tabs.visualizers')" :value="0">
           <FlowLayerPicker
             ref="layerPicker"
             v-model="parsedView.visualizerInfos"
@@ -48,7 +48,7 @@
             @export="exportData($event)"
           />
         </o-tab-item>
-        <o-tab-item :label="$t('flow.visualization.tabs.charts')" :value="1">
+        <o-tab-item :label="t('flow.visualization.tabs.charts')" :value="1">
           <FlowChartPicker v-model="parsedView.chartInfos" v-model:open="chartConfigOpen" />
         </o-tab-item>
       </o-tabs>

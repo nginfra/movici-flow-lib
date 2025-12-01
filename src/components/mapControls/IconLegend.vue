@@ -8,7 +8,7 @@
             <span class="ml-2 legend-value" v-if="!isShapeStatic">{{ iconLegend[0] }}</span>
           </span>
           <label class="label is-size-7 mb-0" :class="{ 'ml-2': isShapeStatic }" v-if="idx < 1">
-            {{ $t("flow.visualization.iconConfig.shape") }}
+            {{ t("flow.visualization.iconConfig.shape") }}
           </label>
         </div>
       </li>
@@ -21,7 +21,7 @@
             <span class="ml-2 legend-value" v-if="!isIconStatic">{{ iconLegend[0] }}</span>
           </span>
           <label class="label is-size-7 mb-0" :class="{ 'ml-2': isIconStatic }" v-if="idx < 1">
-            {{ $t("flow.visualization.iconConfig.icon") }}
+            {{ t("flow.visualization.iconConfig.icon") }}
           </label>
         </div>
       </li>
@@ -32,6 +32,9 @@
 <script setup lang="ts">
 import type { IconShapeLegendItem } from "@movici-flow-lib/types";
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   modelValue: IconShapeLegendItem;

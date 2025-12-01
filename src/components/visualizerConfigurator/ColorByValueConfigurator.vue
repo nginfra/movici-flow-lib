@@ -7,7 +7,7 @@
     :component="ColorInput"
     :componentProps="componentProps"
     :strategy="strategy"
-    :label="$t('flow.visualization.colorConfig.colors')"
+    :label="t('flow.visualization.colorConfig.colors')"
     :buckets="fillType === 'buckets'"
   >
     <template #options-top="{ mappingHelper }">
@@ -24,7 +24,7 @@
                 size="small"
                 :disabled="!isMode(mappingHelper, 'number')"
               >
-                {{ $t("flow.visualization.colorConfig." + kind) }}
+                {{ t("flow.visualization.colorConfig." + kind) }}
               </o-radio>
             </o-field>
           </div>
@@ -63,6 +63,9 @@ import ColorPaletteSelector from "./ColorPaletteSelector.vue";
 import type { ValueMappingHelper, MappingMode } from "./ValueMappingHelper";
 import { DEFAULT_COLOR_PALETTES } from "./colorPalettes";
 import ColorMappingStrategy from "./ColorMappingStrategy";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{

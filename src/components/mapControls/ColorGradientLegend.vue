@@ -1,7 +1,7 @@
 <template>
   <div class="gradient-container is-size-7" v-if="modelValue.colorType === 'gradient'">
     <label class="label is-size-7 mb-1">
-      {{ $t("flow.visualization.colorConfig.color") }}
+      {{ t("flow.visualization.colorConfig.color") }}
     </label>
     <div class="gradient" :style="gradientColorStyle(modelValue)"></div>
     <span class="is-flex is-justify-content-space-between">
@@ -15,6 +15,9 @@
 <script setup lang="ts">
 import type { ColorLegendItem } from "@movici-flow-lib/types";
 import { colorTripleToHex } from "@movici-flow-lib/visualizers/maps/colorMaps";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 defineProps<{
   modelValue: ColorLegendItem;

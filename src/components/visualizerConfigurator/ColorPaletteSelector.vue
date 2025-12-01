@@ -1,6 +1,6 @@
 <template>
   <div class="is-flex is-flex-direction-row is-flex-grow-1">
-    <o-field class="is-flex-grow-1" :label="$t('flow.visualization.colorConfig.type')">
+    <o-field class="is-flex-grow-1" :label="t('flow.visualization.colorConfig.type')">
       <o-select
         :modelValue="selectedGroupName"
         @update:modelValue="selectGroupName"
@@ -26,6 +26,9 @@
 import { computed, ref, watch } from "vue";
 import ColorPaletteDropdown from "./ColorPaletteDropdown.vue";
 import ColorPalette, { DEFAULT_COLOR_PALETTES } from "./colorPalettes";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   modelValue?: ColorPalette | null;

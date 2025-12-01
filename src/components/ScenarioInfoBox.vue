@@ -2,14 +2,14 @@
   <div class="current-scenario is-flex is-align-items-flex-end">
     <div class="info is-flex-grow-1">
       <label class="is-size-7">
-        {{ $t("resources.scenario") }}
+        {{ t("resources.scenario") }}
         <span v-if="editable" class="count">({{ store.scenarios.length }})</span>
       </label>
       <o-field class="is-flex-grow-0 is-flex-shrink-1" v-if="editable">
         <o-select
           :modelValue="store.scenario?.name"
           @update:modelValue="setScenario($event)"
-          :placeholder="$t('flow.scenarios.selectPlaceholder')"
+          :placeholder="t('flow.scenarios.selectPlaceholder')"
           size="small"
           expanded
         >
@@ -37,6 +37,9 @@
 <script setup lang="ts">
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import { getClassFromStatus } from "@movici-flow-lib/utils";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const store = useFlowStore();
 defineProps<{ editable?: boolean }>();

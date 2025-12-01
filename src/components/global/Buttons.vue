@@ -12,7 +12,7 @@
         :icon-pack="btn.iconPack"
         :variant="btn.variant"
       >
-        {{ noTranslate ? btn.label : $t(btn.label) }}
+        {{ noTranslate ? btn.label : t(btn.label) }}
       </o-button>
       <slot></slot>
     </div>
@@ -22,6 +22,9 @@
 
 <script setup lang="ts">
 import type { ButtonItem } from "@movici-flow-lib/types";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const emit = defineEmits<{
   (e: "action", action: string): void;

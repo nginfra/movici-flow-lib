@@ -24,7 +24,6 @@ export function createComponentWrapper(
       i18n: new VueI18n({ locale: "en" }),
       stubs: ["router-view", "router-link"],
       mocks: {
-        $t: (val: string) => val,
         $flow: {
           successMessage: jest.fn(),
           failMessage: jest.fn(),

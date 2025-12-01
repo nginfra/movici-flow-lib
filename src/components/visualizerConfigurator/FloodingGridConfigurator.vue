@@ -3,7 +3,7 @@
     <div class="columns mb-0 is-multiline" v-if="datasets">
       <div class="column is-two-thirds-desktop is-full-tablet">
         <o-field
-          :label="$t('flow.visualization.floodingConfig.heightMap')"
+          :label="t('flow.visualization.floodingConfig.heightMap')"
           required
           :message="errors['heightmap']"
           :variant="errors['heightmap'] && 'danger'"
@@ -20,7 +20,7 @@
       <div class="column is-one-third-desktop">
         <o-field>
           <o-checkbox v-model="showLegend" size="small">
-            {{ $t("flow.visualization.showLegend") }}
+            {{ t("flow.visualization.showLegend") }}
           </o-checkbox>
         </o-field>
       </div>
@@ -39,6 +39,9 @@ import type { ColorClause, FloodingGridClause, ScenarioDataset } from "@movici-f
 import { computed, inject, onUnmounted, provide, ref } from "vue";
 import FloodingColorConfigurator from "./FloodingColorConfigurator.vue";
 import { datasetsInjection, validatorInjection } from "./injectionKeys";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 interface FloodingGridColorClause {
   floodingGrid?: FloodingGridClause;

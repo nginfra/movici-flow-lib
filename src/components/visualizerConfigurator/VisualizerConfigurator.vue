@@ -4,8 +4,8 @@
       <h1 class="is-size-4 has-text-weight-bold mr-2">
         {{
           modelValue.settings
-            ? $t("flow.visualization.editVisualizer")
-            : $t("flow.visualization.newVisualizer")
+            ? t("flow.visualization.editVisualizer")
+            : t("flow.visualization.newVisualizer")
         }}
       </h1>
       <span class="separator is-flex-grow-1"></span>
@@ -21,13 +21,13 @@
         <div class="column">
           <o-field
             required
-            :label="$t('resources.dataset')"
+            :label="t('resources.dataset')"
             :variant="errors['currentDataset'] && 'danger'"
             :message="errors['currentDataset'] || ''"
           >
             <o-select
               v-model="currentDataset"
-              :placeholder="$t('dataset.select')"
+              :placeholder="t('dataset.select')"
               size="small"
               expanded
             >
@@ -40,14 +40,14 @@
         <div class="column">
           <o-field
             required
-            :label="$t('resources.entityGroup')"
+            :label="t('resources.entityGroup')"
             :variant="errors['currentEntityName'] && 'danger'"
             :message="errors['currentEntityName'] || ''"
           >
             <o-select
               v-model="currentEntityName"
               :disabled="(entityGroups?.length ?? 0) < 1"
-              :placeholder="$t('flow.entityGroup.select')"
+              :placeholder="t('flow.entityGroup.select')"
               size="small"
               expanded
             >
@@ -62,7 +62,7 @@
         <div class="column is-full">
           <o-field
             required
-            :label="$t('flow.visualization.visualiserDisplayName')"
+            :label="t('flow.visualization.visualiserDisplayName')"
             :variant="errors['displayName'] && 'danger'"
             :message="errors['displayName'] || ''"
           >
@@ -74,7 +74,7 @@
         <GeometrySelector
           v-model="geometry"
           :attributes="attributes"
-          :label="$t('flow.visualization.displayAs')"
+          :label="t('flow.visualization.displayAs')"
           showAs="button"
         />
       </div>
@@ -105,7 +105,7 @@
           @click="close"
           size="small"
         >
-          {{ $t("actions.cancel") }}
+          {{ t("actions.cancel") }}
         </o-button>
         <o-button
           variant="primary"
@@ -116,7 +116,7 @@
           icon-pack="fak"
           icon-left="fa-mov-save"
         >
-          {{ $t("flow.visualization.save") }}
+          {{ t("flow.visualization.save") }}
         </o-button>
         <o-button
           outlined
@@ -127,7 +127,7 @@
           icon-left="fa-mov-save"
           size="small"
         >
-          {{ $t("flow.visualization.saveAndClose") }}
+          {{ t("flow.visualization.saveAndClose") }}
         </o-button>
       </div>
     </div>

@@ -6,7 +6,7 @@
           <template #label>
             <MovImage
               src="/static/movici-logo.svg"
-              :title="$t('flow.leftMenu.returnToDashboard')"
+              :title="t('flow.leftMenu.returnToDashboard')"
             ></MovImage>
           </template>
         </o-menu-item>
@@ -14,7 +14,7 @@
           v-for="section in sections"
           aria-role="menuitem"
           :key="section.step"
-          :label="$t(section.label)"
+          :label="t(section.label)"
           :icon-pack="section.iconPack"
           :icon="section.icon"
           :disabled="!section.enabled"
@@ -35,7 +35,7 @@
       variant="black"
       position="right"
       :label="
-        (uiStore.collapse ? $t('flow.leftMenu.expand') : $t('flow.leftMenu.collapse')) + ' menu'
+        (uiStore.collapse ? t('flow.leftMenu.expand') : t('flow.leftMenu.collapse')) + ' menu'
       "
     >
       <o-button

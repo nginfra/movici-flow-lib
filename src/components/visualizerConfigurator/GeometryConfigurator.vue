@@ -2,19 +2,19 @@
   <div class="columns mb-0 is-multiline">
     <div class="column is-two-thirds-desktop is-full-tablet">
       <o-field
-        :label="$t('flow.visualization.geometryConfig.geometryLabel')"
+        :label="t('flow.visualization.geometryConfig.geometryLabel')"
         required
         :message="errors['local']"
         :variant="errors['local'] && 'danger'"
       >
         <template #label>
-          {{ $t("flow.visualization.geometryConfig.geometryLabel") }}
+          {{ t("flow.visualization.geometryConfig.geometryLabel") }}
           <o-icon
             size="small"
             variant="info"
             icon-pack="far"
             icon="info-circle"
-            :title="$t('flow.visualization.geometryConfig.geometryInfo')"
+            :title="t('flow.visualization.geometryConfig.geometryInfo')"
           />
         </template>
         <span

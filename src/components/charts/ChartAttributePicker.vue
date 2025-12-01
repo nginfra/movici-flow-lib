@@ -8,10 +8,10 @@
         <template #label>
           <div class="is-flex is-align-items-center">
             <label class="label is-size-7 mb-0 mr-2">{{
-              $t("flow.visualization.graph.chooseAttribute")
+              t("flow.visualization.graph.chooseAttribute")
             }}</label>
             <o-icon
-              :title="$t('flow.visualization.graph.attributeInfo')"
+              :title="t('flow.visualization.graph.attributeInfo')"
               size="tiny"
               icon="info-circle"
               variant="info"
@@ -52,6 +52,9 @@ import {
 } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import { computed } from "@vue/reactivity";
 import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   modelValue: ChartVisualizerInfo[];

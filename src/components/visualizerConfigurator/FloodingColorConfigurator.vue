@@ -4,7 +4,7 @@
       <div class="column is-two-thirds-desktop is-full-tablet">
         <o-field
           required
-          :label="$t('flow.visualization.basedOn')"
+          :label="t('flow.visualization.basedOn')"
           :message="errors['selectedAttribute']"
           :variant="errors['selectedAttribute'] && 'danger'"
         >

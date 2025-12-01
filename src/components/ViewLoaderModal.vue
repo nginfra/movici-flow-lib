@@ -8,8 +8,8 @@
       <span class="is-size-6">
         {{
           views.length
-            ? $t("flow.visualization.dialogs.selectView")
-            : $t("flow.visualization.dialogs.noViewsForScenario")
+            ? t("flow.visualization.dialogs.selectView")
+            : t("flow.visualization.dialogs.noViewsForScenario")
         }}
       </span>
     </template>
@@ -30,7 +30,7 @@
     <template #footer>
       <div class="is-flex is-flex-grow-1 is-justify-content-flex-end">
         <o-button size="small" @click="$emit('close')">
-          {{ views.length ? $t("actions.cancel") : $t("actions.back") }}
+          {{ views.length ? t("actions.cancel") : t("actions.back") }}
         </o-button>
         <o-button
           size="small"
@@ -38,7 +38,7 @@
           variant="primary"
           :disabled="!selectedViewUUID"
         >
-          {{ $t("flow.visualization.dialogs.loadView") }}
+          {{ t("flow.visualization.dialogs.loadView") }}
         </o-button>
       </div>
     </template>

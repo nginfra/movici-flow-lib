@@ -9,7 +9,7 @@
     />
     <div class="info is-flex-grow-1">
       <label class="is-size-7 is-block">
-        {{ $t("flow.visualization.infoLabel") }}
+        {{ t("flow.visualization.infoLabel") }}
       </label>
       <span class="is-flex is-align-items-center is-flex-grow-1">
         <div class="is-flex-grow-1 field">
