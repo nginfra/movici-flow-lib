@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 const { createCanvas, loadImage } = require("canvas"),
   fs = require("fs-extra"),
   args = require("minimist")(process.argv.slice(2)), // slicing args
@@ -26,7 +28,7 @@ function getMaxImageSize(images) {
 // load images with canvas loadImage function
 function getImages(files, sourcePath) {
   return Promise.all(
-    files.map(async (name) => [name.split(".")[0], await loadImage(sourcePath + name)])
+    files.map(async (name) => [name.split(".")[0], await loadImage(sourcePath + name)]),
   );
 }
 

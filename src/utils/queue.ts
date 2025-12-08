@@ -73,7 +73,7 @@ function bubbleUp<T>(heap: T[], comparator: Comparator<T>) {
 function bubbleDown<T>(heap: T[], comparator: Comparator<T>) {
   if (heap.length < 2) return;
   let parentIdx = 0;
-  /*eslint-disable-next-line no-constant-condition*/
+
   while (true) {
     let toSwap: number | null = null;
     const [leftChild, rightChild] = [2 * parentIdx + 1, 2 * parentIdx + 2];

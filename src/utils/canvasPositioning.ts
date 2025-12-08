@@ -44,7 +44,6 @@ export interface DynamicPositionOpts {
  * @returns {String} position - one of 'top', 'bottom', 'left', 'right', 'top-left', 'top-right', 'bottom-left' , and  'bottom-right'
  */
 
-// eslint-disable-next-line complexity,max-statements
 export function getDynamicPosition({
   x,
   y,
@@ -186,7 +185,7 @@ export function getContainerStyle({
 export function getNearestPointOnLine(pickInfo: PickInfo<DeckEntityObject<unknown>>) {
   return nearestPointOnLine(
     lineString((pickInfo.object as { coordinates: PointCoordinate[] }).coordinates),
-    point(pickInfo.coordinate as PointCoordinate)
+    point(pickInfo.coordinate as PointCoordinate),
   ).geometry.coordinates;
 }
 

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Accessor, UpdateParameters } from "@deck.gl/core/typed";
 import { SolidPolygonLayer, type SolidPolygonLayerProps } from "@deck.gl/layers/typed";
 
@@ -227,7 +226,7 @@ export function expandColorMap(colormap: [number, RGBAColor][], nSteps = 50, ens
 function createColorMapTexture(
   colormap: [number, RGBAColor][],
   gl: WebGLRenderingContext,
-  nPixels = 50
+  nPixels = 50,
 ) {
   const linearized = expandColorMap(colormap, nPixels, true);
   const minVal = linearized[0]![0],

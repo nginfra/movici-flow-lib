@@ -129,6 +129,7 @@ function updateMarker(result: GeocodeSearchResult | null) {
       .setPopup(new mapboxgl.Popup().setHTML(result.text))
       .addTo(props.map);
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore: TS-2589 Type instantiation is excessively deep and possibly infinite
     marker.value.togglePopup();
   }

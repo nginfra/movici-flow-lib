@@ -28,7 +28,7 @@ export function createValueMappingHelper<T>({
         if (summary.enum_name) {
           return new EnumValueMappingHelper(ctorArgs);
         }
-      // eslint-disable-next-line no-fallthrough
+
       default:
         if (buckets) {
           return new BucketValueMappingHelper(ctorArgs);
@@ -131,7 +131,7 @@ export abstract class ValueMappingHelper<T> {
         forceRecalculateValues,
         maxValueAsLastValue: !this.buckets,
       },
-      this.strategy
+      this.strategy,
     );
   }
 
@@ -148,7 +148,7 @@ export abstract class ValueMappingHelper<T> {
   }
   abstract initializeMapping(
     mapping: ValueMapping<T>,
-    options?: { overrideMax?: number | null; resetMinMax?: boolean }
+    options?: { overrideMax?: number | null; resetMinMax?: boolean },
   ): ValueMapping<T>;
 
   abstract recalculateMapping({
@@ -178,7 +178,7 @@ export class ContinuousValueMappingHelper<T> extends ValueMappingHelper<T> {
 
   initializeMapping(
     mapping: ValueMapping<T>,
-    options?: { overrideMax?: number | null; resetMinMax?: boolean }
+    options?: { overrideMax?: number | null; resetMinMax?: boolean },
   ): ValueMapping<T> {
     if (options?.resetMinMax) {
       return this.resetMinMax(mapping);
@@ -232,7 +232,7 @@ export class BucketValueMappingHelper<T> extends ValueMappingHelper<T> {
 
   initializeMapping(
     mapping: ValueMapping<T>,
-    options?: { overrideMax?: number | null; resetMinMax?: boolean }
+    options?: { overrideMax?: number | null; resetMinMax?: boolean },
   ): ValueMapping<T> {
     if (options?.resetMinMax) {
       return this.resetMinMax(mapping);
@@ -382,7 +382,7 @@ export interface RecalculateMappingParams<T> extends RecalculateMappingValuePara
 }
 export function recalculateMapping<T>(
   params: RecalculateMappingParams<T>,
-  strategy: MappingStrategy<T>
+  strategy: MappingStrategy<T>,
 ): [number, T][] {
   const output = strategy.recalculateOutputs(params.output, params.nSteps);
   return recalculateMappingValues(params).map((val, idx) => [val, output[idx]!]);
@@ -413,7 +413,7 @@ export function interpolateMinMax(
   min: number,
   max: number,
   nSteps: number,
-  maxValueAsLastValue = false
+  maxValueAsLastValue = false,
 ) {
   const stepSize = (max - min) / (maxValueAsLastValue ? nSteps - 1 : nSteps),
     rv: number[] = [];

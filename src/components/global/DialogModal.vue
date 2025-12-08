@@ -104,7 +104,8 @@ function cancel() {
 }
 
 if (props.inputAttrs && typeof props.inputAttrs?.required === "undefined") {
-  props.inputAttrs["required"] == true;
+  // eslint-disable-next-line vue/no-mutating-props
+  props.inputAttrs["required"] = true;
 }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <div class="data-viewer box popup-fixed" :class="{ collapsed: collapsed_ }">
-    <o-collapse v-if="collapsable" :open.sync="open" animation="none" aria-id="container">
+    <o-collapse v-if="collapsable" v-model:open="open" animation="none" aria-id="container">
       <template #trigger>
         <slot name="collapse-title" :collapsed="collapsed_"></slot>
       </template>

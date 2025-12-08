@@ -18,7 +18,7 @@ import {
   getPointCenter,
   type ANCHOR_TYPE,
 } from "@movici-flow-lib/utils/canvasPositioning";
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 import inRange from "lodash/inRange";
 import type mapboxgl from "mapbox-gl";
 import { ref, watch, type CSSProperties } from "vue";
