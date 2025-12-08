@@ -112,7 +112,7 @@ export default class RenderOrderModule<
     values.push(Number.POSITIVE_INFINITY);
     const rv: [number, number][] = [];
     for (let i = 1; i < values.length; i++) {
-      rv.push([values[i - 1], values[i]]);
+      rv.push([values[i - 1]!, values[i]!]);
     }
     if (order === RenderOrderType.REVERSED) {
       rv.reverse();

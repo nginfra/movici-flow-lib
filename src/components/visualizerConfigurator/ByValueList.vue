@@ -48,8 +48,8 @@
           <MovKebabMenu
             v-if="isMode('number')"
             :modelValue="valueActions"
-            @resetValues="$emit('resetValues')"
-            @interpolateMinMax="$emit('interpolateMinMax')"
+            @resetValues="emit('resetValues')"
+            @interpolateMinMax="emit('interpolateMinMax')"
           />
         </span>
         <div class="is-flex is-flex-direction-column">
@@ -69,7 +69,7 @@
                 <MovNumberinput
                   v-if="isMaxIndex(index)"
                   :modelValue="maxValue"
-                  @update:modelValue="$emit('update:maxValue', $event)"
+                  @update:modelValue="emit('update:maxValue', $event)"
                   :controls="false"
                   :min-step="1e-15"
                   size="small"
@@ -90,7 +90,7 @@
     </div>
     <o-button
       v-if="isMode('number')"
-      @click="$emit('add-row')"
+      @click="emit('addRow')"
       class="is-size-7 is-transparent has-hover-bg is-borderless has-text-primary has-text-weight-bold mt-2"
       icon-pack="far"
       icon-left="plus-circle"
@@ -208,7 +208,7 @@ function removeRow(idx: number) {
 function invertOutput() {
   emitOriginalOrder(
     orderedValue.value.map((val, i) => {
-      return [val[0], props.modelValue[i][1]];
+      return [val[0], props.modelValue[i]![1]];
     })
   );
 }
@@ -220,7 +220,7 @@ function draggableIndex(item: [number, T]) {
 function draggableChange(event: { moved: { oldIndex: number; newIndex: number } }) {
   emitOriginalOrder(
     move(event.moved.oldIndex, event.moved.newIndex, output.value).map((d, idx) => {
-      return [mappingValues.value[idx], d];
+      return [mappingValues.value[idx]!, d];
     })
   );
 }

@@ -191,7 +191,7 @@ watchEffect(() => {
           entityGroup: group.name,
           type: group.type,
           items,
-          color: hexToColorTriple(colors[idx % colors.length]),
+          color: hexToColorTriple(colors[idx % colors.length]!),
         })
       );
     }

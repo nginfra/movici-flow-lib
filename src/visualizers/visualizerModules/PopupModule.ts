@@ -131,7 +131,7 @@ export class PopupContentAccessor {
         const rv: PopupContentItem = {
           name: item.name,
           attribute: item.attribute,
-          tapefile: this.tapefiles[idx],
+          tapefile: this.tapefiles[idx]!,
         };
 
         if (item.attribute.enum_name) {

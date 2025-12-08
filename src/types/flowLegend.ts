@@ -60,7 +60,7 @@ export class IconByValueLegendItem extends IconLegendItem {
 
     if (byValue && legend?.labels) {
       this.iconLegends = legend.labels.map((label: string, idx: number) => {
-        return [label, byValue.icons[idx][1]] as [string, string];
+        return [label, byValue.icons[idx]![1]] as [string, string];
       });
     }
   }
@@ -84,7 +84,7 @@ export class ColorByValueLegendItem extends ColorLegendItem {
 
     this.colorLegends =
       legend.labels?.map((label: string, idx: number) => {
-        return [label, byValue.colors[idx][1]] as [string, RGBAColor];
+        return [label, byValue.colors[idx]![1]] as [string, RGBAColor];
       }) ?? [];
   }
 }

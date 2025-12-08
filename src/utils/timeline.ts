@@ -38,7 +38,7 @@ export class TimelineDownloader {
     for (let i = 0; i < updatesList.length; i++) {
       promises.push(
         this.store
-          .getUpdateData(updatesList[i], this.entityGroup, this.properties)
+          .getUpdateData(updatesList[i]!, this.entityGroup, this.properties)
           .then((update) => {
             this.updateProgress();
             return update;

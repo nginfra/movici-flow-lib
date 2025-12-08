@@ -74,7 +74,7 @@ export default class Client implements IClient {
     if (axios.isAxiosError(e)) {
       const payload = parseHTTPError(e);
       if (payload.status && handlers[payload.status]) {
-        return handlers[payload.status](payload);
+        return handlers[payload.status]!(payload);
       }
       if (handlers.http) {
         return handlers.http(payload);
@@ -117,7 +117,7 @@ export function defaultClient(settings?: {
   });
 }
 
-const HTTPS_STATUS_CODES: Record<number, string> = {
+const HTTP_STATUS_CODES: Record<number, string> = {
   400: "Bad Request",
   401: "Unauthorized",
   403: "Forbidden",
@@ -150,7 +150,8 @@ function parseHTTPError(err: AxiosError): HTTPErrorPayload {
   }
 
   if (!message) {
-    message = status ? HTTPS_STATUS_CODES[status] : "Unknown Error";
+    const trymessage = status ? HTTP_STATUS_CODES[status] : null;
+    message = trymessage ?? "Unknown Error";
   }
 
   return { status, message };

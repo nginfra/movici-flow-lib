@@ -270,8 +270,9 @@ const calculatedOptions = computed(() => {
     //   find the default option and merge with given overrides
     const key = typeof opt === "string" ? opt : opt.id;
     if (key) {
+      const defaultOpt = DEFAULT_OPTIONS[key]!
       const payload =
-        typeof opt === "string" ? DEFAULT_OPTIONS[key] : Object.assign(DEFAULT_OPTIONS[key], opt);
+        typeof opt === "string" ? defaultOpt : Object.assign(defaultOpt, opt);
       //   place in an intermediate array
       rv.push(payload);
     } else throw Error("Invalid DeckDraw option");
@@ -290,7 +291,7 @@ const calculatedOptions = computed(() => {
       return;
     }
 
-    let previousElement = options[previousIndex];
+    let previousElement = options[previousIndex]!;
     if (element.container === previousElement.container && typeof element.container === "string") {
       const container = Object.assign({}, DEFAULT_OPTION_CONTAINERS[element.container], {
         options: [previousElement],

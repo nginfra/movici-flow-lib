@@ -28,7 +28,7 @@ export default class ColorPalette {
       size = Math.max(...Object.keys(this.colorsForSize).map((n) => Number(n)));
     }
 
-    const rv = this.colorsForSize[size].map((n: number) => this.colors[n] ?? "#ffffff");
+    const rv = this.colorsForSize[size]!.map((n: number) => this.colors[n] ?? "#ffffff");
     if (this.reversed) {
       rv.reverse();
     }
@@ -51,7 +51,7 @@ function addReversedColorPalettes(palettes: Record<string, ColorPalette[]>) {
       });
     });
 
-    palettes[key].push(...reversed);
+    palettes[key]!.push(...reversed);
   }
   return palettes;
 }

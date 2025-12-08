@@ -66,7 +66,7 @@ export class TapefileStore {
     store: DatasetDownloader;
     status?: StatusTracker;
   }): StreamingTapefile<T> {
-    return this.getTapefiles<T>(params)[0];
+    return this.getTapefiles<T>(params)[0]!;
   }
   getTapefiles<T>({
     entityGroup,
@@ -280,7 +280,7 @@ function getUpdateDataTask({
       return store.getUpdateData(update, entityGroup, attributes);
     },
     onDone(upd: UpdateWithData) {
-      const data = upd?.data[entityGroup] ?? {};
+      const data = upd?.data[entityGroup] ?? { id: [] };
       for (const tapefile of tapefiles) {
         tapefile.addUpdate(
           {
@@ -313,7 +313,7 @@ export class TapefileStoreCollection extends EventHandler<"data" | "ready", numb
       onData: (ts: number) => this.invokeCallbacks("data", ts),
       onReady: () => this.invokeCallbacks("ready", Number.MAX_SAFE_INTEGER),
     });
-    return this.tapefileStores[scenarioUUID];
+    return this.tapefileStores[scenarioUUID]!;
   }
   get(scenarioUUID: UUID): TapefileStore | null {
     return this.tapefileStores[scenarioUUID] ?? null;

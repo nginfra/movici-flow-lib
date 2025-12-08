@@ -17,7 +17,7 @@
           @update:modelValue="updateItem(index, $event)"
           @edit="startEditingItem(index)"
           @delete="deleteItem(index)"
-          @export="$emit('export', element)"
+          @export="emit('export', element)"
           @reload="reloadItem(index, updateItem)"
           tooltipActive
         />
@@ -66,6 +66,7 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: "update:modelValue", val: ComposableVisualizerInfo[]): void;
   (e: "update:open", val?: number): void;
+  (e: "export", val?: ComposableVisualizerInfo): void;
 }>();
 
 const items = computed(() => props.modelValue);

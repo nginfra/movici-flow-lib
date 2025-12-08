@@ -74,7 +74,7 @@ const props = withDefaults(
     strategy?: ColorMappingStrategy;
   }>(),
   {
-    strategy: () => new ColorMappingStrategy(DEFAULT_COLOR_PALETTES["Sequential"][0]),
+    strategy: () => new ColorMappingStrategy(DEFAULT_COLOR_PALETTES["Sequential"]![0]),
   }
 );
 
@@ -120,7 +120,7 @@ const colorPalette = computed({
     if (palette) {
       const newColors = props.strategy.recalculateOutputs([], colorMapping.value.length);
       colorMapping.value = colorMapping.value.map(([val], idx) => {
-        return [val, newColors[idx]];
+        return [val, newColors[idx]!];
       });
     }
   },

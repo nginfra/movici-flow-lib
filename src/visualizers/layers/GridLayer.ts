@@ -200,27 +200,27 @@ export function expandColorMap(colormap: [number, RGBAColor][], nSteps = 50, ens
    */
   if (colormap.length < 2) throw new Error("Color map must be at least of length 2");
   for (let i = 0; i < colormap.length - 2; i++) {
-    const step = colormap[i + 1][0] - colormap[i][0];
+    const step = colormap[i + 1]![0] - colormap[i]![0];
     if (step <= 0) throw new Error("Color map must be monotonically increasing");
   }
   if (ensureRGBA) {
     colormap = ensureRGBAColorMap(colormap);
   }
-  const minVal = colormap[0][0],
-    maxVal = colormap[colormap.length - 1][0],
+  const minVal = colormap[0]![0],
+    maxVal = colormap[colormap.length - 1]![0],
     stepSize = (maxVal - minVal) / (nSteps - 1);
   let currentMapIndex = 0;
-  let currentColor = colormap[currentMapIndex][1];
+  let currentColor = colormap[currentMapIndex]![1];
   const result: [number, RGBAColor][] = [];
   let val;
   for (val = minVal; val < maxVal; val += stepSize) {
-    while (currentMapIndex < colormap.length - 1 && val >= colormap[currentMapIndex + 1][0]) {
+    while (currentMapIndex < colormap.length - 1 && val >= colormap[currentMapIndex + 1]![0]) {
       currentMapIndex++;
-      currentColor = colormap[currentMapIndex][1];
+      currentColor = colormap[currentMapIndex]![1];
     }
     result.push([val, currentColor]);
   }
-  result.push([val, colormap[colormap.length - 1][1]]);
+  result.push([val, colormap[colormap.length - 1]![1]]);
   return result;
 }
 
@@ -230,9 +230,9 @@ function createColorMapTexture(
   nPixels = 50
 ) {
   const linearized = expandColorMap(colormap, nPixels, true);
-  const minVal = linearized[0][0],
-    maxVal = linearized[linearized.length - 1][0],
-    stepSize = linearized[1][0] - minVal;
+  const minVal = linearized[0]![0],
+    maxVal = linearized[linearized.length - 1]![0],
+    stepSize = linearized[1]![0] - minVal;
   return {
     minVal: minVal,
     maxVal: maxVal + stepSize,

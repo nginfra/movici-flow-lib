@@ -121,5 +121,5 @@ export function getEntitySummary(props: {
     throw new Error(`Invalid entity group '${info.entityGroup}`);
   }
 
-  return summary.entity_groups[index];
+  return summary.entity_groups[index]!;
 }

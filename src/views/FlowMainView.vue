@@ -26,7 +26,7 @@
           <span v-if="userInitials" class="is-small icon user-initials">
             {{ userInitials }}
           </span>
-          <span class="pt-1">{{ flowVersion }}</span>
+          <span class="pt-1">{{ version }}</span>
         </div>
       </o-menu-list>
     </o-menu>
@@ -56,7 +56,7 @@ import { useFlowSidebar } from "@movici-flow-lib/composables/useFlowSidebar";
 import { FlowRedirect } from "@movici-flow-lib/errors";
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import { useUIStore } from "@movici-flow-lib/stores/ui";
-import flowVersion from "@movici-flow-lib/version";
+import { version } from "@movici-flow-lib/version";
 import { computed, ref, toRef, watch } from "vue";
 import { useMoviciSettings } from "../baseComposables/useMoviciSettings";
 import type { FlowLocation, FlowStep } from "../types";

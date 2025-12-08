@@ -13,8 +13,8 @@
       :disabled="disabled"
       :expanded="expanded"
       :placeholder="placeholder"
-      @focus="$emit('focus', $event)"
-      @blur="$emit('blur', $event)"
+      @focus="emit('focus', $event)"
+      @blur="emit('blur', $event)"
     />
   </o-field>
 </template>
@@ -46,6 +46,8 @@ const props = withDefaults(
 );
 const emit = defineEmits<{
   (e: "update:modelValue", val: number | null): void;
+  (e: "focus", val: Event): void
+  (e: "blur", val: Event): void
 }>();
 const input = ref<HTMLElement | null>(null);
 

@@ -23,7 +23,7 @@ export function useCharts({
 }: {
   tapefileStores: TapefileStoreCollection;
   backend: Backend;
-  activeChartId: Ref<string>;
+  activeChartId: Ref<string | undefined>;
   updateChart?: () => void;
 }) {
   const loading = ref(false);

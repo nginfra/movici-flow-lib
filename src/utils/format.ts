@@ -37,7 +37,11 @@ function formatValueRecursive(
     // catches both null and undefined
     return formatters?.NULL?.(value, dataType) ?? "null";
   }
-  const customFormatter = formatters ? formatters[dataType[0]] : null;
+  const customFormatter = formatters
+    ? dataType[0] != undefined
+      ? formatters[dataType[0]]
+      : null
+    : null;
   if (customFormatter) return customFormatter(value, dataType.splice(1), formatters);
 
   switch (dataType[0]) {
@@ -142,7 +146,7 @@ function generateInnerLine(row: string[]): string {
 
 function countDecimals(value: number, max?: number) {
   if (Math.floor(value) === value) return 0;
-  let rv = value.toString().split(".")[1].length || 0;
+  let rv = value.toString().split(".")[1]!.length || 0;
   if (max !== undefined) {
     rv = Math.min(rv, max);
   }

@@ -135,7 +135,7 @@ export abstract class ValueMappingHelper<T> {
     );
   }
 
-  getMinMax(mapping: ValueMapping<T>, resetMinMax?: boolean) {
+  getMinMax(mapping: ValueMapping<T>, resetMinMax?: boolean): [number, number] {
     let minValue = mapping[0]?.[0] ?? this.summary.min_val ?? 0;
     let maxValue = mapping[mapping.length - 1]?.[0] ?? this.summary.max_val ?? minValue;
 
@@ -171,7 +171,7 @@ export class ContinuousValueMappingHelper<T> extends ValueMappingHelper<T> {
 
   getMaxValue(mapping?: ValueMapping<unknown>) {
     if (mapping?.length) {
-      return mapping[mapping.length - 1][0];
+      return mapping[mapping.length - 1]![0];
     }
     return this.maxValue;
   }
@@ -325,7 +325,9 @@ export class EnumValueMappingHelper<T> extends ValueMappingHelper<T> {
     resetMinMax?: boolean;
   }): ValueMapping<T> {
     const maxValue =
-      this.enums[this.summary.enum_name ?? ""]?.length - 1 ?? Math.floor(this.summary.max_val ?? 1);
+      this.summary.enum_name && this.enums[this.summary.enum_name] != undefined
+        ? this.enums[this.summary.enum_name]!.length - 1
+        : Math.floor(this.summary.max_val ?? 1);
 
     return this.doRecalculateMapping({
       mapping,
@@ -383,7 +385,7 @@ export function recalculateMapping<T>(
   strategy: MappingStrategy<T>
 ): [number, T][] {
   const output = strategy.recalculateOutputs(params.output, params.nSteps);
-  return recalculateMappingValues(params).map((val, idx) => [val, output[idx]]);
+  return recalculateMappingValues(params).map((val, idx) => [val, output[idx]!]);
 }
 
 export function recalculateMappingValues(params: RecalculateMappingValueParams): number[] {
@@ -404,7 +406,7 @@ export function recalculateMappingValues(params: RecalculateMappingValueParams):
     maxValueAsLastValue = params.maxValueAsLastValue ?? false;
   }
 
-  return interpolateMinMax(min, max, params.nSteps, maxValueAsLastValue);
+  return interpolateMinMax(min!, max!, params.nSteps, maxValueAsLastValue);
 }
 
 export function interpolateMinMax(

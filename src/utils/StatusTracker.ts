@@ -63,7 +63,7 @@ export default class StatusTracker {
       // We ignore tasks that are not tracked by the StatusTracker
       return;
     }
-    if (this.currentProgress?.[task][id] === undefined) {
+    if (this.currentProgress?.[task]?.[id] === undefined) {
       throw new Error(`id ${id} is not registered for task '${task}'`);
     }
     this.currentProgress[task][id] = val;
@@ -76,7 +76,7 @@ export default class StatusTracker {
       // and instead just throw them to the console
       console.error(`unhandled exception for task ${task}`, error);
     }
-    if (this.currentProgress?.[task][id] === undefined) {
+    if (this.currentProgress?.[task]?.[id] === undefined) {
       throw new Error(`id ${id} is not registered for task '${task}'`);
     }
   }

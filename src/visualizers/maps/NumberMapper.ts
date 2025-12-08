@@ -28,18 +28,19 @@ export default class NumberMapper<T> implements Mapper<number | null, T> {
   specialResult: T;
   undefined: number | null;
   undefinedResult: T;
-  values: number[];
-  results: T[];
+  values: [number, ...number[]]
+  results: [T, ...T[]];
   useCache = false;
   cache: Map<number | null, T>;
 
   constructor(config: NumberMapConfig<T>) {
+    if (!config.mapping.length) throw new Error("number mapping must have at least one entry")
     this.special = NaN;
     this.specialResult = config.specialResult;
     this.undefined = null;
     this.undefinedResult = config.undefinedResult;
-    this.values = config.mapping.map((m) => m[0]);
-    this.results = config.mapping.map((m) => m[1]);
+    this.values = config.mapping.map((m) => m[0]) as [number, ...number[]];
+    this.results = config.mapping.map((m) => m[1]) as [T, ...T[]];
     this.cache = new Map();
   }
 
@@ -66,10 +67,10 @@ export default class NumberMapper<T> implements Mapper<number | null, T> {
     if (this.isSpecial(value)) return this.specialResult;
     if (this.isUndefined(value)) return this.undefinedResult;
     if (!this.values.length) return this.undefinedResult;
-    if (value <= this.values[0]) return this.results[0];
+    if (value <= this.values[0]!) return this.results[0];
     for (let i = this.values.length - 1; i >= 0; i--) {
-      if (value >= this.values[i]) {
-        return this.results[i];
+      if (value >= this.values[i]!) {
+        return this.results[i]!;
       }
     }
     throw new Error("Programming error while calculating color");

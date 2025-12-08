@@ -13,7 +13,7 @@
             <span
               class="color-piece is-size-7"
               v-for="(color, index) in currentColors"
-              :style="{ 'background-color': color }"
+              :style="{ 'background-color': color } as unknown as StyleValue"
               :key="index"
             ></span>
           </o-tooltip>
@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, type StyleValue } from "vue";
 import type ColorPalette from "./colorPalettes";
 import { useI18n } from "vue-i18n";
 
@@ -58,12 +58,12 @@ const props = withDefaults(
 );
 
 const currentName = computed(() => {
-  return props.modelValue != null ? props.colorPalettes[props.modelValue].name : "Select a palette";
+  const tryPalette = props.modelValue != null ? props.colorPalettes[props.modelValue] : null;
+  return tryPalette ?? "Select a palette";
 });
 const currentColors = computed(() => {
-  return props.modelValue != null
-    ? props.colorPalettes[props.modelValue].getHexColorsForSize(props.nSteps)
-    : [];
+  const tryPalette = props.modelValue != null ? props.colorPalettes[props.modelValue] : null;
+  return tryPalette ? tryPalette.getColorTriplesForSize(props.nSteps) : [];
 });
 const validPalettes = computed(() => {
   return Array.from(props.colorPalettes.entries()).filter((entry) => {

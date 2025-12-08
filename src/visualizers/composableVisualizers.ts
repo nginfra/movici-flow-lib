@@ -163,8 +163,8 @@ abstract class ComposableVisualizer<
         status: this.info.status,
       });
       for (const [idx, key] of toDownload.entries()) {
-        this.tapefiles[key] = tapefiles[idx];
-        tapefiles[idx].onData((ts: number) => {
+        this.tapefiles[key] = tapefiles[idx]!;
+        tapefiles[idx]!.onData((ts: number) => {
           if (ts <= (this.timestamp ?? 0)) {
             this.forceUpdateTriggers();
           }
@@ -179,8 +179,8 @@ abstract class ComposableVisualizer<
 
   distributeTapefiles() {
     for (const key of Object.keys(this.attributes)) {
-      for (const callback of this.attributes[key]) {
-        callback(this.tapefiles[key]);
+      for (const callback of this.attributes[key]!) {
+        callback(this.tapefiles[key]!);
       }
     }
   }

@@ -290,7 +290,7 @@ function addChartItem(item: ChartVisualizerItem): number {
       })
     );
   } else {
-    infos[found] = infos[found].addItem(item);
+    infos[found] = infos[found]!.addItem(item);
   }
   parsedView.chartInfos = infos;
   return found;
@@ -299,7 +299,7 @@ const colorPickerPresets = Object.values(MoviciColors);
 
 function suggestColor(chart: ChartVisualizerInfo | null) {
   return hexToColorTriple(
-    colorPickerPresets[chart?.items.length ?? 0 % (colorPickerPresets.length - 1)]
+    colorPickerPresets[chart?.items.length ?? 0 % (colorPickerPresets.length - 1)]!
   );
 }
 
@@ -352,7 +352,7 @@ function openChartAttributePicker({
     events: {
       addChart: ([item, edit]: [ChartVisualizerItem, boolean?]) => {
         const index = addChartItem(item);
-        activeChartId.value = parsedView.chartInfos[index].id;
+        activeChartId.value = parsedView.chartInfos[index]!.id;
         chartVisExpanded.value = true;
         if (edit || (visualizerTabOpen.value === 1 && chartConfigOpen.value === index)) {
           changeVisualizer({ tab: 1, index });
@@ -436,7 +436,7 @@ function doResolveDatasets(infos: BaseVisualizerInfo[]) {
   }
 }
 
-function exportData(info: ComposableVisualizerInfo) {
+function exportData(info?: ComposableVisualizerInfo) {
   oruga.modal.open({
     component: FlowExport,
     props: {

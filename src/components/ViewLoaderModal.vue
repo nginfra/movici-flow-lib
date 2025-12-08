@@ -29,7 +29,7 @@
     </template>
     <template #footer>
       <div class="is-flex is-flex-grow-1 is-justify-content-flex-end">
-        <o-button size="small" @click="$emit('close')">
+        <o-button size="small" @click="emit('close')">
           {{ views.length ? t("actions.cancel") : t("actions.back") }}
         </o-button>
         <o-button
@@ -59,6 +59,7 @@ defineProps<{
 const emit = defineEmits<{
   (e: "update:active", val: boolean): void;
   (e: "loadView", val: UUID): void;
+  (e: "close"): void
 }>();
 
 const selectedViewUUID = ref<UUID>();

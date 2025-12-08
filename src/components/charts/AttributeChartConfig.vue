@@ -6,7 +6,7 @@
         <h1 class="is-size-4 has-text-weight-bold is-flex-grow-1 ml-2">
           {{ t("flow.visualization.graph.title") }}
         </h1>
-        <span class="close is-clickable" :title="t('actions.close')" @click="$emit('close')">
+        <span class="close is-clickable" :title="t('actions.close')" @click="emit('close')">
           <o-icon pack="far" icon="times" />
         </span>
       </div>
@@ -116,7 +116,7 @@
         isPulledRight
         :modelValue="buttons"
         @save="saveChart"
-        @cancel="$emit('close')"
+        @cancel="emit('close')"
       />
     </div>
   </div>
@@ -147,6 +147,7 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{
   (e: "update:modelValue", val: ChartVisualizerInfo): void;
+  (e: "close"): void
 }>();
 const local = ref<ChartVisualizerInfo>();
 const selectedAttributeName = computed(() => {

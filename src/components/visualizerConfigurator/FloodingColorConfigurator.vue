@@ -109,5 +109,5 @@ class FloodingColorMappingStrategy extends ColorMappingStrategy {
     return 3;
   }
 }
-const strategy = new FloodingColorMappingStrategy(DEFAULT_COLOR_PALETTES["Flooding"][0]);
+const strategy = new FloodingColorMappingStrategy(DEFAULT_COLOR_PALETTES["Flooding"]![0]);
 </script>

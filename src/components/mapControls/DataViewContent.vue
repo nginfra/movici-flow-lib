@@ -80,14 +80,14 @@ const contentItems = computed(() => {
 });
 const title = computed(() => {
   if (props.modelValue?.dynamicTitle) {
-    const { value, attribute } = items.value[0];
+    const { value, attribute } = items.value[0]!;
     return formatValue({ value, attribute });
   }
   return props.modelValue?.title;
 });
 
 const titleTooltip = computed(() => {
-  return props.modelValue?.dynamicTitle ? items.value[0].name : props.modelValue?.title;
+  return props.modelValue?.dynamicTitle ? items.value[0]!.name : props.modelValue?.title;
 });
 
 function formatValue(item: Omit<DataViewItem, "name">) {

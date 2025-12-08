@@ -15,7 +15,7 @@
         v-if="charts.length"
         class="flow-tabs mr-5"
         :modelValue="activeChartId"
-        @update:modelValue="$emit('update:activeChartId', $event)"
+        @update:modelValue="emit('update:activeChartId', $event)"
         :animated="false"
         :animateInitially="false"
       >
@@ -29,7 +29,7 @@
                 size="small"
                 class="ml-2 mr-0 is-borderless has-text-primary"
                 :title="t('actions.edit')"
-                @click="$emit('openConfig', i)"
+                @click="emit('openConfig', i)"
               />
               <o-button
                 icon-pack="far"
@@ -86,8 +86,9 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: "update:modelValue", val: ChartVisualizerInfo[]): void;
-  (e: "update:activeChartId", val: string): void;
+  (e: "update:activeChartId", val: string | null): void;
   (e: "update:expanded", val: boolean): void;
+  (e: "openConfig", val: number): void;
 }>();
 
 const { backend } = useFlowStore();

@@ -93,8 +93,8 @@ function GeoTIFFLoader(onDone?: () => void) {
         width: number;
         height: number;
       };
-      const [x0, y0] = image.getOrigin();
-      const resolution = image.getResolution();
+      const [x0, y0] = image.getOrigin() as [number, number];
+      const resolution = image.getResolution() as [number, number];
       const x1 = x0 + rasters.width * resolution[0];
       const y1 = y0 + rasters.height * resolution[1];
       const bboxTexture = [x0, y0, x1, y1];

@@ -92,7 +92,7 @@ class IconMappingStrategy extends MappingStrategy<string> {
   }
 
   defaultOutput(): string {
-    return Object.keys(this.mapping)[0];
+    return Object.keys(this.mapping)[0] ?? "";
   }
 }
 const { t } = useI18n();
