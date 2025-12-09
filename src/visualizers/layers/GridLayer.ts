@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Accessor, UpdateParameters } from "@deck.gl/core/typed";
-import { SolidPolygonLayer, type SolidPolygonLayerProps } from "@deck.gl/layers/typed";
+import type { Accessor, UpdateParameters } from "@deck.gl/core";
+import { SolidPolygonLayer, type SolidPolygonLayerProps } from "@deck.gl/layers";
+import type { Device } from "@luma.gl/core";
 
-import { Texture2D } from "@luma.gl/webgl";
 import { Model } from "@luma.gl/engine";
 import type { RGBAColor } from "@movici-flow-lib/types";
 import { ensureRGBAColorMap } from "@movici-flow-lib/utils/colorUtils";
@@ -36,20 +36,13 @@ type _GridLayerProps<DataT> = {
 
 export type GridLayerProps<DataT> = _GridLayerProps<DataT> & SolidPolygonLayerProps<DataT>;
 
-function isWebGL2Context(gl: WebGLRenderingContext): gl is WebGL2RenderingContext {
-  // todo: implement
-  return true;
-}
-
 export default class GridLayer<D> extends SolidPolygonLayer<D, GridLayerProps<D>> {
   initializeState() {
-    const { gl } = this.context;
     super.initializeState();
     const attributeManager = this.getAttributeManager()!;
     attributeManager.add({
       instanceValue: {
         size: 1,
-        type: gl.FLOAT,
         accessor: "getCellValue",
         defaultValue: 0,
       },
@@ -64,19 +57,17 @@ export default class GridLayer<D> extends SolidPolygonLayer<D, GridLayerProps<D>
     const regenerateModels =
       props.texture !== oldProps.texture || !isEqual(props.colorMap, oldProps.colorMap);
     if (regenerateModels) {
-      this.state.models?.forEach((model) => model.delete());
-      this.setState(this._getModels(this.context.gl));
+      this.state.models?.forEach((model) => model.destroy());
+      this.setState(this._getModels());
       attributeManager!.invalidateAll();
     }
-    this.state.topModel?.setUniforms({
-      opacity: this.props.opacity,
+    this.state.topModel?.shaderInputs.setProps({
+      grid: {
+        opacity: this.props.opacity,
+      },
     });
   }
-  _getModels(gl: WebGLRenderingContext) {
-    if (!isWebGL2Context(gl)) {
-      throw new Error("WebGL 2 required for GridLayer");
-    }
-
+  _getModels() {
     const { id, colorMap } = this.props;
 
     const shaders = this.getShaders("top");
@@ -88,14 +79,13 @@ export default class GridLayer<D> extends SolidPolygonLayer<D, GridLayerProps<D>
       height: 1,
       bbox: [0, 0, 1, 1],
     };
-    const texture = createTexture(textureInfo, gl);
+    const texture = createTexture(textureInfo, this.context.device);
     const bbox = textureInfo.bbox;
 
-    const cm = colorMap ? createColorMapTexture(colorMap, gl) : null;
-    const topModel = new Model(gl, {
+    const cm = colorMap ? createColorMapTexture(colorMap, this.context.device) : null;
+    const topModel = new Model(this.context.device, {
       ...shaders,
       id,
-      drawMode: gl.TRIANGLES,
       attributes: {
         vertexPositions: new Float32Array([0, 1]),
       },
@@ -176,19 +166,17 @@ GridLayer.defaultProps = {
   colorMap: { type: "object", value: null },
 } as any;
 
-function createTexture({ height, width, data }: TextureInfo, gl: WebGL2RenderingContext) {
-  return new Texture2D(gl, {
+function createTexture({ height, width, data }: TextureInfo, device: Device) {
+  return device.createTexture({
     width: width,
     height: height,
-    format: gl.R32F,
-    dataFormat: gl.RED,
-    type: gl.FLOAT,
+    format: "r32float",
     data: data,
-    mipmaps: false,
-    parameters: {
-      [gl.TEXTURE_MIN_FILTER]: gl.NEAREST,
-      [gl.TEXTURE_MAG_FILTER]: gl.NEAREST,
-    },
+    sampler: device.createSampler({
+      mipmapFilter: "none",
+      minFilter: "nearest",
+      magFilter: "nearest",
+    }),
   });
 }
 
@@ -223,11 +211,7 @@ export function expandColorMap(colormap: [number, RGBAColor][], nSteps = 50, ens
   return result;
 }
 
-function createColorMapTexture(
-  colormap: [number, RGBAColor][],
-  gl: WebGLRenderingContext,
-  nPixels = 50,
-) {
+function createColorMapTexture(colormap: [number, RGBAColor][], device: Device, nPixels = 50) {
   const linearized = expandColorMap(colormap, nPixels, true);
   const minVal = linearized[0]![0],
     maxVal = linearized[linearized.length - 1]![0],
@@ -235,18 +219,17 @@ function createColorMapTexture(
   return {
     minVal: minVal,
     maxVal: maxVal + stepSize,
-    texture: new Texture2D(gl, {
+    texture: device.createTexture({
       width: linearized.length,
       height: 1,
-      format: gl.RGBA,
       data: new Uint8Array(linearized.map((r) => r[1] as [number, number, number, number]).flat()),
-      mipmaps: false,
-      parameters: {
-        [gl.TEXTURE_MIN_FILTER]: gl.NEAREST,
-        [gl.TEXTURE_MAG_FILTER]: gl.NEAREST,
-        [gl.TEXTURE_WRAP_S]: gl.CLAMP_TO_EDGE,
-        [gl.TEXTURE_WRAP_T]: gl.CLAMP_TO_EDGE,
-      },
+      sampler: device.createSampler({
+        mipmapFilter: "none",
+        minFilter: "nearest",
+        magFilter: "nearest",
+        addressModeU: "clamp-to-edge",
+        addressModeV: "clamp-to-edge",
+      }),
     }),
   };
 }

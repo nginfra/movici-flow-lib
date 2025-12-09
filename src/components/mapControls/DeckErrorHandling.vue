@@ -14,7 +14,7 @@ const props = withDefaults(
   }
 );
 
-function setError({ error, layer }: { error: Error; layer: Layer<unknown> }) {
+function setError({ error, layer }: { error: Error; layer: Layer }) {
   for (const info of props.layerInfos) {
     if (layer.id.startsWith(info.id)) {
       info.setError("deck", error.message);

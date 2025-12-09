@@ -161,7 +161,7 @@ function updateLayers() {
 
       return v.getLayer(props.timestamp);
     })
-    .filter((l) => l !== null) as Layer<unknown>[];
+    .filter((l) => l !== null) as Layer[];
   layers.value = markRaw(newLayers);
 }
 watch(() => props.timestamp, updateLayers);

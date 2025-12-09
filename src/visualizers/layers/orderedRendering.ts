@@ -1,8 +1,8 @@
 import { CompositeLayer, LayerExtension } from "@deck.gl/core";
 import { DataFilterExtension } from "@deck.gl/extensions";
 import type { LayerConstructor } from "@movici-flow-lib/types";
-import type { LayerProps } from "@deck.gl/core/lib/layer";
-import type { CompositeLayerProps } from "@deck.gl/core/lib/composite-layer";
+import type { LayerProps } from "@deck.gl/core";
+import type { CompositeLayerProps } from "@deck.gl/core";
 
 /**
  * Wrap a deckcgl layer class into an OrderedRendering variant, a CompositeLayer which takes a
@@ -21,12 +21,12 @@ import type { CompositeLayerProps } from "@deck.gl/core/lib/composite-layer";
  * for single values only. Also, as per the DataFilterExtension api, the filteRange is [min, max]
  * both including min and max
  */
-export default function orderedRendering<D, P extends LayerProps<D>>(
-  LayerType: LayerConstructor<D, P>
-) {
+/* eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-unused-vars */
+export default function orderedRendering<D extends {}, P extends LayerProps>(
+  LayerType: LayerConstructor<P>,
+): LayerConstructor<P> {
   class OrderedRenderingLayer<D> extends CompositeLayer<
-    D,
-    P & OrderedLayerProps<D> & CompositeLayerProps<D>
+    P & OrderedLayerProps<D> & CompositeLayerProps
   > {
     renderLayers() {
       // Here we destructure some props that we want to use/modify, the rest goes in ...props.
@@ -55,8 +55,8 @@ export default function orderedRendering<D, P extends LayerProps<D>>(
       return filterRanges.map((filterRange, idx) => {
         return new LayerType({
           // ugh, can't figure out how to type this correctly
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ...this.getSubLayerProps<D, any>({
+           
+          ...this.getSubLayerProps({
             ...props,
             data,
             id: String(idx),
@@ -114,7 +114,7 @@ export default function orderedRendering<D, P extends LayerProps<D>>(
       value: () => 1,
     },
   };
-  return OrderedRenderingLayer;
+  return OrderedRenderingLayer as unknown as LayerConstructor<P>
 }
 
 interface OrderedLayerProps<D> {

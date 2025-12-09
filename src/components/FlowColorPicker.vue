@@ -68,9 +68,9 @@ const positionStyle = computed(() => {
 const rgba = computed<any>({
   get: () => colorTripleToRGBA(props.modelValue),
   set: ({ rgba }) => {
-    const color: RGBAColor = [rgba.r, rgba.g, rgba.b];
+    let color: RGBAColor = [rgba.r, rgba.g, rgba.b];
     if (rgba.a < 1) {
-      color[3] = Math.floor(rgba.a * 255);
+      color = [...color , Math.floor(rgba.a * 255)];
     }
     emit("update:modelValue", color);
   },

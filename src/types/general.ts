@@ -4,9 +4,10 @@ export type Nullable<T> = T | null;
 export type UUID = string;
 export type ProgressEvent = { lengthComputable: boolean; loaded: number; total: number };
 
-export type LayerConstructor<T, P = unknown> = {
-  readonly prototype: Layer<T>;
-  new (props: P): Layer<T>;
+/* eslint-disable-next-line @typescript-eslint/no-empty-object-type */
+export type LayerConstructor<P extends {} = {}> = {
+  readonly prototype: Layer<P>;
+  new (props: P): Layer<P>;
   layerName: string;
   defaultProps?: Partial<P>;
 };

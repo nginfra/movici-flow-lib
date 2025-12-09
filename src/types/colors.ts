@@ -1,1 +1,1 @@
-export type RGBAColor = [number, number, number, number?];
+export type RGBAColor = [number, number, number] | [number, number, number, number];

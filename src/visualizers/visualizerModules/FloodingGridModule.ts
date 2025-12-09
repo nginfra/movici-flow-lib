@@ -9,13 +9,12 @@ import type {
 import { VisualizerModule } from "./common";
 
 import { fromArrayBuffer } from "geotiff";
-import type { TypedArray } from "@deck.gl/layers/path-layer/path-layer";
 import isEqual from "lodash/isEqual";
 type NumberAccessor<D> = ((d: D) => number) | number;
 
 export default class FloodingGridModule<
   Coord extends Coordinate,
-  LData extends TopologyLayerData<Coord>
+  LData extends TopologyLayerData<Coord>,
 > extends VisualizerModule<Coord, LData> {
   accessor?: NumberAccessor<LData>;
   currentSettings?: FloodingGridClause;
@@ -89,10 +88,7 @@ function GeoTIFFLoader(onDone?: () => void) {
       const geotiff = await fromArrayBuffer(buffer);
       const image = await geotiff.getImage();
 
-      const rasters = (await image.readRasters()) as TypedArray[] & {
-        width: number;
-        height: number;
-      };
+      const rasters = await image.readRasters();
       const [x0, y0] = image.getOrigin() as [number, number];
       const resolution = image.getResolution() as [number, number];
       const x1 = x0 + rasters.width * resolution[0];

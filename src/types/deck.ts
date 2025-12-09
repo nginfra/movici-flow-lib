@@ -1,5 +1,5 @@
 import type { Layer } from "@deck.gl/core";
-import type { PickInfo } from "deck.gl";
+import type { PickingInfo } from "@deck.gl/core";
 import type { DeckEntityObject } from "./datasets";
 
 export type DeckEvent = "click" | "error";
@@ -9,10 +9,10 @@ export interface DeckEventCallback<D = unknown> {
 }
 
 export interface DeckEventPayload<D = unknown> {
-  pickInfo?: PickInfo<DeckEntityObject<D>>;
+  pickInfo?: PickingInfo<DeckEntityObject<D>>;
   ev?: DeckMouseEvent;
   error?: Error;
-  layer?: Layer<unknown>;
+  layer?: Layer;
 }
 
 export type DeckMouseEvent = {

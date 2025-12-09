@@ -68,7 +68,7 @@
         >
           <MapContextMenu
             v-if="contextPickInfo"
-            :modelValue="(contextPickInfo as PickInfo<unknown>)"
+            :modelValue="(contextPickInfo as PickingInfo<unknown>)"
             :map="map"
             :view-state="parsedView.viewState"
             :actions="contextMenuActions"
@@ -149,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PickInfo } from "@deck.gl/core/lib/deck";
+import type { PickingInfo } from "@deck.gl/core";
 import { useDialog } from "@movici-flow-lib/baseComposables/useDialog";
 import { useSnackbar } from "@movici-flow-lib/baseComposables/useSnackbar";
 import TimeSlider from "@movici-flow-lib/components/TimeSlider.vue";
@@ -304,11 +304,11 @@ function suggestColor(chart: ChartVisualizerInfo | null) {
 }
 
 function openChart(
-  pickInfo: PickInfo<DeckEntityObject<unknown>>,
+  pickInfo: PickingInfo<DeckEntityObject<unknown>>,
   visualizers: VisualizerManager<ComposableVisualizerInfo, Visualizer>
 ) {
-  const layerId = pickInfo.layer.id.split("-")[0],
-    currentVisualizer = visualizers.getVisualizers().find((v) => v.baseID === layerId);
+  const layerId = pickInfo.layer?.id.split("-")[0],
+    currentVisualizer = layerId && visualizers.getVisualizers().find((v) => v.baseID === layerId);
 
   if (currentVisualizer) {
     const entityGroup = currentVisualizer.info.entityGroup,
@@ -331,7 +331,7 @@ function openChartAttributePicker({
   datasetUUID,
   scenarioUUID,
 }: {
-  info: PickInfo<DeckEntityObject<unknown>>;
+  info: PickingInfo<DeckEntityObject<unknown>>;
   entityGroup: string;
   datasetName: string;
   datasetUUID?: string | null;

@@ -52,10 +52,10 @@ export interface ComposableVisualizerContext extends VisualizerContext<Composabl
 }
 
 abstract class ComposableVisualizer<
-    Coord extends Coordinate,
-    LData extends TopologyLayerData<Coord>,
-    Layer_ extends Layer<LData>
-  >
+  Coord extends Coordinate,
+  LData extends TopologyLayerData<Coord>,
+  Layer_ extends Layer,
+>
   extends BaseVisualizer<ComposableVisualizerInfo>
   implements IMapVisualizer<Coord>
 {
@@ -253,7 +253,7 @@ abstract class ComposableVisualizer<
         prev[key] = [...(val as []), value];
         return prev;
       },
-      {} as Record<string, unknown>
+      {} as Record<string, unknown>,
     );
     return params;
   }
@@ -277,7 +277,7 @@ abstract class ComposableVisualizer<
   }
   getFetchRequest<T extends keyof FetchRequestOptions>(
     request: T,
-    options: FetchRequestOptions[T]
+    options: FetchRequestOptions[T],
   ): { url: string; options: RequestInit } {
     return this.datasetStore.backend.fetch.getRequest(request, options);
   }
@@ -346,7 +346,7 @@ export class ComposableIconVisualizer extends ComposableVisualizer<
 
   getDefaultParams(): LayerParams<TopologyLayerData<PointCoordinate>, PointCoordinate> {
     return {
-      type: ShapeIconLayer as LayerConstructor<TopologyLayerData<PointCoordinate>>,
+      type: ShapeIconLayer as unknown as LayerConstructor<TopologyLayerData<PointCoordinate>>,
       props: {
         id: this.orderedId,
         data: this.topology ?? [],
@@ -527,7 +527,7 @@ export class ComposableFloodingGridVisualizer extends ComposableVisualizer<
 }
 
 function getCommonModules<Coord extends Coordinate, LData extends TopologyLayerData<Coord>>(
-  info: ComposableVisualizerInfo
+  info: ComposableVisualizerInfo,
 ): VisualizerModule<Coord, LData>[] {
   return [
     new ColorModule<Coord, LData>({ info }),

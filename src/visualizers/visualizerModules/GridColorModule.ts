@@ -6,19 +6,19 @@ import type {
   ITapefile,
   ByValueColorClause,
   IMapVisualizer,
+  RGBAColor,
 } from "@movici-flow-lib/types";
 import isEqual from "lodash/isEqual";
 import { TapefileAccessor, VisualizerModule, type VisualizerModuleParams } from "./common";
 
 import NumberToNumberMap from "../maps/NumberToNumberMap";
-import type { RGBAColor } from "deck.gl";
 import { interpolateColorMapping } from "@movici-flow-lib/utils/colorUtils";
 import isError from "lodash/isError";
 type NumberAccessor<D> = ((d: D) => number) | number;
 
 export default class GridColorModule<
   Coord extends Coordinate,
-  LData extends TopologyLayerData<Coord>
+  LData extends TopologyLayerData<Coord>,
 > extends VisualizerModule<Coord, LData> {
   accessor?: NumberAccessor<LData>;
   currentSettings?: ColorClause;
@@ -54,7 +54,7 @@ export default class GridColorModule<
 
   private updateAccessor(
     changed: boolean,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): NumberAccessor<LData> {
     if (!changed && this.accessor) {
       return this.accessor;
@@ -65,7 +65,7 @@ export default class GridColorModule<
 
   private getAccessor(
     clause: ColorClause | undefined,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): NumberAccessor<LData> {
     if (clause?.byValue?.attribute) {
       const mapper = new NumberToNumberMap();
@@ -104,7 +104,7 @@ export default class GridColorModule<
 
     const inBetween = Math.max(
       minInBetween,
-      Math.ceil((minColors - colors.length) / (colors.length - 1))
+      Math.ceil((minColors - colors.length) / (colors.length - 1)),
     );
     const rv: [number, RGBAColor][] = [];
     for (let i = 0; i < colors.length - 1; i++) {
