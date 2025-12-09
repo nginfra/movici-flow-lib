@@ -70,17 +70,17 @@ import {
 import {
   EditableGeoJsonLayer,
   type FeatureCollection as DeckFeatureCollection,
-  type Color as DeckColor,
+  type Color,
 } from "@deck.gl-community/editable-layers";
 import type { Feature, FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import isEqual from "lodash/isEqual";
 import { computed, ref, toRaw, watch } from "vue";
 
-const SELECTED_FEATURE_COLOR_FILL: DeckColor = [26, 182, 126, 90],
-  SELECTED_FEATURE_COLOR: DeckColor = [26, 182, 126, 255],
-  FEATURE_COLOR_FILL: DeckColor = [85, 113, 242, 90],
-  FEATURE_COLOR: DeckColor = [85, 113, 242, 255],
-  WHITE_COLOR: DeckColor = [255, 255, 255, 255];
+const SELECTED_FEATURE_COLOR_FILL: Color = [26, 182, 126, 90],
+  SELECTED_FEATURE_COLOR: Color = [26, 182, 126, 255],
+  FEATURE_COLOR_FILL: Color = [85, 113, 242, 90],
+  FEATURE_COLOR: Color = [85, 113, 242, 255],
+  WHITE_COLOR: Color = [255, 255, 255, 255];
 
 const DEFAULT_OPTIONS: { [key: string]: FeatureDrawOption } = {
   "draw-point": {
@@ -429,7 +429,7 @@ function emitFeatureLayer() {
             activeParent.value = "";
           }
         },
-        getFillColor: (feature): DeckColor => {
+        getFillColor: (feature) => {
           return props.selectedFeatureIndexes.some((i) => isEqual(props.modelValue[i], feature))
             ? SELECTED_FEATURE_COLOR_FILL
             : FEATURE_COLOR_FILL;

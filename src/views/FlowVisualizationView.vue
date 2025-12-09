@@ -68,7 +68,7 @@
         >
           <MapContextMenu
             v-if="contextPickInfo"
-            :modelValue="(contextPickInfo as PickingInfo<unknown>)"
+            :modelValue="contextPickInfo as PickingInfo<unknown>"
             :map="map"
             :camera="parsedView.camera"
             :actions="contextMenuActions"
@@ -287,7 +287,7 @@ function addChartItem(item: ChartVisualizerItem): number {
         scenarioUUID: scenario.value?.uuid,
         title: item.attribute,
         items: [item],
-      })
+      }),
     );
   } else {
     infos[found] = infos[found]!.addItem(item);
@@ -299,13 +299,13 @@ const colorPickerPresets = Object.values(MoviciColors);
 
 function suggestColor(chart: ChartVisualizerInfo | null) {
   return hexToColorTriple(
-    colorPickerPresets[chart?.items.length ?? 0 % (colorPickerPresets.length - 1)]!
+    colorPickerPresets[(chart?.items.length ?? 0) % (colorPickerPresets.length - 1)]!,
   );
 }
 
 function openChart(
   pickInfo: PickingInfo<DeckEntityObject<unknown>>,
-  visualizers: VisualizerManager<ComposableVisualizerInfo, Visualizer>
+  visualizers: VisualizerManager<ComposableVisualizerInfo, Visualizer>,
 ) {
   const layerId = pickInfo.layer?.id.split("-")[0],
     currentVisualizer = layerId && visualizers.getVisualizers().find((v) => v.baseID === layerId);

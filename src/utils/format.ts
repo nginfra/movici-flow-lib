@@ -1,13 +1,13 @@
 export type Formatter = (
   val: unknown,
   dataType: string[],
-  formatters?: Record<string, Formatter>
+  formatters?: Record<string, Formatter>,
 ) => string;
 
 export function formatValueByDataType(
   value: unknown,
   dataType: string,
-  formatters?: Record<string, Formatter>
+  formatters?: Record<string, Formatter>,
 ): string {
   const dt_tokens = parseDataType(dataType);
   const rows = formatValueRecursive(value, dt_tokens, formatters);
@@ -31,17 +31,13 @@ type NestedRows = Array<string | NestedRows>;
 function formatValueRecursive(
   value: unknown,
   dataType: string[],
-  formatters?: Record<string, Formatter>
+  formatters?: Record<string, Formatter>,
 ): NestedRows | string {
   if (value == null) {
     // catches both null and undefined
     return formatters?.NULL?.(value, dataType) ?? "null";
   }
-  const customFormatter = formatters
-    ? dataType[0] != undefined
-      ? formatters[dataType[0]]
-      : null
-    : null;
+  const customFormatter = formatters && dataType[0] != undefined ? formatters[dataType[0]] : null;
   if (customFormatter) return customFormatter(value, dataType.splice(1), formatters);
 
   switch (dataType[0]) {
@@ -89,7 +85,7 @@ function formatFloat(value: unknown): string {
 function formatList(
   value: unknown,
   nestedType: string[],
-  formatters?: Record<string, Formatter>
+  formatters?: Record<string, Formatter>,
 ): NestedRows {
   if (!Array.isArray(value)) {
     value = [value];
