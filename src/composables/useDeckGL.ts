@@ -10,7 +10,7 @@ export function useDeckGL<D extends {} = {}>() {
 
   return {
     basemap: ref("mapbox://styles/mapbox/light-v10"),
-    controller: ref<ControllerProps>(),
+    controller: ref<Partial<ControllerProps>>(),
     layers: ref([]) as Ref<Layer<D>[]>,
     popup,
   };

@@ -90,7 +90,7 @@ const props = withDefaults(
     camera?: DeckCamera;
     basemap?: string;
     accessToken?: string;
-    controller?: ControllerProps;
+    controller?: Partial<ControllerProps>;
     layers?: Layer[];
   }>(),
   {
