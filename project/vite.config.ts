@@ -22,14 +22,6 @@ export default defineConfig({
         find: "@movici-flow-lib",
         replacement: fileURLToPath(new URL("../src", import.meta.url)),
       },
-      {
-        find: /@deck.gl\/layers$/,
-        replacement: "@deck.gl/layers/dist/esm",
-      },
-      {
-        find: /@deck.gl\/layers\/typed$/,
-        replacement: "@deck.gl/layers/dist/esm",
-      },
     ],
   },
 });
