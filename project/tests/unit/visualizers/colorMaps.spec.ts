@@ -26,7 +26,7 @@ describe("colorMaps.ts/NumberColorMap", () => {
   });
   it("returns a color for custom special value", () => {
     const colorMap = new NumberMapper({
-      mapping: [],
+      mapping: [[0, [0, 0, 0]]],
       specialResult: [255, 0, 0],
       undefinedResult: [0, 255, 0],
     });
