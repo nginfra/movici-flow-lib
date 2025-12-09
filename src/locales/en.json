@@ -88,7 +88,10 @@
       "returnToDashboard": "Return to dashboard"
     },
     "legend": {
-      "label": "Legend"
+      "label": "Legend",
+      "color": "Colour",
+      "icon": "Icon",
+      "shape": "Shape"
     },
     "mainView": {
       "noDatasetText": "Select a dataset to view it",
@@ -146,7 +149,6 @@
         "palette": "Colour palette",
         "type": "Colour type",
         "invertColors": "Invert color order",
-
         "advanced": {
           "title": "Advanced settings",
           "fillOpacity": "Fill Opacity",
@@ -155,7 +157,8 @@
           "disabled": "Disabled (better performance)",
           "normal": "Normal",
           "reversed": "Reversed",
-          "advColours": "Advanced Colours"
+          "advColours": "Advanced Colours",
+          "noSettingsAvailable": "There are currently no advanced settings to configure"
         }
       },
       "iconConfig": {

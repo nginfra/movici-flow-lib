@@ -22,26 +22,26 @@
 
 <script setup lang="ts">
 import type { PickingInfo } from "@deck.gl/core";
-import type { ActionItem, ViewState } from "@movici-flow-lib/types";
-import type mapboxgl from "mapbox-gl";
-import { onMounted, ref, type Ref } from "vue";
+import type { ActionItem, DeckCamera } from "@movici-flow-lib/types";
+import { computed, onMounted, ref, type Ref } from "vue";
 import DynamicDataView from "./DynamicDataView.vue";
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     modelValue: PickingInfo<unknown>;
     map?: mapboxgl.Map;
-    viewState?: ViewState;
+    camera?: DeckCamera;
     actions?: ActionItem[];
   }>(),
   {
     actions: () => [],
-  }
+  },
 );
 
 const emit = defineEmits<{
   (e: string): void;
 }>();
+const viewState = computed(() => props.camera?.viewState);
 const focusTarget = ref(null) as Ref<HTMLElement | null>;
 
 function emitAndClose(event: string) {

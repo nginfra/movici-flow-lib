@@ -173,6 +173,7 @@ import {
 import FloodingGridConfigurator from "./FloodingGridConfigurator.vue";
 import ShapeIconConfigurator from "./ShapeIconConfigurator.vue";
 import SizeConfigurator from "./SizeConfigurator.vue";
+import pick from "lodash/pick";
 const { t } = useI18n();
 enum FlowConfigurator {
   COLOR = "color",
@@ -225,6 +226,18 @@ const CONFIGURATORS_BY_TYPE: Record<FlowVisualizerType, FlowConfigurator[]> = {
   [FlowVisualizerType.FLOODING_GRID]: [FlowConfigurator.GEOMETRY, FlowConfigurator.FLOODING],
 };
 
+const CLAUSES_BY_CONFIGURATOR: Record<
+  FlowConfigurator,
+  keyof FlowVisualizerOptions | (keyof FlowVisualizerOptions)[]
+> = {
+  [FlowConfigurator.COLOR]: "color",
+  [FlowConfigurator.SIZE]: "size",
+  [FlowConfigurator.ICON_SHAPE]: ["icon", "shape"],
+  [FlowConfigurator.VISIBILITY]: "visibility",
+  [FlowConfigurator.POPUP]: "popup",
+  [FlowConfigurator.FLOODING]: ["color", "floodingGrid"],
+  [FlowConfigurator.GEOMETRY]: [],
+};
 const props = withDefaults(
   defineProps<{
     modelValue?: ComposableVisualizerInfo;
@@ -322,6 +335,11 @@ interface ConfiguratorSettings {
 }
 
 const configurators = computed<Partial<Record<FlowConfigurator, ConfiguratorSettings>>>(() => {
+  const bindClauses = <T extends keyof FlowVisualizerOptions>(clauseTypes: T | T[]) => {
+    return Array.isArray(clauseTypes)
+      ? bindMultipleClauses(...clauseTypes)
+      : bindClause(clauseTypes);
+  };
   const bindClause = <T extends keyof FlowVisualizerOptions>(clauseType: T) => {
     return {
       modelValue: settings.value?.[clauseType],
@@ -338,7 +356,12 @@ const configurators = computed<Partial<Record<FlowConfigurator, ConfiguratorSett
         return agg;
       }, {} as Partial<FlowVisualizerOptions>),
       "onUpdate:modelValue": (clause: Partial<FlowVisualizerOptions>) => {
-        updateSettings(clause);
+        updateSettings(
+          clauseType.reduce((agg, key) => {
+            agg[key] = clause[key];
+            return agg;
+          }, {} as Partial<FlowVisualizerOptions>)
+        );
       },
     };
   };
@@ -347,7 +370,7 @@ const configurators = computed<Partial<Record<FlowConfigurator, ConfiguratorSett
       id: "color",
       name: t("flow.visualization.colorConfig.colors"),
       component: ColorConfigurator,
-      vBind: bindClause("color"),
+      vBind: bindClauses(CLAUSES_BY_CONFIGURATOR[FlowConfigurator.COLOR]),
     },
     [FlowConfigurator.ICON_SHAPE]: {
       id: "icon-shape",
@@ -355,7 +378,7 @@ const configurators = computed<Partial<Record<FlowConfigurator, ConfiguratorSett
         "flow.visualization.iconConfig.icon"
       )}`,
       component: ShapeIconConfigurator,
-      vBind: bindMultipleClauses("shape", "icon"),
+      vBind: bindClauses(CLAUSES_BY_CONFIGURATOR[FlowConfigurator.ICON_SHAPE]),
     },
     [FlowConfigurator.SIZE]: {
       id: "size",
@@ -373,25 +396,25 @@ const configurators = computed<Partial<Record<FlowConfigurator, ConfiguratorSett
         }
       })(),
       component: SizeConfigurator,
-      vBind: bindClause("size"),
+      vBind: bindClauses(CLAUSES_BY_CONFIGURATOR[FlowConfigurator.SIZE]),
     },
     [FlowConfigurator.VISIBILITY]: {
       id: "visibility",
       name: t("flow.visualization.visibilityConfig.visibility"),
       component: VisibilityConfigurator,
-      vBind: bindClause("visibility"),
+      vBind: bindClauses(CLAUSES_BY_CONFIGURATOR[FlowConfigurator.VISIBILITY]),
     },
     [FlowConfigurator.POPUP]: {
       id: "popup",
       name: t("flow.visualization.popup.popup"),
       component: PopupConfigurator,
-      vBind: bindClause("popup"),
+      vBind: bindClauses(CLAUSES_BY_CONFIGURATOR[FlowConfigurator.POPUP]),
     },
     [FlowConfigurator.FLOODING]: {
       id: "floodingGrid",
       name: t("flow.visualization.floodingConfig.floodingGrid"),
       component: FloodingGridConfigurator,
-      vBind: bindMultipleClauses("floodingGrid", "color"),
+      vBind: bindClauses(CLAUSES_BY_CONFIGURATOR[FlowConfigurator.FLOODING]),
     },
     [FlowConfigurator.GEOMETRY]: {
       id: "geometry",
@@ -567,9 +590,17 @@ const FINALIZERS: Finalizers = {
 };
 
 function finalizeSettings(): FlowVisualizerOptions | null {
-  if (!composedVisualizer.value.settings) return null;
-
-  const rv: FlowVisualizerOptions = { ...composedVisualizer.value.settings };
+  const settings = composedVisualizer.value.settings;
+  if (!settings) return null;
+  const validKeys = CONFIGURATORS_BY_TYPE[settings.type].reduce(
+    (agg, val) => {
+      const clauses = CLAUSES_BY_CONFIGURATOR[val];
+      agg.push(...(Array.isArray(clauses) ? clauses : [clauses]));
+      return agg;
+    },
+    ["type"] as (keyof FlowVisualizerOptions)[]
+  );
+  const rv: FlowVisualizerOptions = pick(settings, validKeys);
   const context: FinalizerContext = {
     datasets: datasetsByName.value,
   };

@@ -25,14 +25,14 @@ export function useClauseConfigurator<
   t: (val: string) => string;
   onEmit: (val: T) => void;
 }) {
-  const attribution = useAttributes({ attributes, supportedDataTypes, t });
+  const attributeHelper = useAttributes({ attributes, supportedDataTypes, t });
   const validation = useValidator(validator);
   validator.configure({
     validators: {
-      selectedAttribute: attribution.validateAttribute(() => clauseType.value === "byValue"),
+      selectedAttribute: attributeHelper.validateAttribute(() => clauseType.value === "byValue"),
     },
   });
-  validation.validated("selectedAttribute", attribution.selectedAttribute);
+  validation.validated("selectedAttribute", attributeHelper.selectedAttribute);
 
   const clauseType = ref<ClauseType>("static");
   const localClause = reactive({} as T);
@@ -42,12 +42,13 @@ export function useClauseConfigurator<
       if (!value) return;
       clauseType.value = value.byValue ? "byValue" : "static";
       Object.assign(localClause, value);
-      attribution.selectAttribute(value.byValue?.attribute);
+      attributeHelper.selectAttribute(value.byValue?.attribute);
     },
     { immediate: true }
   );
 
   function updateClause(clause?: Partial<T>) {
+    console.log(localClause, clause);
     Object.assign(localClause, clause);
     emitClause();
   }
@@ -58,11 +59,22 @@ export function useClauseConfigurator<
         : { byValue: (localClause.byValue ?? {}) as ByValue };
     onEmit(toEmit as T);
   }
+
+  function selectAttribute(attr?: AttributeSummary | null) {
+    if (!attr) {
+      return;
+    }
+    localClause.byValue ??= {} as any;
+    if (localClause.byValue) {
+      localClause.byValue.attribute = attr;
+    }
+    attributeHelper.selectAttribute(attr);
+  }
   watch(attributes, (value, old) => {
     if (!isEqual(value, old)) {
       delete localClause.static;
       delete localClause.byValue;
-      attribution.selectAttribute();
+      attributeHelper.selectAttribute();
       clauseType.value = "static";
     }
   });
@@ -70,11 +82,20 @@ export function useClauseConfigurator<
     validator.touch("selectedAttribute");
     emitClause();
   });
+  watch(attributeHelper.selectedAttribute, (attribute) => {
+    if (!attribute) return;
+    console.log("here", attribute);
+
+    localClause.byValue ??= {
+      attribute,
+    } as any;
+  });
   return {
     ...validation,
-    ...attribution,
+    ...attributeHelper,
     clauseType,
     localClause,
+    selectAttribute,
     updateClause,
   };
 }

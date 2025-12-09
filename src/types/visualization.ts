@@ -28,16 +28,6 @@ export interface IVisualizerInfo {
   setError: (key: string, value: string) => void;
   unsetError: (key: string) => void;
 }
-export interface ViewState {
-  longitude: number;
-  latitude: number;
-  zoom: number;
-  pitch: number;
-  bearing: number;
-  transitionDuration?: number;
-  minZoom?: number;
-  maxZoom?: number;
-}
 
 export interface FeatureDrawOption {
   id: string;

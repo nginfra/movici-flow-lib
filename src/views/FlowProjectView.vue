@@ -36,15 +36,15 @@
         </div>
       </template>
       <template v-else>
-        <MapVis :visualizer-infos="[]" v-model:view-state="viewState" scale>
+        <MapVis :visualizer-infos="[]" v-model:view-state="camera" scale>
           <template #control-left="{ map, onViewstateChange, basemap, setBasemap }">
             <MapControlSearchBar
               v-if="flowStore.hasCapability('geocode')"
               :map="map"
-              :viewState="viewState"
-              @update:viewState="onViewstateChange"
+              :camera="camera"
+              @update:camera="onViewstateChange"
             />
-            <MapControlNavigation :modelValue="viewState" @update:modelValue="onViewstateChange" />
+            <MapControlNavigation :modelValue="camera" @update:modelValue="onViewstateChange" />
             <MapControlBaseMap :modelValue="basemap" @update:modelValue="setBasemap" />
           </template>
         </MapVis>
@@ -68,7 +68,7 @@ import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 const flowStore = useFlowStore();
-const viewState = ref(useMoviciSettings().settings.defaultViewState);
+const camera = ref({ viewState: useMoviciSettings().settings.defaultViewState });
 const details = computed(() => {
   if (flowStore.project) {
     return {

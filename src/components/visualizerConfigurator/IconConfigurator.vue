@@ -103,7 +103,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "update:modelValue", val: IconClause): void;
+  (e: "update:modelValue", val: IconClause | null): void;
 }>();
 
 const attributes = inject(attributesInjection)!;
@@ -126,6 +126,10 @@ const {
   t,
   modelValue: computed(() => props.modelValue),
   onEmit: (toEmit) => {
+    if (toEmit.static?.icon === "") {
+      emit("update:modelValue", null);
+      return;
+    }
     if (showLegend.value) {
       toEmit.legend = localClause.legend;
     }
@@ -148,8 +152,13 @@ const icons = computed({
   },
 });
 
-const showLegend = ref(false);
-watch(showLegend, () => updateClause());
+const showLegend = ref(!!props.modelValue?.legend);
+watch(showLegend, () => {
+  if (showLegend) {
+    localClause.legend ??= {};
+  }
+  updateClause();
+});
 const staticConfiguratorButtons = computed(() => props.iconGroup === "shapes");
 
 const iconMapping = computed(() => MAPPED_ICONS[props.iconGroup]);

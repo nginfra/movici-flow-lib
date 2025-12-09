@@ -5,8 +5,8 @@
         v-if="allowEmpty"
         title="Empty"
         size="small"
-        @click.stop="$emit('update:modelValue', null)"
-        :class="{ 'is-primary': isSelected(null) }"
+        @click.stop="$emit('update:modelValue', '')"
+        :class="{ 'is-primary': isSelected('') }"
       />
       <o-button
         size="small"
@@ -62,8 +62,8 @@ const props = withDefaults(
 
 const icons = computed(() => Object.keys(props.iconOptions));
 
-function isSelected(shape: string | null) {
-  return shape === props.modelValue;
+function isSelected(icon: string) {
+  return icon === (props.modelValue ?? "");
 }
 </script>
 

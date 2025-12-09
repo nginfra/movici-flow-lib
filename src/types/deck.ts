@@ -15,9 +15,26 @@ export interface DeckEventPayload<D = unknown> {
   layer?: Layer;
 }
 
-export type DeckMouseEvent = {
+export interface DeckMouseEvent {
   leftButton: boolean;
   centerButton: boolean;
   rightButton: boolean;
   type: string;
-};
+}
+export interface ViewState {
+  longitude: number;
+  latitude: number;
+  zoom: number;
+  pitch: number;
+  bearing: number;
+  transitionDuration?: number;
+  minZoom?: number;
+  maxZoom?: number;
+}
+export interface DeckCamera {
+  viewState?: ViewState;
+  bbox?: {
+    coords: [number, number, number, number];
+    fillRatio?: number;
+  };
+}
