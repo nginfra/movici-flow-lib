@@ -17,7 +17,7 @@ export function specialValues(generalSection: GeneralSection): DatasetSpecialVal
 function readSpecialSection(section: RawSpecialValues): DatasetSpecialValues {
   const rv: DatasetSpecialValues = {};
   for (const [key, value] of Object.entries(section)) {
-    const [entityGroup, ...attr] = key.split(".");
+    const [entityGroup, ...attr] = key.split(".") as [string, ...string[]];
     rv[entityGroup] ??= {};
     rv[entityGroup][attr.join(".")] = value;
   }

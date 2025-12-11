@@ -1,6 +1,6 @@
 import { lineString, point } from "@turf/helpers";
 import nearestPointOnLine from "@turf/nearest-point-on-line";
-import type { PickInfo } from "deck.gl";
+import type { PickingInfo } from "@deck.gl/core";
 import type { DeckEntityObject, PointCoordinate } from "@movici-flow-lib/types";
 import type { CSSProperties } from "vue";
 
@@ -44,7 +44,6 @@ export interface DynamicPositionOpts {
  * @returns {String} position - one of 'top', 'bottom', 'left', 'right', 'top-left', 'top-right', 'bottom-left' , and  'bottom-right'
  */
 
-// eslint-disable-next-line complexity,max-statements
 export function getDynamicPosition({
   x,
   y,
@@ -183,17 +182,17 @@ export function getContainerStyle({
   return style;
 }
 
-export function getNearestPointOnLine(pickInfo: PickInfo<DeckEntityObject<unknown>>) {
+export function getNearestPointOnLine(pickInfo: PickingInfo<DeckEntityObject<unknown>>) {
   return nearestPointOnLine(
     lineString((pickInfo.object as { coordinates: PointCoordinate[] }).coordinates),
-    point(pickInfo.coordinate as PointCoordinate)
+    point(pickInfo.coordinate as PointCoordinate),
   ).geometry.coordinates;
 }
 
-export function getPointCenter(pickInfo: PickInfo<DeckEntityObject<unknown>>) {
+export function getPointCenter(pickInfo: PickingInfo<DeckEntityObject<unknown>>) {
   return (pickInfo.object as { coordinates: PointCoordinate }).coordinates;
 }
 
-export function getClickPosition(pickInfo: PickInfo<DeckEntityObject<unknown>>) {
+export function getClickPosition(pickInfo: PickingInfo<DeckEntityObject<unknown>>) {
   return pickInfo.coordinate as PointCoordinate;
 }

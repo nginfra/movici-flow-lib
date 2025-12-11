@@ -6,7 +6,7 @@
           <template #label>
             <MovImage
               src="/static/movici-logo.svg"
-              :title="$t('flow.leftMenu.returnToDashboard')"
+              :title="t('flow.leftMenu.returnToDashboard')"
             ></MovImage>
           </template>
         </o-menu-item>
@@ -14,7 +14,7 @@
           v-for="section in sections"
           aria-role="menuitem"
           :key="section.step"
-          :label="$t(section.label)"
+          :label="t(section.label)"
           :icon-pack="section.iconPack"
           :icon="section.icon"
           :disabled="!section.enabled"
@@ -26,7 +26,7 @@
           <span v-if="userInitials" class="is-small icon user-initials">
             {{ userInitials }}
           </span>
-          <span class="pt-1">{{ flowVersion }}</span>
+          <span class="pt-1">{{ version }}</span>
         </div>
       </o-menu-list>
     </o-menu>
@@ -35,7 +35,7 @@
       variant="black"
       position="right"
       :label="
-        (uiStore.collapse ? $t('flow.leftMenu.expand') : $t('flow.leftMenu.collapse')) + ' menu'
+        (uiStore.collapse ? t('flow.leftMenu.expand') : t('flow.leftMenu.collapse')) + ' menu'
       "
     >
       <o-button
@@ -56,7 +56,7 @@ import { useFlowSidebar } from "@movici-flow-lib/composables/useFlowSidebar";
 import { FlowRedirect } from "@movici-flow-lib/errors";
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import { useUIStore } from "@movici-flow-lib/stores/ui";
-import flowVersion from "@movici-flow-lib/version";
+import { version } from "@movici-flow-lib/version";
 import { computed, ref, toRef, watch } from "vue";
 import { useMoviciSettings } from "../baseComposables/useMoviciSettings";
 import type { FlowLocation, FlowStep } from "../types";

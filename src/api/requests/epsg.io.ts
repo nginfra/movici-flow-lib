@@ -23,6 +23,6 @@ export class GetEPSGProjection extends BaseRequest<string | null> {
   makeResponse(resp: AxiosResponse<GetProjectionResponse>): string | null {
     const data = resp.data;
     if (data.status !== "ok" || !data.results.length) return null;
-    return data.results[0].proj4;
+    return data.results[0]!.proj4;
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <o-field class="is-flex-grow-1 ml-2" :label="$t('flow.visualization.colorConfig.palette')">
+  <o-field class="is-flex-grow-1 ml-2" :label="t('flow.visualization.colorConfig.palette')">
     <o-dropdown
       :modelValue="modelValue"
       @update:modelValue="$emit('update:modelValue', $event)"
@@ -13,7 +13,7 @@
             <span
               class="color-piece is-size-7"
               v-for="(color, index) in currentColors"
-              :style="{ 'background-color': color }"
+              :style="{ 'background-color': `rgba(${color.join(', ')})` }"
               :key="index"
             ></span>
           </o-tooltip>
@@ -43,6 +43,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type ColorPalette from "./colorPalettes";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
@@ -51,16 +54,16 @@ const props = withDefaults(
     colorPalettes?: ColorPalette[];
     filter?: (palette: ColorPalette) => boolean;
   }>(),
-  { nSteps: 2, colorPalettes: () => [], filter: () => true }
+  { nSteps: 2, colorPalettes: () => [], filter: () => true },
 );
 
 const currentName = computed(() => {
-  return props.modelValue != null ? props.colorPalettes[props.modelValue].name : "Select a palette";
+  const tryPalette = props.modelValue != null ? props.colorPalettes[props.modelValue] : null;
+  return tryPalette ? tryPalette.name : "Select a palette";
 });
 const currentColors = computed(() => {
-  return props.modelValue != null
-    ? props.colorPalettes[props.modelValue].getHexColorsForSize(props.nSteps)
-    : [];
+  const tryPalette = props.modelValue != null ? props.colorPalettes[props.modelValue] : null;
+  return tryPalette ? tryPalette.getColorTriplesForSize(props.nSteps) : [];
 });
 const validPalettes = computed(() => {
   return Array.from(props.colorPalettes.entries()).filter((entry) => {

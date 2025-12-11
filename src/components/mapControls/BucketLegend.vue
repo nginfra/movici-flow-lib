@@ -15,10 +15,9 @@
 </template>
 
 <script setup lang="ts">
-import type { FlowVisualizerType, LegendItem } from "@movici-flow-lib/types";
+import type { FlowVisualizerType, LegendItem, RGBAColor } from "@movici-flow-lib/types";
 import { computed } from "vue";
 import LegendThumbnail from "./LegendThumbnail.vue";
-import type { RGBAColor } from "deck.gl";
 
 const props = defineProps<{
   modelValue: LegendItem;

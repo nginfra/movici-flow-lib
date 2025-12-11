@@ -39,7 +39,7 @@
             :class="{ active: item.value === modelValue }"
           />
           <span class="is-size-7" :class="{ 'has-text-weight-bold': item.value === modelValue }">
-            {{ upperFirst($t("flow.basemap." + item.name)) }}
+            {{ upperFirst(t("flow.basemap." + item.name)) }}
           </span>
         </div>
       </div>
@@ -51,6 +51,9 @@
 import { ref } from "vue";
 
 import { upperFirst } from "@movici-flow-lib/utils/filters";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 defineProps<{ isRight?: boolean; modelValue: string }>();
 const emit = defineEmits<{
   (e: "update:modelValue", val: string): void;

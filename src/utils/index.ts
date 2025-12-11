@@ -9,10 +9,10 @@ import type { DataAttribute, ShortScenario, Simulation, UUID } from "../types";
  * @param property
  * @returns {boolean}
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export function hasOwnProperty<O, K extends PropertyKey>(
   obj: O,
-  property: K
+  property: K,
 ): obj is O & Record<K, unknown> {
   return Object.prototype.hasOwnProperty.call(obj, property);
 }
@@ -65,12 +65,15 @@ export function buildFlowUrl(name: string, query: Record<string, string | undefi
 }
 
 function extractDefinedValues(obj: Record<string, string | undefined>) {
-  return Object.entries(obj).reduce((prev, [key, val]) => {
-    if (val) {
-      prev[key] = val;
-    }
-    return prev;
-  }, {} as Record<string, string>);
+  return Object.entries(obj).reduce(
+    (prev, [key, val]) => {
+      if (val) {
+        prev[key] = val;
+      }
+      return prev;
+    },
+    {} as Record<string, string>,
+  );
 }
 
 /**
@@ -102,7 +105,7 @@ export function getVariantFromStatus(status: string): string {
 }
 export function getStatusFromScenarioAndSimulation(
   scenario: ShortScenario,
-  simulation: Simulation
+  simulation: Simulation,
 ) {
   const allStatuses = ["failed", "invalid", "pending", "running", "succeeded", "ready", "unknown"];
   const scenarioStatus = getStatusOrUnknown(scenario).toLowerCase();
@@ -126,7 +129,7 @@ function getStatusOrUnknown(obj: ShortScenario | Simulation) {
  * @param allowNull boolean - if false will trigger error if the value of a key is null or undefined
  * @returns sorting order function
  */
-export function sortByKeys<K>(keys: string[], allowNull = true) {
+export function sortByKeys<K>(keys: string[], allowNull = true): (a: K, b: K) => number {
   const order: number[] = [];
   // remapping the keys, slicing the - or + sign if needed
   // also determines the order they will sorted by pushing into order
@@ -139,9 +142,10 @@ export function sortByKeys<K>(keys: string[], allowNull = true) {
     return key;
   });
 
-  return (a: K, b: K) => {
+  return (a: K, b: K): number => {
     for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
+      const key = keys[i]!;
+      const thisOrder = order[i]!;
       // checks if key exists
       if (hasOwnProperty(a, key) && hasOwnProperty(b, key)) {
         const rawValueA = a[key],
@@ -158,17 +162,17 @@ export function sortByKeys<K>(keys: string[], allowNull = true) {
 
           // compares values
           if (valueA > valueB) {
-            return order[i];
+            return thisOrder;
           }
           if (valueA < valueB) {
-            return -order[i];
+            return -thisOrder;
           }
         } else {
           // if there is a null, either trigger an error
           if (!allowNull) throw new Error(`Value is null on key ${key}`);
           //  or see which is null, and pull it to the bottom
-          if (isNullA && !isNullB) return order[i];
-          if (!isNullA && isNullB) return -order[i];
+          if (isNullA && !isNullB) return thisOrder;
+          if (!isNullA && isNullB) return -thisOrder;
         }
       } else {
         // if there is an item without key, either trigger an error
@@ -181,8 +185,11 @@ export function sortByKeys<K>(keys: string[], allowNull = true) {
 }
 
 export function arrayToMap<T>(items: T[], key: (i: T) => string): Record<string, T> {
-  return items.reduce((result, item) => {
-    result[key(item)] = item;
-    return result;
-  }, {} as Record<string, T>);
+  return items.reduce(
+    (result, item) => {
+      result[key(item)] = item;
+      return result;
+    },
+    {} as Record<string, T>,
+  );
 }

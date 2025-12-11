@@ -1,6 +1,5 @@
-import { CompositeLayer } from "@deck.gl/core";
+import { CompositeLayer, type CompositeLayerProps } from "@deck.gl/core";
 import { IconLayer } from "@deck.gl/layers";
-import type { CompositeLayerProps } from "@deck.gl/core/lib/composite-layer";
 import type { PointCoordinate, RGBAColor, TopologyLayerData } from "@movici-flow-lib/types";
 import { getContrastingColor } from "@movici-flow-lib/utils/colorUtils";
 import type { IconPackName } from "../visualizerModules/iconCommon";
@@ -15,7 +14,7 @@ const FALLBACK_ICON = "question",
 const DEFAULT_SIZE_SCALE = 0.5;
 function getValue<D, T extends number | boolean | string>(
   d: D,
-  accessor?: ((_: D) => T) | T
+  accessor?: ((_: D) => T) | T,
 ): T | null {
   if (!accessor) return null;
   if (typeof accessor === "function") {
@@ -24,10 +23,7 @@ function getValue<D, T extends number | boolean | string>(
   return accessor;
 }
 
-export default class ShapeIconLayer<D> extends CompositeLayer<
-  D,
-  CompositeLayerProps<D> & ShapeIconProps<D>
-> {
+export default class ShapeIconLayer<D> extends CompositeLayer<ShapeIconProps<D>> {
   renderLayers() {
     const layers = [];
 
@@ -54,7 +50,7 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
     getIcon,
     iconAtlas,
     iconMapping,
-  }: CompositeLayerProps<D> & ShapeIconProps<D>) {
+  }: CompositeLayerProps & ShapeIconProps<D>) {
     const hasIconAndShape = hasIcon && hasShape,
       getPixelOffset = hasIconAndShape
         ? (d: D) => {
@@ -115,7 +111,7 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
           iconMapping: this.props.updateTriggers.iconMapping,
         },
         loadOptions: LOAD_OPTIONS,
-      })
+      }),
     );
   }
 
@@ -127,7 +123,7 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
     shapeMapping,
     getSize,
     getColor,
-  }: CompositeLayerProps<D> & ShapeIconProps<D>) {
+  }: CompositeLayerProps & ShapeIconProps<D>) {
     return new IconLayer(
       this.getSubLayerProps({
         id: "shape",
@@ -148,7 +144,7 @@ export default class ShapeIconLayer<D> extends CompositeLayer<
           iconMapping: this.props.updateTriggers.shapeMapping,
         },
         loadOptions: LOAD_OPTIONS,
-      })
+      }),
     );
   }
 }

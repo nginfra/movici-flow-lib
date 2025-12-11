@@ -100,7 +100,7 @@ export class PointTopologyGetter extends SimpleTopologyGetter<PointGeometryData,
     if (!data?.["geometry.x"] || !data?.["geometry.y"]) {
       throw new Error("Point geometry not found in dataset");
     }
-    if (data["geometry.x"][i] === null || data["geometry.y"][i] === null) {
+    if (data["geometry.x"][i] == null || data["geometry.y"][i] == null) {
       return null;
     }
     return transform([data["geometry.x"][i], data["geometry.y"][i]], crs);
@@ -120,7 +120,7 @@ export class LineTopologyGetter extends SimpleTopologyGetter<LineGeometryData, L
     if (!arr) {
       throw new Error("Line geometry not found in dataset");
     }
-    if (arr[i] === null) {
+    if (arr[i] == null) {
       return null;
     }
     return transformArray(arr[i], crs);
@@ -145,7 +145,7 @@ export class PolygonTopologyGetter extends SimpleTopologyGetter<
     if (!arr) {
       throw new Error("Polygon geometry not found in dataset");
     }
-    if (arr[i] === null) {
+    if (arr[i] == null) {
       return null;
     }
     return transformArray(arr[i], crs);
@@ -204,9 +204,10 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
     points: PointsByIdT
   ): PolygonCoordinate | null {
     const gridPoints = data["grid.grid_points"][i];
+    if (gridPoints == null) return null;
     const rv: CoordinateArray = [];
     for (let i = 0; i < gridPoints.length; i++) {
-      const point = points[gridPoints[i]];
+      const point = points[gridPoints[i]!];
 
       if (!point) {
         return null;
@@ -224,7 +225,7 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
       if (!coord) {
         continue;
       }
-      points[data.id[i]] = coord;
+      points[data.id[i]!] = coord;
     }
     return points;
   }
@@ -232,7 +233,7 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
     if (!data?.["geometry.x"] || !data?.["geometry.y"]) {
       throw new Error("Point geometry not found in dataset");
     }
-    if (data["geometry.x"][i] === null || data["geometry.y"][i] === null) {
+    if (data["geometry.x"][i] == null || data["geometry.y"][i] == null) {
       return null;
     }
     return transform([data["geometry.x"][i], data["geometry.y"][i]], crs);

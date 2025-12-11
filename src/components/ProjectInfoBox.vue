@@ -2,13 +2,13 @@
   <div class="current-project is-flex is-align-items-flex-end">
     <div class="info is-flex-grow-1">
       <label class="is-size-7 is-block">
-        {{ $t("flow.projects.label") }}
+        {{ t("flow.projects.label") }}
       </label>
       <o-field v-if="edit">
         <o-select
           :modelValue="store.project"
           @update:modelValue="setProject($event)"
-          :placeholder="$t('flow.projects.selectPlaceholder')"
+          :placeholder="t('flow.projects.selectPlaceholder')"
           size="small"
           expanded
         >
@@ -31,7 +31,9 @@
 <script setup lang="ts">
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import type { Project } from "@movici-flow-lib/types";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const store = useFlowStore();
 defineProps<{ edit?: boolean }>();
 

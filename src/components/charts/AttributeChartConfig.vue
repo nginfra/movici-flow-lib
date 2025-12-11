@@ -4,9 +4,9 @@
       <div class="row is-flex is-align-items-center">
         <o-icon pack="far" icon="chart-line" />
         <h1 class="is-size-4 has-text-weight-bold is-flex-grow-1 ml-2">
-          {{ $t("flow.visualization.graph.title") }}
+          {{ t("flow.visualization.graph.title") }}
         </h1>
-        <span class="close is-clickable" :title="$t('actions.close')" @click="$emit('close')">
+        <span class="close is-clickable" :title="t('actions.close')" @click="emit('close')">
           <o-icon pack="far" icon="times" />
         </span>
       </div>
@@ -18,7 +18,7 @@
     </header>
     <div class="columns mb-0">
       <div class="column">
-        <o-field :label="$t('flow.visualization.graph.graphDisplayName')">
+        <o-field :label="t('flow.visualization.graph.graphDisplayName')">
           <o-input
             size="small"
             class="is-size-7"
@@ -30,14 +30,14 @@
     </div>
 
     <div class="contents mb-2" v-if="local.items.length">
-      <label class="label is-size-6-half">{{ $t("flow.visualization.graph.lines") }}</label>
+      <label class="label is-size-6-half">{{ t("flow.visualization.graph.lines") }}</label>
       <div class="box info mb-2 p-3 has-background-white-bis">
         <div class="header is-flex mb-0">
           <label class="label color is-size-7 is-flex-shrink-1 mr-2">
-            {{ $t("flow.visualization.colorConfig.color") }}
+            {{ t("flow.visualization.colorConfig.color") }}
           </label>
           <label class="label display-name is-size-7 is-flex-grow-1">
-            {{ $t("properties.displayName") }}
+            {{ t("properties.displayName") }}
           </label>
         </div>
         <Draggable
@@ -83,8 +83,8 @@
                   :icon-left="showDetails[index] ? 'angle-up' : 'angle-down'"
                   :title="
                     !showDetails[index]
-                      ? $t('flow.visualization.graph.showEntityDetails')
-                      : $t('flow.visualization.graph.hideEntityDetails')
+                      ? t('flow.visualization.graph.showEntityDetails')
+                      : t('flow.visualization.graph.hideEntityDetails')
                   "
                 />
               </div>
@@ -92,13 +92,13 @@
                 v-if="showDetails[index]"
                 class="details is-flex mt-2 mb-1 px-3 py-2 has-background-white"
               >
-                <o-field class="is-flex-shrink-1 mr-5" :label="`${$t('resources.entity')} ID`">
+                <o-field class="is-flex-shrink-1 mr-5" :label="`${t('resources.entity')} ID`">
                   <span class="value is-size-7">{{ element.entityId }}</span>
                 </o-field>
-                <o-field class="is-flex-shrink-1 mr-5" :label="$t('resources.entityGroup')">
+                <o-field class="is-flex-shrink-1 mr-5" :label="t('resources.entityGroup')">
                   <span class="value is-size-7">{{ element.entityGroup }}</span>
                 </o-field>
-                <o-field class="is-flex-shrink-1" :label="$t('resources.dataset')">
+                <o-field class="is-flex-shrink-1" :label="t('resources.dataset')">
                   <span class="value is-size-7">
                     {{ readableDatasetName(element.datasetName) }}
                   </span>
@@ -116,7 +116,7 @@
         isPulledRight
         :modelValue="buttons"
         @save="saveChart"
-        @cancel="$emit('close')"
+        @cancel="emit('close')"
       />
     </div>
   </div>
@@ -138,12 +138,16 @@ import cloneDeep from "lodash/cloneDeep";
 import isEqual from "lodash/isEqual";
 import { computed, ref, watch, type Ref } from "vue";
 import Draggable from "vuedraggable";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   modelValue: ChartVisualizerInfo;
 }>();
 const emit = defineEmits<{
   (e: "update:modelValue", val: ChartVisualizerInfo): void;
+  (e: "close"): void
 }>();
 const local = ref<ChartVisualizerInfo>();
 const selectedAttributeName = computed(() => {

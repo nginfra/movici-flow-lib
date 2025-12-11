@@ -3,7 +3,7 @@
     <div v-if="store.datasets" class="box has-background-white p-4">
       <div class="is-flex is-flex is-align-items-center mb-3">
         <h1 class="is-size-6 has-text-black text-ellipsis">
-          {{ $t("flow.export.modalTitle") }} {{ scenario?.display_name ?? "" }}
+          {{ t("flow.export.modalTitle") }} {{ scenario?.display_name ?? "" }}
         </h1>
       </div>
       <ExportForm
@@ -21,7 +21,7 @@
           class="mr-2 has-text-weight-bold"
           @click="$emit('close')"
         >
-          {{ $t("actions.cancel") }}
+          {{ t("actions.cancel") }}
         </o-button>
         <o-button
           size="small"
@@ -29,7 +29,7 @@
           class="is-primary has-text-weight-bold"
           @click="exportData"
         >
-          {{ $t("flow.export.label") }}
+          {{ t("flow.export.label") }}
         </o-button>
       </div>
       <div class="is-clearfix"></div>
@@ -49,6 +49,9 @@ import type { ExportFormConfig, ScenarioDataset, ShortDataset } from "../types";
 import { FormValidator } from "../utils/FormValidator";
 import type { ComposableVisualizerInfo } from "../visualizers/VisualizerInfo";
 import ExportForm from "./ExportForm.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const parsedView = useParsedViewStore();
 const props = defineProps<{

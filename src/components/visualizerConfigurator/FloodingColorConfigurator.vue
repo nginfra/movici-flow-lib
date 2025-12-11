@@ -4,7 +4,7 @@
       <div class="column is-two-thirds-desktop is-full-tablet">
         <o-field
           required
-          :label="$t('flow.visualization.basedOn')"
+          :label="t('flow.visualization.basedOn')"
           :message="errors['selectedAttribute']"
           :variant="errors['selectedAttribute'] && 'danger'"
         >
@@ -109,5 +109,5 @@ class FloodingColorMappingStrategy extends ColorMappingStrategy {
     return 3;
   }
 }
-const strategy = new FloodingColorMappingStrategy(DEFAULT_COLOR_PALETTES["Flooding"][0]);
+const strategy = new FloodingColorMappingStrategy(DEFAULT_COLOR_PALETTES["Flooding"]![0]);
 </script>

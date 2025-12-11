@@ -32,7 +32,7 @@ function overridingIconMapping(icons: IconMapping, overrides: IconMappingOverrid
 
 function getIconMapping(pack: IconPackName) {
   return ICON_PACKS.reduce((prev, curr) => {
-    prev[curr] = overridingIconMapping(ICONS[curr], ICON_OVERRIDES[curr]);
+    prev[curr] = overridingIconMapping(ICONS[curr], ICON_OVERRIDES[curr]!);
     return prev;
   }, {} as Record<string, IconMapping>)[pack];
 }

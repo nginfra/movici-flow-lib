@@ -2,7 +2,7 @@
   <o-select
     :modelValue="modelValue"
     @update:modelValue="emit('update:modelValue', $event)"
-    :placeholder="warning ? warning : $t('actions.select')"
+    :placeholder="warning ? warning : t('actions.select')"
     size="small"
     expanded
     :disabled="disabled"
@@ -22,6 +22,7 @@
 
 <script setup lang="ts" generic="T extends unknown">
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 export interface Props<T> {
   modelValue?: T;
   options?: T[];
@@ -31,6 +32,8 @@ export interface Props<T> {
   warningMessage?: string;
   disabled?: boolean;
 }
+
+const { t } = useI18n();
 
 // TODO: generic typing bug prevents propagation of T
 const props = defineProps<Props<unknown>>();

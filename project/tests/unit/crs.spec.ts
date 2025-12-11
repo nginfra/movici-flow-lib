@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { transform, transformArray, transformGeoJsonToCRS } from "@movici-flow-lib/crs";
 import { ValidationError } from "@movici-flow-lib/errors";
@@ -53,7 +54,7 @@ describe("crs.ts", () => {
     const input = { ...geojson, crs };
 
     expect(() => transformGeoJsonToCRS(input)).toThrow(
-      new ValidationError('Unsupported CRS: {"type":"EPSG","properties":{"code":0}}')
+      new ValidationError('Unsupported CRS: {"type":"EPSG","properties":{"code":0}}'),
     );
   });
   it("transforms a point to WGS-84", () => {

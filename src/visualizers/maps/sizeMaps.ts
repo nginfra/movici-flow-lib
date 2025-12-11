@@ -19,12 +19,13 @@ export class NumberSizeMap implements Mapper<number | null, number> {
   useCache = false;
   cache: Map<number | null, number>;
 
-  values: number[];
-  sizes: number[];
+  values: [number, ...number[]];
+  sizes: [number, ...number[]];
 
   constructor(config: SizeMapConfig) {
-    this.values = config.sizes.map((c) => c[0]);
-    this.sizes = config.sizes.map((c) => c[1]);
+    if (!config.sizes.length) throw new Error("size mapping must have at least one entry")
+    this.values = config.sizes.map((c) => c[0]) as [number, ...number[]];
+    this.sizes = config.sizes.map((c) => c[1]) as [number, ...number[]];
     this.cache = new Map();
   }
 
@@ -47,14 +48,14 @@ export class NumberSizeMap implements Mapper<number | null, number> {
   calculateSize(value: number | null): number {
     if (value === null || !this.values.length || isNaN(value)) return 0;
     if (this.values.length == 1 || value <= this.values[0]) return this.sizes[0];
-    if (value >= this.values[this.values.length - 1]) return this.sizes[this.sizes.length - 1];
+    if (value >= this.values[this.values.length - 1]!) return this.sizes[this.sizes.length - 1]!;
     for (let i = this.values.length - 2; i >= 0; i--) {
-      if (value >= this.values[i]) {
+      if (value >= this.values[i]!) {
         return getInterpolatedValue(
-          this.values[i],
-          this.sizes[i],
-          this.values[i + 1],
-          this.sizes[i + 1],
+          this.values[i]!,
+          this.sizes[i]!,
+          this.values[i + 1]!,
+          this.sizes[i + 1]!,
           value
         );
       }

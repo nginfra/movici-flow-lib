@@ -3,10 +3,10 @@
     <div class="columns mb-0 layer-kind">
       <div class="column is-two-thirds-desktop is-full-tablet">
         <o-radio class="mr-4" v-model="clauseType" native-value="static" size="small">
-          {{ $t("flow.visualization.static") }}
+          {{ t("flow.visualization.static") }}
         </o-radio>
         <o-radio v-model="clauseType" native-value="byValue" size="small">
-          {{ $t("flow.visualization.byValue") }}
+          {{ t("flow.visualization.byValue") }}
         </o-radio>
       </div>
     </div>
@@ -22,7 +22,7 @@
           <div class="column is-two-thirds-desktop is-full-tablet">
             <o-field
               required
-              :label="$t('flow.visualization.basedOn')"
+              :label="t('flow.visualization.basedOn')"
               :message="errors['selectedAttribute']"
               :variant="errors['selectedAttribute'] && 'danger'"
             >
@@ -54,7 +54,7 @@
               :icon-left="open ? 'angle-down' : 'angle-up'"
             />
             <label class="is-size-6-half ml-1">
-              {{ $t("flow.visualization.sizeConfig.miscellaneous") }}
+              {{ t("flow.visualization.sizeConfig.miscellaneous") }}
             </label>
           </span>
         </template>
@@ -66,7 +66,7 @@
                 :modelValue="localClause.dashed"
                 @update:modelValue="updateClause({ dashed: $event })"
               >
-                {{ $t("flow.visualization.sizeConfig.dashed") }}
+                {{ t("flow.visualization.sizeConfig.dashed") }}
               </o-checkbox>
             </o-field>
           </div>

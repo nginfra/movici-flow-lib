@@ -4,17 +4,17 @@
       <div class="column is-two-thirds-desktop">
         <o-field>
           <o-radio class="mr-4" v-model="clauseType" native-value="static" size="small">
-            {{ $t("flow.visualization.static") }}
+            {{ t("flow.visualization.static") }}
           </o-radio>
           <o-radio v-model="clauseType" native-value="byValue" size="small">
-            {{ $t("flow.visualization.byValue") }}
+            {{ t("flow.visualization.byValue") }}
           </o-radio>
         </o-field>
       </div>
       <div class="column is-one-third-desktop">
         <o-field>
           <o-checkbox v-model="showLegend" size="small">
-            {{ $t("flow.visualization.showLegend") }}
+            {{ t("flow.visualization.showLegend") }}
           </o-checkbox>
         </o-field>
       </div>
@@ -31,7 +31,7 @@
         <div class="column is-two-thirds-desktop is-full-tablet">
           <o-field
             required
-            :label="$t('flow.visualization.basedOn')"
+            :label="t('flow.visualization.basedOn')"
             :message="errors['selectedAttribute']"
             :type="errors['selectedAttribute'] && 'danger'"
           >
@@ -51,7 +51,7 @@
         :component="IconSelector"
         :componentProps="componentProps"
         :strategy="strategy"
-        :label="$t('flow.visualization.iconConfig.shapes')"
+        :label="t('flow.visualization.iconConfig.shapes')"
       >
         <template v-if="showLegend" #legend-labels="{ placeholders }">
           <LegendLabelsConfigurator
@@ -92,7 +92,7 @@ class IconMappingStrategy extends MappingStrategy<string> {
   }
 
   defaultOutput(): string {
-    return Object.keys(this.mapping)[0];
+    return Object.keys(this.mapping)[0] ?? "";
   }
 }
 const { t } = useI18n();

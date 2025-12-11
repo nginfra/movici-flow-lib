@@ -33,7 +33,7 @@ function getDataFromUpdates<T>(
 } {
   const data: [number, T][] = [];
   for (; pos < updates.length; pos++) {
-    const upd = updates[pos];
+    const upd = updates[pos]!;
     const val = getValueFromUpdate(upd, idx);
     if (val === null) continue;
     data.push([upd.timestamp, val]);
@@ -49,7 +49,7 @@ function getDataFromUpdates<T>(
 function getValueFromUpdate<T>(upd: TapefileUpdate<T>, idx: number): T | null {
   const dataIdx = upd.indices.indexOf(idx);
   if (dataIdx < 0) return null;
-  return upd.data[dataIdx];
+  return upd.data[dataIdx]!;
 }
 
 export interface ChartDataPoint {
@@ -64,7 +64,7 @@ export function applyChartData(
 ): ChartDataPoint[] {
   if (!data.length) return currentData;
 
-  if (currentData.length && currentData[currentData.length - 1].isFinal) {
+  if (currentData.length && currentData[currentData.length - 1]!.isFinal) {
     currentData.pop();
   }
 
@@ -76,7 +76,7 @@ export function applyChartData(
   });
 
   if (currentData.length) {
-    if (toAdd[0].x === currentData[currentData.length - 1].x) {
+    if (toAdd[0]!.x === currentData[currentData.length - 1]!.x) {
       currentData.pop();
     }
   }
@@ -86,7 +86,7 @@ export function applyChartData(
     if (timeline) {
       currentData.push({
         x: timeline.duration,
-        y: currentData[currentData.length - 1].y,
+        y: currentData[currentData.length - 1]!.y,
         isFinal: true,
       });
     }

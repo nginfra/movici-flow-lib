@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PickInfo } from "@deck.gl/core/lib/deck";
+import type { PickingInfo } from "@deck.gl/core";
 import type { DeckEntityObject, ViewState } from "@movici-flow-lib/types";
 import {
   getClickPosition,
@@ -18,17 +18,17 @@ import {
   getPointCenter,
   type ANCHOR_TYPE,
 } from "@movici-flow-lib/utils/canvasPositioning";
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 import inRange from "lodash/inRange";
-import type mapboxgl from "mapbox-gl";
+import type { Map } from "mapbox-gl";
 import { ref, watch, type CSSProperties } from "vue";
 
 const DISPLAY_NONE = { display: "none" };
 
 const props = withDefaults(
   defineProps<{
-    modelValue?: PickInfo<unknown>;
-    map: mapboxgl.Map;
+    modelValue?: PickingInfo<unknown>;
+    map: Map;
     viewState?: ViewState;
     tip?: boolean;
     startAnchorType?: ANCHOR_TYPE;
@@ -41,7 +41,7 @@ const props = withDefaults(
   }>(),
   {
     startAnchorType: "bottom",
-  }
+  },
 );
 
 const anchorType = ref<ANCHOR_TYPE>();
@@ -67,7 +67,7 @@ function recalculatePosition(
   y: number,
   contentSize: { width: number; height: number },
   canvasSize: { width: number; height: number },
-  padding = 5
+  padding = 5,
 ) {
   // makes sure element is inside the map area
   if (inRange(x, 0, canvasSize.width) && inRange(y, 0, canvasSize.height)) {
@@ -103,7 +103,7 @@ watch(
   () => {
     if (props.map && props.modelValue?.layer) {
       const coords = getCoordinatesFunction(props.modelValue.layer.constructor.name)(
-          props.modelValue as PickInfo<DeckEntityObject<unknown>>
+          props.modelValue as PickingInfo<DeckEntityObject<unknown>>,
         ),
         contentSize = {
           width: content.value?.clientWidth ?? 220,
@@ -118,7 +118,7 @@ watch(
       recalculatePosition(x, y, contentSize, canvasSize);
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 

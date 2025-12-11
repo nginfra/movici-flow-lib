@@ -1,7 +1,7 @@
 <template>
   <div class="suggestions is-flex is-align-items-center" v-if="unusedSuggestions.length">
     <span class="is-size-7 has-text-weight-bold has-text-grey mr-1">
-      {{ $t("flow.visualization.popup.suggestions") }}:
+      {{ t("flow.visualization.popup.suggestions") }}:
     </span>
     <MovTag
       v-for="(suggestion, idx) in unusedSuggestions"
@@ -22,6 +22,9 @@ import type { AttributeSummary, PopupItem } from "@movici-flow-lib/types";
 import { sortByKeys } from "@movici-flow-lib/utils";
 import { computed, inject } from "vue";
 import { attributesInjection } from "./injectionKeys";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{

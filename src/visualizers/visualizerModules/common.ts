@@ -75,6 +75,6 @@ export class TapefileAccessor<In, Out> {
   getValue(index: number): Out {
     if (!this.tapefile) throw new Error("No tapefile defined for accessor");
 
-    return this.mapping.getValue(this.tapefile.data[index]);
+    return this.mapping.getValue(this.tapefile.data[index]!);
   }
 }

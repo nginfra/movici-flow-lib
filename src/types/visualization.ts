@@ -1,7 +1,7 @@
 import type { RGBAColor } from "./colors";
 import type { DataAttribute } from "./schema";
 import type { Coordinate, TopologyLayerData } from "./geometry";
-import type { LayerProps } from "@deck.gl/core/lib/layer";
+import type { LayerProps } from "@deck.gl/core";
 import type { PopupEventCallback } from "./popup";
 import type { LayerConstructor } from "./general";
 import type {
@@ -15,8 +15,8 @@ import type {
   MeasureDistanceMode,
   MeasureAreaMode,
   MeasureAngleMode,
-} from "@nebula.gl/edit-modes";
-import type { PickInfo } from "deck.gl";
+} from "@deck.gl-community/editable-layers";
+import type { PickingInfo } from "@deck.gl/core";
 import type { FetchRequestOptions } from "./backend";
 import type { ITopologyGetter } from "@movici-flow-lib/types";
 
@@ -44,7 +44,7 @@ export interface FeatureDrawOption {
 }
 
 export type CursorCallback = (input: { isHovering: boolean; isDragging: boolean }) => null | string;
-export type MapOnClickCallback = (input: PickInfo<unknown>, ev?: DeckMouseEvent) => void;
+export type MapOnClickCallback = (input: PickingInfo<unknown>, ev?: DeckMouseEvent) => void;
 
 export type NebulaMode =
   | DrawLineStringMode
@@ -91,12 +91,12 @@ export interface IMapVisualizer<Coord extends Coordinate> {
 }
 
 export type LayerParams<
-  LData extends TopologyLayerData<Coord>,
+  LData extends TopologyLayerData<Coord>, // eslint-disable-line @typescript-eslint/no-unused-vars
   Coord extends Coordinate,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Props extends LayerProps<LData> = any
+  Props extends LayerProps = any
 > = {
-  type: LayerConstructor<LData, Props>;
+  type: LayerConstructor<Props>;
   props: Partial<Props>;
 };
 

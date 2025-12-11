@@ -1,4 +1,4 @@
-import type { PickInfo } from "deck.gl";
+import type { PickingInfo } from "@deck.gl/core";
 import type { DeckMouseEvent } from "./deck";
 import type { AttributeType } from "./schema";
 import type { ITapefile } from "./visualization";
@@ -11,7 +11,7 @@ export interface PopupItem {
 export interface PopupContent<D = unknown> {
   title: string;
   dynamicTitle?: boolean;
-  pickInfo: PickInfo<D>;
+  pickInfo: PickingInfo<D>;
   entityIndex: number;
   items: PopupContentItem[];
 }
@@ -33,4 +33,4 @@ export type PopupInfo<D = unknown> = {
 
 export type PopupEventCallback = (content: PopupContent | null, ev?: DeckMouseEvent) => void;
 
-export type PickingHandler<D> = (info: PickInfo<D>, ev?: DeckMouseEvent) => boolean;
+export type PickingHandler<D> = (info: PickingInfo<D>, ev?: DeckMouseEvent) => boolean;

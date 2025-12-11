@@ -4,17 +4,17 @@
       <div class="column is-two-thirds-desktop">
         <o-field>
           <o-radio class="mr-4" v-model="clauseType" native-value="static" size="small">
-            {{ $t("flow.visualization.static") }}</o-radio
+            {{ t("flow.visualization.static") }}</o-radio
           >
           <o-radio v-model="clauseType" native-value="byValue" size="small">
-            {{ $t("flow.visualization.byValue") }}
+            {{ t("flow.visualization.byValue") }}
           </o-radio>
         </o-field>
       </div>
       <div class="column is-one-third-desktop">
         <o-field>
           <o-checkbox v-model="showLegend" size="small">
-            {{ $t("flow.visualization.showLegend") }}
+            {{ t("flow.visualization.showLegend") }}
           </o-checkbox>
         </o-field>
       </div>
@@ -30,7 +30,7 @@
           <div class="column is-two-thirds-desktop is-full-tablet">
             <o-field
               required
-              :label="$t('flow.visualization.basedOn')"
+              :label="t('flow.visualization.basedOn')"
               :message="errors['selectedAttribute']"
               :variant="errors['selectedAttribute'] && 'danger'"
             >
@@ -113,7 +113,6 @@ const {
   t,
   modelValue: computed(() => props.modelValue),
   onEmit: (toEmit) => {
-    console.log(cloneDeep(toEmit));
     if (localClause.advanced) {
       toEmit.advanced = localClause.advanced;
     }

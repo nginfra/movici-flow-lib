@@ -8,7 +8,7 @@
           :icon-left="open ? 'angle-down' : 'angle-up'"
         />
         <label class="is-size-6-half ml-1">
-          {{ $t("flow.visualization.colorConfig.advanced.title") }}
+          {{ t("flow.visualization.colorConfig.advanced.title") }}
         </label>
       </span>
     </template>
@@ -27,7 +27,7 @@
     </div>
     <div v-if="hasFillOpacity" class="columns mb-2 is-multiline">
       <div class="column py-1 is-2">
-        <o-field :label="$t('flow.visualization.colorConfig.advanced.fillOpacity')">
+        <o-field :label="t('flow.visualization.colorConfig.advanced.fillOpacity')">
           <span class="is-flex-grow-1 mr-2">
             <o-input
               size="small"
@@ -42,7 +42,7 @@
       </div>
     </div>
     <p v-if="!(hasAdvancedColors || hasRenderOrder || hasFillOpacity)" class="is-size-6-half">
-      {{ $t("flow.visualization.colorConfig.advanced.noSettingsAvailable") }}
+      {{ t("flow.visualization.colorConfig.advanced.noSettingsAvailable") }}
     </p>
   </o-collapse>
 </template>
@@ -60,8 +60,10 @@ import { computed, inject, reactive, ref, watch } from "vue";
 import AdvColorList from "./AdvColorList.vue";
 import RenderOrder from "./RenderOrder.vue";
 import { geometryInjection } from "./injectionKeys";
+import { useI18n } from "vue-i18n";
 import isEmpty from "lodash/isEmpty";
 
+const { t } = useI18n();
 const defaultSettings = {
   specialColor: DEFAULT_SPECIAL_COLOR_TRIPLE,
   undefinedColor: DEFAULT_UNDEFINED_COLOR_TRIPLE,
@@ -90,7 +92,7 @@ const localValue = reactive({ ...defaultSettings });
 
 const hasAdvancedColors = computed(() => props.clauseType === "byValue");
 const hasRenderOrder = computed(
-  () => props.clauseType === "byValue" && props.fillType === "buckets"
+  () => props.clauseType === "byValue" && props.fillType === "buckets",
 );
 const hasFillOpacity = computed(() => geometry?.value === "polygons");
 const advColors = computed<AdvColorMapping>(() => [
@@ -135,7 +137,7 @@ watch(
   () => {
     emit("update:modelValue", finalizeValue());
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -144,7 +146,7 @@ watch(
     if (isEmpty(value)) return;
     Object.assign(localValue, value);
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 

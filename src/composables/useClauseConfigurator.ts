@@ -48,7 +48,6 @@ export function useClauseConfigurator<
   );
 
   function updateClause(clause?: Partial<T>) {
-    console.log(localClause, clause);
     Object.assign(localClause, clause);
     emitClause();
   }
@@ -84,7 +83,6 @@ export function useClauseConfigurator<
   });
   watch(attributeHelper.selectedAttribute, (attribute) => {
     if (!attribute) return;
-    console.log("here", attribute);
 
     localClause.byValue ??= {
       attribute,

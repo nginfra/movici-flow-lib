@@ -12,7 +12,7 @@
         >
           <o-icon :pack="pinProps.iconClass" icon="thumbtack" />
         </span>
-        <span class="close is-clickable" :title="$t('actions.close')" @click.stop="$emit('close')">
+        <span class="close is-clickable" :title="t('actions.close')" @click.stop="$emit('close')">
           <o-icon pack="far" icon="times" />
         </span>
       </template>
@@ -80,14 +80,14 @@ const contentItems = computed(() => {
 });
 const title = computed(() => {
   if (props.modelValue?.dynamicTitle) {
-    const { value, attribute } = items.value[0];
+    const { value, attribute } = items.value[0]!;
     return formatValue({ value, attribute });
   }
   return props.modelValue?.title;
 });
 
 const titleTooltip = computed(() => {
-  return props.modelValue?.dynamicTitle ? items.value[0].name : props.modelValue?.title;
+  return props.modelValue?.dynamicTitle ? items.value[0]!.name : props.modelValue?.title;
 });
 
 function formatValue(item: Omit<DataViewItem, "name">) {

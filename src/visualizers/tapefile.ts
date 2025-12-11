@@ -108,7 +108,7 @@ export class TapefileWriter<T> {
     const updateMap: Map<number, T> = new Map();
     function applyUpdate(upd: TapefileUpdate<T>) {
       for (let i = 0; i < upd.length; i++) {
-        updateMap.set(upd.indices[i], upd.data[i]);
+        updateMap.set(upd.indices[i]!, upd.data[i]!);
       }
     }
     applyUpdate(first);
@@ -219,14 +219,14 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
   }
 
   get maxTime() {
-    return this.updates[this.updates.length - 1].timestamp ?? -1;
+    return this.updates[this.updates.length - 1]!.timestamp ?? -1;
   }
 
   get nextTime() {
     if (this.currentUpdateIdx === null || this.currentUpdateIdx === this.updates.length - 1) {
       return Infinity;
     }
-    return this.updates[this.currentUpdateIdx + 1].timestamp;
+    return this.updates[this.currentUpdateIdx + 1]!.timestamp;
   }
 
   get currentUpdate() {
@@ -246,7 +246,7 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
     if (time === currentTime) {
       if (
         this.currentUpdateIdx != null &&
-        this.currentUpdateVersion !== this.updates[this.currentUpdateIdx].version
+        this.currentUpdateVersion !== this.updates[this.currentUpdateIdx]!.version
       ) {
         this.applyUpdateAtIndex(this.currentUpdateIdx);
       }
@@ -280,7 +280,7 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
       throw RangeError("Requested step out of bounds");
     }
     this.currentUpdateIdx++;
-    const newUpdate = this.updates[this.currentUpdateIdx];
+    const newUpdate = this.updates[this.currentUpdateIdx]!;
     // In case we there is no rollback calculated for the newUpdate yet, we need to calculate it
     // just before we apply it, otherwise we cannot later undo (ie rollback) the newUpdate.
     this.calculateRollback(newUpdate, this.currentUpdateIdx === this.updates.length - 1);
@@ -291,11 +291,11 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
     if (this.currentUpdateIdx === null || this.currentUpdateIdx === 0) {
       throw new RangeError("Requested step out of bounds");
     }
-    const currentUpdate = this.updates[this.currentUpdateIdx];
+    const currentUpdate = this.updates[this.currentUpdateIdx]!;
     this.state.rollbackUpdate(currentUpdate);
 
     this.currentUpdateIdx--;
-    this.currentUpdateVersion = this.updates[this.currentUpdateIdx].version;
+    this.currentUpdateVersion = this.updates[this.currentUpdateIdx]!.version;
   }
 
   applyUpdateAtIndex(idx: number) {
@@ -303,7 +303,7 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
       throw new Error(`Index ${idx} out of bounds for tapefile`);
     }
     this.currentUpdateIdx = idx;
-    const toApply = this.updates[idx];
+    const toApply = this.updates[idx]!;
     this.state.applyUpdate(toApply);
     this.currentUpdateVersion = toApply.version;
   }
@@ -316,8 +316,8 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
       lastUpdate = updates.length - 1,
       isLast = nextRollback === lastUpdate;
     if (nextRollback > lastUpdate) return false;
-    this.moveTo(updates[lastRollback].timestamp);
-    this.calculateRollback(updates[nextRollback], isLast);
+    this.moveTo(updates[lastRollback]!.timestamp);
+    this.calculateRollback(updates[nextRollback]!, isLast);
     this.lastRollback = nextRollback;
     this.trimRollbacks();
 
@@ -349,7 +349,7 @@ export class SinglePropertyTapefile<T> extends BaseTapefile<T> {
     let i = this.updates.length - 2;
 
     while (i >= this.trimmedUntil) {
-      const upd = this.updates[i];
+      const upd = this.updates[i]!;
       if (hasFullRollback(upd)) {
         upd.rollback = getDataForIndices(upd.rollback, upd.indices);
         upd.fullRollback = false;
@@ -418,7 +418,7 @@ export class StreamingTapefile<T> extends BaseTapefile<T> {
       return;
     }
     let newDataTimestamp: number | null = null;
-    while (this.pending.length && this.pending[0][0] === this.nextUpdateSequence) {
+    while (this.pending.length && this.pending[0]![0] === this.nextUpdateSequence) {
       const nextUpdate = (
         heapPop(this.pending, (a, b) => a[0] - b[0]) as [number, EntityUpdate<T>]
       )[1];
@@ -479,7 +479,7 @@ export class Index {
   constructor(idArray: number[]) {
     this.map = new Map();
     for (let i = 0; i < idArray.length; i++) {
-      this.map.set(idArray[i], i);
+      this.map.set(idArray[i]!, i);
     }
     this.length = idArray.length;
   }
@@ -491,7 +491,7 @@ export class Index {
   getArray(ids: number[]): number[] {
     const rv = new Array(ids.length);
     for (let i = 0; i < ids.length; i++) {
-      rv[i] = this.get(ids[i]);
+      rv[i] = this.get(ids[i]!);
     }
     return rv;
   }
@@ -518,13 +518,21 @@ class PropertyState<T> {
     }
   }
   private setFullState(data: T[]) {
+    if (data.length !== this.data.length) {
+      throw new Error(`Invalid data length: must be ${this.data.length}, got ${data.length}`);
+    }
     for (let i = 0; i < this.data.length; i++) {
-      this.data[i] = data[i];
+      this.data[i] = data[i]!;
     }
   }
   private setUpdateData(indices: number[], data: T[]) {
+    if (indices.length !== data.length) {
+      throw new Error(
+        `Mismatch length between indices and data, indices has length ${indices.length} while data has length ${data.length}`
+      );
+    }
     for (let i = 0; i < indices.length; i++) {
-      this.data[indices[i]] = data[i];
+      this.data[indices[i]!] = data[i]!;
     }
   }
 
@@ -539,7 +547,9 @@ function getEmptyArray(size: number) {
 function getDataForIndices<T>(data: Array<T>, indices: number[]) {
   const rv: T[] = new Array(indices.length);
   for (let i = 0; i < indices.length; i++) {
-    rv[i] = data[indices[i]];
+    const maybeData = data[indices[i]!]
+    if (maybeData === undefined) throw new Error(`Requested invalid index ${i}`)
+    rv[i] = maybeData;
   }
   return rv;
 }

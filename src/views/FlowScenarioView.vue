@@ -4,9 +4,9 @@
       <ProjectInfoBox class="mb-2" v-if="store.hasCapability('projects')" />
       <ScenarioInfoBox class="mb-2" editable />
       <template v-if="scenario">
-        <span class="is-size-7 mb-4 mt-1"> {{ $t("flow.scenarios.usedInScenario") }}: </span>
+        <span class="is-size-7 mb-4 mt-1"> {{ t("flow.scenarios.usedInScenario") }}: </span>
         <span class="is-size-7">
-          <strong class="has-text-black">{{ $t("flow.scenarios.models") }}</strong>
+          <strong class="has-text-black">{{ t("flow.scenarios.models") }}</strong>
           <span class="count">({{ (scenario.models ?? []).length }})</span>
         </span>
         <o-field class="scenario-model-type-list overflow-hover is-flex-grow-0 is-flex-shrink-2">
@@ -17,7 +17,7 @@
           </ul>
         </o-field>
         <span class="is-size-7">
-          <strong class="has-text-black">{{ $t("flow.datasets.label") }}</strong>
+          <strong class="has-text-black">{{ t("flow.datasets.label") }}</strong>
           <span class="count">({{ scenario.datasets.length }})</span>
         </span>
         <o-field class="scenario-dataset-list overflow-hover is-flex-grow-0 is-flex-shrink-2">
@@ -33,8 +33,8 @@
     <template #mainView>
       <template v-if="!scenario">
         <header>
-          <h1 class="is-size-4 has-text-weight-bold">{{ $t("flow.scenarios.label") }}</h1>
-          <h2 class="is-size-6">{{ $t("flow.mainView.noScenarioText") }}</h2>
+          <h1 class="is-size-4 has-text-weight-bold">{{ t("flow.scenarios.label") }}</h1>
+          <h2 class="is-size-6">{{ t("flow.mainView.noScenarioText") }}</h2>
         </header>
         <div class="no-resource">
           <MovImage src="/static/no-resources.png" />
@@ -75,20 +75,20 @@
             value="widgetDashboard"
             icon="sliders-h"
             icon-pack="far"
-            :label="$t('flow.scenarios.widgetDashboard')"
+            :label="t('flow.scenarios.widgetDashboard')"
           ></o-tab-item>
           <o-tab-item
             disabled
             value="configAssistant"
             icon="th-list"
             icon-pack="far"
-            :label="$t('flow.scenarios.configAssistant')"
+            :label="t('flow.scenarios.configAssistant')"
           ></o-tab-item>
           <o-tab-item
             value="rawConfig"
             icon-pack="far"
             icon="code"
-            :label="$t('flow.scenarios.rawConfig')"
+            :label="t('flow.scenarios.rawConfig')"
           >
             <o-input v-model="formattedRawData" type="textarea" class="is-monospace" readonly />
           </o-tab-item>
@@ -106,6 +106,9 @@ import { computed, ref, watch } from "vue";
 import FlowContainer from "../components/FlowStep.vue";
 import type { Scenario } from "../types";
 import { getClassFromStatus, sortByKeys } from "../utils";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const store = useFlowStore();
 

@@ -4,12 +4,12 @@
       <div class="column is-half-desktop is-full-tablet">
         <o-field
           class="mr-2"
-          :label="$t('resources.dataset')"
+          :label="t('resources.dataset')"
           :message="errors['currentDatasetName'] || ''"
           :variant="errors['currentDatasetName'] && 'danger'"
         >
           <o-select
-            :placeholder="$t('dataset.select')"
+            :placeholder="t('dataset.select')"
             v-model="currentDatasetName"
             size="small"
             expanded
@@ -23,12 +23,12 @@
       <div class="column is-half-desktop is-full-tablet">
         <o-field
           :disabled="!entityGroups"
-          :label="$t('resources.entityGroup')"
+          :label="t('resources.entityGroup')"
           :message="errors['currentEntityName'] || ''"
           :variant="errors['currentEntityName'] && 'danger'"
         >
           <o-select
-            :placeholder="$t('flow.entityGroup.select')"
+            :placeholder="t('flow.entityGroup.select')"
             v-model="currentEntityName"
             size="small"
             expanded
@@ -43,7 +43,7 @@
     </div>
     <div class="columns mb-0" v-if="timelineInfo">
       <div class="column is-full-desktop is-full-tablet">
-        <o-field :label="$t('misc.timestamp')">
+        <o-field :label="t('misc.timestamp')">
           <TimeSlider v-model="currentTimestamp" :timeline-info="timelineInfo" />
         </o-field>
         <o-button
@@ -53,13 +53,13 @@
           icon-pack="far"
           size="small"
         >
-          {{ $t("flow.export.resetTimestamp") }}
+          {{ t("flow.export.resetTimestamp") }}
         </o-button>
       </div>
     </div>
     <div class="columns multiline mb-0">
       <div class="column">
-        <o-field :label="$t('flow.export.format')">
+        <o-field :label="t('flow.export.format')">
           <o-radio
             class="mr-2"
             v-for="format in exportFormats"
@@ -89,6 +89,9 @@ import type { IFormValidator } from "@movici-flow-lib/utils/FormValidator";
 import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import { ref, watch, watchEffect } from "vue";
 import TimeSlider from "./TimeSlider.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{

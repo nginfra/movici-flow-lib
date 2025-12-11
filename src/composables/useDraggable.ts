@@ -19,7 +19,7 @@ export function useDraggable<T>(items: Ref<T[]>, group = "draggable") {
 
   function move<D>(currentIdx: number, targetIdx: number, target: D[]) {
     const rv = [...target],
-      item = rv.splice(currentIdx, 1)[0];
+      item = rv.splice(currentIdx, 1)[0]!;
     rv.splice(targetIdx, 0, item);
     return rv;
   }

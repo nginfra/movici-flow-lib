@@ -108,9 +108,9 @@ export default class ColorModule<
     );
     const rv: [number, RGBAColor][] = [];
     for (let i = 0; i < colors.length - 1; i++) {
-      rv.push(colors[i]);
+      rv.push(colors[i]!);
       try {
-        rv.push(...interpolateColorMapping(colors[i], colors[i + 1], inBetween));
+        rv.push(...interpolateColorMapping(colors[i]!, colors[i + 1]!, inBetween));
       } catch (e) {
         let msg = "Could not interpolate between colors";
 
@@ -120,7 +120,7 @@ export default class ColorModule<
         throw new Error(msg);
       }
     }
-    rv.push(colors[colors.length - 1]);
+    rv.push(colors[colors.length - 1]!);
     return rv;
   }
   assignAccessor(params: LayerParams<LData, Coord>, accessor: ColorAccessor<LData>) {

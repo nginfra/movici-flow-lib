@@ -51,13 +51,11 @@ describe("heapOrdered", () => {
     [[5, 4, 3, 4, 4, 3, 3]],
     [[5, 4, 3, 3, 4, 3]],
   ] as number[][][])("checks for ordered heap", (heap) => {
-    heap;
     expect(heapOrdered<number>(heap, (a, b) => b - a)).toBeTruthy();
   });
   it.each([[[5, 6]], [[5, 5, 6]], [[5, 5, 4, 5, 6]], [[5, 4, 4, 4, 4, 4, 5]]] as number[][][])(
     "finds unordered heaps",
     (heap) => {
-      heap;
       expect(heapOrdered<number>(heap, (a, b) => b - a)).toBeFalsy();
     }
   );

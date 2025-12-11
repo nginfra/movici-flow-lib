@@ -86,7 +86,7 @@ export const usePopupStore = defineStore("flow-popup", () => {
     moveToBottom(popup: PopupInfo) {
       const index = getIndex(popup);
       const [toBottom] = popups.value.splice(index, 1);
-      popups.value.push(toBottom);
+      popups.value.push(toBottom!);
     },
     clearAccents,
     toggleLocation(popup: PopupInfo) {

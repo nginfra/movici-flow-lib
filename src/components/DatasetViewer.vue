@@ -50,7 +50,7 @@ import { ensureProjection, transformBBox } from "@movici-flow-lib/crs";
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import type { DeckCamera, ShortDataset } from "@movici-flow-lib/types";
 import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 import { ref, watch, type Ref } from "vue";
 import MapVis from "./MapVis.vue";
 import EntitySelector from "./mapControls/EntitySelector.vue";

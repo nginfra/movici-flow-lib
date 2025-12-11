@@ -1,6 +1,6 @@
 import proj4 from "proj4";
 import { reproject } from "reproject";
-import { GetEPSGProjection } from "./api/requests/espg.io";
+import { GetEPSGProjection } from "./api/requests/epsg.io";
 import { ValidationError } from "./errors";
 import type {
   Coordinate3DArray,
@@ -46,7 +46,7 @@ export function transformArray(
   const len = arr.length;
   const rv: CoordinateArray = new Array(arr.length);
   for (let i = 0; i < len; i++) {
-    rv[i] = transform(arr[i], crs);
+    rv[i] = transform(arr[i]!, crs);
   }
   return rv;
 }
@@ -60,7 +60,7 @@ export function reverseTransformArray(
   const len = arr.length;
   const rv: CoordinateArray = new Array(arr.length);
   for (let i = 0; i < len; i++) {
-    rv[i] = reverseTransform(arr[i], crs);
+    rv[i] = reverseTransform(arr[i]!, crs);
   }
   return rv;
 }

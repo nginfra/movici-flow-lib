@@ -22,8 +22,8 @@
 
 <script setup lang="ts">
 import { Deck as DeckGL, Layer } from "@deck.gl/core";
-import type { ControllerOptions } from "@deck.gl/core/controllers/controller";
-import type { DeckProps, PickInfo } from "@deck.gl/core/lib/deck";
+import type { ControllerProps } from "@deck.gl/core";
+import type { DeckProps, PickingInfo } from "@deck.gl/core";
 import type { BoundingBox } from "@movici-flow-lib/crs";
 import { viewport } from "@placemarkio/geo-viewport";
 
@@ -51,7 +51,7 @@ function parseViewState(camera?: DeckCamera, map?: mapboxgl.Map): ViewState {
       ...getViewStateFromBBOX(
         camera.bbox.coords,
         getCanvasDimensions(map),
-        camera.bbox?.fillRatio ?? 1
+        camera.bbox?.fillRatio ?? 1,
       ),
       pitch: 0,
       bearing: 0,
@@ -66,14 +66,14 @@ function parseViewState(camera?: DeckCamera, map?: mapboxgl.Map): ViewState {
 function getViewStateFromBBOX(
   bounding_box: BoundingBox,
   dimensions: [number, number],
-  ratio: number
+  ratio: number,
 ) {
   const { center, zoom } = viewport(
       bounding_box,
       dimensions.map((side) => side * ratio) as [number, number],
       {
         allowFloat: true,
-      }
+      },
     ),
     [longitude, latitude] = center;
 
@@ -90,14 +90,14 @@ const props = withDefaults(
     camera?: DeckCamera;
     basemap?: string;
     accessToken?: string;
-    controller?: ControllerOptions;
-    layers?: Layer<unknown>[];
+    controller?: Partial<ControllerProps>;
+    layers?: Layer[];
   }>(),
   {
     basemap: "mapbox://styles/mapbox/light-v10",
     accessToken: import.meta.env.VITE_MAPBOX_TOKEN,
     layers: () => [],
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -112,12 +112,12 @@ const eventListeners = ref<Record<DeckEvent, Map<string, DeckEventCallback>>>({
 });
 
 const loaded = ref(false);
-const contextPickInfo = ref<PickInfo<DeckEntityObject<unknown>>>();
+const contextPickInfo = ref<PickingInfo<DeckEntityObject<unknown>>>();
 const getCursor = ref<CursorCallback>();
 
 const showMap = computed(() => props.basemap.startsWith("mapbox://"));
 const backgroundColorStyle = computed(() =>
-  props.basemap.startsWith("color://") ? { "background-color": props.basemap.split("//")[1] } : {}
+  props.basemap.startsWith("color://") ? { "background-color": props.basemap.split("//")[1] } : {},
 );
 
 function on(event: DeckEvent, callbacks: Record<string, DeckEventCallback>) {
@@ -169,13 +169,13 @@ watch(
   () => props.basemap,
   (basemap) => {
     map.value?.setStyle(showMap.value ? basemap : (null as unknown as string));
-  }
+  },
 );
 watch(
   () => props.layers,
   (layers) => {
     deck.value?.setProps({ layers });
-  }
+  },
 );
 
 watch(
@@ -183,7 +183,7 @@ watch(
   (newVal, oldVal) => {
     if (isEqual(newVal, oldVal)) return;
     newVal && updateCamera(newVal);
-  }
+  },
 );
 
 function initDeck(viewState: ViewState) {
@@ -193,9 +193,9 @@ function initDeck(viewState: ViewState) {
     height: "100%",
     initialViewState: viewState,
 
-    onClick: (info: PickInfo<DeckEntityObject<unknown>>, ev?: DeckMouseEvent) => {
+    onClick: (info: PickingInfo<DeckEntityObject<unknown>>, ev?: DeckMouseEvent) => {
       resetContextPickInfo();
-      const payload = { pickInfo: info, ev, layer: info.layer as Layer<unknown> };
+      const payload = { pickInfo: info, ev, layer: info.layer as Layer };
       if (ev?.leftButton) {
         invokeCallbacks("click", payload);
       } else if (ev?.rightButton) {
@@ -203,7 +203,7 @@ function initDeck(viewState: ViewState) {
       }
       invokeCallbacks("click", payload);
     },
-    onError: (error: Error, layer?: Layer<unknown>) => {
+    onError: (error: Error, layer?: Layer) => {
       console.error(error);
       invokeCallbacks("error", { error, layer });
     },
@@ -250,7 +250,8 @@ onMounted(() => {
 });
 onBeforeUnmount(() => {
   map.value?.remove();
-  deck.value?.canvas.remove();
+  deck.value?.finalize();
+  deck.value?.getCanvas()?.remove();
 });
 </script>
 
@@ -321,7 +322,9 @@ onBeforeUnmount(() => {
     width: calc(80vw - #{$left-menu-size} - #{$menu-item-size});
     display: flex;
     justify-content: center;
-    transition: transform 0.5s, width 0.5s;
+    transition:
+      transform 0.5s,
+      width 0.5s;
   }
   .deck-tooltip {
     width: 30px;

@@ -78,7 +78,7 @@ export class IconStaticLegendItem extends IconLegendItem {
     super({ entries: [["", clause.icon]], clauseType: "static" });
   }
   get icon() {
-    return this.entries[0][1];
+    return this.entries[0]![1];
   }
 }
 
@@ -87,7 +87,7 @@ export class IconByValueLegendItem extends IconLegendItem {
     super({
       entries: legend?.labels
         ? legend.labels.map((label: string, idx: number) => {
-            return [label, clause.icons[idx][1]] as [string, string];
+            return [label, clause.icons[idx]![1]] as [string, string];
           })
         : [],
       clauseType: "byValue",
@@ -108,7 +108,7 @@ export class ColorStaticLegendItem extends ColorLegendItem {
     super({ entries: [["", clause.color]], clauseType: "static" });
   }
   get color() {
-    return this.entries[0][1];
+    return this.entries[0]![1];
   }
 }
 export class ColorByValueLegendItem extends ColorLegendItem {
@@ -121,7 +121,7 @@ export class ColorByValueLegendItem extends ColorLegendItem {
     super({
       entries:
         legend.labels?.map((label: string, idx: number) => {
-          return [label, clause.colors[idx][1]] as [string, RGBAColor];
+          return [label, clause.colors[idx]![1]] as [string, RGBAColor];
         }) ?? [],
       clauseType: "byValue",
     });

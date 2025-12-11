@@ -38,7 +38,7 @@
         class="flow-tabs uppercase field is-flex-grow-0 is-flex-shrink-2"
         :style="tabHeight"
       >
-        <o-tab-item :label="$t('flow.visualization.tabs.visualizers')" :value="0">
+        <o-tab-item :label="t('flow.visualization.tabs.visualizers')" :value="0">
           <FlowLayerPicker
             ref="layerPicker"
             v-model="parsedView.visualizerInfos"
@@ -48,7 +48,7 @@
             @export="exportData($event)"
           />
         </o-tab-item>
-        <o-tab-item :label="$t('flow.visualization.tabs.charts')" :value="1">
+        <o-tab-item :label="t('flow.visualization.tabs.charts')" :value="1">
           <FlowChartPicker v-model="parsedView.chartInfos" v-model:open="chartConfigOpen" />
         </o-tab-item>
       </o-tabs>
@@ -68,7 +68,7 @@
         >
           <MapContextMenu
             v-if="contextPickInfo"
-            :modelValue="(contextPickInfo as PickInfo<unknown>)"
+            :modelValue="contextPickInfo as PickingInfo<unknown>"
             :map="map"
             :camera="parsedView.camera"
             :actions="contextMenuActions"
@@ -149,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PickInfo } from "@deck.gl/core/lib/deck";
+import type { PickingInfo } from "@deck.gl/core";
 import { useDialog } from "@movici-flow-lib/baseComposables/useDialog";
 import { useSnackbar } from "@movici-flow-lib/baseComposables/useSnackbar";
 import TimeSlider from "@movici-flow-lib/components/TimeSlider.vue";
@@ -287,10 +287,10 @@ function addChartItem(item: ChartVisualizerItem): number {
         scenarioUUID: scenario.value?.uuid,
         title: item.attribute,
         items: [item],
-      })
+      }),
     );
   } else {
-    infos[found] = infos[found].addItem(item);
+    infos[found] = infos[found]!.addItem(item);
   }
   parsedView.chartInfos = infos;
   return found;
@@ -299,16 +299,16 @@ const colorPickerPresets = Object.values(MoviciColors);
 
 function suggestColor(chart: ChartVisualizerInfo | null) {
   return hexToColorTriple(
-    colorPickerPresets[chart?.items.length ?? 0 % (colorPickerPresets.length - 1)]
+    colorPickerPresets[(chart?.items.length ?? 0) % (colorPickerPresets.length - 1)]!,
   );
 }
 
 function openChart(
-  pickInfo: PickInfo<DeckEntityObject<unknown>>,
-  visualizers: VisualizerManager<ComposableVisualizerInfo, Visualizer>
+  pickInfo: PickingInfo<DeckEntityObject<unknown>>,
+  visualizers: VisualizerManager<ComposableVisualizerInfo, Visualizer>,
 ) {
-  const layerId = pickInfo.layer.id.split("-")[0],
-    currentVisualizer = visualizers.getVisualizers().find((v) => v.baseID === layerId);
+  const layerId = pickInfo.layer?.id.split("-")[0],
+    currentVisualizer = layerId && visualizers.getVisualizers().find((v) => v.baseID === layerId);
 
   if (currentVisualizer) {
     const entityGroup = currentVisualizer.info.entityGroup,
@@ -331,7 +331,7 @@ function openChartAttributePicker({
   datasetUUID,
   scenarioUUID,
 }: {
-  info: PickInfo<DeckEntityObject<unknown>>;
+  info: PickingInfo<DeckEntityObject<unknown>>;
   entityGroup: string;
   datasetName: string;
   datasetUUID?: string | null;
@@ -352,7 +352,7 @@ function openChartAttributePicker({
     events: {
       addChart: ([item, edit]: [ChartVisualizerItem, boolean?]) => {
         const index = addChartItem(item);
-        activeChartId.value = parsedView.chartInfos[index].id;
+        activeChartId.value = parsedView.chartInfos[index]!.id;
         chartVisExpanded.value = true;
         if (edit || (visualizerTabOpen.value === 1 && chartConfigOpen.value === index)) {
           changeVisualizer({ tab: 1, index });
@@ -436,7 +436,7 @@ function doResolveDatasets(infos: BaseVisualizerInfo[]) {
   }
 }
 
-function exportData(info: ComposableVisualizerInfo) {
+function exportData(info?: ComposableVisualizerInfo) {
   oruga.modal.open({
     component: FlowExport,
     props: {

@@ -7,12 +7,12 @@
       >
         <o-icon
           class="collapsed-icon"
-          :title="$t('flow.legend.label')"
+          :title="t('flow.legend.label')"
           pack="far"
           :icon="collapsed ? 'list' : 'minus-square'"
         />
         <label class="label is-flex-grow-1 is-size-6" v-show="!collapsed">
-          {{ $t("flow.legend.label") }}
+          {{ t("flow.legend.label") }}
         </label>
       </div>
     </template>
@@ -78,10 +78,13 @@ import {
 } from "@movici-flow-lib/types";
 import type { ComposableVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+
 import BucketLegend from "./BucketLegend.vue";
 import ColorGradientLegend from "./ColorGradientLegend.vue";
 import StaticLegendThumbnails from "./StaticLegendThumbnails.vue";
 import WidgetContainer from "./WidgetContainer.vue";
+const { t } = useI18n();
 
 const props = defineProps<{
   modelValue: ComposableVisualizerInfo[];

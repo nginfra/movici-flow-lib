@@ -237,7 +237,6 @@ function flatten(errors: NestedErrorDict, path = "", result: ErrorDict | null = 
 export class ValidationError extends Error {}
 
 export function required(value: unknown, resource = "Input") {
-  ``;
   if (value === undefined || value === null) return `${resource} is required.`;
 }
 

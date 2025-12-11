@@ -4,16 +4,16 @@
       <div class="column is-two-thirds-desktop is-full-tablet show is-flex">
         <o-field class="show-popup">
           <o-checkbox v-model="local.show" size="small">
-            {{ $t("flow.visualization.popup.showPopup") }}
+            {{ t("flow.visualization.popup.showPopup") }}
           </o-checkbox>
         </o-field>
         <template v-if="local.show">
           <o-field class="when ml-6">
             <o-radio class="mr-4" size="small" v-model="local.onHover" :native-value="false">
-              {{ $t("flow.visualization.popup.onClickOnly") }}
+              {{ t("flow.visualization.popup.onClickOnly") }}
             </o-radio>
             <o-radio size="small" v-model="local.onHover" :native-value="true">
-              {{ $t("flow.visualization.popup.onClickAndHover") }}
+              {{ t("flow.visualization.popup.onClickAndHover") }}
             </o-radio>
           </o-field>
         </template>
@@ -21,10 +21,10 @@
     </div>
     <div class="columns mb-0" v-if="local.show">
       <div class="column is-two-thirds is-full-tablet popup-title">
-        <o-field :label="$t('flow.visualization.popup.title')">
+        <o-field :label="t('flow.visualization.popup.title')">
           <o-input
             v-model="local.title"
-            :placeholder="$t('flow.visualization.popup.titlePlaceholder')"
+            :placeholder="t('flow.visualization.popup.titlePlaceholder')"
             size="small"
             :disabled="local.dynamicTitle"
           ></o-input>
@@ -33,7 +33,7 @@
     </div>
     <div class="columns mb-0 items" v-if="local.show">
       <div class="column is-full">
-        <label class="label">{{ $t("misc.properties") }}</label>
+        <label class="label">{{ t("misc.properties") }}</label>
         <o-dropdown
           class="mr-4 mb-2"
           :modelValue="local.items"
@@ -50,7 +50,7 @@
               icon-pack="far"
               size="small"
             >
-              {{ $t("flow.visualization.popup.addItem") }}
+              {{ t("flow.visualization.popup.addItem") }}
             </o-button>
           </template>
           <o-dropdown-item
@@ -99,7 +99,7 @@
                 size="small"
               ></o-input>
               <o-checkbox v-if="index === 0" class="ml-2" size="small" v-model="local.dynamicTitle">
-                {{ $t("flow.visualization.popup.setAsDynamicTitle") }}
+                {{ t("flow.visualization.popup.setAsDynamicTitle") }}
               </o-checkbox>
               <o-button
                 class="is-transparent is-borderless ml-2 has-text-danger has-hover-bg"
@@ -126,6 +126,9 @@ import { computed, inject, onUnmounted, reactive, toRaw, toRef, watch } from "vu
 import Draggable from "vuedraggable";
 import AttributeSuggestions from "./AttributeSuggestions.vue";
 import { attributesInjection, settingsInjection, validatorInjection } from "./injectionKeys";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps<{
   modelValue?: PopupClause;

@@ -111,9 +111,9 @@ export class BatchedTaskDispatcher<T extends Task<unknown> = Task<unknown>>
           for (let i = 0; i < tasks.length; i++) {
             const result = results[i];
             if (hasOwnProperty(result, "_catchError")) {
-              tasks[i].onError?.(result._catchError);
+              tasks[i]!.onError?.(result._catchError);
             } else {
-              tasks[i].onDone?.(result);
+              tasks[i]!.onDone?.(result);
             }
           }
         })

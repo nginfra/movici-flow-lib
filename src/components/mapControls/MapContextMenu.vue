@@ -21,22 +21,21 @@
 </template>
 
 <script setup lang="ts">
-import type { PickInfo } from "@deck.gl/core/lib/deck";
-import type { ActionItem, DeckCamera, ViewState } from "@movici-flow-lib/types";
-import type mapboxgl from "mapbox-gl";
+import type { PickingInfo } from "@deck.gl/core";
+import type { ActionItem, DeckCamera } from "@movici-flow-lib/types";
 import { computed, onMounted, ref, type Ref } from "vue";
 import DynamicDataView from "./DynamicDataView.vue";
 
 const props = withDefaults(
   defineProps<{
-    modelValue: PickInfo<unknown>;
+    modelValue: PickingInfo<unknown>;
     map?: mapboxgl.Map;
     camera?: DeckCamera;
     actions?: ActionItem[];
   }>(),
   {
     actions: () => [],
-  }
+  },
 );
 
 const emit = defineEmits<{

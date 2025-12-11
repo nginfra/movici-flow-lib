@@ -312,7 +312,7 @@ export default {
       window.addEventListener("resize", this.setWidth);
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.observer) {
       this.observer.disconnect();
     }

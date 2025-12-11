@@ -63,7 +63,7 @@ const props = withDefaults(
 const icons = computed(() => Object.keys(props.iconOptions));
 
 function isSelected(icon: string) {
-  return icon === props.modelValue ?? "";
+  return icon === (props.modelValue ?? "");
 }
 </script>
 

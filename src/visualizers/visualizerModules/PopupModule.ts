@@ -11,7 +11,7 @@ import type {
   PickingHandler,
 } from "@movici-flow-lib/types";
 import isEqual from "lodash/isEqual";
-import type { PickInfo } from "@deck.gl/core/lib/deck";
+import type { PickingInfo } from "@deck.gl/core";
 import { VisualizerModule, type VisualizerModuleParams } from "../visualizerModules/common";
 
 export default class PopupModule<
@@ -81,7 +81,7 @@ export default class PopupModule<
     }
     const onHover = clause.onHover;
 
-    return (info: PickInfo<LData>, ev?: DeckMouseEvent) => {
+    return (info: PickingInfo<LData>, ev?: DeckMouseEvent) => {
       const when = ev?.type === "click" ? "onClick" : "onHover";
 
       if (when === "onHover" && !onHover) {
@@ -117,7 +117,7 @@ export class PopupContentAccessor {
 
   getValue<D>(
     index: number,
-    pickInfo: PickInfo<D>,
+    pickInfo: PickingInfo<D>,
     enums: Record<string, string[]>
   ): PopupContent<D> {
     const { title, dynamicTitle, items } = this.popup;
@@ -131,7 +131,7 @@ export class PopupContentAccessor {
         const rv: PopupContentItem = {
           name: item.name,
           attribute: item.attribute,
-          tapefile: this.tapefiles[idx],
+          tapefile: this.tapefiles[idx]!,
         };
 
         if (item.attribute.enum_name) {

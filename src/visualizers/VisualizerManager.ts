@@ -236,13 +236,13 @@ function determineChangedVisualizers<I extends BaseVisualizerInfo>(
     obj[l.id] = l;
     return obj;
   }, {});
-  const [toCreate, toDiscard, toKeep]: I[][] = [[], [], []];
+  const [toCreate, toDiscard, toKeep]: [I[], I[], I[]] = [[], [], []];
   for (const layer of newLayers) {
     if (getVisualizerType(layer) === oldLayerVisualizerTypes[layer.id]) {
       toKeep.push(layer);
     } else {
       toCreate.push(layer);
-      toDiscard.push(oldLayersByID[layer.id]);
+      toDiscard.push(oldLayersByID[layer.id]!);
     }
   }
   return [toCreate, toDiscard, toKeep];

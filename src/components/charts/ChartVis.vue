@@ -3,7 +3,7 @@
     <div class="is-flex is-flex-direction-row-reverse" :disabled="charts.length">
       <span @click="toggleExpand" :class="{ expanded }">
         <o-icon
-          :title="$t('flow.visualization.graph.showCharts')"
+          :title="t('flow.visualization.graph.showCharts')"
           class="collapsed-icon"
           pack="far"
           :icon="expanded ? 'minus-square' : 'chart-line'"
@@ -15,7 +15,7 @@
         v-if="charts.length"
         class="flow-tabs mr-5"
         :modelValue="activeChartId"
-        @update:modelValue="$emit('update:activeChartId', $event)"
+        @update:modelValue="emit('update:activeChartId', $event)"
         :animated="false"
         :animateInitially="false"
       >
@@ -28,15 +28,15 @@
                 icon-left="edit"
                 size="small"
                 class="ml-2 mr-0 is-borderless has-text-primary"
-                :title="$t('actions.edit')"
-                @click="$emit('openConfig', i)"
+                :title="t('actions.edit')"
+                @click="emit('openConfig', i)"
               />
               <o-button
                 icon-pack="far"
                 icon-left="trash"
                 size="small"
                 class="mx-0 is-borderless has-text-primary"
-                :title="$t('actions.delete')"
+                :title="t('actions.delete')"
                 @click="removeChart(i)"
               />
             </div>
@@ -67,6 +67,9 @@ import type { ChartVisualizerInfo } from "@movici-flow-lib/visualizers/Visualize
 import type { ChartData, Chart as ChartJS } from "chart.js";
 import { computed, nextTick, ref, unref, watch } from "vue";
 import AttributeChart from "./AttributeChart.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
@@ -83,8 +86,9 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: "update:modelValue", val: ChartVisualizerInfo[]): void;
-  (e: "update:activeChartId", val: string): void;
+  (e: "update:activeChartId", val: string | null): void;
   (e: "update:expanded", val: boolean): void;
+  (e: "openConfig", val: number): void;
 }>();
 
 const { backend } = useFlowStore();

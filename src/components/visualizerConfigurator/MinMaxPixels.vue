@@ -4,7 +4,7 @@
       <div class="column pb-0 is-flex is-two-thirds-desktop is-full-tablet min-max-px">
         <o-field
           class="mr-4 mb-0"
-          :label="$t('flow.visualization.sizeConfig.minPixels')"
+          :label="t('flow.visualization.sizeConfig.minPixels')"
           :variant="errors['minPixels'] && 'danger'"
           :addons="false"
         >
@@ -15,7 +15,7 @@
         </o-field>
         <o-field
           class="mb-0"
-          :label="$t('flow.visualization.sizeConfig.maxPixels')"
+          :label="t('flow.visualization.sizeConfig.maxPixels')"
           :variant="errors['maxPixels'] && 'danger'"
           :addons="false"
         >
@@ -39,7 +39,9 @@ import type { SizeUnit } from "@movici-flow-lib/types";
 import { isPositive } from "@movici-flow-lib/utils/FormValidator";
 import { computed, inject, onUnmounted } from "vue";
 import { validatorInjection } from "./injectionKeys";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const props = defineProps<{
   minPixels?: number | null;
   maxPixels?: number | null;

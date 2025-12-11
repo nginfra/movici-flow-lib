@@ -99,7 +99,7 @@ export function useGeocoding(backend: RefLike<Backend>, locale?: RefLike<string>
         errorText.value = "No result found";
         return null;
       }
-      return transformResult(result[0]);
+      return transformResult(result[0]!);
     },
   };
 }

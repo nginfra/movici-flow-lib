@@ -54,8 +54,8 @@ export function heapPop<T>(heap: T[], comparator?: Comparator<T>): T | undefined
   return rv;
 }
 function swap<T>(heap: T[], a: number, b: number) {
-  const tmp = heap[a];
-  heap[a] = heap[b];
+  const tmp = heap[a]!;
+  heap[a] = heap[b]!;
   heap[b] = tmp;
 }
 
@@ -63,7 +63,7 @@ function bubbleUp<T>(heap: T[], comparator: Comparator<T>) {
   let idx = heap.length - 1;
   while (idx > 0) {
     const parentIdx = Math.floor((idx - 1) / 2);
-    if (comparator(heap[parentIdx], heap[idx]) <= 0) {
+    if (comparator(heap[parentIdx]!, heap[idx]!) <= 0) {
       break;
     }
     swap(heap, idx, parentIdx);
@@ -73,12 +73,12 @@ function bubbleUp<T>(heap: T[], comparator: Comparator<T>) {
 function bubbleDown<T>(heap: T[], comparator: Comparator<T>) {
   if (heap.length < 2) return;
   let parentIdx = 0;
-  /*eslint-disable-next-line no-constant-condition*/
+
   while (true) {
     let toSwap: number | null = null;
     const [leftChild, rightChild] = [2 * parentIdx + 1, 2 * parentIdx + 2];
     // we mark the left child to swap if it's smaller than it's parent
-    if (leftChild < heap.length && comparator(heap[leftChild], heap[parentIdx]) < 0) {
+    if (leftChild < heap.length && comparator(heap[leftChild]!, heap[parentIdx]!) < 0) {
       toSwap = leftChild;
     }
 
@@ -86,10 +86,10 @@ function bubbleDown<T>(heap: T[], comparator: Comparator<T>) {
       rightChild < heap.length &&
       // we mark right child to swap if we haven't marked the left child and the right
       // child is smaller than the parent
-      ((toSwap === null && comparator(heap[rightChild], heap[parentIdx]) < 0) ||
+      ((toSwap === null && comparator(heap[rightChild]!, heap[parentIdx]!) < 0) ||
         // or if we have marked the left child to swap and the right child is even smaller
         // than the left child
-        (toSwap !== null && comparator(heap[rightChild], heap[leftChild]) < 0))
+        (toSwap !== null && comparator(heap[rightChild]!, heap[leftChild]!) < 0))
     ) {
       toSwap = rightChild;
     }

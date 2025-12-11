@@ -44,7 +44,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { PickInfo } from "@deck.gl/core/lib/deck";
+import type { PickingInfo } from "@deck.gl/core";
 import type {
   CursorCallback,
   DeckEvent,
@@ -52,7 +52,6 @@ import type {
   DeckEventPayload,
   FeatureDrawOption,
   NebulaMode,
-  RGBAColor,
 } from "@movici-flow-lib/types";
 import { sortByKeys } from "@movici-flow-lib/utils";
 import {
@@ -67,17 +66,21 @@ import {
   TranslateMode,
   ViewMode,
   type EditAction,
-} from "@nebula.gl/edit-modes";
-import { EditableGeoJsonLayer } from "@nebula.gl/layers";
+} from "@deck.gl-community/editable-layers";
+import {
+  EditableGeoJsonLayer,
+  type FeatureCollection as DeckFeatureCollection,
+  type Color,
+} from "@deck.gl-community/editable-layers";
 import type { Feature, FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
 import isEqual from "lodash/isEqual";
 import { computed, ref, toRaw, watch } from "vue";
 
-const SELECTED_FEATURE_COLOR_FILL: RGBAColor = [26, 182, 126, 90],
-  SELECTED_FEATURE_COLOR: RGBAColor = [26, 182, 126],
-  FEATURE_COLOR_FILL: RGBAColor = [85, 113, 242, 90],
-  FEATURE_COLOR: RGBAColor = [85, 113, 242],
-  WHITE_COLOR: RGBAColor = [255, 255, 255];
+const SELECTED_FEATURE_COLOR_FILL: Color = [26, 182, 126, 90],
+  SELECTED_FEATURE_COLOR: Color = [26, 182, 126, 255],
+  FEATURE_COLOR_FILL: Color = [85, 113, 242, 90],
+  FEATURE_COLOR: Color = [85, 113, 242, 255],
+  WHITE_COLOR: Color = [255, 255, 255, 255];
 
 const DEFAULT_OPTIONS: { [key: string]: FeatureDrawOption } = {
   "draw-point": {
@@ -247,7 +250,7 @@ const props = withDefaults(
   {
     options: () => [],
     selectedFeatureIndexes: () => [],
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -270,8 +273,8 @@ const calculatedOptions = computed(() => {
     //   find the default option and merge with given overrides
     const key = typeof opt === "string" ? opt : opt.id;
     if (key) {
-      const payload =
-        typeof opt === "string" ? DEFAULT_OPTIONS[key] : Object.assign(DEFAULT_OPTIONS[key], opt);
+      const defaultOpt = DEFAULT_OPTIONS[key]!;
+      const payload = typeof opt === "string" ? defaultOpt : Object.assign(defaultOpt, opt);
       //   place in an intermediate array
       rv.push(payload);
     } else throw Error("Invalid DeckDraw option");
@@ -290,7 +293,7 @@ const calculatedOptions = computed(() => {
       return;
     }
 
-    let previousElement = options[previousIndex];
+    let previousElement = options[previousIndex]!;
     if (element.container === previousElement.container && typeof element.container === "string") {
       const container = Object.assign({}, DEFAULT_OPTION_CONTAINERS[element.container], {
         options: [previousElement],
@@ -331,7 +334,7 @@ watch(
       return null;
     });
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -345,7 +348,7 @@ watch(
       },
     });
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 function updateSelected(selected: number[]) {
@@ -392,22 +395,22 @@ function emitFeatureLayer() {
     toRaw([
       new EditableGeoJsonLayer({
         id: toRaw(props.layerId),
-        data: featureCollection.value,
+        data: featureCollection.value as DeckFeatureCollection,
         mode: nebulaMode.value,
         modeConfig: modeConfig.value,
         selectedFeatureIndexes: props.selectedFeatureIndexes,
-        onClick: (clicked: PickInfo<unknown>) => {
+        onClick: (clicked: PickingInfo<unknown>) => {
           if (isOptionActive("delete")) {
             emit(
               "update:modelValue",
-              props.modelValue.filter((_, idx) => clicked.index !== idx)
+              props.modelValue.filter((_, idx) => clicked.index !== idx),
             );
             updateSelected([]);
           }
 
           if (isOptionActive("select")) {
             const foundIndex = props.selectedFeatureIndexes.findIndex(
-              (idx) => clicked.index === idx
+              (idx) => clicked.index === idx,
             );
             if (foundIndex >= 0) {
               updateSelected(props.selectedFeatureIndexes.filter((val) => clicked.index !== val));
@@ -441,7 +444,7 @@ function emitFeatureLayer() {
         getEditHandlePointColor: WHITE_COLOR,
         getEditHandlePointOutlineColor: SELECTED_FEATURE_COLOR,
       }),
-    ])
+    ]),
   );
 }
 watch(() => [featureCollection.value, props.selectedFeatureIndexes], emitFeatureLayer);

@@ -6,7 +6,7 @@
         <div class="is-flex">
           <o-field
             class="mr-4 is-flex-shrink-1"
-            :label="$t('flow.visualization.byValueConfig.steps')"
+            :label="t('flow.visualization.byValueConfig.steps')"
           >
             <o-select
               :modelValue="modelValue.length"
@@ -58,6 +58,9 @@ import { computed, inject, onMounted, shallowRef, watch } from "vue";
 import ByValueList from "./ByValueList.vue";
 import { MappingStrategy, createValueMappingHelper, type MappingMode } from "./ValueMappingHelper";
 import { summaryInjection } from "./injectionKeys";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 type PlaceholderType = "single" | "range";
 

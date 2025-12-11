@@ -42,10 +42,10 @@
       <MovKebabMenu
         v-if="showOnHeader('more')"
         :modelValue="filteredActions"
-        @edit="$emit('edit')"
-        @export="$emit('export')"
-        @delete="$emit('delete')"
-        @reload="$emit('reload')"
+        @edit="emit('edit')"
+        @export="emit('export')"
+        @delete="emit('delete')"
+        @reload="emit('reload')"
       />
     </div>
     <VisualizerSummary
@@ -83,6 +83,10 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: "update:modelValue", val: ComposableVisualizerInfo): void;
+  (e: "edit"): void
+  (e: "export"): void
+  (e: "delete"): void
+  (e:"reload"): void
 }>();
 const progress = ref<number>();
 const isOpen = ref(false);

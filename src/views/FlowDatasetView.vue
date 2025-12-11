@@ -3,15 +3,15 @@
     <template #leftPanel>
       <ProjectInfoBox class="mb-2" v-if="store.hasCapability('projects')" />
       <span class="is-size-7">
-        {{ $t("flow.datasets.label") }}
+        {{ t("flow.datasets.label") }}
         <span class="count"
-          >({{ filteredDatasets.length }} {{ $t("misc.of") }} {{ store.datasets.length }})</span
+          >({{ filteredDatasets.length }} {{ t("misc.of") }} {{ store.datasets.length }})</span
         >
       </span>
       <o-field>
         <o-input
           v-model="search"
-          :placeholder="$t('flow.datasets.searchPlaceholder')"
+          :placeholder="t('flow.datasets.searchPlaceholder')"
           type="search"
           icon-pack="far"
           icon="search"
@@ -40,7 +40,7 @@
         icon-left="plus-circle"
         disabled
       >
-        {{ $t("dataset.addNew") }}
+        {{ t("dataset.addNew") }}
       </o-button>
     </template>
     <template #mainView>
@@ -48,8 +48,8 @@
       <template v-if="!dataset">
         <header>
           <div class="title-section">
-            <h1 class="is-size-4 has-text-weight-bold">{{ $t("flow.datasets.label") }}</h1>
-            <h2 class="is-size-6">{{ $t("flow.mainView.noDatasetText") }}</h2>
+            <h1 class="is-size-4 has-text-weight-bold">{{ t("flow.datasets.label") }}</h1>
+            <h2 class="is-size-6">{{ t("flow.mainView.noDatasetText") }}</h2>
           </div>
         </header>
         <div class="no-resource">
@@ -66,7 +66,7 @@
               v-html="datasetDisplayName(dataset)"
             ></h1>
             <h2 class="is-flex-grow-1 is-size-6 has-text-weight-bold" :title="dataset.type">
-              {{ $t("properties.type") }}:
+              {{ t("properties.type") }}:
               {{ dataset.type }}
             </h2>
           </div>
@@ -76,7 +76,7 @@
             value="dataPreview"
             icon="map"
             icon-pack="far"
-            :label="$t('flow.datasets.dataPreview')"
+            :label="t('flow.datasets.dataPreview')"
           >
             <DatasetViewer v-model="dataset" />
           </o-tab-item>
@@ -85,7 +85,7 @@
             value="usage"
             icon="fa-scenario"
             icon-pack="fak"
-            :label="$t('flow.datasets.usage')"
+            :label="t('flow.datasets.usage')"
           >
           </o-tab-item>
           <o-tab-item
@@ -93,13 +93,13 @@
             value="resume"
             icon-pack="far"
             icon="code"
-            :label="$t('flow.datasets.summary')"
+            :label="t('flow.datasets.summary')"
           >
           </o-tab-item>
           <o-tab-item value="info" icon="info-circle" icon-pack="fas" label="Info">
             <div class="info details is-size-7 mt-2">
               <span class="is-block" v-for="(prop, key) in details" :key="key">
-                <label>{{ $t("flow.datasets.details." + key) }}: </label>
+                <label>{{ t("flow.datasets.details." + key) }}: </label>
                 <span class="value">{{ prop }}</span>
               </span>
             </div>
@@ -119,6 +119,9 @@ import FlowContainer from "../components/FlowStep.vue";
 import type { ShortDataset } from "../types";
 import ProjectInfoBox from "@movici-flow-lib/components/ProjectInfoBox.vue";
 import DatasetViewer from "@movici-flow-lib/components/DatasetViewer.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const store = useFlowStore();
 
