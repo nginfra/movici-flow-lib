@@ -548,7 +548,7 @@ function getDataForIndices<T>(data: Array<T>, indices: number[]) {
   const rv: T[] = new Array(indices.length);
   for (let i = 0; i < indices.length; i++) {
     const maybeData = data[indices[i]!]
-    if (maybeData == undefined) throw new Error(`Requested invalid index ${i}`)
+    if (maybeData === undefined) throw new Error(`Requested invalid index ${i}`)
     rv[i] = maybeData;
   }
   return rv;

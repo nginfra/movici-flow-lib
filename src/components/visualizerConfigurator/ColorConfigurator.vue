@@ -113,7 +113,6 @@ const {
   t,
   modelValue: computed(() => props.modelValue),
   onEmit: (toEmit) => {
-    console.log(cloneDeep(toEmit));
     if (localClause.advanced) {
       toEmit.advanced = localClause.advanced;
     }

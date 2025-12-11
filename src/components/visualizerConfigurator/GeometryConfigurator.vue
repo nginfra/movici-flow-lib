@@ -59,20 +59,6 @@ const emit = defineEmits<{
 const geometry = inject(geometryInjection)!;
 const summary = inject(summaryInjection)!;
 const validator = inject(validatorInjection)!.child("geometry");
-validator.configure({
-  validators: {
-    local: () => {
-      if (!local.value) return "Invalid clause";
-
-      for (const key in requiredAdditionalEntityGroups.value) {
-        if (!local.value[key]) return t("flow.visualization.geometryConfig.geometryError");
-      }
-    },
-  },
-});
-const { errors, destroyValidator, validated } = useValidator(validator);
-onUnmounted(destroyValidator);
-const local = validated("local", ref<Record<string, EntityGroupSummary>>({}));
 function fillLocal(val?: Record<string, string>) {
   local.value = {};
   if (!val) return;
@@ -86,7 +72,6 @@ function fillLocal(val?: Record<string, string>) {
     }
   }
 }
-fillLocal(props.modelValue);
 function updateValue(key: string, val: EntityGroupSummary) {
   local.value = { ...local.value, ...{ [key]: val } };
   emit("update:modelValue", { ...props.modelValue, [key]: val.name });
@@ -121,6 +106,21 @@ function filterVal(key: EntityGeometry): (val: EntityGroupSummary) => boolean {
 function displayName(val: EntityGroupSummary): string {
   return `${val.name} (${val.count})`;
 }
+validator.configure({
+  validators: {
+    local: () => {
+      if (!local.value) return "Invalid clause";
+
+      for (const key in requiredAdditionalEntityGroups.value) {
+        if (!local.value[key]) return t("flow.visualization.geometryConfig.geometryError");
+      }
+    },
+  },
+});
+const { errors, destroyValidator, validated } = useValidator(validator);
+const local = validated("local", ref<Record<string, EntityGroupSummary>>({}));
+onUnmounted(destroyValidator);
+fillLocal(props.modelValue);
 </script>
 
 <style scoped lang="scss">
