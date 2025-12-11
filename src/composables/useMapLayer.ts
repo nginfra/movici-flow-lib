@@ -13,10 +13,10 @@ export function useMapLayer(map: RefLike<mapboxgl.Map | undefined>) {
     }
   }
 
-  function removeSources(map: mapboxgl.Map) {
+  function removeSources(map?: mapboxgl.Map) {
     for (const source of sources.value) {
       try {
-        map.removeSource(source);
+        map?.removeSource(source);
       } catch (e) {
         console.error(e);
       }
@@ -27,10 +27,10 @@ export function useMapLayer(map: RefLike<mapboxgl.Map | undefined>) {
     ids.value.add(layer.id);
     map.addLayer(layer);
   }
-  function removeLayers(map: mapboxgl.Map) {
+  function removeLayers(map?: mapboxgl.Map) {
     for (const id of ids.value) {
       try {
-        map.removeLayer(id);
+        map?.removeLayer(id);
       } catch (e) {
         console.error(e);
       }

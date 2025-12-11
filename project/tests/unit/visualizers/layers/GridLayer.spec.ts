@@ -7,13 +7,13 @@ describe("expandColorMap", () => {
     expect(() => expandColorMap([])).toThrow();
     expect(() => expandColorMap([[0, [1, 2, 3]]])).toThrow();
   });
-  it("expands to 50 steps by default", () => {
+  it("expands to 51 steps by default", () => {
     const cm: colorMap = [
       [0, [1, 0, 0]],
       [1, [0, 1, 0]],
       [2, [0, 0, 1]],
     ];
-    expect(expandColorMap(cm).length).toStrictEqual(50);
+    expect(expandColorMap(cm).length).toStrictEqual(51);
   });
   it("returns already linear color map unmodified", () => {
     const cm: colorMap = [

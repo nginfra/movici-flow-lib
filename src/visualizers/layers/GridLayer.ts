@@ -43,7 +43,7 @@
  *     has been previously extracted from this geotiff in the GeotiffLoader (see
  *     FloodingGridModule.ts). it is given as [xmin, ymin, xmax, ymax]
  * - colorMap: The colormap as a texture. This is a 1px wide texture. The length of
- *   the texture is configurable but is 50px by default
+ *   the texture is configurable but is 51px by default
  * - minColorValue: the water depth value for the beginning of the color map.
  * - maxColorValue: the water depth value for the end of the color map
  *
@@ -300,7 +300,7 @@ function createTexture({ height, width, data }: TextureInfo, device: Device) {
   });
 }
 
-export function expandColorMap(colormap: [number, RGBAColor][], nSteps = 50, ensureRGBA = false) {
+export function expandColorMap(colormap: [number, RGBAColor][], nSteps = 51, ensureRGBA = false) {
   /**
    * expands and linearizes a colormap so the step sizes are uniform, expands to nSteps number of
    * steps
@@ -334,7 +334,7 @@ export function expandColorMap(colormap: [number, RGBAColor][], nSteps = 50, ens
 function createColorMapTexture(
   colormap: [number, RGBAColor][],
   device: Device,
-  nPixels = 50,
+  nPixels = 51,
 ): ColorMapTextureInfo {
   const linearized = expandColorMap(colormap, nPixels, true);
   const minVal = linearized[0]![0],
