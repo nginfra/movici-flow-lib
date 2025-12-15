@@ -16,7 +16,7 @@ export const useSummaryStore = defineStore("summary", () => {
   const flowStore = useFlowStore();
 
   const summaries = new HashMap<ScenarioDatasetUUID, DatasetSummary>(hash);
-  let promises = new PromiseStore<ScenarioDatasetUUID, DatasetSummary | null>(hash);
+  const promises = new PromiseStore<ScenarioDatasetUUID, DatasetSummary | null>(hash);
 
   function prepareParams(params: ScenarioDatasetUUID): ScenarioDatasetUUID {
     return {
