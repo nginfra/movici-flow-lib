@@ -110,8 +110,10 @@ class HashMap<K, V> {
  * it has been cleared, it can accept new Promises. Any Promise that
  * gets resolved after it has been cleared (goverened by the ``cancelCylce``
  * attribute) will not be processed, while new Promises will be.
+ *
+ * exported for testing purposes
  * */
-class PromiseStore<K, V> {
+export class PromiseStore<K, V> {
   private cancelCycle: number;
   private promises: HashMap<K, Promise<V | null>>;
   constructor(hash: (k: K) => string) {
