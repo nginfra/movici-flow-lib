@@ -39,17 +39,25 @@ export function useReactiveSummary(options?: { datasetOnly?: boolean }) {
   });
 
   const entitySummary = computed(
-    () => summary.value?.entity_groups.find((e) => e.name === currentEntityName.value) ?? null
+    () => summary.value?.entity_groups.find((e) => e.name === currentEntityName.value) ?? null,
   );
   const entityGroups = computed(() => summary.value?.entity_groups);
   const attributes = computed(() => entitySummary.value?.properties);
 
+  const summaryPending = ref(false);
   async function getSummaryByUUID(uuid?: UUID) {
     if (uuid) {
-      summary.value = await store.getSummary({
-        datasetUUID: uuid,
-        scenarioUUID: datasetOnly ? null : undefined,
-      });
+      try {
+        summaryPending.value = true
+        summary.value = await store.getSummary({
+          datasetUUID: uuid,
+          scenarioUUID: datasetOnly ? null : undefined,
+        });
+      } catch {
+        summary.value = undefined;
+      } finally {
+        summaryPending.value = false
+      }
     } else {
       summary.value = undefined;
     }
@@ -64,6 +72,7 @@ export function useReactiveSummary(options?: { datasetOnly?: boolean }) {
 
   return {
     summary,
+    summaryPending,
     currentDataset,
     currentDatasetName,
     currentDatasetUUID,

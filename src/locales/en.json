@@ -294,7 +294,8 @@
     "yes": "Yes",
     "noResources": "No resources available",
     "deselectAllPages": "Deselect from all pages",
-    "selectAllPages": "Select from all pages"
+    "selectAllPages": "Select from all pages",
+    "loading": "Loading..."
   },
   "properties": {
     "actions": "Actions",
