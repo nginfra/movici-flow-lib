@@ -3,13 +3,11 @@ import type { DatasetSummary, UUID } from "@movici-flow-lib/types";
 import { defineStore } from "pinia";
 import { watch } from "vue";
 import { useFlowStore } from "./flow";
-import HashMap from "@movici-flow-lib/utils/HashMap";
-import PromiseStore from "@movici-flow-lib/utils/PromiseStore";
 
-type ScenarioDatasetUUID = {
+interface ScenarioDatasetUUID {
   scenarioUUID?: UUID | null;
   datasetUUID: UUID;
-};
+}
 
 function hash(params: ScenarioDatasetUUID) {
   return params.scenarioUUID ? `${params.scenarioUUID}:${params.datasetUUID}` : params.datasetUUID;
@@ -45,10 +43,7 @@ export const useSummaryStore = defineStore("summary", () => {
     }
     return await promise;
   }
-  async function downloadSummary(params: {
-    datasetUUID: UUID;
-    scenarioUUID?: UUID | null;
-  }): Promise<DatasetSummary | null> {
+  async function downloadSummary(params: ScenarioDatasetUUID): Promise<DatasetSummary | null> {
     const { datasetUUID, scenarioUUID } = params;
 
     if (scenarioUUID) {
@@ -58,16 +53,19 @@ export const useSummaryStore = defineStore("summary", () => {
     }
   }
 
+  /** Get a summary if it's already downloaded. Useful for testing
+   */
   function getCachedSummary(params: {
     datasetUUID: UUID;
     scenarioUUID?: UUID | null;
-  }): DatasetSummary {
-    const { datasetUUID, scenarioUUID } = prepareParams(params);
-
-    const summary = summaries.get({ datasetUUID, scenarioUUID });
-    if (!summary) throw new SummaryNotFound();
-    return summary;
+  }): DatasetSummary | null {
+    return summaries.get(prepareParams(params));
   }
+
+  function hasSummary(params: ScenarioDatasetUUID) {
+    return !!getCachedSummary(params);
+  }
+
   function clearSummaries() {
     promises.clear();
     summaries.clear();
@@ -78,6 +76,71 @@ export const useSummaryStore = defineStore("summary", () => {
     summaries,
     getSummary,
     getCachedSummary,
+    hasSummary,
     clearSummaries,
   };
 });
+
+class HashMap<K, V> {
+  private store: Record<string, V>;
+  private hash: (k: K) => string;
+  constructor(hash: (k: K) => string) {
+    this.store = {};
+    this.hash = hash;
+  }
+
+  get(key: K): V | null {
+    return this.store[this.hash(key)] ?? null;
+  }
+  set(key: K, val: V) {
+    this.store[this.hash(key)] = val;
+  }
+  delete(key: K) {
+    delete this.store[this.hash(key)];
+  }
+  clear() {
+    this.store = {};
+  }
+}
+/** A wrapper around a HashMap to hold Promises along with a
+ * callback. When a registered promise gets resolved, its callback
+ * if the store was not cleared in the mean time.
+ *
+ * This class is meant to last for mulitple clear operations. After
+ * it has been cleared, it can accept new Promises. Any Promise that
+ * gets resolved after it has been cleared (goverened by the ``cancelCylce``
+ * attribute) will not be processed, while new Promises will be.
+ *
+ * exported for testing purposes
+ * */
+export class PromiseStore<K, V> {
+  private cancelCycle: number;
+  private promises: HashMap<K, Promise<V | null>>;
+  constructor(hash: (k: K) => string) {
+    this.promises = new HashMap(hash);
+    this.cancelCycle = 0;
+  }
+  get(key: K) {
+    return this.promises.get(key);
+  }
+  add(key: K, promise: Promise<V>, onSuccess: (v: V) => void) {
+    const currentCycle = this.cancelCycle;
+    this.promises.set(
+      key,
+      promise
+        .then((result) => {
+          if (this.cancelCycle <= currentCycle) {
+            onSuccess(result);
+          }
+          return result;
+        })
+        .finally(() => {
+          this.promises.delete(key);
+        }),
+    );
+  }
+  clear(): void {
+    this.cancelCycle++;
+    this.promises.clear();
+  }
+}

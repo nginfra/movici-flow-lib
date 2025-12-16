@@ -17,6 +17,7 @@
     </template>
     <template #collapse-content>
       <div class="box-content mt-2">
+        <o-loading :full-page="false" :active="pending" icon-size="small" />
         <o-field class="entity-selector">
           <ul class="entities-list is-size-7">
             <Draggable
@@ -56,7 +57,10 @@
                 </li>
               </template>
             </Draggable>
-            <li class="zero-results has-text-danger" v-else>
+            <li v-else-if="pending">
+              {{ t("misc.loading") }}
+            </li>
+            <li v-else class="zero-results has-text-danger">
               {{ t("flow.datasets.zeroEntities") }}
             </li>
           </ul>
@@ -109,6 +113,7 @@ type GetVisualizationProps = {
 const props = defineProps<{
   modelValue?: ComposableVisualizerInfo[];
   summary?: DatasetSummary;
+  pending?: boolean;
   dataset?: ScenarioDataset;
 }>();
 
@@ -157,7 +162,7 @@ watch(
         return { ...e, active: false, type: undefined };
       });
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 function formatEntityName(name: string) {
@@ -169,7 +174,7 @@ function getAdditionalEntityGroups(group: TypedEntityGroupSummary): Record<strin
     return {};
   }
   const firstPointEntityGroup = entityGroups.value.find((group) =>
-    isPoints(group.properties)
+    isPoints(group.properties),
   )?.name;
   return {
     points: firstPointEntityGroup!,
@@ -180,7 +185,7 @@ watchEffect(() => {
   const layers = visualizableEntityGroups.value.reduce((arr, group, idx) => {
     if (props.dataset && group.active && group.type) {
       const items = group.properties.sort((a) =>
-        ["id", ...IMPORTANT_ATTRIBUTES].some((attr) => a.name === attr) ? -1 : 1
+        ["id", ...IMPORTANT_ATTRIBUTES].some((attr) => a.name === attr) ? -1 : 1,
       );
 
       arr.push(
@@ -192,7 +197,7 @@ watchEffect(() => {
           type: group.type,
           items,
           color: hexToColorTriple(colors[idx % colors.length]!),
-        })
+        }),
       );
     }
     return arr;
@@ -258,7 +263,9 @@ function makeVisualizerInfo({
     background: $white-ter;
   }
 }
-
+.box-content {
+  position: relative;
+}
 .entity-selector {
   .entities-list {
     li {

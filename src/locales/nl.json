@@ -295,7 +295,8 @@
     "yes": "Ja",
     "noResources": "Geen items gevonden",
     "deselectAllPages": "Deselecteer in alle pagina's",
-    "selectAllPages": "Selecteer in alle paginas"
+    "selectAllPages": "Selecteer in alle paginas",
+    "loading": "Bezig met laden..."
   },
   "properties": {
     "actions": "Acties",

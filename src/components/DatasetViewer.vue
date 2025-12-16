@@ -29,7 +29,12 @@
       <MapControlBaseMap :modelValue="basemap" @update:modelValue="setBasemap" />
     </template>
     <template #control-right="{ popup }">
-      <EntitySelector v-model="layers" :summary="summary" :dataset="modelValue" />
+      <EntitySelector
+        v-model="layers"
+        :summary="summary"
+        :pending="summaryPending"
+        :dataset="modelValue"
+      />
       <template v-if="popup.rightSidePopups.length">
         <RightSidePopup
           v-for="(p, i) in popup.rightSidePopups"
@@ -65,7 +70,9 @@ const props = defineProps<{
   modelValue: ShortDataset;
 }>();
 
-const { summary, currentDataset } = useReactiveSummary({ datasetOnly: true });
+const { summary, summaryPending, currentDataset, datasets } = useReactiveSummary({
+  datasetOnly: true,
+});
 const store = useFlowStore();
 const layers = ref([]) as Ref<ComposableVisualizerInfo[]>;
 const camera = ref<DeckCamera>({ viewState: DEFAULT_VIEWSTATE });
@@ -76,9 +83,10 @@ const hasGeocodeCapabilities = computed(() => store.hasCapability("geocode"));
 watch(
   () => props.modelValue,
   (dataset) => {
+    datasets.value = [dataset];
     currentDataset.value = dataset;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(summary, async (summary) => {
