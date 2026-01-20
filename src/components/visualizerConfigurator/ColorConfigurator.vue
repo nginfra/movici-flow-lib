@@ -126,7 +126,7 @@ const {
 onUnmounted(destroyValidator);
 const showLegend = ref(!!props.modelValue?.legend);
 watch(showLegend, () => {
-  if (showLegend) {
+  if (showLegend.value) {
     localClause.legend ??= {};
   }
   updateClause();

@@ -134,6 +134,7 @@ export default class GridLayer<D> extends SolidPolygonLayer<D, GridLayerProps<D>
     colorMapTexture: Texture | null;
     minColorValue: number | null;
     maxColorValue: number | null;
+    hasError: boolean;
   };
 
   initializeState() {
@@ -151,7 +152,6 @@ export default class GridLayer<D> extends SolidPolygonLayer<D, GridLayerProps<D>
     super.updateState(updateParams);
 
     const { props, oldProps } = updateParams;
-
     if (props.texture !== oldProps.texture) {
       const textureInfo = props.texture ?? {
         data: new Float32Array([0]),
@@ -159,7 +159,7 @@ export default class GridLayer<D> extends SolidPolygonLayer<D, GridLayerProps<D>
         height: 1,
         bbox: [0, 0, 1, 1],
       };
-
+      this.assertCompatibleTextureSize(textureInfo);
       this.setState({
         texture: createTexture(textureInfo, this.context.device),
         bbox: textureInfo.bbox,
@@ -174,6 +174,16 @@ export default class GridLayer<D> extends SolidPolygonLayer<D, GridLayerProps<D>
         maxColorValue: cm?.maxVal ?? null,
       });
     }
+  }
+  assertCompatibleTextureSize(texture: TextureInfo) {
+    const gl = (this.context.device as any).gl as WebGL2RenderingContext;
+    const maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+    let error = false;
+    if (texture.width > maxTextureSize || texture.height > maxTextureSize) {
+      this.raiseError(new Error("Heightmap is too large to render"), "");
+      error = true;
+    }
+    this.setState({ hasError: error });
   }
   _getModels() {
     const { id } = this.props;
@@ -245,8 +255,16 @@ export default class GridLayer<D> extends SolidPolygonLayer<D, GridLayerProps<D>
   }
   draw() {
     const topModel = this.state.topModel!;
-    const { polygonTesselator, texture, colorMapTexture, minColorValue, maxColorValue, bbox } =
-      this.state;
+    const {
+      polygonTesselator,
+      texture,
+      colorMapTexture,
+      minColorValue,
+      maxColorValue,
+      bbox,
+      hasError,
+    } = this.state;
+    if (hasError) return;
 
     const renderUniforms = {
       extruded: false,

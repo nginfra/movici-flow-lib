@@ -33,6 +33,8 @@ watch(
         }
       },
     });
+  }, {
+    immediate: true
   }
 );
 </script>

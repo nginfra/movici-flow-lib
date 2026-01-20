@@ -140,7 +140,7 @@ export function useViews({
   async function getInitialCamera(config?: FlowViewConfig): Promise<DeckCamera> {
     if (config?.camera) return { viewState: config.camera };
     const scen = unref(scenario);
-    let bbox = scen?.bounding_box;
+    const bbox = scen?.bounding_box;
     if (!bbox) return { viewState: useMoviciSettings().settings.defaultViewState };
 
     const crs = scen?.epsg_code;
