@@ -154,7 +154,7 @@ const icons = computed({
 
 const showLegend = ref(!!props.modelValue?.legend);
 watch(showLegend, () => {
-  if (showLegend) {
+  if (showLegend.value) {
     localClause.legend ??= {};
   }
   updateClause();
