@@ -144,7 +144,6 @@ function updateLayers() {
     .map((v) => {
       if (!v.info.visible) {
         popup.layerIsHidden(v.info.id);
-        return null;
       }
 
       v.setCallbacks({
