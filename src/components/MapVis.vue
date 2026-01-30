@@ -149,11 +149,11 @@ function updateLayers() {
       v.setCallbacks({
         onClick: (content: PopupContent | null, ev?: DeckMouseEvent) => {
           if (ev?.leftButton && content) {
-            popup.onClick(content, v.info.id);
+            popup.onClick(markRaw(content), v.info.id);
           }
         },
         onHover: (content: PopupContent | null) => {
-          popup.onHover(content, v.info.id);
+          popup.onHover(content ? markRaw(content) : null, v.info.id);
         },
       });
 
