@@ -117,10 +117,10 @@ const currentClause = computed(() => {
 watch(currentClause, (c) => emit("update:modelValue", c ? { byValue: c } : c));
 
 function toggleVisiblity(val: boolean) {
+  showVisiblity.value = val;
   if (val) {
     selectAttributeOrFirst(currentClause.value?.attribute);
   }
-  showVisiblity.value = val;
 }
 watch(attributes, (val, old) => {
   if (!isEqual(val, old)) {
