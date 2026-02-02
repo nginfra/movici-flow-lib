@@ -81,15 +81,22 @@
   }
 
   // bulma dropdown
+  $dropdown: $black;
+  $dropdown-selected: $primary;
+  $dropdown-selected-bg: $primary-invert;
   .dropdown {
+    --dropdown: #{$black};
+    --dropdown-selected: #{$dropdown-selected};
+    --dropdown-selected-bg: #{$dropdown-selected-bg};
+
     .dropdown-menu {
       a.dropdown-item {
-        color: $black;
+        color: var(--dropdown);
         font-size: 0.8rem;
         font-weight: 300;
         &:hover {
-          background-color: $primary-invert;
-          color: $primary;
+          color: var(--dropdown-selected);
+          background-color: var(--dropdown-selected-bg)
         }
       }
     }

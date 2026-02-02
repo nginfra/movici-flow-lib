@@ -7,7 +7,7 @@
       :disabled="modelValue.isDisabled"
       :class="itemClass(modelValue)"
       @click.stop="doEmit(modelValue.event)"
-      class="dropdown-item action-menu-item"
+      class="dropdown-item"
     >
       <o-icon :icon="modelValue.icon" :pack="modelValue.iconPack || 'far'" class="mr-2"></o-icon>
       <span>
@@ -42,25 +42,16 @@ function doEmit(action: string) {
 </script>
 
 <style scoped lang="scss">
-a.action-menu-item {
-  color: $black;
+.dropdown-item {
   font-size: 0.8rem;
   font-weight: 300;
-  &:hover {
-    background-color: $primary-invert;
-    color: $primary;
+  &.danger {
+    --dropdown-selected: #{$danger};
+    --dropdown-selected-bg: #{$danger-invert};
   }
-  &.is-danger {
-    &:hover {
-      background-color: $danger-invert;
-      color: $danger;
-    }
-  }
-  &.is-warning {
-    &:hover {
-      background-color: $warning-invert;
-      color: $warning;
-    }
+  &.warning {
+    --dropdown-selected: #{$warning};
+    --dropdown-selected-bg: #{$warning-invert};
   }
 }
 </style>

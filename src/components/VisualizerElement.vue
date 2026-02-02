@@ -102,7 +102,7 @@ const actions: ActionItem[] = [
     iconPack: "fas",
     label: "Reload",
     event: "reload",
-    variant: "danger",
+    variant: "warning",
   },
   {
     icon: "trash",

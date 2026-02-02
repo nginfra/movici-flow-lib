@@ -14,6 +14,7 @@ $white-bis: #fafcfc;
 $white: #ffffff;
 
 $orange: #f18759;
+$light-orange: #f1c5b2;
 $yellow: #e8b53e;
 $green: #1ab67e;
 $green-light: #e8f8f2;
@@ -40,10 +41,9 @@ $dark: $grey-darker;
 $primary-invert: $green-light;
 $info-invert: $light-blue;
 $secondary-invert: $white;
-$warning-invert: $white;
 $pink-invert: $white;
 $success-invert: $white;
-$warning-invert: $white;
+$warning-invert: $light-orange;
 $danger-invert: $light-pink;
 $light-invert: $white;
 $dark-invert: $white;
@@ -109,4 +109,8 @@ $half-left-menu-size: calc(#{$left-menu-size} / 2);
 
 @mixin hover-grey-bgcolor {
   background-color: rgba(0, 0, 0, 0.05);
+}
+
+@mixin hover-white-bgcolor {
+  background-color: $primary-invert;
 }
