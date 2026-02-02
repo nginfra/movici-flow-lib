@@ -12,13 +12,12 @@
       <template #item="{ index, element }">
         <VisualizerElement
           :modelValue="element"
-          :header-buttons="['grip', 'label', 'visibility', 'more', 'errors']"
-          :action-buttons="['edit', 'delete', 'export', 'reload']"
           @update:modelValue="updateItem(index, $event)"
           @edit="startEditingItem(index)"
+          @reload="reloadItem(index, updateItem)"
+          @duplicate="duplicateItem(index)"
           @delete="deleteItem(index)"
           @export="emit('export', element)"
-          @reload="reloadItem(index, updateItem)"
           tooltipActive
         />
       </template>
@@ -61,7 +60,7 @@ const props = withDefaults(
     scenario?: Scenario | null;
     open?: number;
   }>(),
-  { open: -2 }
+  { open: -2 },
 );
 const emit = defineEmits<{
   (e: "update:modelValue", val: ComposableVisualizerInfo[]): void;
@@ -76,6 +75,7 @@ const { draggableEvents, draggableOptions, dragging, move } = useDraggable(items
 const {
   updateItem,
   startEditingItem,
+  duplicateItem,
   deleteItem,
   open,
   editing,
@@ -87,8 +87,12 @@ const {
   strategy: {
     createNewMessage: () => t("flow.visualization.newVisualizer"),
     closeConfiguratorMessage: () => t("flow.visualization.dialogs.closeConfigurator"),
-    deleteMessage: (item?: ComposableVisualizerInfo) =>
-      t("flow.visualization.dialogs.deleteVisualizer", { name: item?.name ?? "this" }),
+    duplicateItem(info: ComposableVisualizerInfo) {
+      return info.clone();
+    },
+    deleteMessage(item?: ComposableVisualizerInfo) {
+      return t("flow.visualization.dialogs.deleteVisualizer", { name: item?.name ?? "this" });
+    },
     finalizeItem(info: ComposableVisualizerInfo) {
       if (props.scenario && !info.scenarioUUID) {
         info.scenarioUUID = props.scenario.uuid;
@@ -107,7 +111,7 @@ watch(
   () => {
     if (props.open == null) return;
     open.value = props.open;
-  }
+  },
 );
 
 watch(open, (val) => emit("update:open", val));

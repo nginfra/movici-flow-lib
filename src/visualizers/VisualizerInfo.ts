@@ -88,7 +88,7 @@ export class ComposableVisualizerInfo extends BaseVisualizerInfo {
     if (this.settings?.floodingGrid) {
       this.settings.floodingGrid.heightMapDatasetUUID = getDatasetUUIDOrThrow(
         this.settings.floodingGrid.heightMapDataset,
-        datasets
+        datasets,
       );
     }
   }
@@ -129,6 +129,19 @@ export class ComposableVisualizerInfo extends BaseVisualizerInfo {
     }
 
     return rv;
+  }
+  clone(): ComposableVisualizerInfo {
+    return new ComposableVisualizerInfo({
+      name: this.name,
+      datasetName: this.datasetName,
+      datasetUUID: this.datasetUUID,
+      scenarioUUID: this.scenarioUUID,
+      entityGroup: this.entityGroup,
+      additionalEntityGroups: this.additionalEntityGroups,
+      visible: this.visible,
+      settings: this.settings,
+      summary: this.summary,
+    });
   }
 }
 
@@ -216,7 +229,7 @@ export class ChartVisualizerItem {
 
 function getDatasetUUIDOrThrow(
   datasetName: string,
-  datasets: Record<string, ScenarioDataset>
+  datasets: Record<string, ScenarioDataset>,
 ): UUID {
   const dataset = datasets[datasetName];
   if (!dataset) {
