@@ -15,7 +15,7 @@
           @click="toggleSummary"
           :class="{ 'not-ready': (progress ?? 0) < 100 }"
         >
-          <span class="is-block is-size-6-half text-ellipsis"</span>
+          <span class="is-block is-size-6-half text-ellipsis"></span>
         </label>
         <span v-if="showOnHeader('errors') && errors.length" class="errors mr-2">
           <o-icon
