@@ -15,7 +15,7 @@
           @click="toggleSummary"
           :class="{ 'not-ready': (progress ?? 0) < 100 }"
         >
-          <span class="is-block is-size-6-half text-ellipsis">{{ modelValue.name }}</span>
+          <span class="is-block is-size-6-half text-ellipsis"</span>
         </label>
         <span v-if="showOnHeader('errors') && errors.length" class="errors mr-2">
           <o-icon
@@ -43,9 +43,10 @@
         v-if="showOnHeader('more')"
         :modelValue="filteredActions"
         @edit="emit('edit')"
+        @reload="emit('reload')"
+        @duplicate="emit('duplicate')"
         @export="emit('export')"
         @delete="emit('delete')"
-        @reload="emit('reload')"
       />
     </div>
     <VisualizerSummary
@@ -66,63 +67,69 @@ import { computed, ref, watch } from "vue";
 import VisualizerSummary from "./VisualizerSummary.vue";
 
 type HeaderItem = "grip" | "label" | "errors" | "visibility" | "more";
-const props = withDefaults(
-  defineProps<{
-    modelValue?: ComposableVisualizerInfo;
-    headerButtons?: HeaderItem[];
-    actionButtons?: string[];
-    tooltipPosition?: string;
-    tooltipActive?: boolean;
-  }>(),
-  {
-    headerButtons: () => [],
-    actionButtons: () => [],
-    tooltipPosition: "is-bottom",
-  }
-);
-
-const emit = defineEmits<{
-  (e: "update:modelValue", val: ComposableVisualizerInfo): void;
-  (e: "edit"): void
-  (e: "export"): void
-  (e: "delete"): void
-  (e:"reload"): void
-}>();
-const progress = ref<number>();
-const isOpen = ref(false);
-const actions: ActionItem[] = [
-  {
+type VisualizerAction = "edit" | "reload" | "duplicate" | "delete" | "export";
+const actions: Record<VisualizerAction, ActionItem> = {
+  edit: {
     icon: "edit",
     iconPack: "far",
     label: "Edit",
     event: "edit",
   },
-  {
+  reload: {
     icon: "redo",
     iconPack: "fas",
     label: "Reload",
     event: "reload",
     variant: "warning",
   },
-  {
+  duplicate: {
+    icon: "clone",
+    iconPack: "far",
+    label: "Duplicate",
+    event: "duplicate",
+  },
+  delete: {
     icon: "trash",
     iconPack: "far",
     label: "Delete",
     event: "delete",
     variant: "danger",
   },
-  {
+  export: {
     icon: "file-download",
     iconPack: "far",
     label: "Export",
     event: "export",
   },
-];
+};
+const props = withDefaults(
+  defineProps<{
+    modelValue?: ComposableVisualizerInfo;
+    headerItems?: HeaderItem[];
+    actionButtons?: null | VisualizerAction[];
+  }>(),
+  {
+    headerItems: () => ["grip", "label", "visibility", "more", "errors"],
+    actionButtons: null,
+  },
+);
 
-const filteredActions = computed(() => {
-  return actions.filter((action) => {
-    return props.actionButtons.includes(action.event);
-  });
+const emit = defineEmits<{
+  (e: "update:modelValue", val: ComposableVisualizerInfo): void;
+  (e: "edit"): void;
+  (e: "reload"): void;
+  (e: "duplicate"): void;
+  (e: "delete"): void;
+  (e: "export"): void;
+}>();
+const progress = ref<number>();
+const isOpen = ref(false);
+
+const filteredActions = computed<ActionItem[]>(() => {
+  if (props.actionButtons) {
+    return props.actionButtons.map((event) => actions[event]).filter((r) => r != null);
+  }
+  return Object.values(actions);
 });
 
 const showLoader = computed(() => {
@@ -148,12 +155,12 @@ function toggleVisibility(force?: boolean) {
       "update:modelValue",
       Object.assign(new ComposableVisualizerInfo(props.modelValue), {
         visible: force ?? !props.modelValue?.visible,
-      })
+      }),
     );
 }
 
 function showOnHeader(button: HeaderItem) {
-  return props.headerButtons.includes(button);
+  return props.headerItems.includes(button);
 }
 
 watch(
@@ -175,7 +182,7 @@ watch(
       }
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 

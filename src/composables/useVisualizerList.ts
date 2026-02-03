@@ -1,5 +1,6 @@
 import { useDialog } from "@movici-flow-lib/baseComposables/useDialog";
-import { computed, nextTick, ref, type Ref } from "vue";
+import { cloneDeep } from "lodash";
+import { computed, nextTick, ref, unref, type Ref } from "vue";
 
 export type FunctionOrString<T> = string | ((item?: T) => string);
 
@@ -9,6 +10,7 @@ export interface VisualizerListStrategy<T> {
   deleteMessage: FunctionOrString<T>;
   finalizeItem?(item: T): T;
   onUpdate(val: T[]): void;
+  duplicateItem(val: T): T;
 }
 function evaluateMessage<T>(message: FunctionOrString<T>, item?: T) {
   return typeof message == "string" ? message : message(item);
@@ -62,8 +64,8 @@ export function useVisualizerList<T>({
   function updateItem(idx: number, val: T) {
     strategy.onUpdate(
       items.value.map((info, arrayIdx) => {
-        return arrayIdx === idx ? strategy.finalizeItem?.(val) ?? val : info;
-      })
+        return arrayIdx === idx ? (strategy.finalizeItem?.(val) ?? val) : info;
+      }),
     );
   }
 
@@ -71,6 +73,15 @@ export function useVisualizerList<T>({
     strategy.onUpdate([...items.value, strategy.finalizeItem?.(val) ?? val]);
   }
 
+  function duplicateItem(idx: number) {
+    const allItems = unref(items);
+    if (idx >= allItems.length) return;
+    strategy.onUpdate([
+      ...allItems.slice(0, idx + 1),
+      strategy.duplicateItem(allItems[idx]!),
+      ...allItems.slice(idx + 1),
+    ]);
+  }
   const currentItem = computed(() => {
     return open.value < 0 ? undefined : items.value[open.value];
   });
@@ -110,6 +121,7 @@ export function useVisualizerList<T>({
     startEditingItem,
     updateItem,
     appendItem,
+    duplicateItem,
     deleteItem,
     currentItem,
     updateCurrentItem,

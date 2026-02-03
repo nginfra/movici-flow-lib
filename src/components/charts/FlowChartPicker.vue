@@ -26,6 +26,7 @@
             <MovKebabMenu
               :modelValue="actions"
               @edit="startEditingItem(index)"
+              @duplicate="duplicateItem(index)"
               @delete="deleteItem(index)"
             />
           </div>
@@ -50,6 +51,7 @@ import type { ActionItem } from "@movici-flow-lib/types";
 import type { ChartVisualizerInfo } from "@movici-flow-lib/visualizers/VisualizerInfo";
 import { computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { cloneDeep } from "lodash";
 
 const { t } = useI18n();
 
@@ -71,6 +73,12 @@ const actions: ActionItem[] = [
     event: "edit",
   },
   {
+    icon: "clone",
+    iconPack: "far",
+    label: "Duplicate",
+    event: "duplicate",
+  },
+  {
     icon: "trash",
     iconPack: "far",
     label: "Delete",
@@ -88,6 +96,7 @@ const {
   deleteItem,
   currentItem,
   updateCurrentItem,
+  duplicateItem,
   close,
   open: openLocal,
 } = useVisualizerList({
@@ -95,8 +104,10 @@ const {
   strategy: {
     createNewMessage: () => t("flow.visualization.newVisualizer"),
     closeConfiguratorMessage: () => t("flow.visualization.dialogs.closeConfigurator"),
-    deleteMessage: (item?: ChartVisualizerInfo) =>
-      t("flow.visualization.dialogs.deleteChart", { name: item?.title ?? "this" }),
+    duplicateItem: (item: ChartVisualizerInfo) => item.clone(),
+    deleteMessage(item?: ChartVisualizerInfo) {
+      return t("flow.visualization.dialogs.deleteChart", { name: item?.title ?? "this" })
+    },
     onUpdate(val: ChartVisualizerInfo[]) {
       emit("update:modelValue", val);
     },
