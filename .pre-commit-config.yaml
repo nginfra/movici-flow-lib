@@ -1,0 +1,13 @@
+repos:
+- repo: local
+  hooks:
+  - id: prettier
+    name: Prettier
+    language: node
+    files: |
+            (?x)^(
+                src/|
+                project/
+            )
+    types_or: [javascript, ts, vue, json, css, scss]
+    entry: npx prettier --write

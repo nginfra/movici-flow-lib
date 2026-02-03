@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "prettier": "3.8.1"
+  },
+  "scripts": {
+    "format": "prettier --write src/ project/",
+    "lint:format": "prettier --check src/ project/"
+  }
+}
