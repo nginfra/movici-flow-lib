@@ -77,7 +77,7 @@ export class DatasetDownloader {
   async getUpdateData(
     update: Update,
     entityGroup: string,
-    properties: DataAttribute[]
+    properties: DataAttribute[],
   ): Promise<UpdateWithData> {
     const data = await this.backend.updates.get(update.uuid, entityGroup, properties);
 

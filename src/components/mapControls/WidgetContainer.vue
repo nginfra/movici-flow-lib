@@ -27,7 +27,7 @@ watch(
   () => props.collapsed,
   (collapsed) => {
     collapsed_.value = collapsed;
-  }
+  },
 );
 const open = computed({
   get: () => !props.collapsed,

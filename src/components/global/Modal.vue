@@ -42,7 +42,7 @@ const props = withDefaults(
   }>(),
   {
     title: "",
-  }
+  },
 );
 const emit = defineEmits<{
   (e: "update:active", val: boolean): void;
@@ -52,8 +52,8 @@ const allCancelOpts = computed(() =>
   Array.isArray(props.canCancel)
     ? props.canCancel
     : props.canCancel
-    ? ["escape", "x", "outside", "button"]
-    : []
+      ? ["escape", "x", "outside", "button"]
+      : [],
 );
 
 const hasCancelX = computed(() => allCancelOpts.value.includes("x"));

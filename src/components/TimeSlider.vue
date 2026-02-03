@@ -36,12 +36,12 @@ const props = withDefaults(
     variant: "primary",
     tooltip: true,
     customTimeFormat: (val: number) => new Date(val * 1000).toLocaleString("NL-nl"),
-  }
+  },
 );
 
 function toFormattedDateTime(relativeTime: number) {
   return props.customTimeFormat(
-    relativeTime * props.timelineInfo.time_scale + props.timelineInfo.reference_time
+    relativeTime * props.timelineInfo.time_scale + props.timelineInfo.reference_time,
   );
 }
 </script>

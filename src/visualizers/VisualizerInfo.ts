@@ -206,8 +206,8 @@ export class ChartVisualizerInfo extends BaseVisualizerInfo {
       attribute: this.attribute,
       items: cloneDeep(this.items),
       title: this.title,
-      settings: cloneDeep(this.settings)
-    })
+      settings: cloneDeep(this.settings),
+    });
   }
 }
 

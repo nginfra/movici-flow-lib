@@ -58,7 +58,7 @@ export function useCharts({
       if (activeChartId.value && registry.getChartByID(activeChartId.value)) return;
       activeChartId.value = charts.value[0]?.id;
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   async function setChartInfos(infos: ChartVisualizerInfo[]) {
@@ -80,7 +80,7 @@ export function useCharts({
 
 function createChartVisualizer(
   info: ChartVisualizerInfo,
-  manager: VisualizerManager<ChartVisualizerInfo, ChartVisualizer>
+  manager: VisualizerManager<ChartVisualizerInfo, ChartVisualizer>,
 ): ChartVisualizer {
   return new ChartVisualizer({
     info,

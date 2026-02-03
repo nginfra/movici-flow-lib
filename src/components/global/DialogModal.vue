@@ -70,7 +70,7 @@ const props = withDefaults(
     canCancel: true,
     cancelText: "Cancel",
     type: "confirm",
-  }
+  },
 );
 
 const data = reactive({

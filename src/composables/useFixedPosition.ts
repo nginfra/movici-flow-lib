@@ -104,7 +104,7 @@ function getOverflowParentHelper(targetClass: string, element: HTMLElement): HTM
 function getStyle(
   anchorRect: { left: number; top: number; width: number; height: number },
   fixedpositionRect: { width: number; height: number },
-  adjust?: { left: number; top: number }
+  adjust?: { left: number; top: number },
 ): CSSProperties {
   // In order to prevent the popup from being positioned outside of the viewport
   // (as best we can), we have to know its dimensions. This way, we can limit

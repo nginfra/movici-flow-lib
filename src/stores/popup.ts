@@ -38,7 +38,7 @@ export const usePopupStore = defineStore("flow-popup", () => {
 
   function findPopup(
     layerId: string,
-    entityIndex: number
+    entityIndex: number,
   ): [PopupInfo, number] | [undefined, undefined] {
     for (const [idx, popup] of popups.value.entries()) {
       if (popup.layerId === layerId && popup.content.entityIndex === entityIndex) {
@@ -141,7 +141,7 @@ export const usePopupStore = defineStore("flow-popup", () => {
         setPopupTimeout(
           "hover",
           () => popups.value.push({ layerId, content, kind: "map-hover" }),
-          POPUP_DELAY
+          POPUP_DELAY,
         );
 
         return;

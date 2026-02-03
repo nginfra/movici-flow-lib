@@ -52,7 +52,7 @@ describe("StatusTracker", () => {
   it("raises when id is not registered for tasks", () => {
     const id = tracker.register(["a", "b"]);
     expect(() => tracker.updateProgress(id, "c", 42)).toThrow(
-      "id 0 is not registered for task 'c'"
+      "id 0 is not registered for task 'c'",
     );
   });
   it("ignores untracked tasks", () => {

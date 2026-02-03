@@ -14,7 +14,7 @@ interface ButtonConfig {
 
 function makeButton(
   config: ButtonConfig,
-  disabled?: RefLike<Partial<Record<SupportedButton, boolean>>>
+  disabled?: RefLike<Partial<Record<SupportedButton, boolean>>>,
 ): ButtonItem {
   const { name, ...config_ } = config;
   const rawResult = { ...config_, event: name, isDisabled: false };
@@ -28,7 +28,7 @@ function makeButton(
 }
 
 export function useButtons(
-  disabled?: RefLike<Record<string, boolean>>
+  disabled?: RefLike<Record<string, boolean>>,
 ): Record<SupportedButton, ButtonItem> {
   return {
     cancel: makeButton(
@@ -38,7 +38,7 @@ export function useButtons(
         icon: "times",
         iconPack: "fas",
       },
-      disabled
+      disabled,
     ),
     save: makeButton(
       {
@@ -48,7 +48,7 @@ export function useButtons(
         icon: "edit",
         iconPack: "fas",
       },
-      disabled
+      disabled,
     ),
     saveAndEdit: makeButton(
       {
@@ -58,7 +58,7 @@ export function useButtons(
         icon: "fa-mov-save",
         iconPack: "fak",
       },
-      disabled
+      disabled,
     ),
     back: makeButton(
       {
@@ -67,7 +67,7 @@ export function useButtons(
         icon: "arrow-left",
         iconPack: "fas",
       },
-      disabled
+      disabled,
     ),
     delete: makeButton(
       {
@@ -77,7 +77,7 @@ export function useButtons(
         icon: "times",
         iconPack: "fas",
       },
-      disabled
+      disabled,
     ),
     refresh: makeButton({
       variant: "primary",
@@ -91,13 +91,13 @@ export function useButtons(
 
 export function useButtonArray(
   buttons: SupportedButton[],
-  disabled?: RefLike<Record<string, boolean>>
+  disabled?: RefLike<Record<string, boolean>>,
 ): Ref<ButtonItem[]> {
   const allButtons = useButtons(disabled);
   return computed(() =>
     buttons.reduce((agg, curr) => {
       agg.push(allButtons[curr]);
       return agg;
-    }, [] as ButtonItem[])
+    }, [] as ButtonItem[]),
   );
 }

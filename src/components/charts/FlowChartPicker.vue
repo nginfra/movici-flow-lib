@@ -106,7 +106,7 @@ const {
     closeConfiguratorMessage: () => t("flow.visualization.dialogs.closeConfigurator"),
     duplicateItem: (item: ChartVisualizerInfo) => item.clone(),
     deleteMessage(item?: ChartVisualizerInfo) {
-      return t("flow.visualization.dialogs.deleteChart", { name: item?.title ?? "this" })
+      return t("flow.visualization.dialogs.deleteChart", { name: item?.title ?? "this" });
     },
     onUpdate(val: ChartVisualizerInfo[]) {
       emit("update:modelValue", val);
@@ -119,7 +119,7 @@ watch(
   () => {
     if (props.open == null) return;
     openLocal.value = props.open;
-  }
+  },
 );
 
 watch(openLocal, (val) => emit("update:open", val));

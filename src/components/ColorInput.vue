@@ -34,14 +34,14 @@ const props = withDefaults(
   }>(),
   {
     colorPickerPosition: "right",
-  }
+  },
 );
 
 const colorPickerPresets = Object.values(MoviciColors);
 const showColorPicker = ref(false);
 
 const hexColor = computed(() =>
-  props.modelValue ? colorTripleToHex(props.modelValue) : MoviciColors.VERY_DARK_GREY
+  props.modelValue ? colorTripleToHex(props.modelValue) : MoviciColors.VERY_DARK_GREY,
 );
 
 const translate = computed(() => {

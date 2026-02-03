@@ -132,7 +132,7 @@ watch(
     if (!store.scenario) return;
     scenario.value = await store.backend?.scenario.get(store.scenario.uuid);
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 

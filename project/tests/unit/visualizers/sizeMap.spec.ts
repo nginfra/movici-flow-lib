@@ -40,7 +40,7 @@ describe("sizeMaps.ts/NumberSizeMap", () => {
           [1, 2],
           [2, 3],
         ],
-      }).getValue(1.5)
+      }).getValue(1.5),
     ).toStrictEqual(2.5);
   });
 
@@ -52,7 +52,7 @@ describe("sizeMaps.ts/NumberSizeMap", () => {
           [-2, 1],
           [-1, 2],
         ],
-      }).getValue(-1.5)
+      }).getValue(-1.5),
     ).toStrictEqual(1.5);
   });
   it("returns the right size for decreasing sizes", () => {
@@ -62,7 +62,7 @@ describe("sizeMaps.ts/NumberSizeMap", () => {
           [-2, 2],
           [-1, 1],
         ],
-      }).getValue(-1.5)
+      }).getValue(-1.5),
     ).toStrictEqual(1.5);
   });
 });

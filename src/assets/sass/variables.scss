@@ -50,50 +50,50 @@ $dark-invert: $white;
 
 // Setup $colors to use as bulma classes
 $colors: (
-  'white': (
+  "white": (
     $white,
-    $black
-  ),
-  'black': (
     $black,
-    $white
   ),
-  'light': (
-    $light,
-    $light-invert
-  ),
-  'dark': (
-    $dark,
-    $dark-invert
-  ),
-  'primary': (
-    $primary,
-    $primary-invert
-  ),
-  'white-green': (
+  "black": (
+    $black,
     $white,
-    $green
   ),
-  'info': (
+  "light": (
+    $light,
+    $light-invert,
+  ),
+  "dark": (
+    $dark,
+    $dark-invert,
+  ),
+  "primary": (
+    $primary,
+    $primary-invert,
+  ),
+  "white-green": (
+    $white,
+    $green,
+  ),
+  "info": (
     $info,
-    $info-invert
+    $info-invert,
   ),
-  'success': (
+  "success": (
     $success,
-    $success-invert
+    $success-invert,
   ),
-  'warning': (
+  "warning": (
     $warning,
-    $warning-invert
+    $warning-invert,
   ),
-  'danger': (
+  "danger": (
     $danger,
-    $danger-invert
+    $danger-invert,
   ),
-  'danger-invert': (
+  "danger-invert": (
     $light-pink,
-    $danger
-  )
+    $danger,
+  ),
 );
 
 $columns-margin: 0;

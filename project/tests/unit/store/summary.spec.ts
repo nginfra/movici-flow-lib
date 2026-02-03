@@ -84,7 +84,7 @@ describe("useSummaryStore", () => {
     backend.summary.getScenario.mockResolvedValue(sentinel);
     await store.getSummary({ datasetUUID: "some-uuid", scenarioUUID: "some-scenario" });
     expect(store.summaries.get({ scenarioUUID: "some-scenario", datasetUUID: "some-uuid" })).toBe(
-      sentinel
+      sentinel,
     );
   });
 
@@ -98,11 +98,11 @@ describe("useSummaryStore", () => {
     const sentinel = { count: 1 };
     store.summaries.set(
       { scenarioUUID: "some-scenario", datasetUUID: "some-uuid" },
-      sentinel as DatasetSummary
+      sentinel as DatasetSummary,
     );
 
     expect(
-      store.getCachedSummary({ datasetUUID: "some-uuid", scenarioUUID: "some-scenario" })
+      store.getCachedSummary({ datasetUUID: "some-uuid", scenarioUUID: "some-scenario" }),
     ).toStrictEqual(sentinel);
   });
   it("retrieves a scenario summary from cache with an active scenario", () => {
@@ -110,7 +110,7 @@ describe("useSummaryStore", () => {
     flowStore.scenario = { uuid: "some-scenario" } as ShortScenario;
     store.summaries.set(
       { scenarioUUID: "some-scenario", datasetUUID: "some-uuid" },
-      sentinel as DatasetSummary
+      sentinel as DatasetSummary,
     );
     expect(store.getCachedSummary({ datasetUUID: "some-uuid" })).toStrictEqual(sentinel);
   });
@@ -161,4 +161,4 @@ describe("PromiseStore", () => {
     await vi.runAllTimersAsync();
     expect(mock).not.toHaveBeenCalledOnce();
   });
-})
+});

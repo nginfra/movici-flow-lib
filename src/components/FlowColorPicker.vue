@@ -33,7 +33,7 @@ const props = withDefaults(
     translateX: 0,
     translateY: 0,
     position: "right",
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -70,7 +70,7 @@ const rgba = computed<any>({
   set: ({ rgba }) => {
     let color: RGBAColor = [rgba.r, rgba.g, rgba.b];
     if (rgba.a < 1) {
-      color = [...color , Math.floor(rgba.a * 255)];
+      color = [...color, Math.floor(rgba.a * 255)];
     }
     emit("update:modelValue", color);
   },
@@ -116,7 +116,7 @@ watch(
         coolDown.value = false;
       }, COOLDOWN_MS);
     }
-  }
+  },
 );
 function handleFocusOut(event: FocusEvent) {
   // when clicking outside the color picker we want to close it. We need to capture the focusout

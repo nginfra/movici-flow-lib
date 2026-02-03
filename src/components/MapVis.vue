@@ -1,10 +1,5 @@
 <template>
-  <Deck
-    :camera="camera"
-    @update:camera="updateCamera($event)"
-    :layers="layers"
-    :basemap="basemap"
-  >
+  <Deck :camera="camera" @update:camera="updateCamera($event)" :layers="layers" :basemap="basemap">
     <template #map="{ map }">
       <o-loading full-page :active="isLoading" icon-size="large" />
       <Buildings v-if="buildings" :map="map" />
@@ -58,7 +53,7 @@ const props = withDefaults(
     layerInfos: () => [],
     timestamp: 0,
     camera: () => ({ viewState: useMoviciSettings().settings.defaultViewState }),
-  }
+  },
 );
 const emit = defineEmits<{
   (e: "update:timestamp", val: number): void;
@@ -126,11 +121,11 @@ watch(
           }
 
           return info;
-        })
-      )
+        }),
+      ),
     );
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 function updateLayers() {
@@ -170,7 +165,7 @@ function updateCamera(camera: DeckCamera) {
 
 function createComposableVisualizer(
   layerInfo: ComposableVisualizerInfo,
-  manager: VisualizerManager<ComposableVisualizerInfo, Visualizer>
+  manager: VisualizerManager<ComposableVisualizerInfo, Visualizer>,
 ): Visualizer {
   if (!layerInfo.datasetUUID) {
     throw new Error(`Invalid dataset ${layerInfo.datasetName} for layer ${layerInfo.id}: no UUID`);

@@ -57,7 +57,7 @@ describe("heapOrdered", () => {
     "finds unordered heaps",
     (heap) => {
       expect(heapOrdered<number>(heap, (a, b) => b - a)).toBeFalsy();
-    }
+    },
   );
 });
 

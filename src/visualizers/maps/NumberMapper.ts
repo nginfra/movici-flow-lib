@@ -28,13 +28,13 @@ export default class NumberMapper<T> implements Mapper<number | null, T> {
   specialResult: T;
   undefined: number | null;
   undefinedResult: T;
-  values: [number, ...number[]]
+  values: [number, ...number[]];
   results: [T, ...T[]];
   useCache = false;
   cache: Map<number | null, T>;
 
   constructor(config: NumberMapConfig<T>) {
-    if (!config.mapping.length) throw new Error("number mapping must have at least one entry")
+    if (!config.mapping.length) throw new Error("number mapping must have at least one entry");
     this.special = NaN;
     this.specialResult = config.specialResult;
     this.undefined = null;

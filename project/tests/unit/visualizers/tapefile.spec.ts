@@ -48,7 +48,7 @@ describe("tapefile.js/createTapefileFromStateAndUpdates", () => {
     ],
     {
       prop: 12,
-    }
+    },
   );
   it("creates a tapefile", () => {
     expect(tapefile).toBeInstanceOf(SinglePropertyTapefile);
@@ -117,7 +117,7 @@ describe("tapefile.js/createTapefileFromStateAndUpdates", () => {
             prop: [2, 2],
           },
         },
-      ]
+      ],
     );
     expect(filterVersion(tapefile.updates)).toStrictEqual([
       {
@@ -167,7 +167,7 @@ describe("tapefile.js/SinglePropertyTapefile", () => {
       ],
       {
         prop: 12,
-      }
+      },
     );
   });
   it("moves forward to defined time", () => {

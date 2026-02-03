@@ -79,7 +79,7 @@ const props = withDefaults(
   }>(),
   {
     progress: 0,
-  }
+  },
 );
 
 const colorByValue = computed(() => {
@@ -124,7 +124,10 @@ function convertColor(color: RGBAColor) {
   min-width: 10rem;
   background: $white;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-  transition: opacity 0.3s linear, height 0.3s linear, padding 0.3s linear;
+  transition:
+    opacity 0.3s linear,
+    height 0.3s linear,
+    padding 0.3s linear;
   opacity: 0;
   height: 0;
   overflow: hidden;

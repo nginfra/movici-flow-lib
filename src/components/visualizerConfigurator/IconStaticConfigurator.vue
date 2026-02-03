@@ -33,7 +33,7 @@ const props = withDefaults(
   {
     iconOptions: () => ({}),
     label: "",
-  }
+  },
 );
 const emit = defineEmits<{
   (e: "update:modelValue", val: IconClause): void;
@@ -44,7 +44,7 @@ const currentIcon = computed(() => {
 });
 
 function updateIcon(icon: string | null) {
-  icon = icon ?? ''
+  icon = icon ?? "";
   emit("update:modelValue", { static: { icon } });
 }
 </script>

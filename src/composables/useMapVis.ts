@@ -18,7 +18,7 @@ export function useMapVis(visualizers?: Ref<ComposableVisualizerInfo[]>) {
             })
           : null;
         return info;
-      })
+      }),
     );
 
     visualizersWithSummary.value = allVisualizers.map((info) => {

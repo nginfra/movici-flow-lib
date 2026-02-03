@@ -8,7 +8,7 @@ import type { TapefileStoreCollection } from "./TapefileStore";
 import type { BaseVisualizerInfo } from "./VisualizerInfo";
 
 type VMCallback<I extends BaseVisualizerInfo, V extends IVisualizer> = (
-  params: CallbackPayload<I, V>
+  params: CallbackPayload<I, V>,
 ) => void;
 
 interface CallbackPayload<I extends BaseVisualizerInfo, V extends IVisualizer> {
@@ -203,7 +203,7 @@ function compareItems<T, K>(oldItems: T[], newItems: T[], key: (i: T) => K): [T[
 
 function determineChanges<I extends BaseVisualizerInfo>(
   newLayers: I[],
-  oldLayers: I[]
+  oldLayers: I[],
 ): [I[], I[]] {
   const [toCreate, toDiscard, toKeep] = determineChangedIDs(newLayers, oldLayers);
   const [moreToCreate, moreToDiscard] = determineChangedVisualizers(toKeep, oldLayers);
@@ -216,21 +216,21 @@ function determineChanges<I extends BaseVisualizerInfo>(
 
 function determineChangedIDs<I extends { id: string }>(
   newLayers: I[],
-  oldLayers: I[]
+  oldLayers: I[],
 ): [I[], I[], I[]] {
   return compareItems(oldLayers, newLayers, (l) => l.id);
 }
 
 function determineChangedVisualizers<I extends BaseVisualizerInfo>(
   newLayers: I[],
-  oldLayers: I[]
+  oldLayers: I[],
 ): [I[], I[], I[]] {
   const oldLayerVisualizerTypes = oldLayers.reduce(
     (obj: Record<string, VisualizerConstructor | null>, l) => {
       obj[l.id] = getVisualizerType(l);
       return obj;
     },
-    {}
+    {},
   );
   const oldLayersByID = oldLayers.reduce((obj: Record<string, I>, l) => {
     obj[l.id] = l;

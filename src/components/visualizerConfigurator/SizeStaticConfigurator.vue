@@ -89,7 +89,7 @@ const local = reactive(defaults());
 const { errors, validated, destroyValidator } = useValidator(validator);
 validated(
   "size",
-  computed(() => local.size)
+  computed(() => local.size),
 );
 onUnmounted(destroyValidator);
 
@@ -98,7 +98,7 @@ watch(
   (val) => {
     Object.assign(local, val?.static);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const currentClause = computed(() => {
@@ -122,7 +122,7 @@ watch(
   (clause) => {
     emit("update:modelValue", { static: clause });
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 

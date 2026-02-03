@@ -104,7 +104,7 @@ const props = withDefaults(
   }>(),
   {
     timestamp: 0,
-  }
+  },
 );
 const emit = defineEmits<{
   (e: "update:modelValue", val: ExportFormConfig): void;
@@ -122,7 +122,7 @@ watch(
   () => {
     datasetsForSummary.value = props.datasets;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -133,7 +133,7 @@ watch(
       currentEntityName.value = info.entityGroup;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const currentTimestamp = ref(props.timestamp);

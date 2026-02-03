@@ -46,7 +46,7 @@ export function visualizerSettingsValidator(summary: EntityGroupSummary) {
 
 function validateClause<T extends ColorClause | SizeClause>(
   summary: EntityGroupSummary,
-  clause: T
+  clause: T,
 ) {
   if (clause.byValue) {
     clause.byValue.attribute = validateAttribute(summary, clause.byValue.attribute);
@@ -67,7 +67,7 @@ export function chartVisualizerValidator(summary: EntityGroupSummary) {
 
 export function validateAttribute(
   summary: EntityGroupSummary,
-  attribute?: DataAttribute | string | null
+  attribute?: DataAttribute | string | null,
 ) {
   if (!attribute) {
     throw new Error(`No attribute defined`);
@@ -95,7 +95,7 @@ export function simplifiedCamera(camera: ViewState): ViewState {
 
 export function validateForContentErrors(
   info: ComposableVisualizerInfo,
-  summary?: DatasetSummary | null
+  summary?: DatasetSummary | null,
 ) {
   if (!info.datasetUUID) {
     // might add errors here

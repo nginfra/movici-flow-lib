@@ -36,7 +36,6 @@ button {
   }
   &.is-border-transparent {
     border-color: transparent !important;
-
   }
   &.is-transparent {
     background-color: transparent;
@@ -66,7 +65,7 @@ button {
   .label {
     &::after {
       margin-left: 2px;
-      content: '*';
+      content: "*";
       color: $grey;
       font-weight: bold;
     }
@@ -92,7 +91,6 @@ textarea.is-monospace {
     overflow: auto;
   }
 }
-
 
 .has-hover-bg {
   &.has-text-primary {

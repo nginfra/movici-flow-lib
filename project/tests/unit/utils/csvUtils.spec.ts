@@ -7,7 +7,7 @@ describe("convertToCSV", () => {
       entityGroupToCSV({
         id: [1, 2],
         bla: [3, 4],
-      })
+      }),
     ).toEqual('"id","bla"\n1,3\n2,4\n');
   });
   it("converts arrays to json", () => {
@@ -15,7 +15,7 @@ describe("convertToCSV", () => {
       entityGroupToCSV({
         id: [1, 2],
         bla: [[], [4]],
-      })
+      }),
     ).toEqual('"id","bla"\n1,"[]"\n2,"[4]"\n');
   });
   it("converts null", () => {
@@ -23,7 +23,7 @@ describe("convertToCSV", () => {
       entityGroupToCSV({
         id: [1],
         bla: [null],
-      })
+      }),
     ).toEqual('"id","bla"\n1,null\n');
   });
   it("converts booleans", () => {
@@ -31,7 +31,7 @@ describe("convertToCSV", () => {
       entityGroupToCSV({
         id: [1, 2],
         bla: [true, false],
-      })
+      }),
     ).toEqual('"id","bla"\n1,true\n2,false\n');
   });
 });

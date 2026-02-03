@@ -16,7 +16,7 @@ import { VisualizerModule, type VisualizerModuleParams } from "../visualizerModu
 
 export default class PopupModule<
   Coord extends Coordinate,
-  LData extends TopologyLayerData<Coord>
+  LData extends TopologyLayerData<Coord>,
 > extends VisualizerModule<Coord, LData> {
   accessor: PickingHandler<LData> | null;
   currentSettings: PopupClause | null;
@@ -31,7 +31,7 @@ export default class PopupModule<
 
   compose(
     params: LayerParams<LData, Coord>,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): LayerParams<LData, Coord> {
     const changed = this.updateSettings(this.info.settings?.popup || null),
       accessor = this.updateAccessor(changed, visualizer),
@@ -56,7 +56,7 @@ export default class PopupModule<
 
   private updateAccessor(
     changed: boolean,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): PickingHandler<LData> | null {
     if (!changed && this.accessor) {
       return this.accessor;
@@ -67,7 +67,7 @@ export default class PopupModule<
 
   private getAccessor(
     clause: PopupClause | null,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): PickingHandler<LData> | null {
     if (!clause || !(clause.show ?? true)) {
       return null;
@@ -118,7 +118,7 @@ export class PopupContentAccessor {
   getValue<D>(
     index: number,
     pickInfo: PickingInfo<D>,
-    enums: Record<string, string[]>
+    enums: Record<string, string[]>,
   ): PopupContent<D> {
     const { title, dynamicTitle, items } = this.popup;
 

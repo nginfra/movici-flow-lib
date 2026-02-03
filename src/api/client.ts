@@ -6,7 +6,7 @@ import type { IClient } from "../types";
 
 export function hasOwnProperty<O, K extends PropertyKey>(
   obj: O,
-  property: K
+  property: K,
 ): obj is O & Record<K, unknown> {
   return Object.prototype.hasOwnProperty.call(obj, property);
 }
@@ -91,7 +91,7 @@ export default class Client implements IClient {
    */
   asFetchRequest(request: BaseRequest<unknown>): { url: string; options: RequestInit } {
     const axiosConfig: Required<AxiosRequestConfig> = request.generateConfig(
-      this
+      this,
     ) as Required<AxiosRequestConfig>;
     return {
       url: axios.getUri(axiosConfig),

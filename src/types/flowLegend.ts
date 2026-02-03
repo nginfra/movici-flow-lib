@@ -116,7 +116,7 @@ export class ColorByValueLegendItem extends ColorLegendItem {
   constructor(
     clause: ByValueColorClause,
     colorType: "buckets" | "gradient",
-    legend: LegendOptions
+    legend: LegendOptions,
   ) {
     super({
       entries:

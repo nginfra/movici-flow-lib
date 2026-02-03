@@ -19,7 +19,7 @@ type VisibilityAccessor<D> = ((d: D) => number) | number;
 
 export default class VisibilityModule<
   Coord extends Coordinate,
-  LData extends TopologyLayerData<Coord>
+  LData extends TopologyLayerData<Coord>,
 > extends VisualizerModule<Coord, LData> {
   accessor?: null | VisibilityAccessor<LData>;
   currentSettings?: VisibilityClause;
@@ -46,7 +46,7 @@ export default class VisibilityModule<
       params.props.extensions.push(
         new DataFilterExtension({
           filterSize: 1,
-        })
+        }),
       );
       this.setUpdateTriggers(params, "getFilterValue", this.currentSettings);
     }
@@ -67,7 +67,7 @@ export default class VisibilityModule<
 
   private updateAccessor(
     changed: boolean,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): null | VisibilityAccessor<LData> {
     if (!changed && this.accessor) {
       return this.accessor;
@@ -78,7 +78,7 @@ export default class VisibilityModule<
 
   private getAccessor(
     clause: VisibilityClause | undefined,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): VisibilityAccessor<LData> | null {
     if (clause?.byValue.attribute) {
       const visibilityMapper = new NumberMapper<number>({
@@ -87,7 +87,7 @@ export default class VisibilityModule<
         undefinedResult: 0,
       });
       const accessor: TapefileAccessor<number | null, number> = new TapefileAccessor(
-        visibilityMapper
+        visibilityMapper,
       );
 
       visualizer.requestTapefile(clause.byValue.attribute, (t) => {

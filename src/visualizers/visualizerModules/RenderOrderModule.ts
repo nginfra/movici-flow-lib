@@ -19,7 +19,7 @@ type RawValueAccessor<D> = (d: D) => number;
 
 export default class RenderOrderModule<
   Coord extends Coordinate,
-  LData extends TopologyLayerData<Coord>
+  LData extends TopologyLayerData<Coord>,
 > extends VisualizerModule<Coord, LData> {
   accessor?: RawValueAccessor<LData>;
   currentSettings?: ColorClause;
@@ -68,7 +68,7 @@ export default class RenderOrderModule<
 
   private updateAccessor(
     changed: boolean,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): RawValueAccessor<LData> | undefined {
     if (!changed && this.accessor) {
       return this.accessor;
@@ -79,7 +79,7 @@ export default class RenderOrderModule<
 
   private getAccessor(
     clause: ColorClause | undefined,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): RawValueAccessor<LData> | undefined {
     if (clause?.byValue?.attribute && clause?.byValue.type === "buckets") {
       const accessor = new TapefileAccessor({

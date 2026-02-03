@@ -23,7 +23,7 @@ const DEFAULTS = {
 
 export default class SizeModule<
   Coord extends Coordinate,
-  LData extends TopologyLayerData<Coord>
+  LData extends TopologyLayerData<Coord>,
 > extends VisualizerModule<Coord, LData> {
   accessor?: SizeAccessor<LData>;
   currentSettings?: { static?: StaticSizeClause; byValue?: ByValueSizeClause };
@@ -127,7 +127,7 @@ export default class SizeModule<
 
   private getAccessor(
     clause: SizeClause | undefined,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): SizeAccessor<LData> {
     if (clause?.byValue?.attribute) {
       const sizeMap = new NumberSizeMap({
@@ -151,7 +151,7 @@ export default class SizeModule<
   private setDashed(
     params: LayerParams<LData, Coord>,
     dashed: boolean,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ) {
     // If we change from dashed to non-dashed, we need to tell deck.gl to fully
     // re-render the layer.
@@ -165,7 +165,7 @@ export default class SizeModule<
         case "PolygonLayer":
           params.props.extensions ??= [];
           params.props.extensions.push(
-            new PathStyleExtension({ dash: true, highPrecisionDash: true })
+            new PathStyleExtension({ dash: true, highPrecisionDash: true }),
           );
           params.props.getDashArray = [3, 6];
           break;

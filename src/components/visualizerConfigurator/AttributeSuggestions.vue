@@ -34,7 +34,7 @@ const props = withDefaults(
   }>(),
   {
     defaultSuggestionNames: () => ["id", "display_name", "name", "reference"],
-  }
+  },
 );
 
 const attributes = inject(attributesInjection)!;
@@ -43,7 +43,7 @@ const defaultSuggestionNamesSet = computed(() => new Set(props.defaultSuggestion
 const usedAttributes = computed(() => new Set(props.items?.map((i) => i.attribute.name)));
 
 const defaultSuggestions = computed(
-  () => attributes.value?.filter((attr) => defaultSuggestionNamesSet.value.has(attr.name)) ?? []
+  () => attributes.value?.filter((attr) => defaultSuggestionNamesSet.value.has(attr.name)) ?? [],
 );
 
 const unusedSuggestions = computed(() => {

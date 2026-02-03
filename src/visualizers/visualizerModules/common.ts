@@ -13,7 +13,7 @@ export type VisualizerModuleParams = { info: ComposableVisualizerInfo };
 
 export abstract class VisualizerModule<
   Coord extends Coordinate,
-  LData extends TopologyLayerData<Coord>
+  LData extends TopologyLayerData<Coord>,
 > {
   info: ComposableVisualizerInfo;
 
@@ -34,7 +34,7 @@ export abstract class VisualizerModule<
    */
   abstract compose(
     params: LayerParams<LData, Coord>,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): LayerParams<LData, Coord>;
 
   setInfo(info: ComposableVisualizerInfo) {
@@ -43,7 +43,7 @@ export abstract class VisualizerModule<
   setUpdateTriggers(
     params: LayerParams<LData, Coord>,
     triggers: string | string[],
-    value: unknown
+    value: unknown,
   ) {
     if (!Array.isArray(triggers)) {
       triggers = [triggers];

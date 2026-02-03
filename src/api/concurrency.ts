@@ -88,7 +88,7 @@ export const ConcurrencyManager = (axios: AxiosInstance, MAX_CONCURRENT = 10) =>
   instance.interceptors.request = axios.interceptors.request.use(instance.requestHandler);
   instance.interceptors.response = axios.interceptors.response.use(
     instance.responseHandler,
-    instance.responseErrorHandler
+    instance.responseErrorHandler,
   );
   return instance;
 };

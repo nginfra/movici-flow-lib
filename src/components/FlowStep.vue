@@ -74,7 +74,9 @@ const collapsedClass = computed(() => {
     z-index: 2;
     background-color: $white;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-    transition: transform 0.5s, box-shadow 0.5s;
+    transition:
+      transform 0.5s,
+      box-shadow 0.5s;
     .details,
     .count-details {
       label {

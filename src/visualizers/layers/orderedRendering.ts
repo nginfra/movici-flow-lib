@@ -55,7 +55,7 @@ export default function orderedRendering<D extends {}, P extends LayerProps>(
       return filterRanges.map((filterRange, idx) => {
         return new LayerType({
           // ugh, can't figure out how to type this correctly
-           
+
           ...this.getSubLayerProps({
             ...props,
             data,
@@ -114,7 +114,7 @@ export default function orderedRendering<D extends {}, P extends LayerProps>(
       value: () => 1,
     },
   };
-  return OrderedRenderingLayer as unknown as LayerConstructor<P>
+  return OrderedRenderingLayer as unknown as LayerConstructor<P>;
 }
 
 interface OrderedLayerProps<D> {

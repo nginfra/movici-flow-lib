@@ -409,7 +409,7 @@ export class StreamingTapefile<T> extends BaseTapefile<T> {
         iteration: -1,
         data: initialData,
       },
-      -1
+      -1,
     );
   }
   addUpdate(update: EntityUpdate<T>, sequenceNumber: number) {
@@ -443,7 +443,7 @@ export class StreamingTapefile<T> extends BaseTapefile<T> {
     heapPush(
       this.pending,
       [sequenceNumber, update] as [number, EntityUpdate<T>],
-      (a, b) => a[0] - b[0]
+      (a, b) => a[0] - b[0],
     );
   }
   calculateRollbacksOnIdle() {
@@ -469,7 +469,7 @@ export class StreamingTapefile<T> extends BaseTapefile<T> {
 }
 
 function hasFullRollback<T>(
-  upd: TapefileUpdate<T>
+  upd: TapefileUpdate<T>,
 ): upd is TapefileUpdate<T> & { hasFullRollback: true; rollback: T[] } {
   return (upd.rollback && upd.fullRollback) ?? false;
 }
@@ -528,7 +528,7 @@ class PropertyState<T> {
   private setUpdateData(indices: number[], data: T[]) {
     if (indices.length !== data.length) {
       throw new Error(
-        `Mismatch length between indices and data, indices has length ${indices.length} while data has length ${data.length}`
+        `Mismatch length between indices and data, indices has length ${indices.length} while data has length ${data.length}`,
       );
     }
     for (let i = 0; i < indices.length; i++) {
@@ -547,8 +547,8 @@ function getEmptyArray(size: number) {
 function getDataForIndices<T>(data: Array<T>, indices: number[]) {
   const rv: T[] = new Array(indices.length);
   for (let i = 0; i < indices.length; i++) {
-    const maybeData = data[indices[i]!]
-    if (maybeData === undefined) throw new Error(`Requested invalid index ${i}`)
+    const maybeData = data[indices[i]!];
+    if (maybeData === undefined) throw new Error(`Requested invalid index ${i}`);
     rv[i] = maybeData;
   }
   return rv;
@@ -561,7 +561,7 @@ export function createTapefileFromStateAndUpdates<T>(
   componentProperty: DataAttribute,
   initialState: EntityGroupData<T>,
   updates: EntityUpdate<T>[],
-  specialValues?: EntityGroupSpecialValues<T>
+  specialValues?: EntityGroupSpecialValues<T>,
 ) {
   const specialValue = specialValues?.[componentProperty.name],
     index = new Index(initialState.id),

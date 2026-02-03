@@ -12,7 +12,7 @@ export class TimelineDownloader {
     entityGroup: string,
     properties: DataAttribute[],
     store: DatasetDownloader,
-    reportProgress?: (p: number) => void
+    reportProgress?: (p: number) => void,
   ) {
     this.entityGroup = entityGroup;
     this.properties = properties;
@@ -42,7 +42,7 @@ export class TimelineDownloader {
           .then((update) => {
             this.updateProgress();
             return update;
-          })
+          }),
       );
     }
     return Promise.all(promises).then((upd) => {

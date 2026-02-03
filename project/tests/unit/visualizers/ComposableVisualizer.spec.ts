@@ -14,7 +14,7 @@ const ScatterplotLayer = {
 } as LayerConstructor<unknown, unknown>;
 
 function getInfoWithColorClause(
-  clause: { byValue: ByValueColorClause } | { static: StaticColorClause }
+  clause: { byValue: ByValueColorClause } | { static: StaticColorClause },
 ) {
   return new ComposableVisualizerInfo({
     settings: {
@@ -37,7 +37,7 @@ function getTapefile() {
       id: [0, 1],
       some_prop: [0, 1],
     },
-    []
+    [],
   );
 }
 describe("ColorModule", () => {
@@ -49,7 +49,7 @@ describe("ColorModule", () => {
     });
     const visualizer = pointVisualizer();
     expect(
-      new ColorModule({ info }).compose({ type: ScatterplotLayer, props: {} }, visualizer)
+      new ColorModule({ info }).compose({ type: ScatterplotLayer, props: {} }, visualizer),
     ).toStrictEqual({
       type: ScatterplotLayer,
       props: {
@@ -80,7 +80,7 @@ describe("ColorModule", () => {
     const visualizer = pointVisualizer();
     expect(
       new ColorModule({ info }).compose({ type: ScatterplotLayer, props: {} }, visualizer).props
-        .getFillColor
+        .getFillColor,
     ).toBeInstanceOf(Function);
   });
   it("requests tapefile for attribute", () => {
@@ -142,7 +142,7 @@ describe("ColorModule", () => {
     const visualizer = pointVisualizer();
     const params = new ColorModule({ info }).compose(
       { type: ScatterplotLayer, props: {} },
-      visualizer
+      visualizer,
     );
     visualizer.requestTapefile.mock.calls[0][1](getTapefile());
 

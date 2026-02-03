@@ -23,7 +23,7 @@ export class NumberSizeMap implements Mapper<number | null, number> {
   sizes: [number, ...number[]];
 
   constructor(config: SizeMapConfig) {
-    if (!config.sizes.length) throw new Error("size mapping must have at least one entry")
+    if (!config.sizes.length) throw new Error("size mapping must have at least one entry");
     this.values = config.sizes.map((c) => c[0]) as [number, ...number[]];
     this.sizes = config.sizes.map((c) => c[1]) as [number, ...number[]];
     this.cache = new Map();
@@ -56,7 +56,7 @@ export class NumberSizeMap implements Mapper<number | null, number> {
           this.sizes[i]!,
           this.values[i + 1]!,
           this.sizes[i + 1]!,
-          value
+          value,
         );
       }
     }

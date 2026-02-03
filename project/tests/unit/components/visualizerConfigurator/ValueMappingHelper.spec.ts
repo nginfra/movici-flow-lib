@@ -57,7 +57,7 @@ describe("ContinuousValueMappingHelper", () => {
       helper.resetMinMax([
         [1, 3],
         [10, 4],
-      ])
+      ]),
     ).toStrictEqual([
       [0, 3],
       [1, 4],
@@ -70,7 +70,7 @@ describe("ContinuousValueMappingHelper", () => {
         [1, 3],
         [2.5, 4],
         [3, 5],
-      ])
+      ]),
     ).toStrictEqual([
       [1, 3],
       [2, 4],
@@ -85,8 +85,8 @@ describe("ContinuousValueMappingHelper", () => {
           [1, 3],
           [3, 5],
         ],
-        3
-      )
+        3,
+      ),
     ).toStrictEqual([
       [1, 3],
       [2, 4],
@@ -102,8 +102,8 @@ describe("ContinuousValueMappingHelper", () => {
           [2, 4],
           [3, 5],
         ],
-        2
-      )
+        2,
+      ),
     ).toStrictEqual([
       [1, 3],
       [3, 5],
@@ -183,7 +183,7 @@ describe("ContinuousValueMappingHelper", () => {
         summaryMax?: number | null;
         readFromSummary?: boolean;
         expected: number[];
-      }
+      },
     ) => {
       const helper = new ContinuousValueMappingHelper({
         summary: {
@@ -195,9 +195,9 @@ describe("ContinuousValueMappingHelper", () => {
         strategy: new DummyStrategy(),
       });
       expect(
-        helper.getMinMax(params.mapping as ValueMapping<number>, params.readFromSummary)
+        helper.getMinMax(params.mapping as ValueMapping<number>, params.readFromSummary),
       ).toStrictEqual(params.expected);
-    }
+    },
   );
   it.each([
     [
@@ -258,7 +258,7 @@ describe("ContinuousValueMappingHelper", () => {
         mapping: number[][];
         resetMinMax?: boolean;
         expected: number[][];
-      }
+      },
     ) => {
       const helper = new ContinuousValueMappingHelper({
         summary: {
@@ -272,9 +272,9 @@ describe("ContinuousValueMappingHelper", () => {
       expect(
         helper.initializeMapping(params.mapping as ValueMapping<number>, {
           resetMinMax: params.resetMinMax,
-        })
+        }),
       ).toStrictEqual(params.expected);
-    }
+    },
   );
   it("initializes with overridden maxValue", () => {
     const helper = new ContinuousValueMappingHelper({
@@ -294,8 +294,8 @@ describe("ContinuousValueMappingHelper", () => {
         ],
         {
           overrideMax: 10,
-        }
-      )
+        },
+      ),
     ).toStrictEqual([
       [0, 0],
       [10, 0],
@@ -321,7 +321,7 @@ describe("BucketValueMappingHelper", () => {
       helper.resetMinMax([
         [1, 3],
         [10, 4],
-      ])
+      ]),
     ).toStrictEqual([
       [0, 3],
       [0.5, 4],
@@ -337,7 +337,7 @@ describe("BucketValueMappingHelper", () => {
       helper.linearizeValues([
         [0, 3],
         [1, 4],
-      ])
+      ]),
     ).toStrictEqual([
       [0, 3],
       [0.5, 4],
@@ -349,7 +349,7 @@ describe("BucketValueMappingHelper", () => {
       helper.linearizeValues([
         [1, 3],
         [2.5, 4],
-      ])
+      ]),
     ).toStrictEqual([
       [1, 3],
       [2, 4],
@@ -365,8 +365,8 @@ describe("BucketValueMappingHelper", () => {
           [1, 3],
           [3, 5],
         ],
-        3
-      )
+        3,
+      ),
     ).toStrictEqual([
       [1, 3],
       [2, 4],
@@ -384,8 +384,8 @@ describe("BucketValueMappingHelper", () => {
           [2, 4],
           [3, 5],
         ],
-        2
-      )
+        2,
+      ),
     ).toStrictEqual([
       [1, 3],
       [2, 5],
@@ -448,7 +448,7 @@ describe("BucketValueMappingHelper", () => {
         mapping: number[][];
         resetMinMax?: boolean;
         expected: number[][];
-      }
+      },
     ) => {
       const helper = new BucketValueMappingHelper({
         summary: {
@@ -462,9 +462,9 @@ describe("BucketValueMappingHelper", () => {
       expect(
         helper.initializeMapping(params.mapping as ValueMapping<number>, {
           resetMinMax: params.resetMinMax,
-        })
+        }),
       ).toStrictEqual(params.expected);
-    }
+    },
   );
   it("overrides max value", () => {
     const mapping: ValueMapping<number> = [
@@ -496,7 +496,7 @@ describe("BooleanValueMappingHelper", () => {
       helper.resetMinMax([
         [1, 3],
         [10, 4],
-      ])
+      ]),
     ).toStrictEqual([
       [0, 3],
       [1, 4],
@@ -516,7 +516,7 @@ describe("BooleanValueMappingHelper", () => {
       helper.resetMinMax([
         [1, 3],
         [10, 4],
-      ])
+      ]),
     ).toStrictEqual([
       [0, 3],
       [1, 4],
@@ -527,7 +527,7 @@ describe("BooleanValueMappingHelper", () => {
       helper.linearizeValues([
         [1, 3],
         [2.5, 4],
-      ])
+      ]),
     ).toStrictEqual([
       [0, 3],
       [1, 4],
@@ -542,8 +542,8 @@ describe("BooleanValueMappingHelper", () => {
           [0, 3],
           [1, 5],
         ],
-        4
-      )
+        4,
+      ),
     ).toStrictEqual([
       [0, 3],
       [1, 5],
@@ -606,7 +606,7 @@ describe("BooleanValueMappingHelper", () => {
       params: {
         mapping: number[][];
         expected: number[][];
-      }
+      },
     ) => {
       const helper = new BooleanValueMappingHelper({
         summary: {
@@ -618,9 +618,9 @@ describe("BooleanValueMappingHelper", () => {
         strategy: new DummyStrategy({ nSteps: 2 }),
       });
       expect(helper.initializeMapping(params.mapping as ValueMapping<number>)).toStrictEqual(
-        params.expected
+        params.expected,
       );
-    }
+    },
   );
 });
 
@@ -644,7 +644,7 @@ describe("EnumValueMappingHelper", () => {
       helper.resetMinMax([
         [1, 3],
         [10, 4],
-      ])
+      ]),
     ).toStrictEqual([
       [0, 3],
       [1, 3.5],
@@ -657,7 +657,7 @@ describe("EnumValueMappingHelper", () => {
       helper.linearizeValues([
         [1, 3],
         [2.5, 4],
-      ])
+      ]),
     ).toStrictEqual([
       [0, 3],
       [1, 3.5],
@@ -673,8 +673,8 @@ describe("EnumValueMappingHelper", () => {
           [0, 3],
           [1, 5],
         ],
-        4
-      )
+        4,
+      ),
     ).toStrictEqual([
       [0, 3],
       [1, 3],
@@ -744,12 +744,12 @@ describe("EnumValueMappingHelper", () => {
       params: {
         mapping: number[][];
         expected: number[][];
-      }
+      },
     ) => {
       expect(helper.initializeMapping(params.mapping as ValueMapping<number>)).toStrictEqual(
-        params.expected
+        params.expected,
       );
-    }
+    },
   );
 });
 
@@ -812,7 +812,7 @@ describe("createValueMappingHelper", () => {
         enumName?: string;
         enums?: Record<string, string[]>;
         expected: unknown;
-      }
+      },
     ) => {
       const summary = {
         name: "attribute",
@@ -828,9 +828,9 @@ describe("createValueMappingHelper", () => {
           buckets: Boolean(params.buckets),
           strategy: new DummyStrategy(),
           enums: params.enums,
-        })
+        }),
       ).toBeInstanceOf(params.expected);
-    }
+    },
   );
 });
 

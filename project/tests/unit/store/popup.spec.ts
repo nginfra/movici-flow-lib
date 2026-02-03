@@ -36,7 +36,7 @@ describe("usePopupStore", () => {
     store.popups.push(
       makePopup({ kind: "right-side", layerId: "some-layer" }),
       makePopup({ kind: "map-hover", layerId: "some-layer" }),
-      makePopup({ kind: "map-hover", layerId: "some-other-layer" })
+      makePopup({ kind: "map-hover", layerId: "some-other-layer" }),
     );
     expect(store.mapPopups).toHaveLength(2);
     expect(store.rightSidePopups).toHaveLength(1);
@@ -50,7 +50,7 @@ describe("usePopupStore", () => {
     store.popups.push(
       makePopup({ kind: "right-side", layerId: "some-layer" }),
       makePopup({ kind: "map-hover", layerId: "some-layer" }),
-      makePopup({ kind: "map-hover", layerId: "some-other-layer" })
+      makePopup({ kind: "map-hover", layerId: "some-other-layer" }),
     );
     expect(store.mapPopups).toHaveLength(2);
     expect(store.rightSidePopups).toHaveLength(1);
@@ -74,7 +74,7 @@ describe("usePopupStore", () => {
   it("moves popup to bottom", () => {
     store.popups.push(
       makePopup({ kind: "map-hover", layerId: "some-layer" }),
-      makePopup({ kind: "map-hover", layerId: "some-other-layer" })
+      makePopup({ kind: "map-hover", layerId: "some-other-layer" }),
     );
     store.moveToBottom(makePopup({ kind: "map-hover", layerId: "some-layer" }));
     expect(store.popups[1].layerId).toStrictEqual("some-layer");
@@ -175,7 +175,7 @@ describe("usePopupStore", () => {
     it("clears accents when null", () => {
       store.popups.push(
         makePopup({ kind: "right-side", accent: "strong" }),
-        makePopup({ kind: "right-side", accent: "weak" })
+        makePopup({ kind: "right-side", accent: "weak" }),
       );
       store.onHover(null, "");
       expect(store.popups[0].accent).toBeFalsy();
@@ -211,7 +211,7 @@ describe("usePopupStore", () => {
 
     it("removes any lingering hover popups when encountering a persistent popup", () => {
       store.popups.push(
-        makePopup({ kind: "map-hover", content: { entityIndex: 2 } as PopupContent })
+        makePopup({ kind: "map-hover", content: { entityIndex: 2 } as PopupContent }),
       );
       store.popups.push(makePopup({ kind: "map-persistent" }));
       store.onHover({ entityIndex: 1 } as PopupContent, "some-layer");

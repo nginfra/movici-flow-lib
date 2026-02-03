@@ -23,8 +23,10 @@ export interface ResourceMessages<T> {
 }
 
 export type StringOrFunction<T> = string | ((payload: T) => string);
-export interface SingleResourceMessages<T>
-  extends Record<string, StringOrFunction<T[]> | undefined> {
+export interface SingleResourceMessages<T> extends Record<
+  string,
+  StringOrFunction<T[]> | undefined
+> {
   title: StringOrFunction<T[]>;
   succesful: StringOrFunction<T[]>;
   variant?: StringOrFunction<T[]>;
@@ -43,7 +45,7 @@ export interface SimpleCRUDTemplate<ShortResource, Resource extends ShortResourc
 export interface CRUDTemplate<
   ShortResource,
   Resource extends ShortResource = ShortResource,
-  CR extends CrudResponse = CrudResponse
+  CR extends CrudResponse = CrudResponse,
 > extends SimpleCRUDTemplate<ShortResource, Resource> {
   list: () => RequestLike<ShortResource[]>;
   create: (res: Resource) => RequestLike<CR>;
@@ -57,7 +59,7 @@ export type RefLike<T> = Ref<T> | T;
 
 export interface SimpleResourceStore<
   ShortResource,
-  Resource extends ShortResource = ShortResource
+  Resource extends ShortResource = ShortResource,
 > {
   allResources: RefLike<ShortResource[]>;
   listResources(): Promise<void>;
@@ -68,7 +70,7 @@ export interface SimpleResourceStore<
 export interface ResourceStore<
   ShortResource,
   Resource extends ShortResource = ShortResource,
-  CR extends CrudResponse = CrudResponse
+  CR extends CrudResponse = CrudResponse,
 > extends SimpleResourceStore<ShortResource, Resource> {
   activeResource: RefLike<Resource | null>;
   activeResourceUUID: RefLike<UUID | null>;

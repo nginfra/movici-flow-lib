@@ -95,10 +95,13 @@ export function useViews({
     const config = store.view.config;
 
     const datasets =
-      unref(scenario)?.datasets.reduce((obj, d) => {
-        obj[d.name] = d.uuid;
-        return obj;
-      }, {} as Record<string, UUID>) ?? {};
+      unref(scenario)?.datasets.reduce(
+        (obj, d) => {
+          obj[d.name] = d.uuid;
+          return obj;
+        },
+        {} as Record<string, UUID>,
+      ) ?? {};
 
     parsedView.visualizerInfos = config.visualizers.map((config) => {
       return ComposableVisualizerInfo.fromVisualizerConfig({
@@ -166,7 +169,7 @@ export function useViews({
         name: serializedView.value.name,
         visualizers: serializedView.value.config?.visualizers,
         charts: serializedView.value.config?.charts,
-      }
+      },
     );
   });
 

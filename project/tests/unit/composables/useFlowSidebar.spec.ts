@@ -50,7 +50,7 @@ describe("useFlowSidebar", () => {
       });
       findSection(sections, action)?.activate?.();
       expect(ActionHandler[action]).toHaveBeenCalledOnce();
-    }
+    },
   );
 
   it("has project section enabled", () => {
@@ -86,7 +86,7 @@ describe("useFlowSidebar", () => {
       expect(findSection(sections, "dataset")?.enabled).toBe(expected);
       expect(findSection(sections, "scenario")?.enabled).toBe(expected);
       expect(findSection(sections, "export")?.enabled).toBe(expected);
-    }
+    },
   );
   it("enables dataset and scenario section when a project is selected", async () => {
     const location = ref<FlowLocation>({ step: "project" });

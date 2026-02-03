@@ -29,7 +29,7 @@ describe("buildStreamingChartData", () => {
           prop: [1],
         },
       },
-      0
+      0,
     );
     tapefile.addUpdate(
       {
@@ -40,7 +40,7 @@ describe("buildStreamingChartData", () => {
           prop: [2],
         },
       },
-      1
+      1,
     );
     buildStreamingChartData({
       idx: 1,
@@ -69,7 +69,7 @@ describe("buildStreamingChartData", () => {
           prop: [3],
         },
       },
-      2
+      2,
     );
     expect(updateData).toStrictEqual([[2, 3]]);
   });
@@ -83,7 +83,7 @@ describe("buildStreamingChartData", () => {
           prop: [3],
         },
       },
-      2
+      2,
     );
     expect(updateData).toStrictEqual([
       [2, 2],
@@ -100,7 +100,7 @@ describe("buildStreamingChartData", () => {
           prop: [30],
         },
       },
-      3
+      3,
     );
     tapefile.addUpdate(
       {
@@ -111,7 +111,7 @@ describe("buildStreamingChartData", () => {
           prop: [20],
         },
       },
-      2
+      2,
     );
     expect(updateData).toStrictEqual([
       [2, 20],
@@ -146,7 +146,7 @@ describe("buildStreamingChartData", () => {
           id: [1],
         },
       },
-      2
+      2,
     );
   });
 });

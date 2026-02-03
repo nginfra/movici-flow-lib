@@ -64,9 +64,9 @@ export class TaskDispatcher<T extends Task<unknown> = Task<unknown>> implements 
   }
 }
 
-export class BatchedTaskDispatcher<T extends Task<unknown> = Task<unknown>>
-  implements ITaskDispatcher<T>
-{
+export class BatchedTaskDispatcher<
+  T extends Task<unknown> = Task<unknown>,
+> implements ITaskDispatcher<T> {
   private BATCH_SIZE: number;
   private queue: IQueue<T>;
   private running: boolean;
@@ -104,8 +104,8 @@ export class BatchedTaskDispatcher<T extends Task<unknown> = Task<unknown>>
         tasks.map((t) =>
           t.getTask().catch((e) => {
             return { _catchError: e };
-          })
-        )
+          }),
+        ),
       )
         .then((results) => {
           for (let i = 0; i < tasks.length; i++) {

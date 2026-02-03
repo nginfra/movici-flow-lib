@@ -16,7 +16,7 @@ export const DEFAULT_POLYGON_FILL_OPACITY = 33;
 export function interpolateColorMapping(
   a: [number, RGBAColor],
   b: [number, RGBAColor],
-  nSteps: number
+  nSteps: number,
 ): [number, RGBAColor][] {
   if (nSteps <= 0) {
     return [];
@@ -61,7 +61,7 @@ function interpolateColor(a: RGBAColor, b: RGBAColor, step: number, nSteps: numb
 }
 export function ensureRGBAColorMap(
   colormap: [number, RGBAColor][],
-  defaultOpacity = 255
+  defaultOpacity = 255,
 ): [number, RGBAColor][] {
   return colormap.map(([value, color]) => {
     return [value, ensureRGBAColor(color, defaultOpacity)];

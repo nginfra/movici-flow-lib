@@ -134,7 +134,7 @@ watch(
       localClause.dashed = true;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 

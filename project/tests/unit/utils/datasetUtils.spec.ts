@@ -8,7 +8,7 @@ describe("specialValues", () => {
         special: {
           "some_entities.some.attribute": 12,
         },
-      })
+      }),
     ).toEqual({
       some_entities: {
         "some.attribute": 12,
@@ -21,7 +21,7 @@ describe("specialValues", () => {
         no_data: {
           "some_entities.some.attribute": 12,
         },
-      })
+      }),
     ).toEqual({
       some_entities: {
         "some.attribute": 12,

@@ -86,7 +86,7 @@ export interface IMapVisualizer<Coord extends Coordinate> {
   onHover: PopupEventCallback;
   getFetchRequest<T extends keyof FetchRequestOptions>(
     request: T,
-    options: FetchRequestOptions[T]
+    options: FetchRequestOptions[T],
   ): { url: string; options: RequestInit };
 }
 
@@ -94,7 +94,7 @@ export type LayerParams<
   LData extends TopologyLayerData<Coord>, // eslint-disable-line @typescript-eslint/no-unused-vars
   Coord extends Coordinate,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Props extends LayerProps = any
+  Props extends LayerProps = any,
 > = {
   type: LayerConstructor<Props>;
   props: Partial<Props>;

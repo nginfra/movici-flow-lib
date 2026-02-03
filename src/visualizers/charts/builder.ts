@@ -26,7 +26,7 @@ export function buildStreamingChartData({
 function getDataFromUpdates<T>(
   updates: TapefileUpdate<T>[],
   idx: number,
-  pos: number
+  pos: number,
 ): {
   data: [number, T][];
   pos: number;
@@ -60,7 +60,7 @@ export interface ChartDataPoint {
 export function applyChartData(
   currentData: ChartDataPoint[],
   data: [number, number][],
-  timeline?: TimeOrientedSimulationInfo | null
+  timeline?: TimeOrientedSimulationInfo | null,
 ): ChartDataPoint[] {
   if (!data.length) return currentData;
 

@@ -67,7 +67,7 @@ type PlaceholderType = "single" | "range";
 function getLegendPlaceholders(
   items: number[],
   type: PlaceholderType,
-  maxValue?: number | null
+  maxValue?: number | null,
 ): string[] {
   if (!items.length) return [];
   return items.map((_, index) => getSingleLegendPlaceholder(items, type, index, maxValue));
@@ -77,7 +77,7 @@ function getSingleLegendPlaceholder(
   items: number[],
   type: PlaceholderType,
   index: number,
-  maxValue?: number | null
+  maxValue?: number | null,
 ): string {
   if (index > items.length - 1) {
     throw RangeError("index out of bounds");
@@ -118,7 +118,7 @@ const mappingHelper = shallowRef(
     buckets: props.buckets,
     maxValue: props.maxValue,
     enums: enums.value,
-  })
+  }),
 );
 
 const stepArray = [2, 3, 4, 5, 6, 7, 8];
@@ -133,7 +133,7 @@ const legendPlaceHolders = computed(() => {
   return getLegendPlaceholders(
     props.modelValue?.map((v) => v[0]) ?? [],
     isMode("buckets") ? "range" : "single",
-    props.maxValue
+    props.maxValue,
   );
 });
 
@@ -177,14 +177,14 @@ watch(
   (summary: AttributeSummary) => {
     evolveMappingHelper({ summary, buckets: props.buckets }, { resetMinMax: true });
     emitMaxValueFromHelper();
-  }
+  },
 );
 
 watch(
   () => props.strategy,
   (strategy: MappingStrategy<T>) => {
     evolveMappingHelper({ strategy });
-  }
+  },
 );
 
 watch(enums, (enums) => {
@@ -206,7 +206,7 @@ watch(
     });
     emitMaxValueFromHelper();
     emitMapping(newMapping);
-  }
+  },
 );
 
 watch(
@@ -215,7 +215,7 @@ watch(
     if (props.maxValue != null) {
       mappingHelper.value.setMaxValue(props.maxValue);
     }
-  }
+  },
 );
 
 function evolveMappingHelper(
@@ -227,7 +227,7 @@ function evolveMappingHelper(
   },
   initializeFlags?: {
     resetMinMax?: boolean;
-  }
+  },
 ) {
   mappingHelper.value = mappingHelper.value.evolve(evolveArgs);
   emitMapping(mappingHelper.value.initializeMapping(props.modelValue ?? [], initializeFlags));

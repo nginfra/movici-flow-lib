@@ -37,7 +37,7 @@ export default class IdleWorker {
           this.schedule(this.minIdleMiliseconds - this.currentIdleTime);
         }
       },
-      waitFor < 0 ? 0 : waitFor
+      waitFor < 0 ? 0 : waitFor,
     );
   }
 

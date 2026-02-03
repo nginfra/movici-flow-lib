@@ -152,7 +152,7 @@ export const useFlowStore = defineStore("flow", () => {
         {
           step: "project",
         },
-        `No such project: ${location.projectName}`
+        `No such project: ${location.projectName}`,
       );
     }
 

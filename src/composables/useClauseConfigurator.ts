@@ -9,7 +9,7 @@ type ClauseType = "static" | "byValue";
 export function useClauseConfigurator<
   Static,
   ByValue extends ByValueClause,
-  T extends { static?: Static; byValue?: ByValue } = { static?: Static; byValue?: ByValue }
+  T extends { static?: Static; byValue?: ByValue } = { static?: Static; byValue?: ByValue },
 >({
   attributes,
   supportedDataTypes,
@@ -44,7 +44,7 @@ export function useClauseConfigurator<
       Object.assign(localClause, value);
       attributeHelper.selectAttribute(value.byValue?.attribute);
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   function updateClause(clause?: Partial<T>) {

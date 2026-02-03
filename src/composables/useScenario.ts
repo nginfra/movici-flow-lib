@@ -19,12 +19,12 @@ export function useScenario(params?: { datasets?: Ref<(ScenarioDataset | ShortDa
         datasets.value = result?.datasets ?? [];
       }
     },
-    { immediate: true }
+    { immediate: true },
   );
   const timelineInfo = computed(() =>
     scenario.value?.simulation_info.mode === SimulationMode.TIME_ORIENTED
       ? scenario.value.simulation_info
-      : null
+      : null,
   );
   return {
     scenario,

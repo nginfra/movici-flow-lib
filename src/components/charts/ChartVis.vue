@@ -81,7 +81,7 @@ const props = withDefaults(
     expanded: boolean;
     customTimeFormat?: (val: number) => string;
   }>(),
-  { timestamp: 0, activeChartId: "" }
+  { timestamp: 0, activeChartId: "" },
 );
 
 const emit = defineEmits<{
@@ -110,7 +110,7 @@ watch(() => props.timelineInfo, registry.setTimelineInfo.bind(registry), { immed
 watch(
   () => props.activeChartId,
   (val) => activateChart(val),
-  { immediate: true }
+  { immediate: true },
 );
 watch(() => props.modelValue, setChartInfos, { immediate: true });
 
@@ -136,7 +136,7 @@ const currentChartInfo = computed(() => {
 function customFormatter(relativeTime: number) {
   return (
     props.customTimeFormat?.(
-      relativeTime * props.timelineInfo.time_scale + props.timelineInfo.reference_time
+      relativeTime * props.timelineInfo.time_scale + props.timelineInfo.reference_time,
     ) ?? String(relativeTime)
   );
 }
@@ -146,7 +146,7 @@ function removeChart(idx: number) {
   emit("update:activeChartId", newactiveChartId);
   emit(
     "update:modelValue",
-    props.modelValue.filter((_, arrayIdx) => idx !== arrayIdx)
+    props.modelValue.filter((_, arrayIdx) => idx !== arrayIdx),
   );
 }
 

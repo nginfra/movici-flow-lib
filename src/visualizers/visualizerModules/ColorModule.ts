@@ -28,7 +28,7 @@ import isError from "lodash/isError";
 type ColorAccessor<D> = ((d: D) => RGBAColor) | RGBAColor;
 export default class ColorModule<
   Coord extends Coordinate,
-  LData extends TopologyLayerData<Coord>
+  LData extends TopologyLayerData<Coord>,
 > extends VisualizerModule<Coord, LData> {
   accessor?: ColorAccessor<LData>;
   currentSettings?: ColorClause;
@@ -58,7 +58,7 @@ export default class ColorModule<
 
   private updateAccessor(
     changed: boolean,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): ColorAccessor<LData> {
     if (!changed && this.accessor) {
       return this.accessor;
@@ -69,7 +69,7 @@ export default class ColorModule<
 
   private getAccessor(
     clause: ColorClause | undefined,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): ColorAccessor<LData> {
     if (clause?.byValue?.attribute) {
       const colorMap = new NumberMapper<RGBAColor>({
@@ -104,7 +104,7 @@ export default class ColorModule<
 
     const inBetween = Math.max(
       minInBetween,
-      Math.ceil((minColors - colors.length) / (colors.length - 1))
+      Math.ceil((minColors - colors.length) / (colors.length - 1)),
     );
     const rv: [number, RGBAColor][] = [];
     for (let i = 0; i < colors.length - 1; i++) {
@@ -191,6 +191,6 @@ function getFillOpacity(color: RGBAColor, fillOpacity: number): RGBAColor {
 
 function darken(color: RGBAColor, fillOpacity: number): RGBAColor {
   return (color.slice(0, 3) as [number, number, number]).map(
-    (c) => (1 - fillOpacity) * c
+    (c) => (1 - fillOpacity) * c,
   ) as RGBAColor;
 }

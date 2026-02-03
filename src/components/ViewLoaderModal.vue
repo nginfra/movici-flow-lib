@@ -59,7 +59,7 @@ defineProps<{
 const emit = defineEmits<{
   (e: "update:active", val: boolean): void;
   (e: "loadView", val: UUID): void;
-  (e: "close"): void
+  (e: "close"): void;
 }>();
 
 const selectedViewUUID = ref<UUID>();

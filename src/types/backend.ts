@@ -86,7 +86,7 @@ export interface FetchRequestOptions {
 export interface FetchRequestService {
   getRequest<T extends keyof FetchRequestOptions>(
     request: T,
-    options: FetchRequestOptions[T]
+    options: FetchRequestOptions[T],
   ): { url: string; options: RequestInit };
 }
 

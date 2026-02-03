@@ -51,7 +51,7 @@ const colorPalettes = computed(() => {
 
 const currentColorPalette = computed(() => {
   return selectedPaletteIdx.value != null
-    ? colorPalettes.value[selectedPaletteIdx.value] ?? null
+    ? (colorPalettes.value[selectedPaletteIdx.value] ?? null)
     : null;
 });
 const colorPaletteFilter = computed(() => {
@@ -73,7 +73,7 @@ watch(
       return;
     }
     [selectedGroupName.value, selectedPaletteIdx.value] = lookupPalette(palette);
-  }
+  },
 );
 
 function lookupPalette(colorPalette: ColorPalette): [string, number | null] {

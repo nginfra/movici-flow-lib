@@ -91,7 +91,7 @@ const FILTERS: Record<EntityGeometry, (val: EntityGroupSummary) => boolean> = {
   [EntityGeometry.GRID]: (val: EntityGroupSummary) => isGrid(val.properties),
 };
 const requiredAdditionalEntityGroups = computed<Record<string, EntityGeometry>>(
-  () => (geometry.value ? REQUIRED_ADDITIONAL_ENTITY_GROUPS[geometry.value] : null) ?? {}
+  () => (geometry.value ? REQUIRED_ADDITIONAL_ENTITY_GROUPS[geometry.value] : null) ?? {},
 );
 function getEntityGroup(name?: string) {
   if (!name || !summary.value) return;

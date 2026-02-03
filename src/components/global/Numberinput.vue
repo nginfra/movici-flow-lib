@@ -42,12 +42,12 @@ const props = withDefaults(
   }>(),
   {
     variant: "primary",
-  }
+  },
 );
 const emit = defineEmits<{
   (e: "update:modelValue", val: number | null): void;
-  (e: "focus", val: Event): void
-  (e: "blur", val: Event): void
+  (e: "focus", val: Event): void;
+  (e: "blur", val: Event): void;
 }>();
 const input = ref<HTMLElement | null>(null);
 
