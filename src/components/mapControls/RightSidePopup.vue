@@ -24,7 +24,7 @@ const props = defineProps<{
 }>();
 
 const accentClass = computed(() =>
-  props.modelValue?.accent ? "is-" + props.modelValue.accent : undefined
+  props.modelValue?.accent ? "is-" + props.modelValue.accent : undefined,
 );
 </script>
 
@@ -44,7 +44,8 @@ const accentClass = computed(() =>
   }
   &.is-strong {
     border-color: $primary;
-    box-shadow: transparentize($primary, 0.5) 0px 0px 5px 0px,
+    box-shadow:
+      transparentize($primary, 0.5) 0px 0px 5px 0px,
       transparentize($primary, 0.5) 0px 0px 1px 0px;
     .attributes,
     .label {

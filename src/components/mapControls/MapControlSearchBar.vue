@@ -193,7 +193,9 @@ function expandAndFocus() {
     background-color: white;
     padding: 0.875rem 3rem 0.875rem 1rem;
     width: 80%;
-    box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
+    box-shadow:
+      0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1),
+      0 0px 0 1px rgba(10, 10, 10, 0.02);
     font-size: 0.875rem;
   }
   input {

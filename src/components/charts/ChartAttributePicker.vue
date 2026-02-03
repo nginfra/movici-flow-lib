@@ -72,7 +72,7 @@ watch(
     currentEntityName.value = entityGroup;
     currentDatasetUUID.value = datasetUUID;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const emit = defineEmits<{
@@ -99,7 +99,7 @@ const validator = ref(
           return "A chart with this attribute and entity already exists, please select a different attribute.";
       },
     },
-  })
+  }),
 );
 const { validated, errors, hasErrors } = useValidator(validator);
 const selectedAttribute = validated("selectedAttribute", ref<AttributeType>(), { immediate: true });

@@ -147,7 +147,7 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{
   (e: "update:modelValue", val: ChartVisualizerInfo): void;
-  (e: "close"): void
+  (e: "close"): void;
 }>();
 const local = ref<ChartVisualizerInfo>();
 const selectedAttributeName = computed(() => {
@@ -164,7 +164,7 @@ watch(
     local.value = cloneDeep(val);
     hideAllDetails();
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const hasPendingChanges = computed(() => {
@@ -190,7 +190,7 @@ const items = computed({
 
 const { draggableEvents, draggableOptions, dragging, draggableChange } = useDraggable(
   items,
-  "chart-items"
+  "chart-items",
 );
 function onDrag(event: { moved: { oldIndex: number; newIndex: number } }) {
   draggableChange(event);

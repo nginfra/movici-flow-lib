@@ -29,7 +29,7 @@ const props = withDefaults(
   }>(),
   {
     placeholders: () => [],
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -76,7 +76,7 @@ function updateItem(idx: number, val: string) {
   emitLegend(
     labels.value.map((label, arrayIdx) => {
       return arrayIdx === idx ? val : label;
-    })
+    }),
   );
 }
 
@@ -89,10 +89,10 @@ watch(
     emitLegend(
       Array(val)
         .fill("")
-        .map((val, idx) => labels.value?.[idx] ?? val)
+        .map((val, idx) => labels.value?.[idx] ?? val),
     );
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 

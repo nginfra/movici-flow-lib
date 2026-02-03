@@ -31,10 +31,13 @@ export default class StatusTracker {
     this.weights = tasks;
     this.onProgress = onProgress;
     this.onError = onError;
-    this.currentProgress = Object.keys(tasks).reduce((obj, key) => {
-      obj[key] = {} as Record<number, number>;
-      return obj;
-    }, {} as Record<string, Record<number, number>>);
+    this.currentProgress = Object.keys(tasks).reduce(
+      (obj, key) => {
+        obj[key] = {} as Record<number, number>;
+        return obj;
+      },
+      {} as Record<string, Record<number, number>>,
+    );
     this.streams = -1;
   }
 

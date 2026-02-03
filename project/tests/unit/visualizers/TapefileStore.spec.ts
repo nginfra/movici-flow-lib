@@ -28,7 +28,7 @@ describe("StreamingTapefile", () => {
         iteration: 0,
         data: { id: [1, 2], attr: [11, 21] },
       },
-      0
+      0,
     );
     tf.moveTo(0);
     expect(tf.copyState()).toStrictEqual([11, 21]);
@@ -42,7 +42,7 @@ describe("StreamingTapefile", () => {
         iteration: 0,
         data: { id: [1, 2], attr: [11, 21] },
       },
-      0
+      0,
     );
     tf.moveTo(0);
     expect(tf.copyState()).toStrictEqual([null, null]);
@@ -59,7 +59,7 @@ describe("StreamingTapefile", () => {
         iteration: 0,
         data: { id: [1], attr: [11] },
       },
-      0
+      0,
     );
     expect(tf.inner?.updates[0].version).toStrictEqual(2);
   });

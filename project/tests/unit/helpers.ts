@@ -16,7 +16,7 @@ type wrapperOpts = {
 
 export function createComponentWrapper(
   component_: VueClass<unknown>,
-  { mountOptions, mergeWithDefaults, doShallowMount, storeOpts }: wrapperOpts = {}
+  { mountOptions, mergeWithDefaults, doShallowMount, storeOpts }: wrapperOpts = {},
 ) {
   const localVue = getLocalVue({ mountOptions }),
     defaultMountingOptions = {
@@ -48,7 +48,7 @@ export function createComponentWrapper(
   const doMount = (
     m: typeof mount | typeof shallowMount,
     component: VueClass<unknown>,
-    opts: Record<string, unknown>
+    opts: Record<string, unknown>,
   ) => {
     return m(component, opts);
   };

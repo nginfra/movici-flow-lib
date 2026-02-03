@@ -149,7 +149,7 @@ watch(
   (val) => {
     Object.assign(local, val);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const attributes = inject(attributesInjection)!;
@@ -171,7 +171,7 @@ onUnmounted(destroyValidator);
 
 const usedAttributes = computed(() => new Set(local.items.map((i) => i.attribute.name)));
 const unusedAttributes = computed(
-  () => attributes.value?.filter((a) => !usedAttributes.value.has(a.name)) ?? []
+  () => attributes.value?.filter((a) => !usedAttributes.value.has(a.name)) ?? [],
 );
 const suggestions = computed(() => {
   return Array.from(
@@ -183,14 +183,14 @@ const suggestions = computed(() => {
         settings.value?.icon?.byValue?.attribute,
         settings.value?.shape?.byValue?.attribute,
         settings.value?.visibility?.byValue.attribute,
-      ].filter((attr) => attr) as AttributeSummary[]
-    )
+      ].filter((attr) => attr) as AttributeSummary[],
+    ),
   );
 });
 
 const { draggableEvents, draggableOptions, dragging, draggableChange } = useDraggable(
   toRef(local, "items"),
-  "popup"
+  "popup",
 );
 
 function draggableItemKey(item: PopupItem) {

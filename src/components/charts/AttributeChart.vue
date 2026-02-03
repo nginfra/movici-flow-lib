@@ -40,7 +40,7 @@ ChartJS.register(
   LinearScale,
   CategoryScale,
   PointElement,
-  annotationPlugin
+  annotationPlugin,
 );
 const { t } = useI18n();
 
@@ -58,7 +58,7 @@ const props = withDefaults(
   {
     cssClasses: "",
     customTimeFormat: (val: number) => new Date(val * 1000).toLocaleString("NL-nl"),
-  }
+  },
 );
 const id = computed(() => props.chartInfo.id);
 

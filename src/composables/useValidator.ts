@@ -10,7 +10,7 @@ export function useValidator(validator: RefLike<IFormValidator>) {
   function validated<T extends Parameters<typeof watch>[0]>(
     name: string,
     ref: T,
-    opts?: { immediate?: boolean }
+    opts?: { immediate?: boolean },
   ) {
     watch(
       ref,
@@ -21,7 +21,7 @@ export function useValidator(validator: RefLike<IFormValidator>) {
           theValidator.validate();
         }
       },
-      { deep: true }
+      { deep: true },
     );
     return ref;
   }

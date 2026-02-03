@@ -48,7 +48,7 @@ export function useReactiveSummary(options?: { datasetOnly?: boolean }) {
   async function getSummaryByUUID(uuid?: UUID) {
     if (uuid) {
       try {
-        summaryPending.value = true
+        summaryPending.value = true;
         summary.value = await store.getSummary({
           datasetUUID: uuid,
           scenarioUUID: datasetOnly ? null : undefined,
@@ -56,7 +56,7 @@ export function useReactiveSummary(options?: { datasetOnly?: boolean }) {
       } catch {
         summary.value = undefined;
       } finally {
-        summaryPending.value = false
+        summaryPending.value = false;
       }
     } else {
       summary.value = undefined;

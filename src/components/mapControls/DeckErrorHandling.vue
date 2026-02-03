@@ -11,7 +11,7 @@ const props = withDefaults(
   }>(),
   {
     layerInfos: () => [],
-  }
+  },
 );
 
 function setError({ error, layer }: { error: Error; layer: Layer }) {
@@ -33,8 +33,9 @@ watch(
         }
       },
     });
-  }, {
-    immediate: true
-  }
+  },
+  {
+    immediate: true,
+  },
 );
 </script>

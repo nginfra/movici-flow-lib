@@ -9,9 +9,7 @@
     "tests/**/*.ts",
     "tests/**/*.js"
   ],
-  "exclude": [
-    "node_modules"
-  ],
+  "exclude": ["node_modules"],
   "compilerOptions": {
     "allowJs": true,
     "composite": true,

@@ -21,7 +21,7 @@ const props = withDefaults(
   {
     color: () => hexToColorTriple(MoviciColors.LIGHT_GREY),
     icon: "",
-  }
+  },
 );
 
 const geometryClass = computed(() => {
@@ -51,7 +51,7 @@ const computedStyle = computed(() => {
   return {
     background: geometryClass.value === "polygon" ? hexAlpha : hex,
     "border-color": hex,
-    "margin-right": "2px"
+    "margin-right": "2px",
   };
 });
 const iconStyle = computed(() => {

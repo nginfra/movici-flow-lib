@@ -118,7 +118,7 @@ const choices = computed(() => {
       choices.push({ geometry, ...geometries[geometry] });
       return choices;
     },
-    [] as GeometryChoicesProps[]
+    [] as GeometryChoicesProps[],
   );
 });
 const choice = computed({
@@ -136,11 +136,11 @@ watch(
       choice.value = validChoices.value?.[0];
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const errorMessage = computed(() =>
-  props.attributes && noChoice.value ? t("flow.visualization.noGeometry") : ""
+  props.attributes && noChoice.value ? t("flow.visualization.noGeometry") : "",
 );
 </script>
 <style scoped lang="scss">

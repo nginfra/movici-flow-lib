@@ -20,7 +20,7 @@ const DEFAULT_SPECIAL_UNDEFINED_SHAPE = "map-marker";
 
 abstract class ShapeIconModule<
   Coord extends Coordinate,
-  LData extends TopologyLayerData<Coord>
+  LData extends TopologyLayerData<Coord>,
 > extends VisualizerModule<Coord, LData> {
   accessor?: IconAccessor<LData> | null;
   currentSettings?: { static?: StaticIconClause; byValue?: ByValueIconClause };
@@ -55,7 +55,7 @@ abstract class ShapeIconModule<
 
   private updateAccessor(
     changed: boolean,
-    visualizer: IMapVisualizer<Coord>
+    visualizer: IMapVisualizer<Coord>,
   ): IconAccessor<LData> | null {
     if (!changed && this.accessor) {
       return this.accessor;
@@ -91,13 +91,13 @@ abstract class ShapeIconModule<
 
   abstract updateParams(
     params: LayerParams<LData, Coord>,
-    accessor: IconAccessor<LData> | null
+    accessor: IconAccessor<LData> | null,
   ): void;
 }
 
 export class IconModule<
   Coord extends Coordinate,
-  LData extends TopologyLayerData<Coord>
+  LData extends TopologyLayerData<Coord>,
 > extends ShapeIconModule<Coord, LData> {
   fallbackIcon = DEFAULT_SPECIAL_UNDEFINED_ICON;
   getSettings() {
@@ -114,7 +114,7 @@ export class IconModule<
 
 export class ShapeModule<
   Coord extends Coordinate,
-  LData extends TopologyLayerData<Coord>
+  LData extends TopologyLayerData<Coord>,
 > extends ShapeIconModule<Coord, LData> {
   fallbackIcon = DEFAULT_SPECIAL_UNDEFINED_SHAPE;
   getSettings() {

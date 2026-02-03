@@ -75,7 +75,7 @@ const props = withDefaults(
   }>(),
   {
     strategy: () => new ColorMappingStrategy(DEFAULT_COLOR_PALETTES["Sequential"]![0]),
-  }
+  },
 );
 
 const emit = defineEmits<{

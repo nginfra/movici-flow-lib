@@ -33,9 +33,8 @@ export interface ITopologyGetter<Coord extends Coordinate> {
 export abstract class SimpleTopologyGetter<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Data extends EntityGroupData<any>,
-  Coord extends Coordinate
-> implements ITopologyGetter<Coord>
-{
+  Coord extends Coordinate,
+> implements ITopologyGetter<Coord> {
   protected store: DatasetDownloader;
   protected entity: string;
   constructor(store: DatasetDownloader, entity: string) {
@@ -56,12 +55,12 @@ export abstract class SimpleTopologyGetter<
   protected abstract getCoordinate(
     data: Data,
     i: number,
-    crs?: string | number | null
+    crs?: string | number | null,
   ): Coord | null;
 
   protected getTopologyFromEntityData(
     data: Data,
-    crs?: string | number | null
+    crs?: string | number | null,
   ): TopologyLayerData<Coord>[] {
     const length = data.id.length;
     const rv: TopologyLayerData<Coord>[] = [];
@@ -185,7 +184,7 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
 
   private getTopologyFromEntityData(
     data: GridCellGeometryData & EntityGroupImportantAttributesData,
-    points: PointsByIdT
+    points: PointsByIdT,
   ): TopologyLayerData<PolygonCoordinate & EntityGroupImportantAttributesData>[] {
     const length = data.id.length;
     const rv: (TopologyLayerData<PolygonCoordinate> & Partial<ImportantAttributeData>)[] = [];
@@ -201,7 +200,7 @@ export class GridTopologyGetter implements ITopologyGetter<PolygonCoordinate> {
   private getCellCoordinates(
     data: GridCellGeometryData,
     i: number,
-    points: PointsByIdT
+    points: PointsByIdT,
   ): PolygonCoordinate | null {
     const gridPoints = data["grid.grid_points"][i];
     if (gridPoints == null) return null;
@@ -254,7 +253,7 @@ function withImportantAttributes(attrs: DataAttribute[]): DataAttribute[] {
 
 function containsAttributes(
   attributeNames: string[],
-  minFound: number
+  minFound: number,
 ): (attributes: DataAttribute[]) => boolean {
   return (attributes: DataAttribute[]): boolean => {
     return (
@@ -267,11 +266,11 @@ function containsAttributes(
 
 function createDataObject<
   Data extends BaseEntityGroup & EntityGroupImportantAttributesData,
-  Coord extends Coordinate
+  Coord extends Coordinate,
 >(
   data: Data,
   coord: Coord,
-  idx: number
+  idx: number,
 ): TopologyLayerData<Coord> & Partial<ImportantAttributeData> {
   // Typing this correctly using ImportantAttribute is a bitch so fallback to any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -293,6 +292,6 @@ export const isPoints = containsAttributes(["geometry.x", "geometry.y"], 2);
 export const isLines = containsAttributes(["geometry.linestring_2d", "geometry.linestring_3d"], 1);
 export const isPolygons = containsAttributes(
   ["geometry.polygon", "geometry.polygon_2d", "geometry.polygon_3d"],
-  1
+  1,
 );
 export const isGrid = containsAttributes(["grid.grid_points"], 1);

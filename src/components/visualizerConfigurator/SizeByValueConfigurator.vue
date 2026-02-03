@@ -134,7 +134,7 @@ watch(
   (val) => {
     Object.assign(local, val?.byValue);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const currentClause = computed<ByValueSizeClause | null>(() => {

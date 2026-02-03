@@ -125,7 +125,7 @@ describe("useFlowStore.setLocation", () => {
         projectName: "some_project",
       });
       expect(store.project?.name).toStrictEqual("some_project");
-    }
+    },
   );
 
   it.each<FlowStep>(["scenario", "visualization"])(
@@ -140,7 +140,7 @@ describe("useFlowStore.setLocation", () => {
         scenarioName: "some_scenario",
       });
       expect(store.scenario).toStrictEqual(scenario);
-    }
+    },
   );
   it("activates view when entering visualization step", async () => {
     const scenario = { name: "some_scenario", uuid: "scenario_uuid" };
@@ -195,7 +195,7 @@ describe("useFlowStore.setLocation", () => {
   async function assertLocationRedirect(
     location: FlowLocation,
     redirect: FlowLocation,
-    store: ReturnType<typeof useFlowStore>
+    store: ReturnType<typeof useFlowStore>,
   ) {
     let throws = false;
     try {
@@ -212,7 +212,7 @@ describe("useFlowStore.setLocation", () => {
     "redirects on invalid project name in %s step",
     async (step) => {
       await assertLocationRedirect({ step, projectName: "invalid" }, { step: "project" }, store);
-    }
+    },
   );
   it.each<FlowStep>(["scenario", "visualization"])(
     "redirects on invalid scenario name in %s step",
@@ -225,9 +225,9 @@ describe("useFlowStore.setLocation", () => {
           scenarioName: "invalid",
         },
         { step: "scenario", projectName: "some_project" },
-        store
+        store,
       );
-    }
+    },
   );
   it("redirects on invalid view uuid", async () => {
     (store.backend?.scenario.list as Mock).mockResolvedValue([
@@ -245,7 +245,7 @@ describe("useFlowStore.setLocation", () => {
         viewUUID: "invalid",
       },
       { step: "visualization", projectName: "some_project", scenarioName: "some_scenario" },
-      store
+      store,
     );
   });
   it("redirects when view is only given as uuid", async () => {
@@ -265,7 +265,7 @@ describe("useFlowStore.setLocation", () => {
         scenarioName: "some_scenario",
         viewUUID: "view_uuid",
       },
-      store
+      store,
     );
   });
 });

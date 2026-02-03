@@ -43,7 +43,7 @@ const props = withDefaults(
     isPulledRight: false,
     isSticky: false,
     size: "",
-  }
+  },
 );
 
 function doEmit(event: string) {

@@ -12,7 +12,7 @@ export function useFlowSidebar({
 }) {
   function updateSections(
     location: FlowLocation | undefined,
-    hasProjectCapability: boolean
+    hasProjectCapability: boolean,
   ): FlowSection[] {
     const sections: FlowSection[] = [];
     const datasetEnabled = !hasProjectCapability || !!location?.projectName;
@@ -62,7 +62,7 @@ export function useFlowSidebar({
         icon: "file-download",
         enabled: exportEnabled,
         activate: actions?.["export"],
-      }
+      },
     );
     return sections;
   }

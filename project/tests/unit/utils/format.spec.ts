@@ -28,7 +28,7 @@ describe("formatValueByDataType", () => {
         ENUM: (val: unknown) => {
           return ["a", "b"][Number(val)];
         },
-      })
+      }),
     ).toEqual("b");
   });
 
@@ -45,7 +45,7 @@ describe("formatValueByDataType", () => {
         ENUM: (val: unknown) => {
           return ["c", "b", "a"][Number(val)];
         },
-      })
+      }),
     ).toEqual("[ a, b, c ]");
   });
 
@@ -59,8 +59,8 @@ describe("formatValueByDataType", () => {
           [4, 4],
           [5, 5],
         ],
-        "LIST<TUPLE<INT,INT>>"
-      )
+        "LIST<TUPLE<INT,INT>>",
+      ),
     ).toEqual(
       [
         rightIndented("[", 20),
@@ -70,7 +70,7 @@ describe("formatValueByDataType", () => {
         "[ 4, 4 ],",
         "[ 5, 5 ],",
         rightIndented("]", 20),
-      ].join("\n")
+      ].join("\n"),
     );
   });
 
@@ -85,8 +85,8 @@ describe("formatValueByDataType", () => {
           [5, 5],
           [6, 6],
         ],
-        "LIST<TUPLE<INT,INT>>"
-      )
+        "LIST<TUPLE<INT,INT>>",
+      ),
     ).toEqual(
       [
         rightIndented("[", 20),
@@ -96,12 +96,12 @@ describe("formatValueByDataType", () => {
         "[ 4, 4 ],",
         rightIndented("...", 13),
         rightIndented("]", 20),
-      ].join("\n")
+      ].join("\n"),
     );
   });
   it("raises on unsupported data type", () => {
     expect(() =>
-      formatValueByDataType([[[]]], "LIST<TUPLE<TUPLE<INT,INT>,TUPLE<INT,INT>>>")
+      formatValueByDataType([[[]]], "LIST<TUPLE<TUPLE<INT,INT>,TUPLE<INT,INT>>>"),
     ).toThrow("Unsupported data type, too many dimensions");
   });
 
@@ -113,7 +113,7 @@ describe("formatValueByDataType", () => {
     expect(
       formatValueByDataType(null, "INT", {
         NULL: () => "N/A",
-      })
+      }),
     ).toEqual("N/A");
   });
 });

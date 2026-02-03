@@ -23,7 +23,7 @@ export function setProjections(projections: Record<string, string>) {
 
 export function transform(
   coord: PointCoordinate | Point3DCoordinate,
-  crs?: string | number | null
+  crs?: string | number | null,
 ): PointCoordinate {
   crs = determineCRS(crs);
   return proj4(crs, "WGS84", [coord[0], coord[1]]);
@@ -31,7 +31,7 @@ export function transform(
 
 export function reverseTransform(
   coord: PointCoordinate | Point3DCoordinate,
-  crs?: string | number | null
+  crs?: string | number | null,
 ): PointCoordinate {
   crs = determineCRS(crs);
   return proj4("WGS84", crs, [coord[0], coord[1]]);
@@ -39,7 +39,7 @@ export function reverseTransform(
 
 export function transformArray(
   arr: CoordinateArray | Coordinate3DArray,
-  crs?: string | number | null
+  crs?: string | number | null,
 ): CoordinateArray {
   crs = determineCRS(crs);
 
@@ -53,7 +53,7 @@ export function transformArray(
 
 export function reverseTransformArray(
   arr: CoordinateArray | Coordinate3DArray,
-  crs?: string | number | null
+  crs?: string | number | null,
 ): CoordinateArray {
   crs = determineCRS(crs);
 

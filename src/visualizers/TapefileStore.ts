@@ -48,7 +48,7 @@ export class TapefileStore {
   private ensureTapefile<T>(
     datasetUUID: UUID,
     entityGroup: string,
-    attribute: string
+    attribute: string,
   ): [StreamingTapefile<T>, boolean] {
     const key = `${datasetUUID}:${entityGroup}:${attribute}`,
       mustCreate = this.tapefiles[key] === undefined;
@@ -184,7 +184,7 @@ async function getMultipleTapefilesTasks({
       tapefiles,
       onError: (err: unknown) => onError?.(err, "initData"),
       onDone: () => onProgress?.(100, "initData"),
-    })
+    }),
   );
   const updates = await store.getUpdateList(),
     total = updates.length;
@@ -206,7 +206,7 @@ async function getMultipleTapefilesTasks({
         onDone: () => {
           onProgress?.((++tasksDone / total) * 100, "updates");
         },
-      })
+      }),
     );
   }
   return tasks;
@@ -288,7 +288,7 @@ function getUpdateDataTask({
             iteration: upd.iteration,
             data,
           },
-          sequenceNumber
+          sequenceNumber,
         );
       }
       onDone?.();

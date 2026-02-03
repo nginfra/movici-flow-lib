@@ -38,7 +38,7 @@ describe("useGeocoding", () => {
 
     await getFirstResult({ query: "some-text" });
     expect(backend.geocode.getResults).toHaveBeenCalledWith(
-      expect.objectContaining({ language: "ja" })
+      expect.objectContaining({ language: "ja" }),
     );
   });
 

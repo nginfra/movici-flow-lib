@@ -57,7 +57,7 @@ const props = withDefaults(
     pack: "fas",
     iconOptions: () => ({}),
     label: "",
-  }
+  },
 );
 
 const icons = computed(() => Object.keys(props.iconOptions));

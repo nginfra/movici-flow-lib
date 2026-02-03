@@ -130,7 +130,7 @@ const { sections } = useFlowSidebar({
 const userInitials = computed(() =>
   store.currentUser
     ? store.currentUser.firstname.slice(0, 1) + store.currentUser.lastname.slice(0, 1)
-    : null
+    : null,
 );
 
 function isActive(step: FlowStep) {
@@ -168,7 +168,7 @@ watch(
       }
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
@@ -178,7 +178,7 @@ watch(
       emit("update:location", location);
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
 

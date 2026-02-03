@@ -26,19 +26,25 @@ function overridingIconMapping(icons: IconMapping, overrides: IconMappingOverrid
         },
       };
     },
-    {} as IconMapping
+    {} as IconMapping,
   );
 }
 
 function getIconMapping(pack: IconPackName) {
-  return ICON_PACKS.reduce((prev, curr) => {
-    prev[curr] = overridingIconMapping(ICONS[curr], ICON_OVERRIDES[curr]!);
-    return prev;
-  }, {} as Record<string, IconMapping>)[pack];
+  return ICON_PACKS.reduce(
+    (prev, curr) => {
+      prev[curr] = overridingIconMapping(ICONS[curr], ICON_OVERRIDES[curr]!);
+      return prev;
+    },
+    {} as Record<string, IconMapping>,
+  )[pack];
 }
 
 export type IconPackName = "icons" | "shapes";
 
-export const MAPPED_ICONS = ICON_PACKS.reduce((acc, pack) => {
-  return { ...acc, [pack]: getIconMapping(pack) };
-}, {} as Record<IconPackName, IconMapping>);
+export const MAPPED_ICONS = ICON_PACKS.reduce(
+  (acc, pack) => {
+    return { ...acc, [pack]: getIconMapping(pack) };
+  },
+  {} as Record<IconPackName, IconMapping>,
+);

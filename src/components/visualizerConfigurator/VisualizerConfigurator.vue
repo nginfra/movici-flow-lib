@@ -243,7 +243,7 @@ const props = withDefaults(
     modelValue?: ComposableVisualizerInfo;
     scenario?: Scenario | null;
   }>(),
-  { modelValue: () => new ComposableVisualizerInfo() }
+  { modelValue: () => new ComposableVisualizerInfo() },
 );
 
 const emit = defineEmits<{
@@ -296,7 +296,7 @@ watch(
       datasets.value = scenario.datasets;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const composedVisualizer = computed<Partial<ComposableVisualizerInfo>>(() => {
@@ -360,7 +360,7 @@ const configurators = computed<Partial<Record<FlowConfigurator, ConfiguratorSett
           clauseType.reduce((agg, key) => {
             agg[key] = clause[key];
             return agg;
-          }, {} as Partial<FlowVisualizerOptions>)
+          }, {} as Partial<FlowVisualizerOptions>),
         );
       },
     };
@@ -375,7 +375,7 @@ const configurators = computed<Partial<Record<FlowConfigurator, ConfiguratorSett
     [FlowConfigurator.ICON_SHAPE]: {
       id: "icon-shape",
       name: `${t("flow.visualization.iconConfig.shape")} / ${t(
-        "flow.visualization.iconConfig.icon"
+        "flow.visualization.iconConfig.icon",
       )}`,
       component: ShapeIconConfigurator,
       vBind: bindClauses(CLAUSES_BY_CONFIGURATOR[FlowConfigurator.ICON_SHAPE]),
@@ -498,7 +498,7 @@ watch(
     geometry.value = val.settings.type;
     settings.value = cloneDeep(val.settings);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 function updateSettings(updatedClause: Partial<FlowVisualizerOptions>) {
@@ -532,8 +532,8 @@ function submit(close?: boolean) {
         Object.assign({}, composedVisualizer.value, {
           id: newIDRequired.value ? undefined : composedVisualizer.value.id,
           settings: finalizeSettings(),
-        })
-      )
+        }),
+      ),
     );
     if (close) emit("close");
   }
@@ -545,11 +545,11 @@ interface FinalizerContext {
 type Finalizers = {
   popup: (
     val: FlowVisualizerOptions["popup"],
-    context: FinalizerContext
+    context: FinalizerContext,
   ) => FlowVisualizerOptions["popup"] | undefined;
   size: (
     val: FlowVisualizerOptions["size"],
-    context: FinalizerContext
+    context: FinalizerContext,
   ) => FlowVisualizerOptions["size"];
 };
 
@@ -598,7 +598,7 @@ function finalizeSettings(): FlowVisualizerOptions | null {
       agg.push(...(Array.isArray(clauses) ? clauses : [clauses]));
       return agg;
     },
-    ["type"] as (keyof FlowVisualizerOptions)[]
+    ["type"] as (keyof FlowVisualizerOptions)[],
   );
   const rv: FlowVisualizerOptions = pick(settings, validKeys);
   const context: FinalizerContext = {

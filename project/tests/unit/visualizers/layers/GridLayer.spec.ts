@@ -46,7 +46,7 @@ describe("expandColorMap", () => {
     expect(
       expandColorMap(cm, 6).map((r) => {
         return [Math.round(r[0] * 10) / 10, r[1]];
-      })
+      }),
     ).toStrictEqual([
       [0.0, [1, 0, 0]],
       [0.1, [1, 0, 0]],

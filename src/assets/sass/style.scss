@@ -22,7 +22,9 @@
       overflow: hidden;
       padding: 0.25rem 0.625rem;
       cursor: pointer;
-      transition: background-color 0.2s, color 0.2s;
+      transition:
+        background-color 0.2s,
+        color 0.2s;
       &:hover {
         background-color: $white-ter;
       }
@@ -96,7 +98,7 @@
         font-weight: 300;
         &:hover {
           color: var(--dropdown-selected);
-          background-color: var(--dropdown-selected-bg)
+          background-color: var(--dropdown-selected-bg);
         }
       }
     }

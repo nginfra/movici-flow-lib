@@ -126,7 +126,7 @@ const props = withDefaults(
   {
     maxValue: 1,
     label: "",
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -143,7 +143,7 @@ const orderedValue = computed(() => {
 
 const { draggableEvents, draggableOptions, dragging, move } = useDraggable(
   orderedValue,
-  "by-value-list"
+  "by-value-list",
 );
 
 const output = computed(() => {
@@ -209,7 +209,7 @@ function invertOutput() {
   emitOriginalOrder(
     orderedValue.value.map((val, i) => {
       return [val[0], props.modelValue[i]![1]];
-    })
+    }),
   );
 }
 
@@ -221,7 +221,7 @@ function draggableChange(event: { moved: { oldIndex: number; newIndex: number } 
   emitOriginalOrder(
     move(event.moved.oldIndex, event.moved.newIndex, output.value).map((d, idx) => {
       return [mappingValues.value[idx]!, d];
-    })
+    }),
   );
 }
 
@@ -241,7 +241,7 @@ function updateOutput(idx: number, newValue: T) {
   emitOriginalOrder(
     orderedValue.value.map((item, arrayIdx) => {
       return arrayIdx === idx ? [item[0], newValue] : item;
-    })
+    }),
   );
 }
 
@@ -249,7 +249,7 @@ function updateMappingValue(idx: number, newValue: number) {
   emitOriginalOrder(
     orderedValue.value.map((item, arrayIdx) => {
       return arrayIdx === idx ? [newValue, item[1]] : item;
-    })
+    }),
   );
 }
 </script>
