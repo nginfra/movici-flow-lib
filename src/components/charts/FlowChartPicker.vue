@@ -104,8 +104,8 @@ const {
   strategy: {
     createNewMessage: () => t("flow.visualization.newVisualizer"),
     closeConfiguratorMessage: () => t("flow.visualization.dialogs.closeConfigurator"),
-    duplicateItem: (item: ChartVisualizerInfo) => cloneDeep(item),
-    deleteMessage: (item?: ChartVisualizerInfo) => {
+    duplicateItem: (item: ChartVisualizerInfo) => item.clone(),
+    deleteMessage(item?: ChartVisualizerInfo) {
       return t("flow.visualization.dialogs.deleteChart", { name: item?.title ?? "this" })
     },
     onUpdate(val: ChartVisualizerInfo[]) {

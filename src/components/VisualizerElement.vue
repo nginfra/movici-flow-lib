@@ -15,7 +15,7 @@
           @click="toggleSummary"
           :class="{ 'not-ready': (progress ?? 0) < 100 }"
         >
-          <span class="is-block is-size-6-half text-ellipsis" :title="modelValue.name">{{ modelValue.name }}</span>
+          <span class="is-block is-size-6-half text-ellipsis"</span>
         </label>
         <span v-if="showOnHeader('errors') && errors.length" class="errors mr-2">
           <o-icon
@@ -107,13 +107,10 @@ const props = withDefaults(
     modelValue?: ComposableVisualizerInfo;
     headerItems?: HeaderItem[];
     actionButtons?: null | VisualizerAction[];
-    tooltipPosition?: string;
-    tooltipActive?: boolean;
   }>(),
   {
     headerItems: () => ["grip", "label", "visibility", "more", "errors"],
     actionButtons: null,
-    tooltipPosition: "is-bottom",
   },
 );
 

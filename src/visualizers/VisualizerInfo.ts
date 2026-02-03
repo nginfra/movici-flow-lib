@@ -11,6 +11,7 @@ import type {
   ShortScenario,
   UUID,
 } from "../types";
+import { cloneDeep } from "lodash";
 
 export abstract class BaseVisualizerInfo {
   id: string;
@@ -131,15 +132,18 @@ export class ComposableVisualizerInfo extends BaseVisualizerInfo {
     return rv;
   }
   clone(): ComposableVisualizerInfo {
+    // Copy over most attributes except:
+    // * id: a new id must be generated
+    // * errors & status: must be tracked separately
     return new ComposableVisualizerInfo({
       name: this.name,
       datasetName: this.datasetName,
       datasetUUID: this.datasetUUID,
       scenarioUUID: this.scenarioUUID,
       entityGroup: this.entityGroup,
-      additionalEntityGroups: this.additionalEntityGroups,
+      additionalEntityGroups: cloneDeep(this.additionalEntityGroups),
       visible: this.visible,
-      settings: this.settings,
+      settings: cloneDeep(this.settings),
       summary: this.summary,
     });
   }
@@ -196,6 +200,14 @@ export class ChartVisualizerInfo extends BaseVisualizerInfo {
     };
 
     return rv;
+  }
+  clone(): ChartVisualizerInfo {
+    return new ChartVisualizerInfo({
+      attribute: this.attribute,
+      items: cloneDeep(this.items),
+      title: this.title,
+      settings: cloneDeep(this.settings)
+    })
   }
 }
 
