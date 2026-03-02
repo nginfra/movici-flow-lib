@@ -81,6 +81,15 @@
             <DatasetViewer v-model="dataset" />
           </o-tab-item>
           <o-tab-item
+            value="dataEditor"
+            icon="edit"
+            icon-pack="far"
+            :label="t('flow.datasets.dataEditor')"
+          >
+          <DatasetViewer v-model="dataset" />
+          <!-- TODO: think of a way in which an editor could be either attraced or extend to the current dataset -->
+          </o-tab-item>
+          <o-tab-item
             disabled
             value="usage"
             icon="fa-scenario"
@@ -122,7 +131,6 @@ import DatasetViewer from "@movici-flow-lib/components/DatasetViewer.vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
-
 const store = useFlowStore();
 
 const dataset = ref<ShortDataset>();

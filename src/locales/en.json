@@ -55,6 +55,7 @@
       "summaryEntityGroupNotFound": "Entity group {entityGroup} not found in dataset {datasetName}"
     },
     "datasets": {
+      "dataEditor": "Editor",
       "dataPreview": "Data preview",
       "details": {
         "created_on": "Created on",
