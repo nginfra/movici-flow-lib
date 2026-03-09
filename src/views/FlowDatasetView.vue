@@ -86,8 +86,16 @@
             icon-pack="far"
             :label="t('flow.datasets.dataEditor')"
           >
-          <DatasetViewer v-model="dataset" />
-          <!-- TODO: think of a way in which an editor could be either attraced or extend to the current dataset -->
+            <div
+              class="is-flex is-justify-content-center is-align-items-center"
+              style="min-height: 200px"
+            >
+              <router-link :to="{ name: 'editor', params: { uuid: dataset?.uuid } }">
+                <o-button icon-left="edit" icon-pack="far" variant="primary">
+                  {{ t('flow.datasets.openEditor') }}
+                </o-button>
+              </router-link>
+            </div>
           </o-tab-item>
           <o-tab-item
             disabled

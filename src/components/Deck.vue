@@ -186,7 +186,7 @@ watch(
   },
 );
 
-function initDeck(viewState: ViewState) {
+function initDeck(viewState: ViewState, initialLayers: Layer[] = []) {
   return new DeckGL({
     canvas: "deckgl-overlay",
     width: "100%",
@@ -215,7 +215,7 @@ function initDeck(viewState: ViewState) {
       return "grab";
     },
     controller: props.controller ?? true,
-    layers: [],
+    layers: initialLayers,
     onViewStateChange: ({ viewState }: { viewState: ViewState }) => {
       updateViewState(viewState);
     },
@@ -241,7 +241,7 @@ onMounted(() => {
   map.value = initMapBox(initialViewState);
   map.value.on("load", () => {
     map.value?.resize();
-    deck.value = initDeck(initialViewState);
+    deck.value = initDeck(initialViewState, props.layers);
     if (props.camera) {
       updateCamera(props.camera);
     }
