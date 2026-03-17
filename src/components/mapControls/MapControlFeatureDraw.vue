@@ -361,7 +361,7 @@ const activeOption = ref("");
 const activeParent = ref("");
 
 function click(option: FeatureDrawOption) {
-  let mode = new ViewMode(),
+  let mode: NebulaMode = new ViewMode(),
     config: Record<string, unknown> = {};
 
   if (!option.options) {
