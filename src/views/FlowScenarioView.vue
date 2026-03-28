@@ -90,7 +90,52 @@
             icon="code"
             :label="t('flow.scenarios.rawConfig')"
           >
-            <o-input v-model="formattedRawData" type="textarea" class="is-monospace" readonly />
+            <div class="raw-config-editor">
+              <div class="editor-toolbar mb-3">
+                <o-button 
+                  class="is-primary mr-2" 
+                  size="small" 
+                  icon-pack="far" 
+                  icon-left="save"
+                  :disabled="!hasConfigChanges || isSaving"
+                  :loading="isSaving"
+                  @click="saveConfig"
+                >
+                  {{ isSaving ? 'Saving...' : 'Save' }}
+                </o-button>
+                <o-button 
+                  class="is-light" 
+                  size="small" 
+                  icon-pack="far" 
+                  icon-left="undo"
+                  :disabled="!hasConfigChanges"
+                  @click="resetConfig"
+                >
+                  Reset
+                </o-button>
+                <o-notification 
+                  v-if="saveMessage" 
+                  class="ml-3 is-inline-block"
+                  :variant="saveMessage.type"
+                  auto-close
+                  :duration="3000"
+                  @close="saveMessage = null"
+                >
+                  {{ saveMessage.text }}
+                </o-notification>
+              </div>
+              <o-input 
+                v-model="editableConfigData" 
+                type="textarea" 
+                class="is-monospace config-textarea" 
+                :class="{ 'has-error': configError }"
+                placeholder="Enter scenario configuration JSON..."
+                rows="20"
+              />
+              <div v-if="configError" class="error-message mt-2">
+                <span class="has-text-danger">{{ configError }}</span>
+              </div>
+            </div>
           </o-tab-item>
         </o-tabs>
       </template>
@@ -113,6 +158,11 @@ const { t } = useI18n();
 const store = useFlowStore();
 
 const scenario = ref<Scenario | null>();
+const editableConfigData = ref<string>('');
+const originalConfigData = ref<string>('');
+const isSaving = ref<boolean>(false);
+const configError = ref<string>('');
+const saveMessage = ref<{type: string, text: string} | null>(null);
 
 const scenarioModels = computed(() => {
   return [...(scenario.value?.models ?? [])].sort(sortByKeys(["+name"])) ?? [];
@@ -126,14 +176,82 @@ const formattedRawData = computed(() => {
   return JSON.stringify(scenario.value, null, 2);
 });
 
+const hasConfigChanges = computed(() => {
+  return editableConfigData.value !== originalConfigData.value;
+});
+
+// Validate JSON and update error state
+const validatedConfig = () => {
+  try {
+    const result = JSON.parse(editableConfigData.value);
+    configError.value = '';
+    return result;
+  } catch (error) {
+    configError.value = `Invalid JSON: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    return null;
+  }
+};
+
+// Save configuration
+const saveConfig = async () => {
+  if (!store.scenario?.uuid) return;
+  
+  const result = validatedConfig();
+  
+  if (!result) {
+    return;
+  }
+  
+  isSaving.value = true;
+  saveMessage.value = null;
+  
+  try {
+    await store.backend?.scenario.update(store.scenario.uuid, result);
+    originalConfigData.value = editableConfigData.value;
+    
+    // Refresh scenario data
+    scenario.value = await store.backend?.scenario.get(store.scenario.uuid);
+    
+    saveMessage.value = {
+      type: 'success',
+      text: 'Configuration saved successfully!'
+    };
+  } catch (error) {
+    saveMessage.value = {
+      type: 'danger',
+      text: `Failed to save: ${error instanceof Error ? error.message : 'Unknown error'}`
+    };
+  } finally {
+    isSaving.value = false;
+  }
+};
+
+// Reset configuration to original
+const resetConfig = () => {
+  editableConfigData.value = originalConfigData.value;
+  configError.value = '';
+  saveMessage.value = null;
+};
+
 watch(
   () => store.scenario,
   async () => {
     if (!store.scenario) return;
     scenario.value = await store.backend?.scenario.get(store.scenario.uuid);
+    // Initialize editable config data
+    const configStr = JSON.stringify(scenario.value, null, 2);
+    editableConfigData.value = configStr;
+    originalConfigData.value = configStr;
   },
   { immediate: true },
 );
+
+// Validate JSON on input change
+watch(editableConfigData, () => {
+  if (editableConfigData.value.trim()) {
+    validatedConfig();
+  }
+});
 </script>
 
 <style scoped lang="scss">
@@ -164,6 +282,37 @@ header {
 .tab-item {
   .control {
     height: inherit !important;
+  }
+}
+
+.raw-config-editor {
+  .editor-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .config-textarea {
+    font-family: 'Courier New', monospace !important;
+    
+    textarea {
+      min-height: 400px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    
+    &.has-error textarea {
+      border-color: $danger !important;
+    }
+  }
+
+  .error-message {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+    background-color: lighten($danger, 45%);
+    border: 1px solid $danger;
+    border-radius: 4px;
   }
 }
 </style>
