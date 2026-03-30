@@ -71,7 +71,7 @@
             </h2>
           </div>
         </header>
-        <o-tabs class="flow-tabs uppercase mt-2">
+        <o-tabs class="flow-tabs uppercase mt-2" @update:model-value="onTabChange">
           <o-tab-item
             value="dataPreview"
             icon="map"
@@ -80,6 +80,12 @@
           >
             <DatasetViewer v-model="dataset" />
           </o-tab-item>
+          <o-tab-item
+            value="dataEditor"
+            icon="edit"
+            icon-pack="far"
+            :label="t('flow.datasets.dataEditor')"
+          />
           <o-tab-item
             disabled
             value="usage"
@@ -115,6 +121,7 @@ import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import { sortByKeys } from "@movici-flow-lib/utils";
 import { dateString } from "@movici-flow-lib/utils/filters";
 import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 import FlowContainer from "../components/FlowStep.vue";
 import type { ShortDataset } from "../types";
 import ProjectInfoBox from "@movici-flow-lib/components/ProjectInfoBox.vue";
@@ -122,8 +129,14 @@ import DatasetViewer from "@movici-flow-lib/components/DatasetViewer.vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
-
 const store = useFlowStore();
+const router = useRouter();
+
+function onTabChange(tab: string) {
+  if (tab === "dataEditor" && dataset.value?.uuid) {
+    router.push({ name: "editor", params: { uuid: dataset.value.uuid } });
+  }
+}
 
 const dataset = ref<ShortDataset>();
 
