@@ -7,9 +7,11 @@ interface MoviciSettings {
   homeRoute: RouteLocationRaw;
   defaultViewState: ViewState;
   defaultViewName: string;
+  mapboxToken: string;
 }
 const settings: MoviciSettings = reactive<MoviciSettings>({
   homeRoute: "/",
+  mapboxToken: "",
   defaultViewState: {
     latitude: 52.18,
     longitude: 5.2,

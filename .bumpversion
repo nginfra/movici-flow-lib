@@ -6,6 +6,10 @@ allow_dirty = True
 
 [bumpversion:file:src/version.ts]
 
+[bumpversion:file:package.json]
+search = "version": "{current_version}",
+replace = "version": "{new_version}",
+
 [bumpversion:file:project/package.json]
 search = "version": "{current_version}",
 replace = "version": "{new_version}",

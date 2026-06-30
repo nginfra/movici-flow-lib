@@ -36,6 +36,8 @@ jobs:
       run: |
         make install
 
-    - name: Run unit tests
+    - name: Build, type-check and test
       run: |
-        npm --prefix project/ run test:unit
+        npm run build
+        npm run type-check
+        npm run test:unit

@@ -27,10 +27,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useSlots } from "vue";
+import { computed, useSlots, type Slots } from "vue";
 
-const slots = useSlots();
-const hasFooter = computed(() => !!slots["footer"]);
+// Explicit types so declaration emission doesn't infer `any` (vue-tsc emits the
+// setup bindings and `useSlots()`'s inferred type is circular during .d.ts build).
+const slots: Slots = useSlots();
+const hasFooter = computed<boolean>(() => !!slots["footer"]);
 
 const props = withDefaults(
   defineProps<{

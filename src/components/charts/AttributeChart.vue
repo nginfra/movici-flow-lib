@@ -65,7 +65,9 @@ const id = computed(() => props.chartInfo.id);
 const scatter = ref<{ chart: ChartJS } | null>(null);
 
 defineExpose({
-  getChart: () => scatter.value?.chart,
+  // Explicit (named) return type so the emitted .d.ts references `ChartJS`
+  // instead of inlining chart.js's huge inferred type (which isn't portable).
+  getChart: (): ChartJS | undefined => scatter.value?.chart,
 });
 
 const windowHeight = ref(0);

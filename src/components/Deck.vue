@@ -95,7 +95,8 @@ const props = withDefaults(
   }>(),
   {
     basemap: "mapbox://styles/mapbox/light-v10",
-    accessToken: import.meta.env.VITE_MAPBOX_TOKEN,
+    // Token comes from the host via the Flow plugin option (app.use(Flow, { mapboxToken })).
+    accessToken: () => useMoviciSettings().settings.mapboxToken,
     layers: () => [],
   },
 );
