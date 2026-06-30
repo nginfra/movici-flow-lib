@@ -71,7 +71,7 @@
             </h2>
           </div>
         </header>
-        <o-tabs class="flow-tabs uppercase mt-2">
+        <o-tabs class="flow-tabs uppercase mt-2" v-model="activeTab">
           <o-tab-item
             value="dataPreview"
             icon="map"
@@ -126,6 +126,8 @@ const { t } = useI18n();
 const store = useFlowStore();
 
 const dataset = ref<ShortDataset>();
+// Oruga 0.13 <o-tabs> needs an initial model value to activate a tab.
+const activeTab = ref("dataPreview");
 
 const search = ref("");
 const filteredDatasets = computed(() => {

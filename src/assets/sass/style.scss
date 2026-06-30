@@ -1,4 +1,5 @@
-@import "./variables";
+// `variables` is injected globally via vite `additionalData` (@use … as *),
+// so no local @import/@use is needed here (and one would clash with the inject).
 
 // block for the movici flow components
 .flow {
@@ -75,9 +76,23 @@
       margin: 0;
       height: calc(100% - 43px);
       padding: 0;
+      // Oruga 0.13's tab panel is a plain block; make it a flex column so panel
+      // content that relies on flex-grow (the map / Deck) fills the height and
+      // block content (the raw-config textarea control) stretches full-width —
+      // both regressed when Oruga's panel stopped being a flex container.
       .tab-item {
         height: 100%;
         width: 100%;
+        display: flex;
+        flex-direction: column;
+        // The Deck map container has no intrinsic height and an absolutely
+        // positioned canvas; make it the positioning context and fill the panel
+        // so the map stays inside the tab instead of covering the tab headers.
+        #mapbox-container {
+          position: relative;
+          flex: 1 1 auto;
+          min-height: 0;
+        }
       }
     }
   }
@@ -160,8 +175,8 @@
   }
 }
 
-.b-radio.is-small,
-.b-checkbox.is-small {
+.radio.is-small,
+.checkbox.is-small {
   height: 30px;
 }
 

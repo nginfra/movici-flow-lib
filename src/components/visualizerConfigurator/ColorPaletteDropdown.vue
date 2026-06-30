@@ -104,7 +104,7 @@ const validPalettes = computed(() => {
     height: 28px;
     padding: 0;
 
-    .b-tooltip {
+    .tooltip {
       width: 100%;
       height: 28px;
       .tooltip-content {

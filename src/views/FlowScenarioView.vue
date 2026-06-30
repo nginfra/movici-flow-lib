@@ -90,7 +90,12 @@
             icon="code"
             :label="t('flow.scenarios.rawConfig')"
           >
-            <o-input v-model="formattedRawData" type="textarea" class="is-monospace" readonly />
+            <o-input
+              v-model="formattedRawData"
+              type="textarea"
+              input-class="is-monospace"
+              readonly
+            />
           </o-tab-item>
         </o-tabs>
       </template>

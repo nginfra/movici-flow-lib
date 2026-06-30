@@ -50,7 +50,7 @@ button {
     border: 2px solid $white-ter !important;
     &:hover {
       color: $primary;
-      background: $primary-light;
+      background: var(--bulma-primary-light);
       border-color: $grey-light;
     }
     &:active {
