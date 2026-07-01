@@ -103,6 +103,14 @@ $menu-bottom-item-size: 3.625rem;
 $left-menu-size: 18.75rem;
 $half-left-menu-size: calc(#{$left-menu-size} / 2);
 
+// Bulma-derived values re-declared as plain constants so component/app SCSS no
+// longer relies on Bulma's global-scope variable leak (removed by Bulma 1.0's
+// module system). Values match Bulma 1.0 defaults; $border keeps our own grey,
+// as it resolved in the original build (Bulma's $border == our $grey-lighter).
+$control-height: 2.5em;
+$border: $grey-lighter;
+$size-7: 0.75rem;
+
 @mixin border-radius {
   border-radius: 0.25rem !important;
 }

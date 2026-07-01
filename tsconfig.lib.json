@@ -1,0 +1,28 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.json"],
+  "exclude": [
+    "src/**/__tests__/**",
+    "src/**/__mocks__/**",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "node_modules",
+    "dist"
+  ],
+  "compilerOptions": {
+    "composite": false,
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "isolatedModules": true,
+    "allowJs": true,
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "lib": ["esnext", "dom"],
+    "types": ["node", "vite/client"],
+    "paths": {
+      "@movici-flow-lib/*": ["src/*"],
+      "@movici-flow-lib": ["src/index.ts"]
+    }
+  }
+}

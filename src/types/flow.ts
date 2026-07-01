@@ -1,12 +1,7 @@
 import type { UUID } from "./general";
 
 export type FlowStep =
-  | "project"
-  | "workspace"
-  | "dataset"
-  | "scenario"
-  | "visualization"
-  | "export";
+  "project" | "workspace" | "dataset" | "scenario" | "visualization" | "export";
 
 export type ExtendedFlowStep = FlowStep | "workspace" | "datasets";
 

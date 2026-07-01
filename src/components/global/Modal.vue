@@ -1,6 +1,5 @@
 <template>
   <o-modal
-    content-class="modal-content"
     :active="active"
     @update:active="$emit('update:active', $event)"
     @close="close"
@@ -10,7 +9,7 @@
     :can-cancel="cancelOpts"
     :width="width"
   >
-    <div class="modal-card">
+    <div class="modal-card" :style="cardStyle">
       <header class="modal-card-head">
         <slot name="header">
           <p class="modal-card-title">{{ title }}</p>
@@ -28,10 +27,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useSlots } from "vue";
+import { computed, useSlots, type Slots } from "vue";
 
-const slots = useSlots();
-const hasFooter = computed(() => !!slots["footer"]);
+// Explicit types so declaration emission doesn't infer `any` (vue-tsc emits the
+// setup bindings and `useSlots()`'s inferred type is circular during .d.ts build).
+const slots: Slots = useSlots();
+const hasFooter = computed<boolean>(() => !!slots["footer"]);
 
 const props = withDefaults(
   defineProps<{
@@ -48,6 +49,14 @@ const emit = defineEmits<{
   (e: "update:active", val: boolean): void;
   (e: "close"): void;
 }>();
+// Bulma v1 gives .modal-card a fixed 640px width; drive it from the `width` prop
+// so it matches the o-modal content wrapper instead of overflowing it.
+const cardStyle = computed(() => {
+  const w = props.width;
+  if (w === undefined || w === null || w === "") return undefined;
+  const isNum = typeof w === "number" || /^\d+(\.\d+)?$/.test(String(w));
+  return { width: isNum ? `${w}px` : String(w), maxWidth: "100%" };
+});
 const allCancelOpts = computed(() =>
   Array.isArray(props.canCancel)
     ? props.canCancel
@@ -65,4 +74,9 @@ function close() {
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+// Never let the card exceed its wrapper / the viewport (width comes from cardStyle).
+.modal-card {
+  max-width: 100%;
+}
+</style>

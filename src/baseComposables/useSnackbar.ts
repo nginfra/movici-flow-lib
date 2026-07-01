@@ -1,13 +1,13 @@
-import { useProgrammatic } from "@oruga-ui/oruga-next";
+import { useOruga } from "@oruga-ui/oruga-next";
 
 export function useSnackbar() {
-  const { oruga } = useProgrammatic();
+  const oruga = useOruga();
 
   function openSnackbar(params: Record<string, unknown>) {
     oruga.notification.open({
       position: "top",
       rootClass: "toast-notification",
-      closable: true,
+      closeable: true,
       queue: false,
       ...params,
     });

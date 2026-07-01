@@ -164,7 +164,7 @@ import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import type { Visualizer } from "@movici-flow-lib/visualizers";
 import type VisualizerManager from "@movici-flow-lib/visualizers/VisualizerManager";
 import { MoviciColors, hexToColorTriple } from "@movici-flow-lib/visualizers/maps/colorMaps";
-import { useProgrammatic } from "@oruga-ui/oruga-next";
+import { useOruga } from "@oruga-ui/oruga-next";
 import isError from "lodash/isError";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -190,7 +190,7 @@ const store = useFlowStore();
 const { openDialog } = useDialog();
 const { t } = useI18n();
 const { successMessage } = useSnackbar();
-const { oruga } = useProgrammatic();
+const oruga = useOruga();
 
 defineProps<{
   hasPendingChanges?: boolean;
@@ -343,10 +343,10 @@ function openChartAttributePicker({
     canCancel: ["x", "escape"],
     props: {
       modelValue: parsedView.chartInfos,
-      object: info.object,
+      object: info.object!,
       datasetName,
       scenarioUUID,
-      datasetUUID,
+      datasetUUID: datasetUUID ?? undefined,
       entityGroup,
     },
     events: {

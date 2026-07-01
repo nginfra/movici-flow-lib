@@ -1,4 +1,5 @@
-import { useProgrammatic } from "@oruga-ui/oruga-next";
+import { useOruga } from "@oruga-ui/oruga-next";
+import MovDialogModal from "../components/global/DialogModal.vue";
 interface ShowDialogOptions {
   title?: string;
   message?: string;
@@ -17,11 +18,11 @@ interface ShowDialogOptions {
 }
 export function useDialog() {
   // define functions for dialog and confirm
-  const { oruga } = useProgrammatic();
+  const oruga = useOruga();
   return {
     openDialog(props: ShowDialogOptions) {
       return oruga.modal.open({
-        component: "MovDialogModal",
+        component: MovDialogModal,
         props,
         trapFocus: true,
         canCancel: ["escape", "button", "outside"],

@@ -1,34 +1,32 @@
 <template>
   <section class="flow columns is-gapless is-margin-less">
-    <o-menu class="column flow-menu" :activable="false">
-      <o-menu-list aria-role="menu">
-        <o-menu-item class="home" tag="router-link" :to="settings.homeRoute">
-          <template #label>
-            <MovImage
-              src="/static/movici-logo.svg"
-              :title="t('flow.leftMenu.returnToDashboard')"
-            ></MovImage>
-          </template>
-        </o-menu-item>
-        <o-menu-item
-          v-for="section in sections"
-          aria-role="menuitem"
-          :key="section.step"
-          :label="t(section.label)"
-          :icon-pack="section.iconPack"
-          :icon="section.icon"
-          :disabled="!section.enabled"
-          :active="isActive(section.step)"
-          @click.stop="section.activate"
-          tag="a"
-        />
-        <div class="bottom">
-          <span v-if="userInitials" class="is-small icon user-initials">
-            {{ userInitials }}
-          </span>
-          <span class="pt-1">{{ version }}</span>
-        </div>
-      </o-menu-list>
+    <o-menu class="column flow-menu" :activable="false" role="menu">
+      <o-menu-item class="home" tag="router-link" :to="settings.homeRoute">
+        <template #label>
+          <MovImage
+            src="/static/movici-logo.svg"
+            :title="t('flow.leftMenu.returnToDashboard')"
+          ></MovImage>
+        </template>
+      </o-menu-item>
+      <o-menu-item
+        v-for="section in sections"
+        aria-role="menuitem"
+        :key="section.step"
+        :label="t(section.label)"
+        :icon-pack="section.iconPack"
+        :icon="section.icon"
+        :disabled="!section.enabled"
+        :active="isActive(section.step)"
+        @click="section.activate"
+        tag="a"
+      />
+      <div class="bottom">
+        <span v-if="userInitials" class="is-small icon user-initials">
+          {{ userInitials }}
+        </span>
+        <span class="pt-1">{{ version }}</span>
+      </div>
     </o-menu>
     <o-tooltip
       class="collapse-button"
@@ -66,7 +64,7 @@ import FlowScenarioView from "./FlowScenarioView.vue";
 import FlowVisualizationView from "./FlowVisualizationView.vue";
 import { useDialog } from "@movici-flow-lib/baseComposables/useDialog";
 import { useI18n } from "vue-i18n";
-import { useProgrammatic } from "@oruga-ui/oruga-next";
+import { useOruga } from "@oruga-ui/oruga-next";
 import FlowExport from "@movici-flow-lib/components/FlowExport.vue";
 const { settings } = useMoviciSettings();
 const { openDialog } = useDialog();
@@ -108,7 +106,7 @@ function goToStep(step: FlowStep) {
   }
 }
 
-const { oruga } = useProgrammatic();
+const oruga = useOruga();
 const { sections } = useFlowSidebar({
   location: toRef(props, "location"),
   hasProjectCapability: hasProjectCapablity,

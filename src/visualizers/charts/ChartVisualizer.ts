@@ -111,7 +111,10 @@ export default class ChartVisualizer extends BaseVisualizer<ChartVisualizerInfo>
     };
   }
 
-  getChartDataset(item: ChartVisualizerItem) {
+  // Explicit (named) return type: the inferred shape mixes Partial<ChartOptions>
+  // with dataset props and leaks chart.js-internal types that aren't portably
+  // nameable in the emitted .d.ts.
+  getChartDataset(item: ChartVisualizerItem): ChartDataset<"line"> {
     return {
       ...item.settings,
       label: item.name,
@@ -127,6 +130,6 @@ export default class ChartVisualizer extends BaseVisualizer<ChartVisualizerInfo>
           radius: 2.5,
         },
       },
-    };
+    } as unknown as ChartDataset<"line">;
   }
 }
