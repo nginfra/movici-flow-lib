@@ -1,7 +1,12 @@
 <template>
-  <div id="mapbox-container">
-    <div id="map" />
-    <canvas id="deckgl-overlay" :style="backgroundColorStyle" @contextmenu.prevent />
+  <div class="mapbox-container">
+    <div ref="mapEl" class="deck-map" />
+    <canvas
+      ref="deckCanvas"
+      class="deck-canvas"
+      :style="backgroundColorStyle"
+      @contextmenu.prevent
+    />
     <div class="map-control map-control-zero" v-if="loaded">
       <slot name="control-zero" v-bind="slotProps" />
     </div>
@@ -105,6 +110,12 @@ const emit = defineEmits<{
 }>();
 const map = ref<mapboxgl.Map>();
 const deck = ref<DeckGL>();
+const mapEl = ref<HTMLDivElement | null>(null);
+const deckCanvas = ref<HTMLCanvasElement | null>(null);
+let resizeObserver: ResizeObserver | undefined;
+let resizeFrame = 0;
+let lastWidth = 0;
+let lastHeight = 0;
 const eventListeners = ref<Record<DeckEvent, Map<string, DeckEventCallback>>>({
   click: new Map<string, DeckEventCallback>(),
 
@@ -171,10 +182,20 @@ watch(
     map.value?.setStyle(showMap.value ? basemap : (null as unknown as string));
   },
 );
+
+// Avoid erros and GPU buffer dangling when loading layers to canvas. Necessary
+// for correct behaviour between preview data and editor tabs.
+function applyLayers() {
+  if (!deck.value || !mapEl.value) return;
+  const { width, height } = mapEl.value.getBoundingClientRect();
+  if (!width || !height) return;
+  deck.value.setProps({ layers: props.layers });
+}
+
 watch(
   () => props.layers,
-  (layers) => {
-    deck.value?.setProps({ layers });
+  () => {
+    applyLayers();
   },
 );
 
@@ -188,7 +209,7 @@ watch(
 
 function initDeck(viewState: ViewState) {
   return new DeckGL({
-    canvas: "deckgl-overlay",
+    canvas: deckCanvas.value ?? undefined,
     width: "100%",
     height: "100%",
     initialViewState: viewState,
@@ -228,7 +249,7 @@ function initMapBox(viewState: ViewState) {
     zoom: viewState.zoom,
     bearing: viewState.bearing,
     pitch: viewState.pitch,
-    container: "map",
+    container: mapEl.value as HTMLElement,
     accessToken: props.accessToken,
     maxPitch: 65,
     style: props.basemap,
@@ -236,7 +257,31 @@ function initMapBox(viewState: ViewState) {
     interactive: false,
   });
 }
+
+//  Handlging the map size is necessary to avoid misplacements of maps and layers
+//  when changing between tabs with maps.
+function handleResize() {
+  const el = mapEl.value;
+  if (!el) return;
+  const { width, height } = el.getBoundingClientRect();
+  if (!width || !height) return;
+  if (width === lastWidth && height === lastHeight) return;
+  lastWidth = width;
+  lastHeight = height;
+  map.value?.resize();
+  deck.value?.setProps({ width: Math.round(width), height: Math.round(height) });
+  // Now that the canvas has a real size, apply any layers that couldn't be
+  // initialized while the tab was hidden
+  applyLayers();
+  // Prevents bbox camera's zoom remain fitted to an element with wrong dimensions
+  // camera becomes viewState-based and we leave the view untouched.
+  if (props.camera?.bbox) {
+    updateCamera(props.camera);
+  }
+}
+
 onMounted(() => {
+  if (!mapEl.value || !deckCanvas.value) return;
   const initialViewState = props.camera?.viewState || DEFAULT_VIEWSTATE;
   map.value = initMapBox(initialViewState);
   map.value.on("load", () => {
@@ -245,10 +290,23 @@ onMounted(() => {
     if (props.camera) {
       updateCamera(props.camera);
     }
+    // Apply layers that populated before the deck existed.
+    // Not applied while the tabs are hidden, so layers never init on zero size canvas.
+    applyLayers();
     loaded.value = true;
   });
+
+  if (mapEl.value) {
+    resizeObserver = new ResizeObserver(() => {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(handleResize);
+    });
+    resizeObserver.observe(mapEl.value);
+  }
 });
 onBeforeUnmount(() => {
+  cancelAnimationFrame(resizeFrame);
+  resizeObserver?.disconnect();
   map.value?.remove();
   deck.value?.finalize();
   deck.value?.getCanvas()?.remove();
@@ -256,10 +314,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-#mapbox-container {
+.mapbox-container {
   width: 100%;
-  & > #map,
-  & > #deckgl-overlay {
+  .deck-map,
+  .deck-canvas {
     position: absolute;
     top: 0;
     left: 0;
