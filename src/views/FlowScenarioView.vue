@@ -61,6 +61,9 @@
             <o-button class="is-primary" icon-pack="far" size="small" icon-left="redo" disabled>
               Run scenario
             </o-button>
+            <o-button class="is-info ml-2" icon-pack="far" size="small" icon-left="save" disabled>
+              {{ t("actions.save") }}
+            </o-button>
           </div>
           <div class="status">
             <span class="is-size-7 mr-2">Status:</span>
@@ -78,12 +81,17 @@
             :label="t('flow.scenarios.widgetDashboard')"
           ></o-tab-item>
           <o-tab-item
-            disabled
             value="configAssistant"
             icon="th-list"
             icon-pack="far"
             :label="t('flow.scenarios.configAssistant')"
-          ></o-tab-item>
+          >
+            <ConfigurationAssistant
+              v-if="scenario"
+              v-model="scenario"
+              :available-datasets="availableDatasets"
+            />
+          </o-tab-item>
           <o-tab-item
             value="rawConfig"
             icon-pack="far"
@@ -99,6 +107,8 @@
 </template>
 
 <script setup lang="ts">
+import { useSnackbar } from "@movici-flow-lib/baseComposables/useSnackbar";
+import ConfigurationAssistant from "@movici-flow-lib/components/configurationAssistant/ConfigurationAssistant.vue";
 import ProjectInfoBox from "@movici-flow-lib/components/ProjectInfoBox.vue";
 import ScenarioInfoBox from "@movici-flow-lib/components/ScenarioInfoBox.vue";
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
@@ -109,17 +119,22 @@ import { getClassFromStatus, sortByKeys } from "../utils";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
+const { failMessage } = useSnackbar();
 
 const store = useFlowStore();
 
-const scenario = ref<Scenario | null>();
+const scenario = ref<Scenario | null>(null);
 
 const scenarioModels = computed(() => {
-  return [...(scenario.value?.models ?? [])].sort(sortByKeys(["+name"])) ?? [];
+  return [...(scenario.value?.models ?? [])].sort(sortByKeys(["+name"]));
 });
 
 const scenarioDatasets = computed(() => {
-  return [...(scenario.value?.datasets ?? [])].sort(sortByKeys(["+name"])) ?? [];
+  return [...(scenario.value?.datasets ?? [])].sort(sortByKeys(["+name"]));
+});
+
+const availableDatasets = computed(() => {
+  return [...store.datasets].sort(sortByKeys(["+display_name", "+name"]));
 });
 
 const formattedRawData = computed(() => {
@@ -128,9 +143,24 @@ const formattedRawData = computed(() => {
 
 watch(
   () => store.scenario,
-  async () => {
-    if (!store.scenario) return;
-    scenario.value = await store.backend?.scenario.get(store.scenario.uuid);
+  async (selectedScenario, _, onCleanup) => {
+    let cancelled = false;
+    onCleanup(() => {
+      cancelled = true;
+    });
+
+    if (!selectedScenario) {
+      scenario.value = null;
+      return;
+    }
+
+    const scenarioUUID = selectedScenario.uuid;
+    void store.loadDatasets().catch(() => {
+      if (!cancelled) failMessage(t("flow.errors.datasetsNotFound"));
+    });
+
+    const loadedScenario = await store.backend?.scenario.get(scenarioUUID);
+    if (!cancelled) scenario.value = loadedScenario ?? null;
   },
   { immediate: true },
 );

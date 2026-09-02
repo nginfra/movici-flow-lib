@@ -47,12 +47,28 @@
       "projectInvalid": "Invalid Project",
       "scenarioNameNotProvided": "Scenario name not provided",
       "scenarioInvalid": "Scenario is invalid",
+      "datasetsNotFound": "Could not load datasets",
       "viewHasNoScenario": "View has no Scenario UUID",
       "viewInvalid": "View is invalid",
       "viewNotInScenario": "View does not exist on this Scenario",
       "viewNotInProject": "View does not exist on this Project",
       "summaryNotFound": "Could not get dataset summary information",
       "summaryEntityGroupNotFound": "Entity group {entityGroup} not found in dataset {datasetName}"
+    },
+    "configurationAssistant": {
+      "addInput": "Add input",
+      "scenarioSettings": {
+        "advanced": "Advanced",
+        "emptyDatasets": "No datasets are used in this scenario yet.",
+        "emptyModels": "No models are configured for this scenario yet.",
+        "epsgCode": "EPSG Code",
+        "mode": "Mode",
+        "modeOptions": {
+          "eventOriented": "Event Oriented",
+          "timeOriented": "Time Oriented"
+        },
+        "referenceTime": "Reference Time (UTC)"
+      }
     },
     "datasets": {
       "dataPreview": "Data preview",
@@ -296,6 +312,11 @@
     "deselectAllPages": "Deselect from all pages",
     "selectAllPages": "Select from all pages",
     "loading": "Loading..."
+  },
+  "model": {
+    "addNew": "Create model",
+    "edit": "Edit model",
+    "name": "Model name"
   },
   "properties": {
     "actions": "Actions",

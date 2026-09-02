@@ -47,12 +47,28 @@
       "projectInvalid": "Ongeldige Werkruimte",
       "scenarioNameNotProvided": "Geen Scenario-naam",
       "scenarioInvalid": "Ongeldig Scenario",
+      "datasetsNotFound": "Datasets konden niet worden geladen",
       "viewHasNoScenario": "View heeft geen Scenario UUID",
       "viewInvalid": "Ongeldige View",
       "viewNotInScenario": "View bestaat niet in dit Scenario",
       "viewNotInProject": "View bestaat niet in deze Werkruimte",
       "summaryNotFound": "Fout bij het ophalen van de samenvatting",
       "summaryEntityGroupNotFound": "Entiteitgroep {entityGroup} bestaat niet in dataset {datasetName}"
+    },
+    "configurationAssistant": {
+      "addInput": "Input toevoegen",
+      "scenarioSettings": {
+        "advanced": "Geavanceerd",
+        "emptyDatasets": "Er zijn nog geen datasets in gebruik voor dit scenario.",
+        "emptyModels": "Er zijn nog geen modellen geconfigureerd voor dit scenario.",
+        "epsgCode": "EPSG Code",
+        "mode": "Modus",
+        "modeOptions": {
+          "eventOriented": "Eventgericht",
+          "timeOriented": "Tijdsgericht"
+        },
+        "referenceTime": "Referentietijd (UTC)"
+      }
     },
     "datasets": {
       "dataPreview": "Data voorbeeld",
@@ -297,6 +313,11 @@
     "deselectAllPages": "Deselecteer in alle pagina's",
     "selectAllPages": "Selecteer in alle paginas",
     "loading": "Bezig met laden..."
+  },
+  "model": {
+    "addNew": "Model maken",
+    "edit": "Model bewerken",
+    "name": "Modelnaam"
   },
   "properties": {
     "actions": "Acties",
