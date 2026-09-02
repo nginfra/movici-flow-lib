@@ -21,6 +21,7 @@ export interface ShortScenario {
 
 export interface Scenario extends ShortScenario {
   project_name: string;
+  description?: string;
   datasets: ScenarioDataset[];
   simulation_info: SimulationInfo;
   has_timeline?: boolean;
