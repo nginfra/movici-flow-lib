@@ -73,6 +73,14 @@ export const MULTI_SELECT_MODES: EditModeKey[] = ["select-rectangle", "select-po
 export const DRAW_MODES: EditModeKey[] = ["draw-point", "draw-line", "draw-polygon"];
 // modes in which the cursor snaps to existing geometry
 export const SNAP_MODES: EditModeKey[] = [...DRAW_MODES, "modify"];
+// modes that act on the active group
+export const ACTIVE_GROUP_MODES: EditModeKey[] = [
+  ...DRAW_MODES,
+  ...MULTI_SELECT_MODES,
+  "modify",
+  "translate",
+  "delete",
+];
 export const NO_SNAP_TARGETS: Feature[] = [];
 
 export const useEditorStore = defineStore("editor", () => {
@@ -1054,6 +1062,11 @@ export const useEditorStore = defineStore("editor", () => {
   function setGroupVisible(name: string, visible: boolean) {
     if (visible) hiddenGroups.value.delete(name);
     else hiddenGroups.value.add(name);
+    // A hidden active group can't be edited: drop what can no longer be seen
+    if (!visible && name === entityGroup.value) {
+      clearSelection();
+      if (ACTIVE_GROUP_MODES.includes(editModeKey.value)) editModeKey.value = "view";
+    }
   }
   function isGroupVisible(name: string) {
     return !hiddenGroups.value.has(name);

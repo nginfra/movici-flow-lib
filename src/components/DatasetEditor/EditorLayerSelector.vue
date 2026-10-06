@@ -21,7 +21,6 @@
         >
           <o-checkbox
             :model-value="store.isGroupVisible(name)"
-            :disabled="name === store.entityGroup"
             @update:model-value="(v: boolean) => store.setGroupVisible(name, v)"
             size="small"
           >

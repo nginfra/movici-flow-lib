@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useEditorStore } from "@movici-flow-lib/stores/editor";
+import { ACTIVE_GROUP_MODES, useEditorStore } from "@movici-flow-lib/stores/editor";
 import type { EditModeKey } from "@movici-flow-lib/stores/editor";
 import type { SnapType } from "@movici-flow-lib/utils/snapping";
 import { isMetricCRS } from "@movici-flow-lib/utils/measure";
@@ -89,12 +89,21 @@ const measureSupported = computed(() => {
   return isMetricCRS(store.dataset?.epsg_code);
 });
 
+const activeGroupHidden = computed(
+  () => !!store.entityGroup && !store.isGroupVisible(store.entityGroup),
+);
+
+function needsVisibleGroup(key: EditModeKey) {
+  return activeGroupHidden.value && ACTIVE_GROUP_MODES.includes(key);
+}
+
 function isDisabled(key: EditModeKey) {
-  return key === "measure" && !measureSupported.value;
+  return (key === "measure" && !measureSupported.value) || needsVisibleGroup(key);
 }
 
 function tooltipFor(mode: { key: EditModeKey; label: string }) {
   if (!isDisabled(mode.key)) return mode.label;
+  if (needsVisibleGroup(mode.key)) return `${mode.label} (Turn on active entity group)`;
   return `Measuring needs a projected CRS in metres (dataset: ${determineCRS(store.dataset?.epsg_code)})`;
 }
 
