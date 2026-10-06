@@ -1,4 +1,4 @@
-import { computed, watch } from "vue";
+import { computed, watch, type Ref } from "vue";
 import {
   EditableGeoJsonLayer,
   ViewMode,
@@ -6,6 +6,7 @@ import {
   DrawPolygonMode,
 } from "@deck.gl-community/editable-layers";
 import type { Layer } from "@deck.gl/core";
+import { GeoJsonLayer } from "@deck.gl/layers";
 import { DRAW_MODES, NO_SNAP_TARGETS, useEditorStore } from "../stores/editor";
 import { SnappingEditableGeoJsonLayer } from "../visualizers/layers/SnappingEditableGeoJsonLayer";
 import { SNAP_TOLERANCE_PX } from "../utils/snapping";
@@ -18,6 +19,11 @@ const EDIT_HANDLE_COLOR: [number, number, number, number] = [255, 255, 255, 255]
 const EDIT_HANDLE_OUTLINE_COLOR: [number, number, number, number] = [255, 140, 0, 255];
 const SELECTION_FILL_COLOR: [number, number, number, number] = [100, 160, 220, 40];
 const SELECTION_LINE_COLOR: [number, number, number, number] = [100, 160, 220, 200];
+const [mr, mg, mb] = hexToColorTriple(MoviciColors.TEAL);
+const [cr, cg, cb] = hexToColorTriple(MoviciColors.VERY_DARK_GREY);
+const MEASURE_HIGHLIGHT_FILL_COLOR: [number, number, number, number] = [mr, mg, mb, 70];
+const MEASURE_HIGHLIGHT_LINE_COLOR: [number, number, number, number] = [mr, mg, mb, 255];
+const MEASURE_HIGHLIGHT_CASING_COLOR: [number, number, number, number] = [cr, cg, cb, 220];
 const EMPTY_FEATURE_COLLECTION = { type: "FeatureCollection" as const, features: [] };
 
 const ENTITY_GROUP_PALETTE = [
@@ -33,7 +39,7 @@ const ENTITY_GROUP_PALETTE = [
 
 type RGBA = [number, number, number, number];
 
-export function useEditorLayer() {
+export function useEditorLayer(highlightedFeature?: Readonly<Ref<Feature | null>>) {
   const store = useEditorStore();
 
   const accessorCache = new Map<string, { getFillColor: unknown; getLineColor: unknown }>();
@@ -214,6 +220,34 @@ export function useEditorLayer() {
             if (ring) store.selectInPolygon(ring);
           }) as any,
         } as any),
+      );
+    }
+    const highlighted = highlightedFeature?.value;
+    if (highlighted) {
+      const data = [highlighted];
+      editableLayers.push(
+        new GeoJsonLayer({
+          id: "editor-measure-highlight-casing",
+          data,
+          pickable: false,
+          filled: false,
+          getLineColor: MEASURE_HIGHLIGHT_CASING_COLOR,
+          getLineWidth: 9,
+          lineWidthUnits: "pixels",
+          lineCapRounded: true,
+          lineJointRounded: true,
+        }),
+        new GeoJsonLayer({
+          id: "editor-measure-highlight",
+          data,
+          pickable: false,
+          getFillColor: MEASURE_HIGHLIGHT_FILL_COLOR,
+          getLineColor: MEASURE_HIGHLIGHT_LINE_COLOR,
+          getLineWidth: 5,
+          lineWidthUnits: "pixels",
+          lineCapRounded: true,
+          lineJointRounded: true,
+        }),
       );
     }
     return editableLayers;

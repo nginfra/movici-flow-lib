@@ -35,13 +35,17 @@ export function useMeasureTool() {
     target.value = { groupName, id, pickInfo };
   }
 
-  const measurement = computed<Measurement | null>(() => {
+  // Current WGS84 geometry, also used to highlight it on the map
+  const feature = computed<Feature | null>(() => {
     const t = target.value;
+    if (!t || !store.isGroupVisible(t.groupName)) return null;
+    return store.wgs84Features[t.groupName]?.find((f) => f.properties?.__id === t.id) ?? null;
+  });
+
+  const measurement = computed<Measurement | null>(() => {
     const crs = store.dataset?.epsg_code;
-    if (!t || !isMetricCRS(crs) || !store.isGroupVisible(t.groupName)) return null;
-    const feature = store.wgs84Features[t.groupName]?.find((f) => f.properties?.__id === t.id);
-    if (!feature) return null;
-    return measureFeature(feature, crs);
+    if (!feature.value || !isMetricCRS(crs)) return null;
+    return measureFeature(feature.value, crs);
   });
 
   watch([target, measurement], ([t, m]) => {
@@ -56,5 +60,5 @@ export function useMeasureTool() {
   );
   watch(() => store.datasetUUID, clear);
 
-  return { target, measurement, onClick, clear };
+  return { target, feature, measurement, onClick, clear };
 }

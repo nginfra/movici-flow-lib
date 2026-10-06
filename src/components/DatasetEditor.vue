@@ -61,13 +61,14 @@ const props = defineProps<{
 
 const store = useEditorStore();
 const sidebar = useEditorSidebar();
-const { layers } = useEditorLayer();
 const {
   target: measureTarget,
+  feature: measureFeature,
   measurement,
   onClick: onMeasureClick,
   clear: clearMeasure,
 } = useMeasureTool();
+const { layers } = useEditorLayer(measureFeature);
 
 // Keeps the popup clear of the left toolbar and the right property sidebar
 const measurePopupPadding = computed(() => ({
