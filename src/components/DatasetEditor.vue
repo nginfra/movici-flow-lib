@@ -18,8 +18,12 @@
             <EditorSidebar />
           </template>
           <!-- Hack to leave click registration 'on' because Deck doesn't provide direct event access-->
-          <template #control-zero="{ on, map }">
-            <span :data-on="registerOn(on)" style="display: none" />
+          <template #control-zero="{ on, map, setCursorCallback }">
+            <span
+              :data-on="registerOn(on)"
+              :data-cursor="registerCursor(setCursorCallback)"
+              style="display: none"
+            />
             <MeasurePopup
               v-if="map && measureTarget && measurement"
               :map="map"
@@ -41,7 +45,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useEditorStore } from "../stores/editor";
 import { useEditorLayer } from "../composables/useEditorLayer";
 import { transformBBox } from "../crs";
-import type { DeckCamera, DeckEventCallback, ShortDataset } from "../types";
+import type { CursorCallback, DeckCamera, DeckEventCallback, ShortDataset } from "../types";
 import { useMoviciSettings } from "../baseComposables/useMoviciSettings";
 import Deck from "../components/Deck.vue";
 import MapControlNavigation from "../components/mapControls/MapControlNavigation.vue";
@@ -54,6 +58,7 @@ import MeasurePopup from "./DatasetEditor/MeasurePopup.vue";
 import { MULTI_SELECT_MODES, DRAW_MODES } from "../stores/editor";
 import { useEditorSidebar } from "../composables/useEditorSidebar";
 import { useMeasureTool } from "../composables/useMeasureTool";
+import { editorCursor } from "../utils/editorCursor";
 
 const props = defineProps<{
   modelValue: ShortDataset;
@@ -122,6 +127,15 @@ function registerOn(on: (event: "click", callback: Record<string, DeckEventCallb
       }
     },
   });
+  return "";
+}
+
+let _setCursor: ((cb?: CursorCallback) => void) | null = null;
+
+function registerCursor(setCursorCallback: (cb?: CursorCallback) => void) {
+  if (_setCursor === setCursorCallback) return "";
+  _setCursor = setCursorCallback;
+  setCursorCallback((state) => editorCursor(store.editModeKey, state));
   return "";
 }
 
