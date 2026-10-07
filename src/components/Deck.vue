@@ -264,11 +264,7 @@ function handleResize() {
   const el = mapEl.value;
   if (!el) return;
   const { width, height } = el.getBoundingClientRect();
-  if (!width || !height) {
-    lastWidth = 0;
-    lastHeight = 0;
-    return;
-  }
+  if (!width || !height) return;
   if (width === lastWidth && height === lastHeight) return;
   lastWidth = width;
   lastHeight = height;

@@ -167,6 +167,7 @@ function padBBox(
 
 async function loadAndInit(uuid: string) {
   sidebar.initForDataset(uuid);
+  await store.loadDataset(uuid);
   // Only loads a single dataset. loadDataset also ensures the projection and
   // builds the wgs84 features.
   await store.loadDataset(uuid);
