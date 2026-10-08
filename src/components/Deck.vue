@@ -264,7 +264,12 @@ function handleResize() {
   const el = mapEl.value;
   if (!el) return;
   const { width, height } = el.getBoundingClientRect();
-  if (!width || !height) return;
+  if (!width || !height) {
+    // Corrects o-tab behavior stoping editor to update dataset. Editor tab is hidden with no dimentions at dataset initial load.
+    lastWidth = 0;
+    lastHeight = 0;
+    return;
+  }
   if (width === lastWidth && height === lastHeight) return;
   lastWidth = width;
   lastHeight = height;
