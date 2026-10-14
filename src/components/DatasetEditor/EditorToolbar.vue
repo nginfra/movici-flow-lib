@@ -71,7 +71,7 @@
       >
       </o-button>
     </div>
-    <o-field horizontal nowrap size="small" :label="'Active group:'" label-class="is-size-7">
+    <o-field horizontal nowrap size="small" label="Active group:" label-class="is-size-7">
       <o-select
         v-model="selectedGroup"
         size="small"

@@ -28,19 +28,19 @@
           :class="{ 'has-text-warning-dark has-text-weight-bold': isModified(key) }"
         >
           {{ key }}
-          <span v-if="isModified(String(key))">*</span>
+          <span v-if="isModified(key)">*</span>
         </span>
 
         <div class="is-flex-grow-1">
           <o-select
-            v-if="inputKind(String(key)) === 'enum'"
-            :model-value="currentValue(String(key))"
-            @update:model-value="(v: unknown) => emit('change', String(key), Number(v))"
+            v-if="inputKind(key) === 'enum'"
+            :model-value="currentValue(key)"
+            @update:model-value="(v: unknown) => emit('change', key, Number(v))"
             size="small"
           >
             <option v-if="isMulti" :value="undefined" disabled>new value</option>
             <option
-              v-for="(label, index) in getEnumOptions(String(key))"
+              v-for="(label, index) in getEnumOptions(key)"
               :key="index"
               :value="index"
             >
@@ -65,11 +65,11 @@
             size="small"
           />
           <o-input
-            v-else-if="inputKind(String(key)) === 'number'"
+            v-else-if="inputKind(key) === 'number'"
             type="number"
-            :step="isIntegerColumn(String(key)) ? '1' : 'any'"
-            :model-value="displayValue(String(key))"
-            @change="(e: Event) => onNumberChange(String(key), e)"
+            :step="isIntegerColumn(key) ? '1' : 'any'"
+            :model-value="displayValue(key)"
+            @change="(e: Event) => onNumberChange(key, e)"
             size="small"
             :placeholder="isMulti ? 'new value' : undefined"
           />
@@ -85,9 +85,9 @@
           <o-input
             v-else
             type="text"
-            :model-value="displayValue(String(key))"
+            :model-value="displayValue(key)"
             @change="
-              (e: Event) => emit('change', String(key), (e.target as HTMLInputElement).value)
+              (e: Event) => emit('change', key, (e.target as HTMLInputElement).value)
             "
             size="small"
             :placeholder="isMulti ? 'new value' : undefined"
@@ -222,7 +222,7 @@ function isModified(key: string): boolean {
       return pending !== undefined && key in pending;
     });
   }
-  if (!props.entityGroup || store.selectedId === null) return false;
+  if (store.selectedId === null) return false;
   const pending = store.changes.get(props.entityGroup)?.get(store.selectedId);
   if (pending !== undefined && key in pending) return true;
   const pendingGeom = store.geometryChanges.get(props.entityGroup)?.get(store.selectedId);

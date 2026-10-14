@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import type { Feature } from "geojson";
-import { useEditorStore } from "../stores/editor";
+import { useEditorStore, MULTI_SELECT_MODES, DRAW_MODES } from "../stores/editor";
 import { useEditorLayer } from "../composables/useEditorLayer";
 import { transformBBox } from "../crs";
 import type { CursorCallback, DeckCamera, DeckEventCallback, ShortDataset } from "../types";
@@ -56,7 +56,6 @@ import EditorSidebar from "./DatasetEditor/PropertySidebar.vue";
 import EditModeToolbar from "./DatasetEditor/EditModeToolbar.vue";
 import EditorLayerSelector from "./DatasetEditor/EditorLayerSelector.vue";
 import MeasurePopup from "./DatasetEditor/MeasurePopup.vue";
-import { MULTI_SELECT_MODES, DRAW_MODES } from "../stores/editor";
 import { useEditorSidebar } from "../composables/useEditorSidebar";
 import { useMeasureTool } from "../composables/useMeasureTool";
 import { editorCursor } from "../utils/editorCursor";

@@ -1,6 +1,6 @@
 <template>
   <DynamicDataView
-    :modelValue="target.pickInfo"
+    :model-value="target.pickInfo"
     :map="map"
     :view-state="viewState"
     :border-padding="borderPadding"
@@ -29,6 +29,7 @@ import { computed } from "vue";
 import type { ViewState } from "@movici-flow-lib/types";
 import type { MeasureTarget } from "@movici-flow-lib/composables/useMeasureTool";
 import { formatArea, formatLength, type Measurement } from "@movici-flow-lib/utils/measure";
+import { snakeToFriendly } from "@movici-flow-lib/utils/filters";
 import DynamicDataView from "../mapControls/DynamicDataView.vue";
 
 const props = defineProps<{
@@ -40,7 +41,7 @@ const props = defineProps<{
 }>();
 defineEmits<{ (e: "close"): void }>();
 
-const title = computed(() => `${props.target.groupName}`);
+const title = computed(() => snakeToFriendly(props.target.groupName));
 
 const rows = computed(() =>
   props.measurement.kind === "line"

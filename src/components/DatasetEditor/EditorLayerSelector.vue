@@ -24,7 +24,7 @@
             @update:model-value="(v: boolean) => store.setGroupVisible(name, v)"
             size="small"
           >
-            {{ formatEntityNames(name) }} ({{ store.entityCount(name) }})
+            {{ snakeToFriendly(name) }} ({{ store.entityCount(name) }})
           </o-checkbox>
           <button
             v-if="store.snappingEnabled"
@@ -46,10 +46,9 @@
 <script setup lang="ts">
 import WidgetContainer from "@movici-flow-lib/components/mapControls/WidgetContainer.vue";
 import { useEditorStore } from "@movici-flow-lib/stores/editor";
-import { snakeToSpaces, upperFirst } from "@movici-flow-lib/utils/filters";
+import { snakeToFriendly } from "@movici-flow-lib/utils/filters";
 
 const store = useEditorStore();
-const formatEntityNames = (name: string) => upperFirst(snakeToSpaces(name));
 
 function snapToggleTitle(name: string) {
   if (!store.isGroupVisible(name)) return "Hidden groups are not snapped";

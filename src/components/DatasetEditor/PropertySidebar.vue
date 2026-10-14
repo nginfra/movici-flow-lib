@@ -50,7 +50,7 @@ import { useEditorStore } from "@movici-flow-lib/stores/editor";
 import { useDialog } from "@movici-flow-lib/baseComposables/useDialog";
 import { useEditorSidebar } from "@movici-flow-lib/composables/useEditorSidebar";
 import PropertyEditor from "./PropertyEditor.vue";
-import { snakeToFriendly } from "@movici-flow-lib/utils/filters.ts";
+import { snakeToFriendly } from "@movici-flow-lib/utils/filters";
 import WidgetContainer from "@movici-flow-lib/components/mapControls/WidgetContainer.vue";
 
 const store = useEditorStore();

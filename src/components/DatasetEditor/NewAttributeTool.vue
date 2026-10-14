@@ -32,7 +32,7 @@ const name = ref("");
 const type = ref<AttributeValueType>("integer");
 const nameInput = ref<{ focus(): void } | null>(null);
 
-const canAdd = computed(() => !!store.entityGroup && name.value.trim().length > 0);
+const canAdd = computed(() => !!props.entityGroup && name.value.trim().length > 0);
 onMounted(() => nameInput.value?.focus());
 
 function onSubmit(): string | null {
