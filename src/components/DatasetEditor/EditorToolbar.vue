@@ -1,6 +1,6 @@
 <template>
   <nav class="editor-toolbar is-flex is-align-items-center px-4 py-2">
-    <span v-if="store.dirtyCount > 0" class="dirty-count is-size-7 has-text-warning mr-3">
+    <span v-if="store.isDirty"class="dirty-count is-size-7 has-text-warning mr-3">
       {{ store.dirtyCount }} unsaved change{{ store.dirtyCount !== 1 ? "s" : "" }}
     </span>
     <div>

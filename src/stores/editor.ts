@@ -186,25 +186,6 @@ export const useEditorStore = defineStore("editor", () => {
     entityGroup.value ? (bridges.value[entityGroup.value]?.geometryType ?? null) : null,
   );
 
-  const isDirty = computed(() => {
-    for (const groupChanges of changes.value.values()) {
-      if (groupChanges.size > 0) return true;
-    }
-    for (const groupGeomChanges of geometryChanges.value.values()) {
-      if (groupGeomChanges.size > 0) return true;
-    }
-    for (const id of deletedEntityIds.value.values()) {
-      if (id.size > 0) return true;
-    }
-    for (const attributes of deletedAttributes.value.values()) {
-      if (attributes.size > 0) return true;
-    }
-    // A new entity group is deliberately NOT dirty on its own: the backend rejects
-    // groups with zero entities. It becomes dirty via geometryChanges as soon as
-    // addEntity puts the first entity in it, and generatePatch skips empty groups.
-    return false;
-  });
-
   const dirtyCount = computed(() => {
     let count = 0;
     for (const groupChanges of changes.value.values()) {
@@ -221,6 +202,11 @@ export const useEditorStore = defineStore("editor", () => {
     }
     return count;
   });
+
+  // A new entity group is deliberately NOT dirty on its own: the backend rejects
+  // groups with zero entities. It becomes dirty via geometryChanges as soon as
+  // addEntity puts the first entity in it, and generatePatch skips empty groups.
+  const isDirty = computed(() => dirtyCount.value > 0);
 
   // Entity groups with zero entities at saving
   // shall be completed deleted by the backend.
