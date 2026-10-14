@@ -90,7 +90,8 @@ export const GROUP_SWITCH_RESET_MODES: EditModeKey[] = [
   ...MULTI_SELECT_MODES,
 ];
 export const NO_SNAP_TARGETS: Feature[] = [];
-
+// No mode currently needs its own config; suppress the library's tooltips
+export const EDIT_MODE_CONFIG: Record<string, unknown> = { formatTooltip: () => "" };
 function getOrCreate<K, V>(map: Map<K, V>, key: K, create: () => V): V {
   if (!map.has(key)) map.set(key, create());
   return map.get(key)!;
@@ -132,8 +133,6 @@ export const useEditorStore = defineStore("editor", () => {
   };
 
   const editMode = computed(() => modeInstances[editModeKey.value]);
-  // No mode currently needs its own config; suppress the library's tooltips
-  const editModeConfig = computed<Record<string, unknown>>(() => ({ formatTooltip: () => "" }));
   const historyStore = useEditorHistoryStore();
   const flowStore = useFlowStore();
 
@@ -438,7 +437,7 @@ export const useEditorStore = defineStore("editor", () => {
     for (const featureIndex of featureIndexes) {
       const feature = updatedFeatures[featureIndex];
       if (!feature) continue;
-      const id = (feature as any).properties?.__id as number | undefined;
+      const id = feature.properties?.__id as number | undefined;
       if (id === undefined) continue;
 
       const newGeometryColumns = bridge.featureToGeometryData(feature);
@@ -966,7 +965,7 @@ export const useEditorStore = defineStore("editor", () => {
   function deleteEntity(groupName: string, id: number, skipHistory = false): void {
     // Capture snapshot before mutating (necessary for undo functionality)
     const groupData = dataset.value?.data?.[groupName] as Record<string, unknown[]> | undefined;
-    let index = groupData ? rowIndex(groupName, id) : -1;
+    const index = groupData ? rowIndex(groupName, id) : -1;
     const rowData: Record<string, unknown> = {};
     if (groupData && index !== -1) {
       for (const key of Object.keys(groupData)) {
@@ -995,7 +994,7 @@ export const useEditorStore = defineStore("editor", () => {
     // Remove the feature from wgs84Features
     wgs84Features.value = {
       ...wgs84Features.value,
-      [groupName]: allFeatures.filter((f) => (f as any).properties?.__id !== id),
+      [groupName]: allFeatures.filter((f) => f.properties?.__id !== id),
     };
 
     // Discard any pending changes for this entity
@@ -1116,7 +1115,6 @@ export const useEditorStore = defineStore("editor", () => {
     error,
     editModeKey,
     editMode,
-    editModeConfig,
     entityGroupNames,
     entityCount,
     selectedEntity,

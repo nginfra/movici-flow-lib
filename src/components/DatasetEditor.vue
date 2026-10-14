@@ -41,7 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
+import type { Feature } from "geojson";
 import { useEditorStore } from "../stores/editor";
 import { useEditorLayer } from "../composables/useEditorLayer";
 import { transformBBox } from "../crs";
@@ -109,10 +110,10 @@ function registerOn(on: (event: "click", callback: Record<string, DeckEventCallb
       }
 
       const info = payload.pickInfo; //info.object is a GeoJSON feature with properties.__id
-      const obj = info?.object as any;
+      const obj = info?.object as Feature | undefined;
       const entityId = obj?.properties?.__id;
       if (entityId !== undefined && info != null) {
-        const layerId: string = (info as any).layer?.id ?? "";
+        const layerId: string = info.layer?.id ?? "";
 
         const groupMatch = layerId.match(/^editable-(.+)$/);
         const clickedGroup = groupMatch?.[1] ?? store.entityGroup ?? "";
@@ -183,15 +184,10 @@ async function loadAndInit(uuid: string) {
   }
 }
 
-onMounted(async () => {
-  await loadAndInit(props.modelValue.uuid);
-});
-
 watch(
   () => props.modelValue.uuid,
-  async (uuid) => {
-    await loadAndInit(uuid);
-  },
+  (uuid) => loadAndInit(uuid),
+  { immediate: true },
 );
 </script>
 

@@ -6,6 +6,8 @@ import { EditableGeoJsonLayer, getPickedEditHandle } from "@deck.gl-community/ed
 import type {
   ClickEvent,
   DraggingEvent,
+  EditableGeoJsonLayerProps,
+  FeatureCollection,
   PointerMoveEvent,
   StartDraggingEvent,
   StopDraggingEvent,
@@ -27,6 +29,8 @@ type SnappingProps = {
   snapTolerance: number;
   snapTrigger: SnapTrigger;
 };
+export type SnappingEditableGeoJsonLayerProps = EditableGeoJsonLayerProps<FeatureCollection> &
+  Partial<SnappingProps>;
 type SnappableEvent = { screenCoords: number[]; mapCoords: Position };
 
 const SNAP_INDICATOR_COLOR: [number, number, number, number] = [255, 0, 255, 255];
@@ -40,6 +44,10 @@ export class SnappingEditableGeoJsonLayer extends EditableGeoJsonLayer {
     snapTolerance: SNAP_TOLERANCE_PX,
     snapTrigger: "pointer",
   };
+
+  constructor(props: SnappingEditableGeoJsonLayerProps) {
+    super(props);
+  }
 
   get snapProps(): SnappingProps {
     return this.props as unknown as SnappingProps;

@@ -4,10 +4,17 @@ import {
   ViewMode,
   SelectionLayer,
   DrawPolygonMode,
+  type FeatureCollection as EditableFeatureCollection,
 } from "@deck.gl-community/editable-layers";
 import type { Layer } from "@deck.gl/core";
 import { GeoJsonLayer } from "@deck.gl/layers";
-import { ACTIVE_LAYER_MODES, DRAW_MODES, NO_SNAP_TARGETS, useEditorStore } from "../stores/editor";
+import {
+  ACTIVE_LAYER_MODES,
+  DRAW_MODES,
+  EDIT_MODE_CONFIG,
+  NO_SNAP_TARGETS,
+  useEditorStore,
+} from "../stores/editor";
 import { SnappingEditableGeoJsonLayer } from "../visualizers/layers/SnappingEditableGeoJsonLayer";
 import { SNAP_TOLERANCE_PX } from "../utils/snapping";
 import { MoviciColors, hexToColorTriple } from "@movici-flow-lib/visualizers/maps/colorMaps";
@@ -38,11 +45,13 @@ const ENTITY_GROUP_PALETTE = [
 ];
 
 type RGBA = [number, number, number, number];
+type ColorAccessor = (feature: unknown, isSelected: boolean) => RGBA;
+type GroupAccessors = { getFillColor: ColorAccessor; getLineColor: ColorAccessor };
 
 export function useEditorLayer(highlightedFeature?: Readonly<Ref<Feature | null>>) {
   const store = useEditorStore();
 
-  const accessorCache = new Map<string, { getFillColor: unknown; getLineColor: unknown }>();
+  const accessorCache = new Map<string, GroupAccessors>();
   const collectionCache = new Map<string, { features: Feature[]; collection: FeatureCollection }>();
   const selectPolygonMode = new DrawPolygonMode();
 
@@ -119,13 +128,13 @@ export function useEditorLayer(highlightedFeature?: Readonly<Ref<Feature | null>
         return new SnappingEditableGeoJsonLayer({
           id: `editable-${groupName}`,
           visible: store.isGroupVisible(groupName),
-          data: featureCollection,
+          data: featureCollection as EditableFeatureCollection,
           mode: layerMode,
-          modeConfig: store.editModeConfig,
+          modeConfig: EDIT_MODE_CONFIG,
           selectedFeatureIndexes: selectedIndexes,
           pickable: true,
-          getFillColor: getFillColor as any,
-          getLineColor: getLineColor as any,
+          getFillColor,
+          getLineColor,
           getLineWidth: 3,
           lineWidthUnits: "pixels",
           getRadius: 6,
@@ -154,7 +163,7 @@ export function useEditorLayer(highlightedFeature?: Readonly<Ref<Feature | null>
             } else {
               store.onGeometryEdit(groupName, updatedData.features, featureIndexes, editType);
             }
-          }) as any,
+          }),
           updateTriggers: {
             getFillColor: [
               store.selectedId,
@@ -170,7 +179,7 @@ export function useEditorLayer(highlightedFeature?: Readonly<Ref<Feature | null>
             mode: [store.editMode, store.entityGroup],
             modeConfig: [store.editModeKey],
           },
-        } as any);
+        });
       },
     );
 
@@ -192,7 +201,7 @@ export function useEditorLayer(highlightedFeature?: Readonly<Ref<Feature | null>
           getTentativeFillColor: () => [100, 160, 220, 40] as [number, number, number, number],
           getTentativeLineColor: () => [100, 160, 220, 200] as [number, number, number, number],
           lineWidthMinPixels: 1,
-        } as any),
+        }),
       );
     }
     // User draws a polygon in and around multiple features.
@@ -217,8 +226,8 @@ export function useEditorLayer(highlightedFeature?: Readonly<Ref<Feature | null>
             if (editAction.editType !== "addFeature") return;
             const ring = editAction.updatedData.features.at(-1)?.geometry?.coordinates?.[0];
             if (ring) store.selectInPolygon(ring);
-          }) as any,
-        } as any),
+          }),
+        }),
       );
     }
     const highlighted = highlightedFeature?.value;
