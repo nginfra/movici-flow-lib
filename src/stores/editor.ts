@@ -83,6 +83,11 @@ export const ACTIVE_GROUP_MODES: EditModeKey[] = [
 ];
 export const NO_SNAP_TARGETS: Feature[] = [];
 
+function getOrCreate<K, V>(map: Map<K, V>, key: K, create: () => V): V {
+  if (!map.has(key)) map.set(key, create());
+  return map.get(key)!;
+}
+
 export const useEditorStore = defineStore("editor", () => {
   const datasetUUID = ref<string | null>(null);
   const dataset = shallowRef<DatasetWithData | null>(null);
@@ -265,7 +270,9 @@ export const useEditorStore = defineStore("editor", () => {
           if (deletedIds.has(id)) return null;
           const pending = { ...propChanges.get(id), ...geomChanges.get(id) };
           if (prop in pending) return pending[prop] as PatchValue;
-          return hasClears ? ((getCurrentValue(entityGroup, id, prop) ?? null) as PatchValue) : null;
+          return hasClears
+            ? ((getCurrentValue(entityGroup, id, prop) ?? null) as PatchValue)
+            : null;
         });
       }
 
@@ -425,14 +432,11 @@ export const useEditorStore = defineStore("editor", () => {
       const oldGeometryColumns = getOriginalGeomColumns(groupName, id);
 
       // update geometryChanges
-      if (!geometryChanges.value.has(groupName)) {
-        geometryChanges.value.set(groupName, new Map());
-      }
-      const groupGeomChanges = geometryChanges.value.get(groupName)!;
-      if (!groupGeomChanges.has(id)) {
-        groupGeomChanges.set(id, {});
-      }
-      Object.assign(groupGeomChanges.get(id)!, newGeometryColumns);
+      const groupGeomChanges = getOrCreate(geometryChanges.value, groupName, () => new Map());
+      Object.assign(
+        getOrCreate(groupGeomChanges, id, () => ({})),
+        newGeometryColumns,
+      );
 
       // Push to history
       historyStore.push({
@@ -456,14 +460,11 @@ export const useEditorStore = defineStore("editor", () => {
       groupGeomChanges?.delete(cmd.id);
     } else {
       //  Record/refresh the pending change
-      if (!geometryChanges.value.has(cmd.entityGroup)) {
-        geometryChanges.value.set(cmd.entityGroup, new Map());
-      }
-      const groupGeomChanges = geometryChanges.value.get(cmd.entityGroup)!;
-      if (!groupGeomChanges.has(cmd.id)) {
-        groupGeomChanges.set(cmd.id, {});
-      }
-      Object.assign(groupGeomChanges.get(cmd.id)!, geomToApply);
+      const groupGeomChanges = getOrCreate(geometryChanges.value, cmd.entityGroup, () => new Map());
+      Object.assign(
+        getOrCreate(groupGeomChanges, cmd.id, () => ({})),
+        geomToApply,
+      );
     }
 
     // Update wgs84Features for rendering
@@ -532,10 +533,8 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   function writeChanges(groupName: string, id: number, prop: string, newValue: unknown) {
-    if (!changes.value.has(groupName)) changes.value.set(groupName, new Map());
-    const groupChanges = changes.value.get(groupName)!;
-    if (!groupChanges.has(id)) groupChanges.set(id, {});
-    groupChanges.get(id)![prop] = newValue;
+    const groupChanges = getOrCreate(changes.value, groupName, () => new Map());
+    getOrCreate(groupChanges, id, () => ({}))[prop] = newValue;
   }
 
   function updateProperty(
@@ -647,19 +646,17 @@ export const useEditorStore = defineStore("editor", () => {
 
     // Restore any pending property/geometry changes
     if (Object.keys(pendingChanges).length) {
-      if (!changes.value.has(entityGroup)) changes.value.set(entityGroup, new Map());
-      changes.value.get(entityGroup)!.set(id, { ...pendingChanges });
+      getOrCreate(changes.value, entityGroup, () => new Map()).set(id, { ...pendingChanges });
     }
     if (Object.keys(pendingGeometryChanges).length) {
-      if (!geometryChanges.value.has(entityGroup))
-        geometryChanges.value.set(entityGroup, new Map());
-      geometryChanges.value.get(entityGroup)!.set(id, { ...pendingGeometryChanges });
+      getOrCreate(geometryChanges.value, entityGroup, () => new Map()).set(id, {
+        ...pendingGeometryChanges,
+      });
     }
 
     // Restore tracking state
     if (isNew) {
-      if (!newEntityIds.value.get(entityGroup)) newEntityIds.value.set(entityGroup, new Set());
-      newEntityIds.value.get(entityGroup)!.add(id);
+      getOrCreate(newEntityIds.value, entityGroup, () => new Set()).add(id);
     } else {
       deletedEntityIds.value.get(entityGroup)?.delete(id);
     }
@@ -814,16 +811,10 @@ export const useEditorStore = defineStore("editor", () => {
     };
 
     // track geometry changes
-    if (!geometryChanges.value.has(groupName)) {
-      geometryChanges.value.set(groupName, new Map());
-    }
-    geometryChanges.value.get(groupName)!.set(newId, { ...geomColumns });
+    getOrCreate(geometryChanges.value, groupName, () => new Map()).set(newId, { ...geomColumns });
 
-    // track as new entity
-    if (!newEntityIds.value.has(groupName)) {
-      newEntityIds.value.set(groupName, new Set());
-    }
-    newEntityIds.value.get(groupName)!.add(newId);
+    // track new entity
+    getOrCreate(newEntityIds.value, groupName, () => new Set()).add(newId);
 
     //Build the rowData snapshot for undo (all columns for this new entity)
     const rowData: Record<string, unknown> = {};
@@ -869,8 +860,7 @@ export const useEditorStore = defineStore("editor", () => {
     const size = (groupData["id"] as unknown[])?.length ?? 0;
     groupData[attr] = new Array(size).fill(null);
     triggerRef(dataset);
-    if (!newAttributeTypes.value.has(groupName)) newAttributeTypes.value.set(groupName, new Map());
-    newAttributeTypes.value.get(groupName)!.set(attr, type);
+    getOrCreate(newAttributeTypes.value, groupName, () => new Map()).set(attr, type);
     return true;
   }
 
@@ -898,10 +888,7 @@ export const useEditorStore = defineStore("editor", () => {
       newAttributeTypes.value.get(groupName)!.delete(name);
       triggerRef(dataset);
     } else {
-      if (!deletedAttributes.value.has(groupName)) {
-        deletedAttributes.value.set(groupName, new Set());
-      }
-      deletedAttributes.value.get(groupName)!.add(name);
+      getOrCreate(deletedAttributes.value, groupName, () => new Set()).add(name);
     }
 
     if (!skipHistory) {
@@ -926,10 +913,10 @@ export const useEditorStore = defineStore("editor", () => {
       if (!groupData) return;
       groupData[cmd.attribute] = [...(cmd.columnSnapshot ?? [])];
       if (cmd.declaredType) {
-        if (!newAttributeTypes.value.has(cmd.entityGroup)) {
-          newAttributeTypes.value.set(cmd.entityGroup, new Map());
-        }
-        newAttributeTypes.value.get(cmd.entityGroup)!.set(cmd.attribute, cmd.declaredType);
+        getOrCreate(newAttributeTypes.value, cmd.entityGroup, () => new Map()).set(
+          cmd.attribute,
+          cmd.declaredType,
+        );
       }
       triggerRef(dataset);
     } else {
@@ -1007,10 +994,7 @@ export const useEditorStore = defineStore("editor", () => {
       newEntityIds.value.get(groupName)?.delete(id);
     } else {
       // Track for deletion in the next patch
-      if (!deletedEntityIds.value.has(groupName)) {
-        deletedEntityIds.value.set(groupName, new Set());
-      }
-      deletedEntityIds.value.get(groupName)!.add(id);
+      getOrCreate(deletedEntityIds.value, groupName, () => new Set()).add(id);
     }
 
     // Clear selection if entity was selected
