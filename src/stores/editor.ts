@@ -265,7 +265,7 @@ export const useEditorStore = defineStore("editor", () => {
           if (deletedIds.has(id)) return null;
           const pending = { ...propChanges.get(id), ...geomChanges.get(id) };
           if (prop in pending) return pending[prop] as PatchValue;
-          return hasClears ? getCurrentValue(entityGroup, id, prop) : null;
+          return hasClears ? ((getCurrentValue(entityGroup, id, prop) ?? null) as PatchValue) : null;
         });
       }
 
@@ -379,11 +379,11 @@ export const useEditorStore = defineStore("editor", () => {
     return idIndex.value[groupName]?.get(id) ?? -1;
   }
 
-  function getCurrentValue(groupName: string, id: number, prop: string): PatchValue {
-    const groupData = dataset.value?.data?.[groupName] as Record<string, unknown[]> | undefined;
+  function getCurrentValue(groupName: string, id: number, prop: string): unknown {
     const index = rowIndex(groupName, id);
-    if (index === -1) return null;
-    return ((groupData?.[prop] as unknown[])?.[index] ?? null) as PatchValue;
+    if (index === -1) return undefined;
+    const groupData = dataset.value?.data?.[groupName] as Record<string, unknown[]> | undefined;
+    return groupData?.[prop]?.[index];
   }
 
   function getOriginalGeomColumns(groupName: string, id: number): GeometryData {
@@ -528,9 +528,7 @@ export const useEditorStore = defineStore("editor", () => {
   function pendingOrCurrentValue(groupName: string, id: number, prop: string): unknown {
     const pending = changes.value.get(groupName)?.get(id);
     if (pending && prop in pending) return pending[prop];
-    const groupData = dataset.value?.data?.[groupName] as Record<string, unknown[]> | undefined;
-    const dataIndex = rowIndex(groupName, id);
-    return dataIndex !== -1 ? (groupData?.[prop] as unknown[])?.[dataIndex] : undefined;
+    return getCurrentValue(groupName, id, prop);
   }
 
   function writeChanges(groupName: string, id: number, prop: string, newValue: unknown) {
@@ -668,12 +666,7 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   function undoPropertyChange(cmd: UpdatePropertyCommand) {
-    const groupData = dataset.value?.data?.[cmd.entityGroup] as
-      | Record<string, unknown[]>
-      | undefined;
-    const dataIndex = rowIndex(cmd.entityGroup, cmd.id);
-    const originalValue =
-      dataIndex !== -1 ? (groupData?.[cmd.property] as unknown[])?.[dataIndex] : undefined;
+    const originalValue = getCurrentValue(cmd.entityGroup, cmd.id, cmd.property);
 
     if (cmd.oldValue === originalValue) {
       revertProperty(cmd.entityGroup, cmd.id, cmd.property);

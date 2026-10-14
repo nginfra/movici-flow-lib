@@ -109,6 +109,41 @@ describe("useEditorStore", () => {
     });
   });
 
+  describe("updateProperty", () => {
+    it("drops the pending change when undone back to the dataset value", () => {
+      store.updateProperty(GROUP, 1, "grid.load", 42);
+      store.undo();
+
+      expect(pending(1, "grid.load")).toBeUndefined();
+      expect(store.isDirty).toBe(false);
+    });
+
+    it("restores the earlier pending value when undone onto a previous edit", () => {
+      store.updateProperty(GROUP, 1, "grid.load", 42);
+      store.updateProperty(GROUP, 1, "grid.load", 43);
+      store.undo();
+
+      expect(pending(1, "grid.load")).toBe(42);
+    });
+
+    it("drops the pending change when undone back to a null dataset value", () => {
+      groupData()["label"]![1] = null;
+      store.updateProperty(GROUP, 2, "label", "z");
+      store.undo();
+
+      expect(pending(2, "label")).toBeUndefined();
+      expect(store.isDirty).toBe(false);
+    });
+
+    it("drops the pending change when undone on an attribute missing from the dataset", () => {
+      store.updateProperty(GROUP, 1, "extra", 5);
+      store.undo();
+
+      expect(pending(1, "extra")).toBeUndefined();
+      expect(store.isDirty).toBe(false);
+    });
+  });
+
   describe("deleteAttribute", () => {
     it("marks an existing attribute deleted without dropping the column", () => {
       expect(store.deleteAttribute(GROUP, "label")).toBe(true);
@@ -338,7 +373,48 @@ describe("useEditorStore", () => {
     });
   });
 
-  it.todo(
-    "generatePatch emits pending attribute deletions once DatasetPatch supports attribute drops",
-  );
+  describe("generatePatch", () => {
+    it("pads untouched cells with null when nothing is cleared", () => {
+      store.updateProperty(GROUP, 1, "label", "x");
+      store.updateProperty(GROUP, 2, "grid.load", 7);
+
+      const patch = store.generatePatch();
+
+      expect(patch.nulls_overwrite).toBe(false);
+      expect(patch.data[GROUP]).toEqual({
+        id: [1, 2],
+        label: ["x", null],
+        "grid.load": [null, 7],
+      });
+    });
+
+    it("pads untouched cells with the dataset value when a value is cleared", () => {
+      store.updateProperty(GROUP, 1, "label", null);
+      store.updateProperty(GROUP, 2, "grid.load", 7);
+
+      const patch = store.generatePatch();
+
+      expect(patch.nulls_overwrite).toBe(true);
+      expect(patch.data[GROUP]).toEqual({
+        id: [1, 2],
+        label: [null, "b"],
+        "grid.load": [1, 7],
+      });
+    });
+
+    it("pads with null where the dataset has no value when a value is cleared", () => {
+      store.updateProperty(GROUP, 1, "label", null);
+      store.updateProperty(GROUP, 2, "extra", 5);
+
+      const patch = store.generatePatch();
+
+      expect(patch.data[GROUP]).toEqual({
+        id: [1, 2],
+        label: [null, "b"],
+        extra: [null, 5],
+      });
+    });
+
+    it.todo("emits pending attribute deletions once DatasetPatch supports attribute drops");
+  });
 });
