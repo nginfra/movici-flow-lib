@@ -1,4 +1,4 @@
-import { useEditorStore } from "@movici-flow-lib/stores/editor";
+import { useEditorStore, type EditModeKey } from "@movici-flow-lib/stores/editor";
 import { useEditorHistoryStore } from "@movici-flow-lib/stores/editorHistory";
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
 import { useMoviciSettings } from "@movici-flow-lib/baseComposables/useMoviciSettings";
@@ -144,6 +144,25 @@ describe("useEditorStore", () => {
     });
   });
 
+  describe("entityCount", () => {
+    it("counts the entities of a group", () => {
+      expect(store.entityCount(GROUP)).toBe(3);
+    });
+
+    it("is 0 for no group or an unknown group", () => {
+      expect(store.entityCount(null)).toBe(0);
+      expect(store.entityCount("unknown_entities")).toBe(0);
+    });
+
+    it("follows entity deletion and its undo", () => {
+      store.deleteEntity(GROUP, 2);
+      expect(store.entityCount(GROUP)).toBe(2);
+
+      store.undo();
+      expect(store.entityCount(GROUP)).toBe(3);
+    });
+  });
+
   describe("deleteAttribute", () => {
     it("marks an existing attribute deleted without dropping the column", () => {
       expect(store.deleteAttribute(GROUP, "label")).toBe(true);
@@ -252,19 +271,29 @@ describe("useEditorStore", () => {
       expect(store.dirtyCount).toBe(0);
     });
 
-    it("drops a draw mode when the entity group is re-selected", () => {
-      store.setEditMode("draw-point");
+    it.each<EditModeKey>([
+      "draw-point",
+      "draw-line",
+      "draw-polygon",
+      "delete",
+      "select-rectangle",
+      "select-polygon",
+    ])("drops %s mode when the entity group is re-selected", (mode) => {
+      store.setEditMode(mode);
       store.selectEntityGroup(GROUP);
 
       expect(store.editModeKey).toBe("view");
     });
 
-    it("stays in measure mode when the entity group is re-selected", () => {
-      store.setEditMode("measure");
-      store.selectEntityGroup(GROUP);
+    it.each<EditModeKey>(["measure", "modify", "translate"])(
+      "stays in %s mode when the entity group is re-selected",
+      (mode) => {
+        store.setEditMode(mode);
+        store.selectEntityGroup(GROUP);
 
-      expect(store.editModeKey).toBe("measure");
-    });
+        expect(store.editModeKey).toBe(mode);
+      },
+    );
   });
 
   describe("snapping", () => {

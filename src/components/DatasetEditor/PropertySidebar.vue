@@ -68,7 +68,7 @@ const attributes = computed<string[]>(() => {
 });
 
 const selectionLabel = computed(
-  () => `${store.selectedIds.length} of ${entityCount.value} selected`,
+  () => `${store.selectedIds.length} of ${store.entityCount(store.entityGroup)} selected`,
 );
 
 function onPropertyChange(prop: string, value: unknown) {
@@ -90,12 +90,6 @@ function onDeleteAttribute(prop: string) {
     onConfirm: () => store.deleteAttribute(group, prop),
   });
 }
-
-const entityCount = computed(() => {
-  if (!store.dataset?.data || !store.entityGroup) return 0;
-  const groupData = store.dataset.data[store.entityGroup] as Record<string, unknown[]> | undefined;
-  return (groupData?.["id"] as unknown[])?.length ?? 0;
-});
 
 const generalEnums = computed<Record<string, string[]>>(() => {
   const g = store.dataset?.general as Record<string, unknown> | undefined;

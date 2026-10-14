@@ -81,6 +81,14 @@ export const ACTIVE_GROUP_MODES: EditModeKey[] = [
   "translate",
   "delete",
 ];
+// modes that edit only the active group's layer; other layers stay in view mode
+export const ACTIVE_LAYER_MODES: EditModeKey[] = [...DRAW_MODES, "delete", "translate"];
+// modes reset to view when another entity group is selected
+export const GROUP_SWITCH_RESET_MODES: EditModeKey[] = [
+  ...DRAW_MODES,
+  "delete",
+  ...MULTI_SELECT_MODES,
+];
 export const NO_SNAP_TARGETS: Feature[] = [];
 
 function getOrCreate<K, V>(map: Map<K, V>, key: K, create: () => V): V {
@@ -386,6 +394,11 @@ export const useEditorStore = defineStore("editor", () => {
     return idIndex.value[groupName]?.get(id) ?? -1;
   }
 
+  function entityCount(groupName: string | null): number {
+    if (!groupName) return 0;
+    return (dataset.value?.data?.[groupName]?.["id"] as unknown[] | undefined)?.length ?? 0;
+  }
+
   function getCurrentValue(groupName: string, id: number, prop: string): unknown {
     const index = rowIndex(groupName, id);
     if (index === -1) return undefined;
@@ -487,7 +500,7 @@ export const useEditorStore = defineStore("editor", () => {
     selectedId.value = null;
     setGroupVisible(name, true);
     // Reset draw/delete/select modes when switching groups
-    if ([...DRAW_MODES, "delete", ...MULTI_SELECT_MODES].includes(editModeKey.value)) {
+    if (GROUP_SWITCH_RESET_MODES.includes(editModeKey.value)) {
       editModeKey.value = "view";
     }
     multiSelectedIds.value = [];
@@ -1105,6 +1118,7 @@ export const useEditorStore = defineStore("editor", () => {
     editMode,
     editModeConfig,
     entityGroupNames,
+    entityCount,
     selectedEntity,
     boundingBox,
     currentGroupGeometryType,

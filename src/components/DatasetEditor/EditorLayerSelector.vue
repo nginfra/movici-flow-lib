@@ -24,7 +24,7 @@
             @update:model-value="(v: boolean) => store.setGroupVisible(name, v)"
             size="small"
           >
-            {{ formatEntityNames(name) }} ({{ entityCount(name) }})
+            {{ formatEntityNames(name) }} ({{ store.entityCount(name) }})
           </o-checkbox>
           <button
             v-if="store.snappingEnabled"
@@ -50,8 +50,6 @@ import { snakeToSpaces, upperFirst } from "@movici-flow-lib/utils/filters";
 
 const store = useEditorStore();
 const formatEntityNames = (name: string) => upperFirst(snakeToSpaces(name));
-const entityCount = (name: string) =>
-  ((store.dataset?.data?.[name]?.["id"] as unknown[]) ?? []).length;
 
 function snapToggleTitle(name: string) {
   if (!store.isGroupVisible(name)) return "Hidden groups are not snapped";

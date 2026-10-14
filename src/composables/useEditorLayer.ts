@@ -7,7 +7,7 @@ import {
 } from "@deck.gl-community/editable-layers";
 import type { Layer } from "@deck.gl/core";
 import { GeoJsonLayer } from "@deck.gl/layers";
-import { DRAW_MODES, NO_SNAP_TARGETS, useEditorStore } from "../stores/editor";
+import { ACTIVE_LAYER_MODES, DRAW_MODES, NO_SNAP_TARGETS, useEditorStore } from "../stores/editor";
 import { SnappingEditableGeoJsonLayer } from "../visualizers/layers/SnappingEditableGeoJsonLayer";
 import { SNAP_TOLERANCE_PX } from "../utils/snapping";
 import { MoviciColors, hexToColorTriple } from "@movici-flow-lib/visualizers/maps/colorMaps";
@@ -106,8 +106,7 @@ export function useEditorLayer(highlightedFeature?: Readonly<Ref<Feature | null>
           }
         }
 
-        // Draw/delete/translate modes apply only to active group; other groups stay in view mode
-        const isScopeMode = [...DRAW_MODES, "delete", "translate"].includes(store.editModeKey);
+        const isScopeMode = ACTIVE_LAYER_MODES.includes(store.editModeKey);
         const layerMode =
           isScopeMode && groupName !== store.entityGroup ? VIEW_MODE : store.editMode;
 
