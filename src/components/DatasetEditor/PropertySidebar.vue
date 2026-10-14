@@ -16,8 +16,8 @@
 
         <div class="is-flex-grow-1" v-show="!collapsed">
           <div class="property-title is-flex is-align-items-baseline">
-            <p class="label mb-0 mr-2">Properties:</p>
-            <span class="is-size-8">
+            <p class="label mb-0 mr-2">Properties of:</p>
+            <span class="is-size-7">
               {{ groupLabel || "Property Editor" }}
             </span>
           </div>
@@ -83,7 +83,7 @@ function onDeleteAttribute(prop: string) {
     title: "Delete attribute?",
     message:
       `Attribute '${prop}' will be removed from entity group '${group}'. ` +
-      `You can undo this until the datase is saved.`,
+      `You can undo this until the dataset is saved.`,
     variant: "danger",
     hasIcon: true,
     confirmButtonText: "Yes. Delete",
@@ -97,24 +97,17 @@ const entityCount = computed(() => {
   return (groupData?.["id"] as unknown[])?.length ?? 0;
 });
 
-const modifiedCount = computed(() => {
-  if (!store.entityGroup) return 0;
-  return store.changes.get(store.entityGroup)?.size ?? 0;
-});
-
 const generalEnums = computed<Record<string, string[]>>(() => {
   const g = store.dataset?.general as Record<string, unknown> | undefined;
-  // Accept "enums" as a lenient fallback
+  // Accepts "enums" as a lenient fallback
   const enums = (g?.["enum"] ?? g?.["enums"]) as Record<string, string[]> | undefined;
   return enums ?? {};
 });
 
 const enumNames = computed<Record<string, string>>(() => {
-  // enum_name mapping lives in the dataset
-  // summary, which the editor doesn't load.
-  // We apply a Best-effort convention:
-  // an attribute maps to the enum named after its last segment, e.g.
-  // "operational.power_source" -> general.enum["power_source"]
+  // enum_name mapping lives in the dataset summary, which the editor doesn't load.
+  // We apply a best-effort convention: an attribute maps to the enum
+  // named after its last segment, e.g. "operational.power_source" -> general.enum["power_source"]
   const result: Record<string, string> = {};
   if (!store.entityGroup) return result;
   for (const key of attributes.value) {
@@ -130,11 +123,6 @@ const enumNames = computed<Record<string, string>>(() => {
 <style scoped lang="scss">
 .property-sidebar {
   width: 360px;
-}
-
-.sidebar-header {
-  border-bottom: 1px solid $grey-lighter;
-  flex-shrink: 0;
 }
 .sidebar-content {
   max-height: 55vh;

@@ -137,7 +137,6 @@ function onSave() {
     );
   }
   if (droppedAttributes.length) {
-    // TODO: Revise after checking backend implementation.
     parts.push(
       `Attribute deletion is not supported by the backend: ${droppedAttributes.join(", ")} will not be removed.`,
     );
@@ -200,13 +199,6 @@ const selectedGroup = computed({
     margin-bottom: 0;
     margin-right: 0.5rem;
     white-space: nowrap;
-  }
-
-  .dataset-name {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 400px;
   }
 
   .dirty-count {

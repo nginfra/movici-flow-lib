@@ -114,7 +114,7 @@ const props = defineProps<{
   attributes: string[];
   selectedIds: number[]; // edits apply only to these ids.
   generalEnums: Record<string, string[]>;
-  enumNames: Record<string, string>; // PropNames become enumNames
+  enumNames: Record<string, string>; // Property names
 }>();
 
 const emit = defineEmits<{
@@ -157,7 +157,7 @@ function columnType(key: string): AttributeValueKind | null {
 }
 
 function boolSelectValue(key: string) {
-  const v = commonPendinValue(key);
+  const v = commonPendingValue(key);
   return v === undefined ? "" : String(Boolean(v));
 }
 
@@ -189,8 +189,8 @@ function currentGeometryValue(key: string): unknown {
 function geometryDisplay(key: string): string {
   const v = currentGeometryValue(key);
   if (v === null || v === undefined) return "";
-  // Point coordinates (geometry.x / geometry.y) are plain numbers: show them
-  // truncated to 2 decimals (full precision is in the title tooltip)
+  // Point coordinates (geometry.x / geometry.y) are plain numbers
+  // we truncated to 2 decimals
   if (typeof v === "number") return v.toFixed(2);
   // For Linestring/polygon columns show a compact summary
   if (Array.isArray(v)) return `[${v.length} vertices]`;
@@ -230,7 +230,7 @@ function isModified(key: string): boolean {
 }
 
 function currentValue(key: string): unknown {
-  if (isMulti.value) return commonPendinValue(key);
+  if (isMulti.value) return commonPendingValue(key);
   if (!props.entityGroup || store.selectedId === null) return props.entity?.[key];
   const pending = store.changes.get(props.entityGroup)?.get(store.selectedId);
   if (pending && key in pending) return pending[key];
@@ -243,7 +243,7 @@ function getEnumOptions(key: string): string[] | null {
   return props.generalEnums[enumName] ?? null;
 }
 
-function commonPendinValue(key: string): unknown {
+function commonPendingValue(key: string): unknown {
   if (!props.entityGroup) return undefined;
   const groupChanges = store.changes.get(props.entityGroup);
   if (!groupChanges) return undefined;

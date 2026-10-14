@@ -30,7 +30,7 @@ export function useMeasureTool() {
       !groupName ||
       !MEASURABLE_TYPES.includes(feature?.geometry?.type ?? "")
     ) {
-      return clear(); //
+      return clear();
     }
     target.value = { groupName, id, pickInfo };
   }

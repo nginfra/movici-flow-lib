@@ -85,7 +85,7 @@ const DEFAULT_VIEWSTATE = useMoviciSettings().settings.defaultViewState;
 const camera = ref<DeckCamera>({ viewState: DEFAULT_VIEWSTATE });
 // homeCamera fits initial load of datasets to its bbox
 const homeCamera = ref<DeckCamera>({ viewState: DEFAULT_VIEWSTATE });
-const basemap = ref("mapbox://styles/mapbox/light-v10"); //
+const basemap = ref("mapbox://styles/mapbox/light-v10");
 
 // Registering a click handler on the Deck component's 'on' method.
 let _on: ((event: "click", callbacks: Record<string, DeckEventCallback>) => void) | null = null;
@@ -154,7 +154,7 @@ function onKeyDown(e: KeyboardEvent) {
 }
 
 //  Expand a WGS84 bbox to at least minDeg
-// Controls the inital zoom extend and level depending on the extent of the dataset
+// Controls the inital zoom extent and level depending on the extent of the dataset
 function padBBox(
   bbox: [number, number, number, number],
   minDeg = 0.05,
@@ -169,7 +169,7 @@ function padBBox(
 
 async function loadAndInit(uuid: string) {
   sidebar.initForDataset(uuid);
-  // Only loads a single dataset. loadDataset also ensures the projection and
+  // Handles a single dataset. loadDataset also ensures the projection and
   // builds the wgs84 features.
   await store.loadDataset(uuid);
   // If a new dataset is requested while loading: abandon stale camera update.

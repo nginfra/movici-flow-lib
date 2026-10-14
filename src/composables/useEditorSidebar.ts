@@ -24,9 +24,9 @@ function writeAll(state: SidebarStorage) {
 }
 
 export function useEditorSidebar() {
-  // Called when editor opens a dataset for the first time.
-  // The SidebarStorage keeps track of which dataset has been open.
-
+  // The sidebar is shown (open) when a user changes from 'data preview'
+  // to 'editor' tab, for the very first time.
+  // After that the state is tracked and maintain by SidebarStorage.
   function initForDataset(uuid: string) {
     activeUUID.value = uuid;
     collapsed.value = readAll()[uuid]?.collapsed ?? false;
