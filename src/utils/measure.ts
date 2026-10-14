@@ -53,8 +53,15 @@ export function measureFeature(feature: Feature, crs?: string | number | null): 
     return { kind: "line", length: planarLength(coords) };
   }
   if (geometry?.type === "Polygon") {
-    const ring = reverseTransformArray((geometry.coordinates[0] ?? []) as CoordinateArray, crs);
-    return { kind: "polygon", perimeter: planarPerimeter(ring), area: planarArea(ring) };
+    const rings = geometry.coordinates.map((ring) =>
+      reverseTransformArray(ring as CoordinateArray, crs),
+    );
+    const perimeter = rings.reduce((total, ring) => total + planarPerimeter(ring), 0);
+    const area = rings.reduce(
+      (total, ring, index) => total + (index === 0 ? 1 : -1) * planarArea(ring),
+      0,
+    );
+    return { kind: "polygon", perimeter, area };
   }
   return null;
 }

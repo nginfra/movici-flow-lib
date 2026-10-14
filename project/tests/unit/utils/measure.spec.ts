@@ -107,6 +107,29 @@ describe("measureFeature", () => {
     expect(result.area).toBeCloseTo(10000, 3);
   });
 
+  it("subtracts hole areas and includes hole boundaries in the perimeter", () => {
+    const outer = rdToWgs84([
+      [155000, 463000],
+      [155100, 463000],
+      [155100, 463100],
+      [155000, 463100],
+      [155000, 463000],
+    ]);
+    const hole = rdToWgs84([
+      [155020, 463020],
+      [155020, 463040],
+      [155040, 463040],
+      [155040, 463020],
+      [155020, 463020],
+    ]);
+    const result = measureFeature(feature({ type: "Polygon", coordinates: [outer, hole] }), 28992);
+
+    expect(result?.kind).toBe("polygon");
+    if (result?.kind !== "polygon") return;
+    expect(result.perimeter).toBeCloseTo(480, 3);
+    expect(result.area).toBeCloseTo(9600, 3);
+  });
+
   it("measures a line in the dataset CRS", () => {
     const line = rdToWgs84([
       [155000, 463000],
