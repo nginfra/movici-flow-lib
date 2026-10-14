@@ -113,6 +113,14 @@ export const useEditorStore = defineStore("editor", () => {
   const newEntityIds = ref<Map<string, Set<number>>>(new Map());
   // Ids of existing entities deleted in an editing session
   const deletedEntityIds = ref<Map<string, Set<number>>>(new Map());
+  // Entity groups created in an editing session
+  const newEntityGroups = ref<Set<string>>(new Set());
+  // Declared value types of attributes added in an editing session
+  const newAttributeTypes = ref<Map<string, Map<string, AttributeValueType>>>(new Map());
+  // Existing attributes deleted in an editing session
+  const deletedAttributes = ref<Map<string, Set<string>>>(new Map());
+  // Entity groups hidden on the map
+  const hiddenGroups = ref<Set<string>>(new Set());
   // Ids of entities selected via rectangle/polygon selection (only for current entity group)
   const multiSelectedIds = ref<number[]>([]);
   const saving = ref(false);
@@ -140,7 +148,6 @@ export const useEditorStore = defineStore("editor", () => {
     if (!dataset.value?.data) return [];
     return Object.keys(dataset.value.data);
   });
-  const newEntityGroups = ref<Set<string>>(new Set());
 
   const selectedEntity = computed<Record<string, unknown> | null>(() => {
     if (selectedId.value === null || !entityGroup.value) return null;
@@ -852,9 +859,6 @@ export const useEditorStore = defineStore("editor", () => {
     multiSelectedIds.value = [newId];
   }
 
-  const newAttributeTypes = ref<Map<string, Map<string, AttributeValueType>>>(new Map());
-  const deletedAttributes = ref<Map<string, Set<string>>>(new Map());
-
   function isAttributeDeleted(groupName: string, name: string): boolean {
     return deletedAttributes.value.get(groupName)?.has(name) ?? false;
   }
@@ -1034,8 +1038,6 @@ export const useEditorStore = defineStore("editor", () => {
       });
     }
   }
-
-  const hiddenGroups = ref<Set<string>>(new Set());
 
   function setGroupVisible(name: string, visible: boolean) {
     if (visible) hiddenGroups.value.delete(name);
