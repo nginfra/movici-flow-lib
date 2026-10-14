@@ -7,7 +7,7 @@
           <template #control-left="{ onViewstateChange }">
             <MapControlNavigation
               :model-value="camera"
-              :init-camera="camera"
+              :initial-camera="homeCamera"
               @update:model-value="onViewstateChange($event)"
             />
             <MapControlBaseMap :model-value="basemap" @update:model-value="basemap = $event" />
@@ -83,7 +83,9 @@ const measurePopupPadding = computed(() => ({
 
 const DEFAULT_VIEWSTATE = useMoviciSettings().settings.defaultViewState;
 const camera = ref<DeckCamera>({ viewState: DEFAULT_VIEWSTATE });
-const basemap = ref("mapbox://styles/mapbox/light-v10"); // TODO: replace with basemap selector
+// homeCamera fits initial load of datasets to its bbox
+const homeCamera = ref<DeckCamera>({ viewState: DEFAULT_VIEWSTATE });
+const basemap = ref("mapbox://styles/mapbox/light-v10"); //
 
 // Registering a click handler on the Deck component's 'on' method.
 let _on: ((event: "click", callbacks: Record<string, DeckEventCallback>) => void) | null = null;
@@ -177,6 +179,7 @@ async function loadAndInit(uuid: string) {
     const bbox = padBBox(rawBbox);
     const cam = { bbox: { coords: bbox, fillRatio: 0.7 } };
     camera.value = cam;
+    homeCamera.value = cam;
   }
 }
 
