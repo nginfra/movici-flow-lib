@@ -133,13 +133,13 @@ function onSave() {
   if (emptied.length) {
     parts.push(
       `Saving will delete all entities from ${emptied.map((n) => `'${n}'`).join(", ")} group. ` +
-        `It will also delete the emptied entity group. This cannot be undone.`,
+        `It will also delete the entity group from the dataset. This cannot be undone.`,
     );
   }
   if (droppedAttributes.length) {
     // TODO: Revise after checking backend implementation.
     parts.push(
-      `Attribute deletion is not supported by the backend yet: ${droppedAttributes.join(", ")} will not be removed.`,
+      `Attribute deletion is not supported by the backend: ${droppedAttributes.join(", ")} will not be removed.`,
     );
   }
 

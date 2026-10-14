@@ -42,6 +42,6 @@ function onSubmit(): string | null {
   const groupName = name.value.trim();
   return store.addEntityGroup(groupName, geometryType.value)
     ? null
-    : `Cannot add entity group '${groupName}'. It already exists`;
+    : `Cannot add entity group '${groupName}'. Is the group name unique?`;
 }
 </script>
