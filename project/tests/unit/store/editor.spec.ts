@@ -302,6 +302,40 @@ describe("useEditorStore", () => {
       expect(store.isGroupSnappable(GROUP)).toBe(true);
       expect(store.snappingEnabled).toBe(true);
     });
+
+    it("tracks projection readiness while loading", async () => {
+      const getData = useFlowStore(pinia).backend!.dataset.getData as Mock;
+      let resolveData!: (data: ReturnType<typeof makeFixture>) => void;
+      getData.mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveData = resolve;
+          }),
+      );
+
+      const load = store.loadDataset("pending");
+      expect(store.projectionReady).toBe(false);
+
+      resolveData(makeFixture());
+      await load;
+      expect(store.projectionReady).toBe(true);
+    });
+
+    it("keeps projection readiness false when projection setup fails", async () => {
+      const getData = useFlowStore(pinia).backend!.dataset.getData as Mock;
+      const fixture = makeFixture();
+      fixture.epsg_code = 999999;
+      getData.mockImplementationOnce(async () => fixture);
+
+      await store.loadDataset("unsupported-crs");
+
+      expect(store.projectionReady).toBe(false);
+      expect(store.error).toContain("Could not determine projection");
+    });
+
+    it("marks projection ready after a successful dataset load", () => {
+      expect(store.projectionReady).toBe(true);
+    });
   });
 
   it.todo(

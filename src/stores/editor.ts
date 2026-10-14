@@ -86,6 +86,7 @@ export const NO_SNAP_TARGETS: Feature[] = [];
 export const useEditorStore = defineStore("editor", () => {
   const datasetUUID = ref<string | null>(null);
   const dataset = shallowRef<DatasetWithData | null>(null);
+  const projectionReady = ref(false);
   const entityGroup = ref<string | null>(null);
   const selectedId = ref<number | null>(null);
   const changes = ref<Changes>(new Map());
@@ -127,6 +128,7 @@ export const useEditorStore = defineStore("editor", () => {
     if (!dataset.value?.data) return [];
     return Object.keys(dataset.value.data);
   });
+  const newEntityGroups = ref<Set<string>>(new Set());
 
   const selectedEntity = computed<Record<string, unknown> | null>(() => {
     if (selectedId.value === null || !entityGroup.value) return null;
@@ -220,9 +222,9 @@ export const useEditorStore = defineStore("editor", () => {
     return count;
   });
 
-  // Entity groups which will be left with zero entities before save
-  // will be completed deleted by the backen. This tracks which
-  // entity groups will be left emptied.
+  // Entity groups with zero entities at saving
+  // shall be completed deleted by the backend.
+  // This tracks which entity groups will be left emptied.
   const groupsToBeEmptied = computed<string[]>(() => {
     const data = dataset.value?.data;
     if (!data) return [];
@@ -298,6 +300,7 @@ export const useEditorStore = defineStore("editor", () => {
     const token = ++loadToken;
     datasetUUID.value = null;
     dataset.value = null;
+    projectionReady.value = false;
     entityGroup.value = null;
     selectedId.value = null;
     changes.value = new Map();
@@ -334,6 +337,7 @@ export const useEditorStore = defineStore("editor", () => {
     try {
       await ensureProjection(dataset.value.epsg_code);
       if (token !== loadToken) return;
+      projectionReady.value = true;
       initWgs84Features();
     } catch (e) {
       error.value = e instanceof Error ? e.message : String(e);
@@ -957,8 +961,6 @@ export const useEditorStore = defineStore("editor", () => {
     }
   }
 
-  const newEntityGroups = ref<Set<string>>(new Set());
-
   function addEntityGroup(name: string, geometryType: GeometryType): boolean {
     const data = dataset.value?.data;
     const groupName = name.trim();
@@ -1040,7 +1042,8 @@ export const useEditorStore = defineStore("editor", () => {
       multiSelectedIds.value = multiSelectedIds.value.filter((selected) => selected !== id);
     }
 
-    // Push to history of undo/redo works. Skip for redo replays
+    // Pushes to history if undo/redo works.
+    // Pushes are skip on redo replays
     // index === -1 means nothing was removed
     if (!skipHistory && index !== -1) {
       historyStore.push({
@@ -1114,6 +1117,7 @@ export const useEditorStore = defineStore("editor", () => {
   return {
     datasetUUID,
     dataset,
+    projectionReady,
     entityGroup,
     selectedId,
     changes,

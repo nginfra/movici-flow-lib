@@ -83,11 +83,9 @@ const snapTypeButtons: { type: SnapType; label: string; icon: string }[] = [
   { type: "endpoint", label: "Snap to endpoint", icon: "dot-circle" },
 ];
 
-const measureSupported = computed(() => {
-  // loadDataset only sets proj4 after ensureProjection has registered the dataset CRS
-  void store.wgs84Features;
-  return isMetricCRS(store.dataset?.epsg_code);
-});
+const measureSupported = computed(
+  () => store.projectionReady && isMetricCRS(store.dataset?.epsg_code),
+);
 
 const activeGroupHidden = computed(
   () => !!store.entityGroup && !store.isGroupVisible(store.entityGroup),
