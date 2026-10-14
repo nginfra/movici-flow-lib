@@ -78,6 +78,8 @@ function getViewStateFromBBOX(
       dimensions.map((side) => side * ratio) as [number, number],
       {
         allowFloat: true,
+        // mapbox-gl and deck.gl define zoom levels with 512px tiles
+        tileSize: 512,
       },
     ),
     [longitude, latitude] = center;
@@ -85,9 +87,11 @@ function getViewStateFromBBOX(
   return { longitude, latitude, zoom };
 }
 
+// Map size in CSS pixels. The canvas' width/height are device pixels
+// (x devicePixelRatio), which would zoom in too far on high-DPI screens.
 function getCanvasDimensions(map: mapboxgl.Map): [number, number] {
-  const dimensions = map.getCanvas();
-  return [dimensions.width, dimensions.height];
+  const { width, height } = map.getContainer().getBoundingClientRect();
+  return [width, height];
 }
 
 const props = withDefaults(
@@ -148,6 +152,12 @@ function setCursorCallback(cb?: CursorCallback) {
 }
 
 function updateCamera(camera: DeckCamera) {
+  // A bbox can't be fitted to the Editor map while the tab is hidden. This keeps the bbox
+  // camera, so handleResize fits it once the tab becomes visible.
+  if (camera.bbox && map.value) {
+    const [width, height] = getCanvasDimensions(map.value);
+    if (!width || !height) return;
+  }
   const viewState = parseViewState(camera, map.value);
   updateViewState(viewState);
 }
