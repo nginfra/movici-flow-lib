@@ -319,7 +319,7 @@ watch(
   :deep(main) {
     background-color: $white;
     .flow-datasets {
-      #mapbox-container {
+      .mapbox-container {
         height: initial;
       }
     }

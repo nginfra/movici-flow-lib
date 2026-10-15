@@ -23,6 +23,9 @@ export function useDialog() {
       return oruga.modal.open({
         component: "MovDialogModal",
         props,
+        // Oruga's modal defaults to 960px wide while MovDialogModal caps itself and the bulma theme's
+        // strips the centring Bulma would otherwise apply
+        width: 460,
         trapFocus: true,
         canCancel: ["escape", "button", "outside"],
       });

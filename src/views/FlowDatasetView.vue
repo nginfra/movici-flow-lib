@@ -81,6 +81,16 @@
             <DatasetViewer v-model="dataset" />
           </o-tab-item>
           <o-tab-item
+            value="dataEditor"
+            icon="edit"
+            icon-pack="far"
+            label="Editor"
+            :disable="!store.hasCapability(CAPABILITIES.PATCH_DATASETS)"
+          >
+            <DatasetEditor v-model="dataset" />
+          </o-tab-item>
+
+          <o-tab-item
             disabled
             value="usage"
             icon="fa-scenario"
@@ -112,6 +122,7 @@
 
 <script setup lang="ts">
 import { useFlowStore } from "@movici-flow-lib/stores/flow";
+import { CAPABILITIES } from "@movici-flow-lib/api";
 import { sortByKeys } from "@movici-flow-lib/utils";
 import { dateString } from "@movici-flow-lib/utils/filters";
 import { computed, ref } from "vue";
@@ -119,6 +130,7 @@ import FlowContainer from "../components/FlowStep.vue";
 import type { ShortDataset } from "../types";
 import ProjectInfoBox from "@movici-flow-lib/components/ProjectInfoBox.vue";
 import DatasetViewer from "@movici-flow-lib/components/DatasetViewer.vue";
+import DatasetEditor from "@movici-flow-lib/components/DatasetEditor.vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();

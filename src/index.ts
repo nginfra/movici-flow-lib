@@ -11,6 +11,7 @@ function registerComponent(Vue: App, component: typeof Vue, name: string) {
 
 interface FlowPluginOptions {
   homeRoute: RouteLocationRaw;
+  restrictedAttributes: string[];
 }
 export default {
   install(Vue: App, options?: Partial<FlowPluginOptions>) {

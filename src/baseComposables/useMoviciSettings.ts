@@ -1,5 +1,5 @@
 import type { ViewState } from "@movici-flow-lib/types";
-import merge from "lodash/merge";
+import mergeWith from "lodash/mergeWith";
 import { reactive } from "vue";
 import type { RouteLocationRaw } from "vue-router";
 
@@ -7,7 +7,9 @@ interface MoviciSettings {
   homeRoute: RouteLocationRaw;
   defaultViewState: ViewState;
   defaultViewName: string;
+  restrictedAttributes: string[];
 }
+
 const settings: MoviciSettings = reactive<MoviciSettings>({
   homeRoute: "/",
   defaultViewState: {
@@ -18,11 +20,12 @@ const settings: MoviciSettings = reactive<MoviciSettings>({
     pitch: 0,
   },
   defaultViewName: "Untitled",
+  restrictedAttributes: [],
 });
 
 export function useMoviciSettings() {
   function updateSettings(obj: Partial<MoviciSettings>) {
-    merge(settings, obj);
+    mergeWith(settings, obj, (_target, source) => (Array.isArray(source) ? source : undefined));
   }
   return { settings, updateSettings };
 }
