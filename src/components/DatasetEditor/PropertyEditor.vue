@@ -39,11 +39,7 @@
             size="small"
           >
             <option v-if="isMulti" :value="undefined" disabled>new value</option>
-            <option
-              v-for="(label, index) in getEnumOptions(key)"
-              :key="index"
-              :value="index"
-            >
+            <option v-for="(label, index) in getEnumOptions(key)" :key="index" :value="index">
               {{ label }}
             </option>
           </o-select>
@@ -86,9 +82,7 @@
             v-else
             type="text"
             :model-value="displayValue(key)"
-            @change="
-              (e: Event) => emit('change', key, (e.target as HTMLInputElement).value)
-            "
+            @change="(e: Event) => emit('change', key, (e.target as HTMLInputElement).value)"
             size="small"
             :placeholder="isMulti ? 'new value' : undefined"
           />

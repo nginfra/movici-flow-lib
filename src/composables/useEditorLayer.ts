@@ -151,7 +151,7 @@ export function useEditorLayer(highlightedFeature?: Readonly<Ref<Feature | null>
           snapTolerance: SNAP_TOLERANCE_PX,
           snapTrigger: DRAW_MODES.includes(store.editModeKey) ? "pointer" : "drag",
           //Callback
-          onEdit: ((editAction: any) => {
+          onEdit: (editAction: any) => {
             const { updatedData, editType, editContext } = editAction;
             const featureIndexes: number[] = editContext?.featureIndexes ?? [];
             if (editType === "addFeature") {
@@ -163,7 +163,7 @@ export function useEditorLayer(highlightedFeature?: Readonly<Ref<Feature | null>
             } else {
               store.onGeometryEdit(groupName, updatedData.features, featureIndexes, editType);
             }
-          }),
+          },
           updateTriggers: {
             getFillColor: [
               store.selectedId,
@@ -222,11 +222,11 @@ export function useEditorLayer(highlightedFeature?: Readonly<Ref<Feature | null>
           getEditHandlePointOutlineColor: SELECTION_LINE_COLOR,
           editHandlePointOutline: true,
           editHandlePointStrokeWidth: 2,
-          onEdit: ((editAction: any) => {
+          onEdit: (editAction: any) => {
             if (editAction.editType !== "addFeature") return;
             const ring = editAction.updatedData.features.at(-1)?.geometry?.coordinates?.[0];
             if (ring) store.selectInPolygon(ring);
-          }),
+          },
         }),
       );
     }
